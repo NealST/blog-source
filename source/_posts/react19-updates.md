@@ -434,7 +434,7 @@ export function UserInfo({id}){
 * 给开发者带来了更高的心智负担，由于需要将server component 的概念与以往的 React 组件概念进行区分，React 团队将传统的组件重新定义为 client component, 并需要在代码中进行手动声明。对于开发者来说，就需要更加关注不同的场景下使用不同类型的组件。
 
 
-## React 19 带来的重要改进
+## 研发体验改进
 
 ### React Compiler
 
