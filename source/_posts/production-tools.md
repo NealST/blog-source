@@ -1,6 +1,7 @@
 ---
 title: 一些不错的生产力工具
 date: 2024-08-11 20:39:10
+updated: 2024-12-01 22:39:00
 tags:
   - production tools
 categories:
@@ -55,7 +56,6 @@ https://github.com/charmbracelet/wish, 一个整合了最佳实践和中间件�
 
 https://github.com/sherlock-project/sherlock, 可以通过用户名进行人肉搜索
 
-
 ## Shields for Badges
 
 https://github.com/badges/shields?tab=readme-ov-file, 徽章制作工具
@@ -67,6 +67,26 @@ https://github.com/responsively-org/responsively-app, 用于测试 web 响应式
 ## QuickRecorder
 
 https://github.com/lihaoyun6/QuickRecorder, 轻量的屏幕录制工具
+
 ## Chrome-Extension-Cli
 
 https://github.com/dutiyesh/chrome-extension-cli, chrome 插件研发脚手架
+
+## Eslint-plugin-perfectionist
+
+https://github.com/azat-io/eslint-plugin-perfectionist, 强迫症的福音，这是一个 eslint 插件，可以帮助你对多种数据类型进行强制排序，包括 objects, imports, types, enums, jsx props 等。
+
+## NpmPackage.info
+
+https://npmpackage.info/, 提供查询某个 npm 包详细信息的网站，在判断是否要使用某个 npm 包时可以先用这个工具查看一下相关信息。
+
+## Dependency-cruiser
+
+https://github.com/sverweij/dependency-cruiser, 依赖校验和可视化工具
+
+## Fuite
+
+https://github.com/nolanlawson/fuite, 一个命令行工具，可以帮助开发者查找 web 页面中的内存泄露
+
+
+

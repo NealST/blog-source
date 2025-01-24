@@ -1,6 +1,7 @@
 ---
 title: 一些优质的三方库
 date: 2024-08-11 21:39:10
+updated: 2024-12-01 22:39:00
 tags:
   - libraries
 categories:
@@ -111,3 +112,42 @@ https://imask.js.org/guide.html#getting-started，input 遮罩
 
 https://github.com/f5/unovis, 现代化的数据可视化框架，支持 React，Angular, Svelte, Vue 等多种框架
 
+## React Swipeable
+
+https://commerce.nearform.com/open-source/react-swipeable, 可定制，轻量化，高性能的 React hook，帮助开发者高效处理 swipe 交互事件
+
+## Viselect
+
+https://simonwep.github.io/selection/, 当你想创建一个通过点击和拖拽来可视化选中多个元素时，这个库可以开箱即用。
+
+## React currency input field
+
+https://github.com/cchanxzy/react-currency-input-field, 高质量的国际化多币种输入框组件，在国际化业务场景下会非常有用
+
+## Fast-grid
+
+https://github.com/gabrielpetersson/fast-grid, 号称是世界上最高性能的基于 web 的表格展示组件
+
+## React-loading-skeleton
+
+https://github.com/dvtng/react-loading-skeleton, 高效创建与 app 相对应的骨架屏
+
+## Simple Keyboard
+
+https://virtual-keyboard.js.org/react/, 高性能，零依赖，可定制化的虚拟键盘组件
+
+## React Email
+
+https://resend.com/blog/react-email-3, 邮件 API 服务
+
+## Floating UI
+
+https://floating-ui.com/, 一个用于管理浮动元素并能创建各种浮动元素的交互效果的 js 库，官网也做的挺好的。
+
+## International Telephone Input
+
+https://intl-tel-input.com/, 适用于国际化场景下的手机号输入框组件
+
+## React-movable
+
+https://github.com/tajo/react-movable, 支持对列表和表格元素通过拖放来移动排序
