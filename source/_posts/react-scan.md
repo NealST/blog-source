@@ -45,6 +45,7 @@ npx react-scan@latest http://localhost:3000(your website url)
 
 ## 效果展示
 
+![](https://raw.githubusercontent.com/aidenybai/react-scan/refs/heads/main/.github/assets/demo.gif)
 
 ## 实现原理
 
