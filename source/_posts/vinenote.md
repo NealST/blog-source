@@ -8,7 +8,7 @@ tags: "tauri, rust, react"
 
 ## 前言
 
-[英文介绍](https://github.com/NealST/VineNote/README.md)     [Github 地址](https://github.com/NealST/VineNote)
+[Github 地址](https://github.com/NealST/VineNote)
 
 VineNote 是一款基于 Tauri、React、shadcn/ui、TailwindCSS、Zustand 等优秀技术栈构建的轻量化跨平台笔记软件，兼具强大的编辑功能与卓越性能
 
