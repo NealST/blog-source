@@ -8,6 +8,8 @@ tags: "Front-end engineering"
 
 `Bun install` 命令安装依赖包的速度堪称极致，平均而言，它比 npm 快 7 倍，比 pnpm 快 4 倍，比 yarn 快 17 倍。这种速度优势在依赖众多的大型前端工程中会体现的非常明显，其安装耗时直接从分钟级干到毫秒级。
 
+![Image 1: Timeline showing shift from I/O wait to syscall overhead](https://bun.com/images/blog/bun-install/Group1.svg)
+
 它能达到这个效果的核心原因在于它针对安装过程中的每个环节都做了极致性的设计和实现，包括优化系统调用，消除 javascript 开销，异步 dns 解析，二进制 Manifest 缓存，优化 tarball 提取，利于缓存的数据结构设计，锁文件格式的优化，文件复制过程的优化以及多核利用的并行化处理等，笔者读完之后叹为观止，感受到了其做底层基建的匠心，特意翻译并分享出来。
 
 在正式介绍优化手段前，需要先介绍一个概念 - 系统调用
