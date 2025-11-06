@@ -1,8 +1,10 @@
 ---
-title: Grab 自研视觉大模型解决图像信息提取
+title: Grab 自研视觉大模型提取图像信息
 date: 2025-11-05 21:10:00
 tags: "AI"
 ---
+
+![](https://img.alicdn.com/imgextra/i1/O1CN015vtwaI1luB6wqXBO8_!!6000000004878-2-tps-1408-768.png)
 
 ## 前言
 
