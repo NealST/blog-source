@@ -1,12 +1,12 @@
 ---
-title: 设计师视角下我觉得好用且常用的 9 个 AI 工具
+title: 设计师视角下我觉得好用且常用的 8 个 AI 工具
 date: 2025-11-18 22:10:00
 tags: "AI, Designer"
 ---
 
 ![](https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2Fd04760f952e84129835415175160c471?format=webp&width=2000)
 
-作为一名产品工程师，在代码之外也会涉及一些产品设计的工作，本篇文章主要列举设计师视角下笔者认为最好用和最常用的 9 个 AI 工具（排名不分先后）
+作为一名产品工程师，在代码之外也会涉及一些产品设计的工作，本篇文章主要列举设计师视角下笔者认为最好用和最常用的 8 个 AI 工具（排名不分先后）
 
 ## Uizard
 
@@ -25,10 +25,6 @@ tags: "AI, Designer"
 ![](https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2F13f713a706b04d32a692eaad19eb3f40?format=webp&width=2000)
 
 [Fontjoy](https://fontjoy.com/) 这个堪称神器，它能自动帮我找到那些搭配起来既美观又平衡的字体组合，我不需要再花很多时间在各种字体网站上反复挑选试错。
-
-## Descript
-
-[Descript](https://www.descript.com/) 主要用于视频编辑，上传初始化素材以后，我可以仅通过文字编辑就能更改视频内容和效果，非常高效。
 
 ## Spline AI
 
