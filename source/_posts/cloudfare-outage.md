@@ -4,6 +4,8 @@ date: 2025-11-23 20:40
 tags: "cloudflare"
 ---
 
+![](https://img.alicdn.com/imgextra/i1/O1CN01vwKXZh1EtpUeB2ZjW_!!6000000000410-2-tps-1408-768.png)
+
 ## 前言
 
 全球领先的网络基础设施服务提供商 Cloudflare 于 2025 年 11 月 18 日（UTC 时间）发生了一次持续数小时的重大服务中断，导致全球大量网站和在线服务出现访问故障，包括 X（原 Twitter）、ChatGPT、Spotify、Roblox、Grindr、Canva 等热门平台均受到波及。尝试访问其服务网站的用户会看到一个错误页面，提示 Cloudflare 网络异常：
