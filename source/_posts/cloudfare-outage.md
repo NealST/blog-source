@@ -1,5 +1,5 @@
 ---
-title: 2025 年 11 月 18 号 cloudfare 崩溃复盘
+title: 2025 年 11 月 18 号 cloudflare 崩溃复盘
 date: 2025-11-23 20:40
 tags: "cloudflare"
 ---
