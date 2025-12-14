@@ -4,6 +4,8 @@ date: 2025-12-14 18:34:58
 tags: "React"
 ---
 
+![](https://img.alicdn.com/imgextra/i3/O1CN014WaMLX1zbJQTNMQGP_!!6000000006732-2-tps-1024-1024.png)
+
 ## 前言
 
 React Hooks 问世已有数年，但在日常很多场景和代码库中仍然充斥着最原始的那套写法：各种 useState 搭配沉重繁杂的 useEffect，以及各种无脑复制粘贴的代码。
