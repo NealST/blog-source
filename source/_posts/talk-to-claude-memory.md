@@ -1,5 +1,5 @@
 ---
-title: 如何构建一个让 Claude Code 进行记忆检索的 Skill
+title: 如何构建一个能让 Claude Code 做记忆检索的 Skill
 date: 2026-01-18 18:00:00
 tags: "AI,Claude Code"
 ---
