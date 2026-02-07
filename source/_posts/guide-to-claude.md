@@ -8,7 +8,7 @@ tags: "AI"
 
 如果你正在使用 [Claude Code](https://claude.com/product/claude-code)（或者 Cursor、Zed 等支持类似机制的 AI 编程工具），可能会遇到一个常见痛点：**AI 总是记不住你的项目规范**。它不知道你对于命名导出和默认导出的偏好，也不知道你的测试命令是 `pnpm test:e2e`，于是每次执行编程任务时它只能一遍又一遍的去读取你的项目代码以获取上述知识，这不仅会增加任务执行的耗时，还会浪费不少 token。
 
-于是工程侧推出了 `CLAUDE.md` 的方案，它是一个 Markdown 文件，角色类似于项目的“系统设定”，Claude 会在每次会话开始时自动读取它，能让 AI 瞬间懂你的项目。
+于是工程侧推出了 `CLAUDE.md` 的方案，它是一个 Markdown 文件，角色类似于项目的“系统设定”，Claude 会在每次会话开始时自动读取它，从而形成对你项目的第一印象。
 
 ## 如何创建？
 
@@ -39,20 +39,20 @@ Claude 会根据你的项目结构自动生成一个初版。
 
 2. **代码风格 (Code Style)**
    明确你的风格偏好，不要只说“代码要规范”，“要具体”这种正确的废话。
-   > - TypeScript strict mode，禁止使用 `any`
-   > - 必须使用 Named Exports
-   > - CSS 仅使用 Tailwind utility classes
+   - TypeScript strict mode，禁止使用 `any`
+   - 必须使用 Named Exports
+   - CSS 仅使用 Tailwind utility classes
 
 3. **常用命令 (Commands)**
    告诉 Claude 怎么干活。
-   > - `npm run dev`: 启动开发服务器
-   > - `npm run test`: 运行 Jest 测试
-   > - `npm run db:migrate`: 执行数据库迁移
+   - `npm run dev`: 启动开发服务器
+   - `npm run test`: 运行 Jest 测试
+   - `npm run db:migrate`: 执行数据库迁移
 
 4. **避坑指南 (Gotchas)**
    项目里那些特殊的规则和警告。
-   > - 认证模块有特殊的重试逻辑，不要改动
-   > - API 端点必须包含特定的 Header
+   - 认证模块有特殊的重试逻辑，不要改动
+   - API 端点必须包含特定的 Header
 
 ### 完整示例 (Next.js 项目)
 
