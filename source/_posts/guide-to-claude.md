@@ -4,6 +4,8 @@ date: 2026-02-07 16:00:00
 tags: "AI"
 ---
 
+![](https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2Fc46f9083ec71424d8b2c6ae0820a148e?format=webp&width=2000)
+
 如果你正在使用 [Claude Code](https://claude.com/product/claude-code)（或者 Cursor、Zed 等支持类似机制的 AI 编程工具），可能会遇到一个常见痛点：**AI 总是记不住你的项目规范**。它不知道你对于命名导出和默认导出的偏好，也不知道你的测试命令是 `pnpm test:e2e`，于是每次执行编程任务时它只能一遍又一遍的去读取你的项目代码以获取上述知识，这不仅会增加任务执行的耗时，还会浪费不少 token。
 
 于是工程侧推出了 `CLAUDE.md` 的方案，它是一个 Markdown 文件，角色类似于项目的“系统设定”，Claude 会在每次会话开始时自动读取它，能让 AI 瞬间懂你的项目。
@@ -129,3 +131,7 @@ See @docs/api-patterns.md for API conventions
 ## 总结
 
 `CLAUDE.md` 可以固化你的项目上下文信息以帮助 claude 更高效的理解你的项目，在 claude code 中你可以在项目根目录运行 `/init` 就可以直接生成一份初始化文件，把它当成给你分配的一名实习生：你给它的入职文档越清晰，它干活就越靠谱。
+
+## 参考
+* https://www.builder.io/blog/claude-md-guide
+* https://agents.md/
