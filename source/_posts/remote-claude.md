@@ -1,6 +1,6 @@
 ---
 title: 在手机上运行 Claude Code：移动端 AI 编程的思考
-date: 2026-03-08 22:25:00
+date: 2026-03-09 23:00:00
 tags:
   - AI
   - tooling
