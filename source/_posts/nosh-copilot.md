@@ -4,6 +4,8 @@ date: 2025-03-22 20:00:00
 tags: "AI"
 ---
 
+![](https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBdtNpv96Yt5yTNXxZvJmUZYTKj-L94AACqQtrG1ewAUan7aEaQhgMvQEAAwIAA3cAAzoE.png)
+
 ## 前言
 从 2025 年起，vibe coding 的概念大行其道，全行业基本上都在讨论如何用 AI 提升研发效率，社交媒体上也充斥着各种无需研发背景就能 vibe coding 出各种应用的宣传。而我主要在思考两件事情：一是 AI 在帮助我们写代码之外，是否还能产品化应用到一些日常生活中解决一些现实的决策问题；二是我想用一个产品开发的全生命周期（从开发到上架）来完整体验一下 vibe coding，看看这个过程存在什么坑点，AI 到底能做什么以及能做到什么程度，未来工程师与 AI 协作应该是怎样的。纸上得来终觉浅，绝知此事要躬行，尽信书不如无书，与其每天被各种外部宣传轰炸，不如自己动手实操一把，有了体感才有依据。
 
