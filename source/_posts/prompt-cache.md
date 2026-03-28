@@ -4,6 +4,8 @@ date: 2026-03-28 10:00:00
 tags: "AI"
 ---
 
+![](https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBeEZpx5kmDhu4L7EIlB6jTtlWrgXyPwACOwtrGwTKQEbXfe_coLsQTQEAAwIAA3cAAzoE.png)
+
 ## 前言
 
 随着 AI 应用的普及，大语言模型 (LLM) 已经成了基础设施，不管是帮你写代码的 Copilot，还是做知识库问答的系统。但应用一上规模，一个很现实的问题就摆在面前：把一堆重复的指令反反复复发给模型，账单上的 Token 开销是在成倍往上涨的。
