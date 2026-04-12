@@ -128,9 +128,10 @@ I want to be part of it.
 **Task:** Diagnose and resolve the editor performance issue to eliminate user complaints.
 
 **Action:**
-- Used profiling to pinpoint bottlenecks in DOM operations and serialization
-- Redesigned the data processing pipeline, introducing incremental processing and async chunking
-- Applied separate optimization strategies for "create new" vs. "edit existing" scenarios
+- **Identified the Bottleneck:** The root cause of the lag was the heavy computational cost of converting all merchant-uploaded text and image modules into images via `canvas` upon submission, which severely blocked the main thread.
+- **Asynchronous Task Sharding (Pre-processing):** Shifted the heavy conversion process from a centralized "on-submit" action to a background process. Tasks were sharded and triggered incrementally immediately after a merchant added or edited each module.
+- **Parallel Execution via Task Queues:** Introduced a task queue system and spun up multiple hidden child `iframe` instances to execute these canvas rendering tasks in parallel, bypassing single-thread limitations.
+- **Scenario-specific Optimization:** Applied tailored strategies—bulk generation for "create new" scenarios vs. cache-reliant incremental updates for "edit existing" scenarios.
 
 **Result:** P95 for new product editing dropped from 6+ minutes to under 10 seconds; editing existing products to under 3 seconds. Daily complaints went from hundreds to zero.
 
@@ -141,9 +142,10 @@ I want to be part of it.
 **Task:** 定位并解决编辑器性能问题，消除用户投诉。
 
 **Action:**
-- 通过 Profiling 定位到 DOM 操作和序列化的性能瓶颈
-- 重新设计数据处理流程，引入增量处理和异步分片
-- 针对新建/编辑两种场景分别优化
+- **定位瓶颈**：卡顿根源在于提交时需通过 Canvas 将所有图文模块统一转化为图片，巨大的计算量严重阻塞了主线程。
+- **异步任务分片（前置处理）**：将集中式的转换过程拆解，前置到商家每次新增或修改模块后，在后台静默增量处理组件转换。
+- **任务队列与并行执行**：引入任务队列机制，并通过分配给多个隐藏的子 iframe 实例同时执行任务，实现 Canvas 渲染的多进程/多实例并行处理。
+- **场景化优化**：针对“新建”（需批量生成整个长图）和“编辑”（依靠缓存，仅局部增量更新）场景运用不同策略分别优化以避免冗余计算。
 
 **Result:** 新建编辑 P95 从 6+ 分钟降到 10 秒内，编辑场景降到 3 秒内，日投诉量从数百降到零。
 
@@ -217,29 +219,29 @@ I want to be part of it.
 
 **English Version:**
 
-**Situation:** During the product detail page performance overhaul, the business team initially didn't want to allocate sprint capacity for "purely technical" work that wouldn't ship new features.
+**Situation:** Marketing complained slow page loads were wasting ad budgets, but Product Managers refused to pause features for a root-level codebase refactoring.
 
-**Task:** Convince stakeholders to invest in a technical initiative that would ultimately serve business goals.
+**Task:** Align cross-functional priorities and secure buy-in for a complete codebase overhaul.
 
 **Action:**
-- Let data speak: presented the correlation between page load time and conversion rates, showing that every second of delay cost measurable revenue
-- Offered multiple approaches with clear trade-off analysis — a quick-win option vs. a deeper architectural fix — so stakeholders could make an informed choice
-- Found shared ground: on the editor lag issue, the business team cared about complaint volume, I cared about P95 latency — but the goal was the same
+- **Linked Tech to Business Impact:** Quantified how maintaining legacy codebases caused high latency and killed ad ROI, uniting Marketing, Product, and Engineering around a shared revenue goal.
+- **Refused Quick Fixes:** Explained there was no viable "band-aid." Advocated firmly for the painful but correct path: converging scattered codebases and dropping legacy versions to fix the root cause.
+- **Zero-Downtime Rollout:** Designed a phased migration strategy, allowing us to swap the architecture safely ("change the engine in flight") without blocking new feature releases.
 
-**Result:** Secured buy-in for the full architectural migration. The 2% conversion uplift validated the investment. The approach became a template for how we justify technical initiatives going forward.
+**Result:** Secured full buy-in. We achieved a 1.2s P95 load time, driving a 2% conversion lift that resolved Marketing's complaints. The converged codebase doubled future delivery speed.
 
 **中文版：**
 
-**Situation:** 在推动详情页性能改造时，业务方最初不愿意把迭代资源投入到"纯技术"工作上，因为不直接产出新功能。
+**Situation:** 广告端投诉详情页变慢浪费预算，但产品端拒绝为“纯技术重构”暂停新功能迭代，导致优先级冲突。
 
-**Task:** 说服 stakeholder 为技术改造投入资源。
+**Task:** 调和分歧，争取资源进行彻底的底层代码重构。
 
 **Action:**
-- 用数据说话：展示页面加载时间与转化率的相关性，量化每秒延迟带来的收入损失
-- 提供方案对比：给出"快速止血"和"深度架构重构"两个方案的 trade-off 分析，让 stakeholder 做知情选择
-- 找到共同目标：例如商家编辑器问题，业务方关心投诉量，技术关心性能指标，但目标一致
+- **技术债务业务化**：用数据证明维护老旧代码是如何拖垮 FCP 和广告 ROI 的，将三方目标统一到“提升整体营收”上。
+- **拒绝苟且重本求源**：明确指出没有“快速止血”捷径。顶住压力推动正确但痛苦的抉择：收敛多套零散代码库、坚决下线长尾历史版本，彻底拔除性能和维护痛点。
+- **平滑演进打消顾虑**：设计精细的灰度迁移方案，在不中断核心业务迭代的前提下“开着飞机换引擎”，打消了产品侧对断档发版的担忧。
 
-**Result:** 拿到了完整架构迁移的资源支持。2% 转化率提升验证了投入的价值。这套推动方式也成为后续技术项目立项的参考模板。
+**Result:** 成功拿到了完整重构的排期。最终 P95 降至 1.2s，转化率提升 2% 终结了客诉，且统一后的代码库让后续研发提速一倍。
 
 ---
 

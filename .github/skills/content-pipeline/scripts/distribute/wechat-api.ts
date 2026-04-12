@@ -388,15 +388,15 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
   // 3. Extract content from pre-rendered HTML
   console.log('  [wechat-api] Using pre-rendered HTML');
   const extracted = extractArticleContent(wechatData.html!);
-  let htmlContent = extracted.content;
-  // styles stays '' — pre-rendered HTML needs no <style> wrapper
+  // Wrap in .content div so CSS selectors (.content h1, .content p, etc.) still match
+  let htmlContent = `<div class="content">${extracted.content}</div>`;
   const title = wechatData.title || manifest.title;
   const author = wechatData.author;
   const digest = wechatData.digest;
 
   // 4. Process HTML with placeholder images (if any from old workflow)
   const imageMap = new Map<string, string>();
-  const finalContent = processHtmlWithImages(htmlContent, '', imageMap);
+  const finalContent = processHtmlWithImages(htmlContent, extracted.styles, imageMap);
 
   // 5. Upload local images referenced in HTML to WeChat CDN
   let contentWithCdnImages = await uploadLocalImagesInHtml(finalContent, token);
