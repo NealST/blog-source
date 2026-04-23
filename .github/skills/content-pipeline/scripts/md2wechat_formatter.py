@@ -129,7 +129,7 @@ THEMES = {
             'operator': '#9A8A7B',
         },
         'blockquote_border':'rgba(0,0,0,0.84)',
-        'blockquote_bg':    'transparent',
+        'blockquote_bg':    'rgba(196,149,106,0.06)',
         'table_header_bg':  'rgba(0,0,0,0.84)',
         'table_header_text':'#FFFFFF',
         'table_stripe':     '#FAFAFA',
@@ -331,16 +331,16 @@ body {{
   color: {t.get('pre_text', t['text'])};
 }}
 .content blockquote {{
-  margin: {'30px 0 30px -20px' if is_medium else '0 0 16px'};
-  padding: {'0 0 0 40px' if is_medium else '12px 16px'};
-  border-left: {'3px solid rgba(0,0,0,0.84)' if is_medium else f"4px solid {t['blockquote_border']}"};
+  margin: {'24px 0' if is_medium else '0 0 16px'};
+  padding: {'4px 0 4px 20px' if is_medium else '12px 16px'};
+  border-left: {'4px solid #C4956A' if is_medium else f"4px solid {t['blockquote_border']}"};
   background: {t['blockquote_bg']};
   color: {'rgba(0,0,0,0.68)' if is_medium else '#666'};
   border-radius: {'0' if is_medium else '0 4px 4px 0'};
   font-style: {'italic' if is_medium else 'normal'};
-  font-size: {'19px' if is_medium else 'inherit'};
-  line-height: {'1.5' if is_medium else 'inherit'};
-  letter-spacing: {'-.012em' if is_medium else 'inherit'};
+  font-size: {'17px' if is_medium else 'inherit'};
+  line-height: {'1.7' if is_medium else 'inherit'};
+  letter-spacing: {'-.003em' if is_medium else 'inherit'};
 }}
 .content blockquote p {{
   margin: 0;

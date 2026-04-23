@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "created": "2026-04-23T12:00:00+08:00",
+  "source": "source/_posts/kimi-vs-opus.md",
+  "title": "同一套工作流评测规范：深度对比 Claude Opus 4.7 与 Kimi 2.6",
+  "outputs": {
+    "wechat": {
+      "markdown": "source/_posts/kimi-vs-opus.md",
+      "html": "source/_posts/kimi-vs-opus_preview.html",
+      "cover_image": "/Users/mozheng/Downloads/kimi-vs-opus-头图.png",
+      "title": "同一套工作流评测规范：深度对比 Claude Opus 4.7 与 Kimi 2.6",
+      "author": "墨筝",
+      "digest": "Kilo Code 用 1042 行 FlowGraph 规范同时压测 Claude Opus 4.7 与 Kimi 2.6：91 vs 68 分，便宜五倍的代价是租约、调度与 SSE 的全部失分。",
+      "images": []
+    }
+  },
+  "cover": {
+    "style": "medium",
+    "html": "source/_posts/kimi-vs-opus_cover.html",
+    "size": "900x383"
+  },
+  "layout": {
+    "theme": "medium",
+    "font_size": "large"
+  }
+}
