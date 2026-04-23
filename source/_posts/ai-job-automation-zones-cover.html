@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>头图 — AI 自动化区域</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+  .toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); padding: 12px 20px; display: flex; gap: 10px; z-index: 100; justify-content: center; }
+  .toolbar button { padding: 8px 20px; border-radius: 6px; border: 1.5px solid rgba(196,149,106,0.5); background: rgba(196,149,106,0.12); color: #C4956A; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .toolbar button:hover { background: rgba(196,149,106,0.25); }
+
+  .cover { width: 900px; height: 383px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 30px; }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  .bg-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(196,149,106,0.06) 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(196,149,106,0.04) 0%, transparent 50%); }
+
+  /* 左侧装饰：四个 Zone 色块 */
+  .zone-deco { position: absolute; left: 40px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 1; opacity: 0.18; }
+  .zone-bar { width: 5px; border-radius: 3px; background: rgba(255,255,255,0.5); }
+
+  /* 右侧装饰：百分比数字 */
+  .pct-deco { position: absolute; right: 50px; top: 50%; transform: translateY(-50%); z-index: 1; opacity: 0.08; font-size: 140px; font-weight: 900; color: #F2EDE3; line-height: 1; letter-spacing: -8px; }
+
+  .content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; padding: 0 100px; }
+
+  .brand { position: absolute; top: 20px; left: 24px; display: flex; align-items: center; gap: 8px; z-index: 3; }
+  .brand svg { width: 22px; height: 22px; }
+  .brand-text { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 600; letter-spacing: 1px; }
+
+  .keyword { display: inline-block; font-size: 14px; font-weight: 700; color: #C4956A; border: 1.5px solid rgba(196,149,106,0.5); border-radius: 6px; padding: 5px 16px; letter-spacing: 1px; margin-bottom: 16px; }
+
+  .main-title { font-size: 52px; font-weight: 900; color: #F2EDE3; text-align: center; line-height: 1.3; letter-spacing: 1px; }
+  .main-title .gold { color: #C4956A; }
+
+  .subtitle { font-size: 20px; color: rgba(255,255,255,0.45); margin-top: 14px; text-align: center; font-weight: 400; }
+
+  .bottom-tags { position: absolute; bottom: 18px; right: 24px; display: flex; gap: 10px; z-index: 3; }
+  .bottom-tags span { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 1px; }
+
+  .label { margin-top: 16px; font-size: 13px; color: rgba(255,255,255,0.4); }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="downloadCover('main')">下载头图 (900×383)</button>
+    <button onclick="downloadCover('secondary')">下载次图 (200×200)</button>
+  </div>
+
+  <div class="cover" id="cover-main">
+    <div class="bg-dark"></div>
+    <div class="bg-gradient"></div>
+
+    <!-- 左侧 Zone 装饰条 -->
+    <div class="zone-deco">
+      <div class="zone-bar" style="height:30px;background:rgba(196,149,106,0.8);"></div>
+      <div class="zone-bar" style="height:50px;background:rgba(196,149,106,0.5);"></div>
+      <div class="zone-bar" style="height:80px;background:rgba(196,149,106,0.3);"></div>
+      <div class="zone-bar" style="height:40px;background:rgba(196,149,106,0.15);"></div>
+    </div>
+
+    <!-- 右侧百分比装饰 -->
+    <div class="pct-deco">35%</div>
+
+    <!-- 品牌角标 -->
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none">
+        <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+        <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+        <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+        <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+        <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+        <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="content">
+      <div class="keyword">PASF 自动化框架 × 127 个任务</div>
+      <div class="main-title">白领工作的 <span class="gold">AI 替代</span>真相</div>
+      <div class="subtitle">10 个岗位 · 四个自动化区域 · 当前天花板 35%</div>
+    </div>
+
+    <!-- 底部标签 -->
+    <div class="bottom-tags">
+      <span>AI 自动化</span>
+      <span>·</span>
+      <span>白领岗位</span>
+      <span>·</span>
+      <span>Zone 分析</span>
+    </div>
+  </div>
+
+  <div class="label">主头图 900×383</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script>
+    function flattenAlpha(canvas, bgColor) {
+      const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+      const flat = document.createElement('canvas');
+      flat.width = canvas.width; flat.height = canvas.height;
+      const ctx = flat.getContext('2d');
+      ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+      ctx.fillRect(0, 0, flat.width, flat.height);
+      ctx.drawImage(canvas, 0, 0);
+      return flat;
+    }
+
+    async function renderSlide(el) {
+      const origRadius = el.style.borderRadius;
+      el.style.borderRadius = '0';
+      const bgEl = el.querySelector('.bg-light, .bg-dark');
+      const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+      const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+      el.style.borderRadius = origRadius;
+      return flattenAlpha(raw, bg);
+    }
+
+    async function downloadCover(type) {
+      const el = document.getElementById('cover-main');
+      const flat = await renderSlide(el);
+
+      if (type === 'main') {
+        flat.toBlob(blob => saveAs(blob, 'ai-job-automation-zones-头图.png'), 'image/png');
+      } else {
+        // 从中心裁出 200x200（2x=400x400）
+        const crop = document.createElement('canvas');
+        crop.width = 400; crop.height = 400;
+        const ctx = crop.getContext('2d');
+        const sx = (flat.width - 400) / 2;
+        const sy = (flat.height - 400) / 2;
+        ctx.drawImage(flat, sx, sy, 400, 400, 0, 0, 400, 400);
+        crop.toBlob(blob => saveAs(blob, 'ai-job-automation-zones-次图.png'), 'image/png');
+      }
+    }
+  </script>
+</body>
+</html>

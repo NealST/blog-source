@@ -46,6 +46,7 @@ THEMES = {
         'heading':          '#1C1C1E',
         'accent':           '#C4956A',
         'link':             '#C4956A',
+        'mark_bg':          'rgba(196,149,106,0.28)',
         'code_bg':          '#f0ece4',
         'code_border':      '#ddd8ce',
         'code_text':        '#1C1C1E',
@@ -103,6 +104,54 @@ THEMES = {
         'table_border':     '#E5E5E5',
         'hr_color':         '#D2D2D7',
     },
+    # Medium 风格 — 参考 github.com/lucagez/medium.css
+    # 衬线正文、大字号、宽行距、极简装饰，搭配墨筝品牌色点缀
+    'medium': {
+        'bg':               '#FFFFFF',
+        'text':             'rgba(0,0,0,0.84)',
+        'heading':          'rgba(0,0,0,0.84)',
+        'accent':           '#C4956A',
+        'link':             'rgba(0,0,0,0.84)',
+        'mark_bg':          '#7DFFB3',
+        'code_bg':          'rgba(0,0,0,0.05)',
+        'code_border':      'rgba(0,0,0,0.08)',
+        'code_text':        'rgba(0,0,0,0.84)',
+        'pre_bg':           '#1C1C1E',
+        'pre_border':       'rgba(196,149,106,0.15)',
+        'pre_text':         '#F2EDE3',
+        'syntax': {
+            'keyword':  '#C4956A',
+            'string':   '#A8C97F',
+            'comment':  '#7A7876',
+            'number':   '#D4A76A',
+            'func':     '#8FBCBB',
+            'type':     '#B48EAD',
+            'operator': '#9A8A7B',
+        },
+        'blockquote_border':'rgba(0,0,0,0.84)',
+        'blockquote_bg':    'transparent',
+        'table_header_bg':  'rgba(0,0,0,0.84)',
+        'table_header_text':'#FFFFFF',
+        'table_stripe':     '#FAFAFA',
+        'table_border':     '#E6E6E6',
+        'hr_color':         'rgba(0,0,0,0.15)',
+        'default_layout':   'medium',
+    },
+}
+
+# 主题主用 mozheng；chinese / apple 不指定 default_layout，默认 standard
+for _name in ('mozheng', 'chinese', 'apple'):
+    THEMES[_name].setdefault('default_layout', 'standard')
+
+# ─── Layouts ─── 字体/字号/间距等排版规则（与配色解耦）
+
+LAYOUTS = {
+    'standard': {
+        'medium_typography': False,
+    },
+    'medium': {
+        'medium_typography': True,
+    },
 }
 
 FONT_SIZES = {
@@ -113,12 +162,28 @@ FONT_SIZES = {
 
 # ─── CSS Builder ───
 
-def build_css(theme_name, font_size_name):
+def build_css(theme_name, font_size_name, layout_name=None):
     t = THEMES[theme_name]
+    if layout_name is None:
+        layout_name = t.get('default_layout', 'standard')
+    layout = LAYOUTS.get(layout_name, LAYOUTS['standard'])
     fs = FONT_SIZES[font_size_name]
     lh = '1.8' if font_size_name == 'large' else '1.75'
-    return f"""
-/* md2wechat_formatter — {theme_name} theme */
+    is_medium = layout.get('medium_typography', False)
+
+    # Medium 排版：覆写字号/行高/字间距
+    if is_medium:
+        fs = '16px'
+        lh = '1.7'
+        # 微信不支持外部字体，中文 serif 系统字体覆盖率极低（Android 无宋体）
+        # 用无衬线保证一致性，靠字号/行高/间距传递 Medium 质感
+        body_font = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'PingFang HK', 'Noto Sans SC', 'Microsoft YaHei', 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"
+    else:
+        body_font = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'PingFang HK', 'Microsoft YaHei', 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"
+    heading_font = body_font
+
+    css = f"""
+/* md2wechat_formatter — theme={theme_name} layout={layout_name} */
 * {{ margin: 0; padding: 0; }}
 body {{
   background: {t['bg']};
@@ -138,53 +203,69 @@ body {{
   max-width: 100%;
   margin: 0 auto;
   padding: 24px 16px 40px;
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+  background-color: {t['bg']};
+  font-family: {body_font};
   font-size: {fs};
   line-height: {lh};
   color: {t['text']};
   word-wrap: break-word;
   overflow-wrap: break-word;
-  letter-spacing: 0.5px;
+  letter-spacing: {'-.003em' if is_medium else '0.5px'};
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }}
 .content h1 {{
-  font-size: 24px;
-  font-weight: 700;
+  font-size: {'24px' if is_medium else '24px'};
+  font-weight: {'800' if is_medium else '700'};
   color: {t['heading']};
-  margin: 36px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid {t['accent']};
-  letter-spacing: 1px;
+  font-family: {heading_font};
+  margin: {'40px 0 16px' if is_medium else '36px 0 16px'};
+  padding-bottom: {'0' if is_medium else '8px'};
+  border-bottom: {'none' if is_medium else f"2px solid {t['accent']}"};
+  letter-spacing: {'-.015em' if is_medium else '1px'};
+  line-height: {'1.25' if is_medium else 'inherit'};
 }}
 .content h2 {{
-  font-size: 20px;
+  font-size: {'20px' if is_medium else '20px'};
   font-weight: 700;
   color: {t['heading']};
-  margin: 32px 0 14px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid {t['accent']};
-  letter-spacing: 0.5px;
+  font-family: {heading_font};
+  margin: {'40px 0 12px' if is_medium else '32px 0 14px'};
+  padding-bottom: {'0' if is_medium else '6px'};
+  border-bottom: {'none' if is_medium else f"1px solid {t['accent']}"};
+  letter-spacing: {'-.022em' if is_medium else '0.5px'};
+  line-height: {'1.3' if is_medium else 'inherit'};
 }}
 .content h3 {{
-  font-size: 17px;
-  font-weight: 600;
+  font-size: {'17px' if is_medium else '17px'};
+  font-weight: {'700' if is_medium else '600'};
   color: {t['heading']};
-  margin: 24px 0 10px;
+  font-family: {heading_font};
+  margin: {'24px 0 8px' if is_medium else '24px 0 10px'};
+  line-height: {'1.3' if is_medium else 'inherit'};
 }}
 .content h4, .content h5, .content h6 {{
   font-size: {fs};
   font-weight: 600;
   color: {t['heading']};
+  font-family: {heading_font};
   margin: 20px 0 8px;
 }}
 .content p {{
-  margin: 0 0 16px;
-  text-align: justify;
+  margin: {'21px 0 0' if is_medium else '0 0 16px'};
+  text-align: {'left' if is_medium else 'justify'};
 }}
 .content a {{
   color: {t['link']};
-  text-decoration: none;
-  border-bottom: 1px solid {t['link']};
+  text-decoration: {'underline' if is_medium else 'none'};
+  border-bottom: {'none' if is_medium else f"1px solid {t['link']}"};
   word-break: break-all;
+}}
+.content mark {{
+  background: {t.get('mark_bg', 'rgba(196,149,106,0.25)')};
+  color: inherit;
+  padding: 0 2px;
 }}
 .content strong {{
   color: {t['accent']};
@@ -202,6 +283,34 @@ body {{
   padding: 2px 5px;
   color: {t['code_text']};
   word-break: break-all;
+}}
+.code-wrap {{
+  margin: 0 0 16px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid {t.get('pre_border', t['code_border'])};
+  background: {t.get('pre_bg', t['code_bg'])};
+}}
+.code-badge {{
+  display: block;
+  background: rgba(196,149,106,0.12);
+  color: {t['accent']};
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(196,149,106,0.18);
+}}
+.code-wrap pre {{
+  background: {t.get('pre_bg', t['code_bg'])};
+  border: none;
+  border-radius: 0;
+  padding: 14px 16px;
+  margin: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }}
 .content pre {{
   background: {t.get('pre_bg', t['code_bg'])};
@@ -222,18 +331,30 @@ body {{
   color: {t.get('pre_text', t['text'])};
 }}
 .content blockquote {{
-  margin: 0 0 16px;
-  padding: 12px 16px;
-  border-left: 4px solid {t['blockquote_border']};
+  margin: {'30px 0 30px -20px' if is_medium else '0 0 16px'};
+  padding: {'0 0 0 40px' if is_medium else '12px 16px'};
+  border-left: {'3px solid rgba(0,0,0,0.84)' if is_medium else f"4px solid {t['blockquote_border']}"};
   background: {t['blockquote_bg']};
-  color: #666;
-  border-radius: 0 4px 4px 0;
+  color: {'rgba(0,0,0,0.68)' if is_medium else '#666'};
+  border-radius: {'0' if is_medium else '0 4px 4px 0'};
+  font-style: {'italic' if is_medium else 'normal'};
+  font-size: {'19px' if is_medium else 'inherit'};
+  line-height: {'1.5' if is_medium else 'inherit'};
+  letter-spacing: {'-.012em' if is_medium else 'inherit'};
 }}
 .content blockquote p {{
   margin: 0;
 }}
 .content blockquote p + p {{
   margin-top: 8px;
+}}
+.content blockquote cite {{
+  display: block;
+  margin-top: 12px;
+  font-style: normal;
+  font-size: {'15px' if is_medium else '13px'};
+  color: {'rgba(0,0,0,0.54)' if is_medium else '#999'};
+  letter-spacing: 0.3px;
 }}
 .content ul, .content ol {{
   margin: 0 0 16px;
@@ -242,13 +363,23 @@ body {{
 .content li {{
   margin-bottom: 6px;
 }}
+.content li > ul, .content li > ol {{
+  margin: 4px 0 4px;
+  padding-left: 20px;
+}}
+.content ul ul {{
+  list-style-type: circle;
+}}
+.content ul ul ul {{
+  list-style-type: square;
+}}
 .content li p {{
   margin: 0;
 }}
 .content table {{
   width: 100%;
   border-collapse: collapse;
-  margin: 0 0 16px;
+  margin: {'21px 0 32px' if is_medium else '0 0 16px'};
   font-size: 14px;
   table-layout: auto;
 }}
@@ -270,10 +401,30 @@ body {{
 }}
 .content hr {{
   border: none;
-  height: 2px;
-  background: {t['hr_color']};
-  margin: 28px 0;
-  opacity: 0.3;
+  height: {'auto' if is_medium else '2px'};
+  background: {'transparent' if is_medium else t['hr_color']};
+  margin: {'52px 0' if is_medium else '28px 0'};
+  opacity: {'1' if is_medium else '0.3'};
+  text-align: center;
+  color: rgba(0,0,0,0.54);
+  font-size: {'28px' if is_medium else '0'};
+  letter-spacing: 16px;
+  line-height: 1;
+}}
+.content figure {{
+  margin: 24px 0;
+  text-align: center;
+}}
+.content figure img {{
+  margin: 0 auto;
+}}
+.content figcaption {{
+  margin-top: 8px;
+  font-size: {'14px' if is_medium else '13px'};
+  color: {'rgba(0,0,0,0.54)' if is_medium else '#999'};
+  font-style: italic;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
 }}
 .content img {{
   max-width: 100%;
@@ -282,6 +433,7 @@ body {{
   margin: 8px 0;
 }}
 """
+    return css
 
 # ─── Syntax Highlighting ───
 
@@ -367,8 +519,95 @@ def strip_frontmatter(text):
     return text
 
 
+def _ensure_blank_line_before_list(text):
+    """Insert a blank line before list markers that follow paragraph text.
+
+    Python's markdown library requires a blank line before a list block to
+    recognise it as a list. Without the blank line, `* item` after a paragraph
+    is treated as continuation text (rendered as raw `*` inside <p>).
+    """
+    lines = text.split('\n')
+    result = []
+    in_fenced_code = False
+    list_marker_re = re.compile(r'^(\s*)([-*+]|\d+\.)\s+')
+
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if re.match(r'^`{3,}', stripped):
+            in_fenced_code = not in_fenced_code
+            result.append(line)
+            continue
+        if in_fenced_code:
+            result.append(line)
+            continue
+
+        if list_marker_re.match(line) and i > 0:
+            # Look back for the nearest non-blank line
+            prev_idx = i - 1
+            while prev_idx >= 0 and lines[prev_idx].strip() == '':
+                prev_idx -= 1
+            if prev_idx >= 0:
+                prev_line = lines[prev_idx]
+                prev_stripped = prev_line.strip()
+                # If previous non-blank line is NOT a list marker and NOT a
+                # heading, insert blank line so markdown sees a new list block
+                if (not list_marker_re.match(prev_line)
+                        and not prev_stripped.startswith('#')
+                        and not re.match(r'^`{3,}', prev_stripped)
+                        and lines[i - 1].strip() != ''):
+                    result.append('')
+        result.append(line)
+
+    return '\n'.join(result)
+
+
+def _normalize_list_indent(text):
+    """Normalize list indentation so Python markdown lib produces proper nesting.
+
+    The `markdown` library requires 4-space indent per nesting level, but most
+    writers use 2- or 3-space indent (GFM style). This preprocessor detects the
+    smallest indent unit used in list blocks and re-maps all indentation to
+    4-space multiples.
+    """
+    lines = text.split('\n')
+    result = []
+    in_fenced_code = False
+
+    for line in lines:
+        # Don't touch fenced code blocks
+        if re.match(r'^`{3,}', line.strip()):
+            in_fenced_code = not in_fenced_code
+            result.append(line)
+            continue
+        if in_fenced_code:
+            result.append(line)
+            continue
+
+        # Match indented list items: leading spaces + list marker (*, -, +, 1.)
+        m = re.match(r'^(\s+)([-*+]|\d+\.)\s+(.*)', line)
+        if m:
+            indent = len(m.group(1))
+            marker = m.group(2)
+            content = m.group(3)
+            # Detect indent unit: treat 2, 3, or 4 spaces as 1 nesting level
+            if indent <= 4:
+                level = 1
+            else:
+                # For deeper nesting, estimate level from smallest plausible unit
+                unit = 2 if indent % 2 == 0 else 3
+                level = max(1, indent // unit)
+            new_indent = '    ' * level  # 4 spaces per level
+            result.append(f'{new_indent}{marker} {content}')
+        else:
+            result.append(line)
+
+    return '\n'.join(result)
+
+
 def convert_with_markdown_lib(md_text, theme=None):
     """Convert using the `markdown` Python package."""
+    md_text = _ensure_blank_line_before_list(md_text)
+    md_text = _normalize_list_indent(md_text)
     extensions = [
         'tables',
         'fenced_code',
@@ -387,7 +626,8 @@ def convert_with_markdown_lib(md_text, theme=None):
             # Decode HTML entities back to raw text for Pygments
             raw = html_module.unescape(code_html)
             highlighted = highlight_code(raw, lang, theme)
-            return f'<pre><code>{highlighted}</code></pre>'
+            cls_attr = f' class="language-{lang}"' if lang else ''
+            return f'<pre><code{cls_attr}>{highlighted}</code></pre>'
         html_out = re.sub(
             r'<pre><code(?:\s+class="([^"]*)")?>(.*?)</code></pre>',
             _highlight_block,
@@ -398,7 +638,7 @@ def convert_with_markdown_lib(md_text, theme=None):
 
 
 def inline_format(text):
-    """Process inline Markdown: bold, italic, code, links, images."""
+    """Process inline Markdown: bold, italic, code, links, images, highlight."""
     # Images (before links to avoid conflict)
     text = re.sub(r'!\[([^\]]*)\]\(([^)]+)\)', r'<img src="\2" alt="\1" />', text)
     # Links
@@ -406,6 +646,8 @@ def inline_format(text):
     # Bold (** or __)
     text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
     text = re.sub(r'__(.+?)__', r'<strong>\1</strong>', text)
+    # Highlight (==text==) — Markdown extra syntax → <mark>
+    text = re.sub(r'==(.+?)==', r'<mark>\1</mark>', text)
     # Italic (* or _) — but not inside words with underscores
     text = re.sub(r'(?<!\w)\*([^*]+?)\*(?!\w)', r'<em>\1</em>', text)
     # Inline code (must come after bold/italic to avoid conflicts inside code)
@@ -595,6 +837,81 @@ def convert_md_to_html(md_text, theme=None):
     return convert_basic(md_text, theme)
 
 
+# ─── Content Post-processing ───
+
+def _slugify(text):
+    """Generate a stable anchor id from heading text."""
+    text = re.sub(r'<[^>]+>', '', text)
+    text = re.sub(r'[^\w\u4e00-\u9fff\s-]', '', text).strip()
+    text = re.sub(r'\s+', '-', text)
+    return text.lower()[:60] or 'section'
+
+
+def wrap_code_with_badge(html):
+    """Wrap <pre><code class="language-X"> with code-wrap + language badge."""
+    def _wrap(m):
+        full_pre = m.group(0)
+        lang_match = re.search(r'class="(?:[^"]*?)language-(\w+)', full_pre)
+        if not lang_match:
+            return full_pre
+        lang = lang_match.group(1)
+        return (
+            f'<div class="code-wrap">'
+            f'<div class="code-badge">{lang}</div>'
+            f'{full_pre}'
+            f'</div>'
+        )
+    return re.sub(r'<pre><code\s+class="[^"]+">[\s\S]*?</code></pre>', _wrap, html)
+
+
+def wrap_image_caption(html):
+    """Convert <p><img alt="X" /></p> into <figure><img/><figcaption>X</figcaption></figure>.
+
+    Caption only rendered when alt text is non-empty.
+    """
+    def _wrap(m):
+        alt = m.group('alt').strip()
+        img = m.group('img')
+        if not alt:
+            return f'<figure>{img}</figure>'
+        return f'<figure>{img}<figcaption>{alt}</figcaption></figure>'
+    return re.sub(
+        r'<p>\s*(?P<img><img[^>]*alt="(?P<alt>[^"]*)"[^>]*/?>)\s*</p>',
+        _wrap,
+        html,
+    )
+
+
+def wrap_blockquote_cite(html):
+    """If a blockquote ends with a paragraph starting with — or --, wrap as <cite>."""
+    def _wrap(m):
+        body = m.group(1)
+        # Check the trailing <p>...</p> for cite marker
+        cite_re = re.compile(r'(.*)<p>\s*([—\-]{1,2}\s+[^<]+)</p>\s*$', re.DOTALL)
+        cm = cite_re.match(body)
+        if not cm:
+            return m.group(0)
+        head, cite_text = cm.group(1), cm.group(2)
+        return f'<blockquote>{head}<cite>{cite_text}</cite></blockquote>'
+    return re.sub(r'<blockquote>([\s\S]*?)</blockquote>', _wrap, html)
+
+
+def postprocess_content(html, is_medium):
+    """Run all content-level post-processing steps in the right order."""
+    html = wrap_code_with_badge(html)
+    html = wrap_image_caption(html)
+    html = wrap_blockquote_cite(html)
+    if is_medium:
+        # Medium-only: replace <hr> with inline-DOM section dots (sanitizer-safe)
+        dots_html = (
+            '<p style="text-align:center;color:rgba(0,0,0,0.54);'
+            'font-size:28px;letter-spacing:16px;line-height:1;margin:52px 0;">'
+            '\u00b7\u00b7\u00b7</p>'
+        )
+        html = re.sub(r'<hr\s*/?\s*>', dots_html, html)
+    return html
+
+
 # ─── WeChat Sanitizer ───
 
 def _rgba_to_hex(rgba_str):
@@ -718,11 +1035,14 @@ def main():
     parser.add_argument('input', help='Markdown 文件路径')
     parser.add_argument('--theme', choices=list(THEMES.keys()), default='mozheng',
                         help='配色主题 (default: mozheng)')
+    parser.add_argument('--layout', choices=list(LAYOUTS.keys()), default=None,
+                        help='排版布局 (default: 跟随主题的 default_layout)')
     parser.add_argument('--font-size', choices=list(FONT_SIZES.keys()), default='medium',
                         help='正文字号 (default: medium = 15px)')
     parser.add_argument('-o', '--output', help='输出路径 (default: [input]_preview.html)')
-    parser.add_argument('--inline', action='store_true',
-                        help='内联 CSS 到元素 style 属性（用于微信 API 推送）')
+    parser.add_argument('--no-inline', dest='inline', action='store_false',
+                        help='不内联 CSS（仅用于本地预览）')
+    parser.set_defaults(inline=True)
     args = parser.parse_args()
 
     if not os.path.isfile(args.input):
@@ -747,8 +1067,12 @@ def main():
 
     # Convert
     theme_dict = THEMES[args.theme]
+    layout_name = args.layout or theme_dict.get('default_layout', 'standard')
+    is_medium = LAYOUTS[layout_name].get('medium_typography', False)
     content_html = convert_md_to_html(md_text, theme_dict)
-    css = build_css(args.theme, args.font_size)
+    content_html = postprocess_content(content_html, is_medium=is_medium)
+
+    css = build_css(args.theme, args.font_size, layout_name)
     full_html = build_html(content_html, css, title)
 
     # Inline CSS if requested (for WeChat API which strips <style> blocks)

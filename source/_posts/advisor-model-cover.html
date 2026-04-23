@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>顾问模型 头图 + 配图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif; }
+  .toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(17,17,17,0.95); backdrop-filter: blur(10px); padding: 14px 20px; display: flex; gap: 12px; justify-content: center; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .toolbar button { padding: 8px 20px; border: 1px solid rgba(196,149,106,0.4); background: rgba(196,149,106,0.1); color: #C4956A; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+  .toolbar button:hover { background: rgba(196,149,106,0.25); }
+
+  .cover { width: 900px; height: 383px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 30px; }
+  .slide { width: 800px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 10px; }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  .bg-light { position: absolute; inset: 0; background: #F2EDE3; }
+  .bg-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse at 35% 40%, rgba(196,149,106,0.06) 0%, transparent 55%), radial-gradient(ellipse at 65% 60%, rgba(196,149,106,0.04) 0%, transparent 50%); }
+  .content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; padding: 0 50px; }
+
+  .brand { position: absolute; top: 20px; left: 24px; display: flex; align-items: center; gap: 8px; z-index: 3; }
+  .brand svg { width: 28px; height: 28px; }
+  .brand-text { font-size: 13px; font-weight: 600; letter-spacing: 1px; }
+  .brand-s { position: absolute; top: 16px; left: 20px; display: flex; align-items: center; gap: 6px; z-index: 3; }
+  .brand-s svg { width: 22px; height: 22px; }
+  .brand-s span { font-size: 11px; font-weight: 600; letter-spacing: 1px; }
+  .page-num { position: absolute; bottom: 16px; right: 20px; font-size: 11px; z-index: 3; }
+  .section-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 4px 12px; border-radius: 4px; margin-bottom: 16px; }
+  .on-dark { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+  .on-light { background: rgba(28,28,30,0.06); color: rgba(28,28,30,0.4); }
+  .tags { position: absolute; bottom: 18px; right: 24px; display: flex; gap: 8px; z-index: 3; }
+  .tag { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
+  .cover-label { color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 8px; }
+  .slide-label { color: rgba(255,255,255,0.5); font-size: 13px; margin: 30px 0 8px; }
+
+  .flow-card { min-width: 100px; padding: 12px 16px; border-radius: 10px; background: rgba(196,149,106,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1.5px solid rgba(196,149,106,0.3); flex-shrink: 0; }
+  .fc-title { font-size: 13px; font-weight: 800; color: #F2EDE3; }
+  .fc-sub { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+  .flow-arrow { color: rgba(255,255,255,0.25); font-size: 20px; padding: 0 6px; flex-shrink: 0; }
+  .flow-row { display: flex; align-items: center; justify-content: center; flex-wrap: nowrap; }
+  .info-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+  .info-dot { width: 6px; height: 6px; border-radius: 50%; background: #C4956A; flex-shrink: 0; margin-top: 6px; }
+  .info-text { font-size: 13px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="downloadCover('main')">下载头图</button>
+    <button onclick="downloadCover('secondary')">下载次图</button>
+    <button onclick="downloadAllSlides()">下载全部配图 (ZIP)</button>
+  </div>
+
+  <!-- ═══ 头图 900×383 ═══ -->
+  <div class="cover-label">头图 900×383</div>
+  <div class="cover" id="cover-main">
+    <div class="bg-dark"></div>
+    <div class="bg-gradient"></div>
+    <!-- 装饰：节点网络 -->
+    <svg style="position:absolute;left:30px;top:50px;z-index:1;opacity:0.09;" width="140" height="280" viewBox="0 0 140 280">
+      <circle cx="70" cy="30" r="18" fill="none" stroke="#C4956A" stroke-width="2"/>
+      <text x="70" y="35" text-anchor="middle" font-size="14" font-weight="800" fill="#C4956A">A</text>
+      <line x1="70" y1="48" x2="35" y2="120" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+      <line x1="70" y1="48" x2="105" y2="120" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+      <circle cx="35" cy="130" r="12" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+      <circle cx="105" cy="130" r="12" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+      <line x1="35" y1="142" x2="35" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/>
+      <line x1="105" y1="142" x2="105" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/>
+      <circle cx="35" cy="210" r="10" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+      <circle cx="105" cy="210" r="10" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+      <path d="M45 210 Q70 240 95 210" stroke="rgba(196,149,106,0.4)" stroke-width="1.2" fill="none"/>
+    </svg>
+    <svg style="position:absolute;right:40px;bottom:50px;z-index:1;opacity:0.07;" width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="40" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <circle cx="60" cy="20" r="8" fill="none" stroke="#C4956A" stroke-width="1.5"/>
+      <circle cx="95" cy="80" r="8" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <circle cx="25" cy="80" r="8" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <line x1="60" y1="28" x2="87" y2="74" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+      <line x1="60" y1="28" x2="33" y2="74" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+    </svg>
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text" style="color:rgba(255,255,255,0.5);">墨筝</span>
+    </div>
+    <div class="content">
+      <div style="display:inline-flex;align-items:center;gap:10px;padding:6px 20px;border:1.5px solid rgba(196,149,106,0.5);border-radius:6px;margin-bottom:20px;">
+        <span style="font-size:26px;font-weight:800;color:#C4956A;letter-spacing:1px;">Advisor Models</span>
+      </div>
+      <div style="font-size:34px;font-weight:900;color:#F2EDE3;text-align:center;line-height:1.4;margin-bottom:14px;letter-spacing:1px;">顾问模型：让小模型给大模型当军师</div>
+      <div style="font-size:16px;color:rgba(255,255,255,0.45);text-align:center;">Claude 实践 · UC 伯克利论文 · 深入浅出</div>
+    </div>
+    <div class="tags">
+      <span class="tag">advisor models</span>
+      <span class="tag">·</span>
+      <span class="tag">GRPO</span>
+      <span class="tag">·</span>
+      <span class="tag">RL training</span>
+    </div>
+  </div>
+
+  <!-- ═══ 配图 1 · 顾问策略架构 ═══ -->
+  <div class="slide-label">配图 1 · 放在「可以用一张图更形象的描述」之后</div>
+  <div class="slide" id="slide-1" style="height:440px;">
+    <div class="bg-dark"></div>
+    <div class="brand-s"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span style="color:rgba(255,255,255,0.5);">墨筝</span></div>
+    <div class="page-num" style="color:rgba(255,255,255,0.35);">1/4</div>
+    <div class="content" style="padding-top:55px;">
+      <div class="section-tag on-dark">ADVISOR STRATEGY</div>
+      <div style="font-size:24px;font-weight:800;color:#F2EDE3;margin-bottom:28px;text-align:center;">顾问策略：军师 + 牛马</div>
+      <div class="flow-row" style="margin-bottom:20px;">
+        <div style="padding:16px 24px;border-radius:10px;background:rgba(196,149,106,0.2);border:2px solid rgba(196,149,106,0.5);text-align:center;">
+          <div style="font-size:15px;font-weight:800;color:#C4956A;">🧠 顾问模型</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">Opus / 训练后的小模型</div>
+        </div>
+      </div>
+      <div style="color:rgba(255,255,255,0.25);font-size:24px;margin-bottom:16px;">↓ 建议</div>
+      <div class="flow-row">
+        <div class="flow-card"><div class="fc-title">任务输入</div><div class="fc-sub">用户请求</div></div>
+        <div class="flow-arrow">→</div>
+        <div style="padding:14px 20px;border-radius:10px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);text-align:center;">
+          <div style="font-size:13px;font-weight:800;color:#F2EDE3;">主力模型</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;">Sonnet / Haiku / GPT</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-card"><div class="fc-title">更优输出</div><div class="fc-sub">质量提升</div></div>
+      </div>
+      <div style="margin-top:24px;padding:8px 20px;border-radius:6px;background:rgba(196,149,106,0.12);border:1px solid rgba(196,149,106,0.25);">
+        <span style="font-size:12px;color:#C4956A;font-weight:600;">共享上下文 · 不是简单的工具调用</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 配图 2 · 训练循环 ═══ -->
+  <div class="slide-label">配图 2 · 放在「核心机制：强化学习」之后</div>
+  <div class="slide" id="slide-2" style="height:440px;">
+    <div class="bg-light"></div>
+    <div class="brand-s"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span style="color:rgba(28,28,30,0.4);">墨筝</span></div>
+    <div class="page-num" style="color:rgba(28,28,30,0.3);">2/4</div>
+    <div class="content" style="padding-top:55px;">
+      <div class="section-tag on-light">TRAINING LOOP</div>
+      <div style="font-size:24px;font-weight:800;color:#1C1C1E;margin-bottom:24px;">RL 训练循环</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap;">
+        <div style="width:140px;padding:14px;border-radius:10px;background:#1C1C1E;text-align:center;">
+          <div style="font-size:13px;font-weight:800;color:#C4956A;">① 出主意</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;">顾问生成建议</div>
+        </div>
+        <div style="color:rgba(28,28,30,0.3);font-size:20px;padding:0 8px;">→</div>
+        <div style="width:140px;padding:14px;border-radius:10px;background:#1C1C1E;text-align:center;">
+          <div style="font-size:13px;font-weight:800;color:#F2EDE3;">② 干活</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;">大模型执行任务</div>
+        </div>
+        <div style="color:rgba(28,28,30,0.3);font-size:20px;padding:0 8px;">→</div>
+        <div style="width:140px;padding:14px;border-radius:10px;background:#1C1C1E;text-align:center;">
+          <div style="font-size:13px;font-weight:800;color:#C4956A;">③ 打分</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;">计算奖励</div>
+        </div>
+        <div style="color:rgba(28,28,30,0.3);font-size:20px;padding:0 8px;">→</div>
+        <div style="width:140px;padding:14px;border-radius:10px;background:#1C1C1E;text-align:center;">
+          <div style="font-size:13px;font-weight:800;color:#F2EDE3;">④ 涨经验</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;">GRPO 更新参数</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:center;">
+        <svg width="580" height="30" viewBox="0 0 580 30">
+          <path d="M555 20 Q580 20 580 10 Q580 0 555 0 L25 0 Q0 0 0 10" stroke="rgba(196,149,106,0.4)" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
+          <polygon points="0,10 -5,5 5,5" fill="rgba(196,149,106,0.4)" transform="translate(0,10) rotate(90)"/>
+        </svg>
+      </div>
+      <div style="text-align:center;margin-top:8px;">
+        <span style="font-size:12px;color:rgba(28,28,30,0.4);">循环迭代 · 全程只靠 API 交互 · 不碰大模型权重</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 配图 3 · 小训练大迁移 ═══ -->
+  <div class="slide-label">配图 3 · 放在「小训练，大迁移」之后</div>
+  <div class="slide" id="slide-3" style="height:420px;">
+    <div class="bg-dark"></div>
+    <div class="brand-s"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span style="color:rgba(255,255,255,0.5);">墨筝</span></div>
+    <div class="page-num" style="color:rgba(255,255,255,0.35);">3/4</div>
+    <div class="content" style="padding-top:55px;">
+      <div class="section-tag on-dark">TRANSFERABILITY</div>
+      <div style="font-size:24px;font-weight:800;color:#F2EDE3;margin-bottom:24px;">小训练，大迁移</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:20px;">
+        <!-- 左：低cost训练 -->
+        <div style="padding:20px;border-radius:12px;background:rgba(255,255,255,0.05);text-align:center;width:200px;">
+          <div style="font-size:12px;font-weight:700;letter-spacing:1px;color:#C4956A;margin-bottom:14px;">低成本练级</div>
+          <div class="info-row"><div class="info-dot"></div><div class="info-text" style="color:rgba(255,255,255,0.8);">GPT-4o mini</div></div>
+          <div class="info-row"><div class="info-dot"></div><div class="info-text" style="color:rgba(255,255,255,0.8);">Gemini 2.5 Flash</div></div>
+          <div style="padding:6px 14px;border-radius:6px;background:rgba(255,255,255,0.06);margin-top:8px;">
+            <span style="font-size:11px;color:rgba(255,255,255,0.4);">便宜 · 快速迭代</span>
+          </div>
+        </div>
+        <!-- 箭头 -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <div style="font-size:28px;color:#C4956A;">→</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35);">无缝迁移</div>
+        </div>
+        <!-- 右：前沿模型 -->
+        <div style="padding:20px;border-radius:12px;background:rgba(196,149,106,0.1);border:1px solid rgba(196,149,106,0.25);text-align:center;width:200px;">
+          <div style="font-size:12px;font-weight:700;letter-spacing:1px;color:#C4956A;margin-bottom:14px;">前沿模型</div>
+          <div class="info-row"><div class="info-dot"></div><div class="info-text" style="color:rgba(255,255,255,0.8);">GPT-5</div></div>
+          <div class="info-row"><div class="info-dot"></div><div class="info-text" style="color:rgba(255,255,255,0.8);">Gemini 3 Pro</div></div>
+          <div class="info-row"><div class="info-dot"></div><div class="info-text" style="color:rgba(255,255,255,0.8);">跨家族迁移到 Claude</div></div>
+        </div>
+      </div>
+      <div style="margin-top:20px;text-align:center;">
+        <span style="font-size:12px;color:rgba(255,255,255,0.35);">在便宜模型上训练 → 直接给顶级模型当军师</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 配图 4 · 效果评测 ═══ -->
+  <div class="slide-label">配图 4 · 放在「综合评测数据对照表」之后</div>
+  <div class="slide" id="slide-4" style="height:460px;">
+    <div class="bg-light"></div>
+    <div class="brand-s"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span style="color:rgba(28,28,30,0.4);">墨筝</span></div>
+    <div class="page-num" style="color:rgba(28,28,30,0.3);">4/4</div>
+    <div class="content" style="padding-top:55px;">
+      <div class="section-tag on-light">BENCHMARK</div>
+      <div style="font-size:24px;font-weight:800;color:#1C1C1E;margin-bottom:24px;">评测效果</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:640px;">
+        <!-- 税务 -->
+        <div style="padding:18px;border-radius:10px;background:#1C1C1E;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:10px;">税务推理</div>
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <span style="font-size:36px;font-weight:900;color:#C4956A;">+71%</span>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">GPT-5: 31.2% → 53.6%</div>
+        </div>
+        <!-- 翻译 -->
+        <div style="padding:18px;border-radius:10px;background:#1C1C1E;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:10px;">低资源翻译</div>
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <span style="font-size:36px;font-weight:900;color:#C4956A;">45.8</span>
+            <span style="font-size:13px;color:rgba(255,255,255,0.4);">chrF</span>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">接近人类专家 51.6</div>
+        </div>
+        <!-- SWE -->
+        <div style="padding:18px;border-radius:10px;background:#1C1C1E;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:10px;">软件工程</div>
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <span style="font-size:36px;font-weight:900;color:#C4956A;">-24.6%</span>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">交互步骤减少，效率提升</div>
+        </div>
+        <!-- 个性化 -->
+        <div style="padding:18px;border-radius:10px;background:#1C1C1E;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:10px;">个性化偏好</div>
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <span style="font-size:36px;font-weight:900;color:#C4956A;">99.6%</span>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">准确率超过"全知口谕"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadCover(type) {
+  const el = document.getElementById('cover-main');
+  const flat = await renderSlide(el);
+  if (type === 'main') {
+    flat.toBlob(blob => saveAs(blob, 'advisor-model-头图-900x383.png'));
+  } else {
+    const size = Math.min(flat.width, flat.height);
+    const crop = document.createElement('canvas');
+    crop.width = 400; crop.height = 400;
+    const ctx = crop.getContext('2d');
+    ctx.drawImage(flat, (flat.width - size) / 2, (flat.height - size) / 2, size, size, 0, 0, 400, 400);
+    crop.toBlob(blob => saveAs(blob, 'advisor-model-次图-200x200.png'));
+  }
+}
+
+async function downloadAllSlides() {
+  const zip = new JSZip();
+  const names = ['配图-1-顾问策略架构', '配图-2-训练循环', '配图-3-小训练大迁移', '配图-4-效果评测'];
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('slide-' + i);
+    const flat = await renderSlide(el);
+    const blob = await new Promise(r => flat.toBlob(r));
+    zip.file(names[i - 1] + '.png', blob);
+  }
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+  saveAs(zipBlob, 'advisor-model-配图.zip');
+}
+</script>
+</body>
+</html>

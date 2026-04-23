@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>从 Claude Twitter 贴到 UC 伯克利大学论文，深入浅出顾问模型背后的思路</title>
+<style>.content tbody tr:nth-child(even) td {background:#f0ece4}</style>
+</head>
+<body style="background:#F2EDE3; padding:0; margin:0">
+<div class="tip" style='background:#eee; padding:10px; text-align:center; font-size:13px; color:#999; margin-bottom:0; font-family:-apple-system, "PingFang SC", sans-serif' align="center">全选下方内容 → 复制 → 粘贴到公众号编辑器（此行不会被复制）</div>
+<div class="content" style='max-width:100%; margin:0 auto; padding:24px 16px 40px; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif; font-size:15px; line-height:1.75; color:#333; word-wrap:break-word; overflow-wrap:break-word; letter-spacing:0.5px'>
+<p style="margin:0 0 16px; text-align:justify" align="justify">4 月 10 号，Claude 官方在 twitter 上发了一个关于顾问模型的帖子，内容如下：
+<img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBfcJp2zzezIqmw78GrZwknnSKZ7M_3AACVQxrG_yl2EarpdFRYHR1OwEAAwIAA3kAAzsE.png" style="max-width:100%; height:auto; border-radius:4px; margin:8px 0" height="auto"></p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">意思就是让 Opus 当军师，让 Sonnet 和 Haiku 当牛马，当 agent 调用模型执行任务时如果遇事不决，可以请教军师给出建议从而提升整体智力水准。下图生动形象的诠释了这一点：
+<img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBfcNp2z6OvusfUH_-TXLXEwbl5QJpqwACVwxrG_yl2EatCLr1_hBkqwEAAwIAA3cAAzsE.jpeg" style="max-width:100%; height:auto; border-radius:4px; margin:8px 0" height="auto"></p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">Claude 在帖子中也添加了他们实践这种顾问策略后的实际效果
+<img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBfcRp2z_jIYYapkfEfS1cqSsyC9_mgwACWAxrG_yl2EbMmud8vcsh2QEAAwIAA3kAAzsE.png" style="max-width:100%; height:auto; border-radius:4px; margin:8px 0" height="auto"></p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">可以用一张图更形象的描述这种顾问策略：
+<img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBfcVp20EnUC2jxl-RPjngPcQfLaVJwgACWQxrG_yl2EZASQABPIrFBYkBAAMCAAN3AAM7BA.png" style="max-width:100%; height:auto; border-radius:4px; margin:8px 0" height="auto"></p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">在具体的技术实现层面，对于工程侧来说，只需要在模型调用传参时显式指定顾问模型即可，如下所示：
+<img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBfcZp20JWj31i9k--ffgLMe5JovklJwACWgxrG_yl2EZxxd6O5cB2uQEAAwIAA3cAAzsE.png" style="max-width:100%; height:auto; border-radius:4px; margin:8px 0" height="auto"></p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">这种顾问模型策略本质上是一种特殊的工具调用，特殊之处在于它是与 agent 主力模型共享上下文信息的，而不仅仅是特定的入参限制。</p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">这种顾问策略的思路其实并非 Claude 首创。早在今年 2 月份，UC 伯克利大学便发表了一篇名为 “Advisor Models” 的论文(论文地址：https://arxiv.org/abs/2510.02453)，通过训练轻量级的开源模型（顾问模型）来生成针对具体实例的自然语言建议，从而引导和提升那些无法访问内部权重的 <strong style="color:#C4956A; font-weight:600">“黑盒”前沿模型</strong>（如 GPT-5 或 Gemini 3 Pro）的性能。Claude 只是采用了一种不同的实现方式而已。</p>
+<h2 style="font-size:20px; font-weight:700; color:#1C1C1E; margin:32px 0 14px; padding-bottom:6px; border-bottom:1px solid #C4956A; letter-spacing:0.5px">顾问模型是怎么训练的</h2>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">核心机制：强化学习（RL）</h3>
+<p style="margin:0 0 16px; text-align:justify" align="justify">顾问模型的训练本质上是将“提示工程”转变为一个参数化优化问题，通过强化学习来训练一个轻量级的策略模型。</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">
+<p style="margin:0; text-align:justify" align="justify">训练循环：</p>
+<ul style="margin:4px 0 4px; padding-left:20px; list-style-type:circle">
+<li style="margin-bottom:6px">生成建议：顾问模型根据输入的实例采样生成自然语言建议。</li>
+<li style="margin-bottom:6px">黑盒响应：将建议注入上下文，引导“黑盒”学生模型（如 GPT-4o mini）生成最终输出。</li>
+<li style="margin-bottom:6px">计算奖励：根据学生模型的输出计算特定任务的奖励（Task-specific Reward）。</li>
+<li style="margin-bottom:6px">策略更新：使用 GRPO（Group Relative Policy Optimization） 算法，仅基于观察到的奖励来更新顾问模型的参数。</li>
+</ul>
+</li>
+<li style="margin-bottom:6px">
+<p style="margin:0; text-align:justify" align="justify">无需梯度访问：整个过程不需要访问黑盒学生模型的权重或梯度，只需通过 API 进行交互。</p>
+</li>
+</ul>
+<p style="margin:0 0 16px; text-align:justify" align="justify">简单来说就是：我们不再自己绞尽脑汁来做各种“提示词”工程，而是训练一个“专门给大模型出主意”的小模型，只要大模型听了它的建议后结果变好，就给它发“奖金”让它自己涨经验，全程不需要懂大模型的内部代码，只靠 API 接口互相聊天就能练出来。</p>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">为什么要使用 GRPO 算法来训练</h3>
+<p style="margin:0 0 16px; text-align:justify" align="justify">GRPO 算法的全称是 Group Relative Policy Optimization（组相对策略优化），最初由 Shao 等人在 DeepSeekMath 的研究中提出。其核心设计理念是通过组内相对比较来省去传统 RLHF 中复杂的价值模型（Value Model），这与顾问模型追求的轻量化和易于集成的目标高度契合。</p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">可以用一个 <strong style="color:#C4956A; font-weight:600">“面试打分”</strong> 的例子来打个比方：</p>
+<h4 style="font-size:15px; font-weight:600; color:#1C1C1E; margin:20px 0 8px">1. 传统 RLHF（如 PPO 算法）：需要一个“全知教官”</h4>
+<p style="margin:0 0 16px; text-align:justify" align="justify">在传统的强化学习（RLHF）中，为了让模型变聪明，需要准备两个模型：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">学生模型</strong>：负责回答问题。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">价值模型（Value Model/教官）</strong>：它不仅要看学生的答案，还要预测这个学生在各种情况下能拿多少分。这个”价值模型”非常沉重且复杂，它就像一个必须全天候盯着学生的”全知教官”，训练时极其占内存和算力。</li>
+</ul>
+<h4 style="font-size:15px; font-weight:600; color:#1C1C1E; margin:20px 0 8px">2. GRPO 算法：改为“组内选优”</h4>
+<p style="margin:0 0 16px; text-align:justify" align="justify">这句话提到的 <strong style="color:#C4956A; font-weight:600">GRPO（组相对策略优化）</strong> 换了一种思路：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">不请教官了</strong>：我们不需要那个复杂的价值模型来搞预测。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">大家一起比</strong>：让顾问模型对同一个问题同时给出 <strong style="color:#C4956A; font-weight:600">8 个建议</strong>（也就是一组建议）。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">相对打分</strong>：看完这 8 个建议在黑盒模型上的最终效果后，我们不看绝对分，只看<strong style="color:#C4956A; font-weight:600">相对分</strong>。<ul style="margin:4px 0 4px; padding-left:20px; list-style-type:circle">
+<li style="margin-bottom:6px">表现比这 8 个平均水平好的建议，就”加分”；</li>
+<li style="margin-bottom:6px">表现比平均水平差的建议，就”减分”。</li>
+</ul>
+</li>
+</ul>
+<h4 style="font-size:15px; font-weight:600; color:#1C1C1E; margin:20px 0 8px">3. 为什么说它俩“高度契合”？</h4>
+<p style="margin:0 0 16px; text-align:justify" align="justify">顾问模型的核心目标是<strong style="color:#C4956A; font-weight:600">轻量化（低成本）</strong>和<strong style="color:#C4956A; font-weight:600">易于集成（像插件一样好用）</strong>：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">更省资源（轻量化）</strong>：省去了那个巨大的”价值模型”，意味着你在训练时<strong style="color:#C4956A; font-weight:600">少了一大坢成本</strong>。现在的训练过程只需要顾问模型本身和黑盒模型的反馈，普通服务器（甚至单机）就能跑得动。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">架构简单（易于集成）</strong>：因为不需要维护复杂的价值模型和对应的梯度计算，顾问模型的训练逻辑变得非常干净。它只需要通过 API 和黑盒大模型说说话、拿个奖励分数，就能通过这种”组内比一比”的方式自我进化。</li>
+</ul>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">训练实践</h3>
+<p style="margin:0 0 16px; text-align:justify" align="justify">论文在多个维度上进行了深入的训练实践，以验证该框架的有效性和灵活性：</p>
+<ol style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">
+<p style="margin:0; text-align:justify" align="justify">多样化的架构设计实践
+    为了应对不同复杂度的任务，研究者设计了三种架构变体：</p>
+<ul style="margin:4px 0 4px; padding-left:20px">
+<li style="margin-bottom:6px">2 步模式（基础）：顾问接收输入并直接为学生提供建议，用于翻译（MTOB）和个性化任务。</li>
+<li style="margin-bottom:6px">3 步模式（验证者）：学生先做初步尝试，顾问基于该尝试提供建议，学生再进行修正。这种模式在复杂的税务推理（RuleArena Taxes）任务中效果更好，因为它将顾问的角色从”生成者”简化为了”验证者”。</li>
+<li style="margin-bottom:6px">多轮模式（Agent协作）：在软件工程（SWE）任务中，顾问每隔 5 个步骤向 Agent 注入一次建议，根据环境观察结果进行动态引导。</li>
+</ul>
+</li>
+<li style="margin-bottom:6px">
+<p style="margin:0; text-align:justify" align="justify">“小训练，大迁移”的高效实践（Transferability）
+    这是该研究最核心的实践之一：</p>
+<ul style="margin:4px 0 4px; padding-left:20px">
+<li style="margin-bottom:6px">成本优化：由于直接用前沿大模型（如 GPT-5）进行强化学习训练成本极高，研究者先在低成本学生模型（如 GPT-4o mini 或 Gemini 2.5 Flash）上训练顾问模型。</li>
+<li style="margin-bottom:6px">跨模型迁移：训练完成后，将顾问直接迁移到前沿大模型（如 GPT-5 或 Gemini 3 Pro）甚至不同家族的模型（如从 GPT 迁移到 Claude）上，依然能显著提升性能。</li>
+</ul>
+</li>
+<li style="margin-bottom:6px">
+<p style="margin:0; text-align:justify" align="justify">针对性领域的专项训练</p>
+<ul style="margin:4px 0 4px; padding-left:20px">
+<li style="margin-bottom:6px">专业推理任务：
+            * RuleArena Taxes：针对复杂的税务计算，训练顾问学习专业规则。
+            * MTOB（低资源翻译）：在极度缺乏数据的 Kalamang 语翻译中，通过顾问引导，模型表现接近人类专家水平。</li>
+<li style="margin-bottom:6px">个性化偏好学习：在不告知用户偏好（如特定评论长度或写作水平）的情况下，顾问模型仅通过奖励信号就实现了近乎完美的偏好对齐（85-100%）。</li>
+</ul>
+</li>
+<li style="margin-bottom:6px">
+<p style="margin:0; text-align:justify" align="justify">鲁棒性与初始化测试</p>
+<ul style="margin:4px 0 4px; padding-left:20px">
+<li style="margin-bottom:6px">保留核心能力：实践证明，由于学生模型权重被冻结，系统在优化特定任务（如数学方案偏好）时，不会降低学生模型原本的基础能力（如数学解题准确率），避免了灾难性遗忘。</li>
+<li style="margin-bottom:6px">弱初始化实验：研究发现即使使用没有具体指导的”弱初始化提示词”，顾问模型虽然学习较慢，但最终仍能达到与”强初始化”相同的性能水平。</li>
+</ul>
+</li>
+</ol>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">硬件与工程实践</h3>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">训练环境：实验主要在配备 8xH100 GPU 的单节点上运行，使用了 SkyRL 强化学习框架。</li>
+<li style="margin-bottom:6px">训练规模：不同任务的训练轮数不同，例如 SWE 任务训练 30 轮，税务任务训练 40 轮，而简单的长度偏好任务只需 5 轮。</li>
+</ul>
+<h2 style="font-size:20px; font-weight:700; color:#1C1C1E; margin:32px 0 14px; padding-bottom:6px; border-bottom:1px solid #C4956A; letter-spacing:0.5px">顾问模型是如何协同主力模型提升性能的</h2>
+<p style="margin:0 0 16px; text-align:justify" align="justify">顾问模型（ADVISOR MODELS）通过一种<strong style="color:#C4956A; font-weight:600">“轻量级策略引导”的机制与主力模型（即黑盒学生模型）协同工作。其核心逻辑不是修改主力模型的参数，而是通过训练一个轻量级的开源模型来生成针对具体实例的 </strong>自然语言建议**，从而引导其生成更优的输出。</p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">与传统的“静态提示词优化”不同，顾问模型将提示工程转变为一种可学习的策略。</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">实时响应：顾问模型会根据每一个不同的输入（实例）生成定制化的建议，而不是对所有问题使用同一个固定模板。</li>
+<li style="margin-bottom:6px">上下文注入：顾问生成的建议会直接作为补充信息插入到主力模型的 Prompt 中，引导其关注特定重点或遵循特定规则</li>
+</ul>
+<p style="margin:0 0 16px; text-align:justify" align="justify">基于这种自然语言的协议，也使得顾问模型具备了充分的泛化能力，即使主力模型从 gemini 迁移到 claude，也能无缝衔接。</p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">此外，由于训练机制的原因，顾问模型在学习和对齐用户 <strong style="color:#C4956A; font-weight:600">隐藏偏好</strong> 方面表现极其出色，使得顾问模型生成的提示词本身就会具备很高的质量。</p>
+<h2 style="font-size:20px; font-weight:700; color:#1C1C1E; margin:32px 0 14px; padding-bottom:6px; border-bottom:1px solid #C4956A; letter-spacing:0.5px">论文采用了哪些开源权重模型作为基模来训练？</h2>
+<p style="margin:0 0 16px; text-align:justify" align="justify">伯克利大学的研究人员主要采用了 <strong style="color:#C4956A; font-weight:600">Qwen</strong> 和 <strong style="color:#C4956A; font-weight:600">Llama</strong> 这两个开源权重模型系列作为基础来训练顾问模型：</p>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">1. 主要使用的基础模型</h3>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">Qwen2.5 7B Instruct</strong>：这是论文中最常使用的顾问模型基础，广泛应用于专业推理、软件工程效率提升以及个性化偏好学习等多个实验领域。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">Qwen 3 8B</strong>：在处理复杂的税务推理任务（RuleArena Taxes）时，研究者选用了该模型作为顾问的基础。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">Qwen2.5 3B Instruct</strong>：在一项对比顾问模型与直接强化学习（RL）效果的消融实验中，该模型被用作较弱的顾问来引导更强的学生模型。</li>
+</ul>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">2. 用于验证通用性的模型</h3>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">Llama 3.1 8B Instruct</strong>：为了证明顾问模型框架的<strong style="color:#C4956A; font-weight:600">通用性</strong>（即不局限于特定的模型家族），研究者在附录的消融实验中专门测试了使用 Llama 模型作为顾问的效果。结果显示，Llama 模型同样能被训练成有效的顾问。</li>
+</ul>
+<h2 style="font-size:20px; font-weight:700; color:#1C1C1E; margin:32px 0 14px; padding-bottom:6px; border-bottom:1px solid #C4956A; letter-spacing:0.5px">顾问策略的效果评测</h2>
+<p style="margin:0 0 16px; text-align:justify" align="justify">论文的实践结果：加入顾问模型后，主力干活大模型在多个核心领域的性能均得到了显著提升，尤其是在<strong style="color:#C4956A; font-weight:600">专业推理、代理效率和个性化定制</strong>方面表现优异。该模型最大的亮点在于，即使在低成本模型上训练的顾问，也能将这种提升“迁移”到最顶尖的前沿模型（如 GPT-5）上。</p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">以下是根据来源资料整理的实际评测效果说明及数据分析：</p>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">1. 专业推理任务：显著跨越性能瓶颈</h3>
+<p style="margin:0 0 16px; text-align:justify" align="justify">在涉及复杂规则和稀缺领域知识的任务中，顾问模型让大模型表现出了质的飞跃。</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">税务规则计算 (RuleArena Taxes)</strong>：该任务要求模型根据复杂的指令计算税务责任。加入顾问模型后，<strong style="color:#C4956A; font-weight:600">GPT-5 的准确率从 31.2% 大幅提升至 53.6%</strong>，相对提升幅度高达 <strong style="color:#C4956A; font-weight:600">71%</strong>。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">低资源语言翻译 (MTOB)</strong>：针对极其稀缺的 Kalamang 语，顾问模型将 GPT-4o mini 的 chrF 分数从 33.1 提升至 <strong style="color:#C4956A; font-weight:600">45.8</strong>，这一表现已非常<strong style="color:#C4956A; font-weight:600">接近人类专家水平（51.6）</strong>。</li>
+</ul>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">2. 代理效率 (SWE Agent)：更少步骤，相同结果</h3>
+<p style="margin:0 0 16px; text-align:justify" align="justify">在软件工程任务中，顾问模型不仅关注结果的正确性，更优化了解决问题的路径。</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">步骤压缩</strong>：在 SWE 代理任务中，顾问模型成功引导 <strong style="color:#C4956A; font-weight:600">Gemini 3 Pro 将交互步骤减少了 24.6%</strong>（平均步骤从 31.7 降至 26.3），同时保持了原有的问题解决率（Resolve Rate）。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">策略进化</strong>：评测显示，训练后的顾问学会了建议模型使用 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>grep</code> 进行高效的文件搜索，而不是盲目的 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>ls</code>。</li>
+</ul>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">3. 个性化偏好：近乎完美的学习能力</h3>
+<p style="margin:0 0 16px; text-align:justify" align="justify">在学习用户未明确告知的隐藏偏好（如特定写作风格或长度要求）时，顾问模型完胜所有静态提示优化工具。</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">奖励分数</strong>：顾问模型在多个个性化维度上获得了 <strong style="color:#C4956A; font-weight:600">85% - 100%</strong> 的奖励评分，而现有的静态优化器（如 GEPA）仅能获得 40% - 60%。</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">具体准确率</strong>：在“评论分级”任务中，顾问模型的准确率达到了惊人的 <strong style="color:#C4956A; font-weight:600">99.6%</strong>。它甚至<strong style="color:#C4956A; font-weight:600">超过了“全知口谕”（ICL Oracle）</strong>，即直接在提示词中告诉模型用户偏好的表现。</li>
+</ul>
+<h3 style="font-size:17px; font-weight:600; color:#1C1C1E; margin:24px 0 10px">综合评测数据对照表</h3>
+<table style="width:100%; border-collapse:collapse; margin:0 0 16px; font-size:14px; table-layout:auto" width="100%">
+<thead>
+<tr>
+<th style="background:#1C1C1E; color:#F2EDE3; font-weight:600; padding:10px 12px; text-align:left; border:1px solid #d5d0c6" align="left">任务领域</th>
+<th style="background:#1C1C1E; color:#F2EDE3; font-weight:600; padding:10px 12px; text-align:left; border:1px solid #d5d0c6" align="left">基准模型 (Student Only)</th>
+<th style="background:#1C1C1E; color:#F2EDE3; font-weight:600; padding:10px 12px; text-align:left; border:1px solid #d5d0c6" align="left">加入顾问模型后 (Advisor Models)</th>
+<th style="background:#1C1C1E; color:#F2EDE3; font-weight:600; padding:10px 12px; text-align:left; border:1px solid #d5d0c6" align="left">提升效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">税务推理 (GPT-5)</strong></td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">31.2% (准确率)</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">53.6%</strong></td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">+71% 性能</strong></td>
+</tr>
+<tr>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">翻译 (GPT-4o mini)</strong></td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">33.1 (chrF)</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">45.8</strong></td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">接近人类水平</strong></td>
+</tr>
+<tr>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">软件工程 (Gemini 3 Pro)</strong></td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">31.7 (步数)</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">26.3</strong></td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">效率提升 24.6%</strong></td>
+</tr>
+<tr>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">个性化偏好 (GPT-5)</strong></td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">~40% - 60% (奖励)</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">85% - 100%</strong></td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left"><strong style="color:#C4956A; font-weight:600">几乎完美对齐</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 style="font-size:20px; font-weight:700; color:#1C1C1E; margin:32px 0 14px; padding-bottom:6px; border-bottom:1px solid #C4956A; letter-spacing:0.5px">写在最后</h2>
+<p style="margin:0 0 16px; text-align:justify" align="justify">锐评一下，顾问模型在整个 agent 工程链路的中扮演的角色本质上就是一个 prompt 增强器，主要的价值在于减少人类做提示词工程的成本，同时在一定程度上减少模型的使用成本。如果足够有钱，token 无限，无脑全用 Claude Opus 其实也用不到这种手段。</p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">伯克利大学的论文与 Claude 的做法本质上是同一个 idea 的不同路子，区别只是伯克利基于开源的千问等模型单独训了一个顾问模型，而 Claude 直接用了当前意图识别上最强的 Opus 作为顾问模型。</p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">从个人经验出发，Claude 的路子其实更加靠谱一些，如果做意图识别的顾问模型本身质量不够高，形成的建议反而可能误导主力干活的模型，得到错误的结果。</p>
+<p style="margin:0 0 16px; text-align:justify" align="justify">毕竟<strong style="color:#C4956A; font-weight:600">方向错了，就是越努力越离谱</strong>。</p>
+</div>
+</body>
+</html>

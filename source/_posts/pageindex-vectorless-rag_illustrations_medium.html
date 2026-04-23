@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配图（Medium 风格）— PageIndex 无向量 RAG</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0E0E10; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 80px 20px 60px; gap: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  }
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.92); padding: 14px 20px;
+    display: flex; gap: 12px; justify-content: center; z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .toolbar button {
+    background: #C4956A; color: #1C1C1E; border: none;
+    padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 700;
+    cursor: pointer;
+  }
+  .toolbar button:hover { background: #d4a57a; }
+
+  /* ─── Slide ─── */
+  .slide-label {
+    color: rgba(255,255,255,0.45); font-size: 12px;
+    margin-top: 28px; margin-bottom: 6px; letter-spacing: 0.5px;
+  }
+  .slide {
+    width: 800px; position: relative; overflow: hidden; border-radius: 8px;
+  }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  .bg-light { position: absolute; inset: 0; background: #F2EDE3; }
+  .content {
+    position: relative; z-index: 2; padding: 44px 56px;
+    display: flex; flex-direction: column;
+  }
+
+  /* 品牌角标 */
+  .brand {
+    position: absolute; top: 18px; left: 22px;
+    display: flex; align-items: center; gap: 6px; z-index: 3;
+  }
+  .brand svg { width: 18px; height: 18px; }
+  .brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+  .brand.on-dark .brand-text { color: rgba(255,255,255,0.32); }
+  .brand.on-light .brand-text { color: rgba(28,28,30,0.32); }
+
+  .page-num {
+    position: absolute; bottom: 16px; right: 22px;
+    font-size: 11px; z-index: 3;
+    font-family: "SF Mono", Menlo, monospace; letter-spacing: 1px;
+  }
+  .page-num.on-dark { color: rgba(255,255,255,0.22); }
+  .page-num.on-light { color: rgba(28,28,30,0.22); }
+
+  /* ─── Medium-style section tag：金色细横线 + 编辑字距 ─── */
+  .kicker {
+    display: inline-block; align-self: flex-start;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    color: #C4956A; text-transform: uppercase;
+    padding-top: 11px; position: relative;
+    margin-bottom: 18px;
+  }
+  .kicker::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 28px; height: 1px; background: #C4956A;
+  }
+
+  /* 标题 + lede */
+  .h-title {
+    font-size: 32px; font-weight: 800; letter-spacing: -0.018em;
+    line-height: 1.25; margin-bottom: 8px;
+  }
+  .h-title.on-dark { color: #F2EDE3; }
+  .h-title.on-light { color: #1C1C1E; }
+
+  .lede {
+    font-size: 14px; font-weight: 400; font-style: italic;
+    line-height: 1.55; margin-bottom: 28px;
+    letter-spacing: 0.2px;
+  }
+  .lede.on-dark { color: rgba(255,255,255,0.5); }
+  .lede.on-light { color: #7A7876; }
+
+  /* 装饰大数字（背景，opacity 0.06） */
+  .ghost-num {
+    position: absolute; bottom: 20px; right: 30px;
+    font-size: 120px; font-weight: 900; line-height: 1;
+    letter-spacing: -0.04em; pointer-events: none; user-select: none;
+  }
+  .ghost-num.on-dark { color: rgba(242,237,227,0.06); }
+  .ghost-num.on-light { color: rgba(28,28,30,0.06); }
+
+  /* ─── 流程卡片（去高饱和金，改为细描边 + 微透明） ─── */
+  .flow-row { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+  .flow-card {
+    min-width: 130px; min-height: 70px; border-radius: 8px;
+    padding: 12px 14px; display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: center;
+  }
+  .flow-card.on-dark {
+    background: transparent; border: 1px solid rgba(255,255,255,0.18);
+  }
+  .flow-card.on-light {
+    background: transparent; border: 1px solid rgba(28,28,30,0.16);
+  }
+  .flow-card.accent { border-color: #C4956A; border-width: 1.5px; }
+  .fc-title { font-size: 13px; font-weight: 700; line-height: 1.3; }
+  .fc-sub { font-size: 11px; margin-top: 4px; letter-spacing: 0.3px; }
+  .on-dark .fc-title { color: #F2EDE3; }
+  .on-dark .fc-sub { color: rgba(255,255,255,0.4); }
+  .on-light .fc-title { color: #1C1C1E; }
+  .on-light .fc-sub { color: #7A7876; }
+  .flow-card.accent .fc-title { color: #C4956A; }
+
+  .arrow {
+    font-size: 16px; padding: 0 14px; flex-shrink: 0;
+    font-weight: 300;
+  }
+  .arrow.on-dark { color: rgba(255,255,255,0.3); }
+  .arrow.on-light { color: rgba(28,28,30,0.3); }
+
+  /* ─── 信息条（简洁横线列表） ─── */
+  .info-list { display: flex; flex-direction: column; gap: 18px; }
+  .info-item {
+    display: grid; grid-template-columns: 24px 1fr;
+    gap: 14px; align-items: baseline;
+  }
+  .info-num {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 13px; font-weight: 700; color: #C4956A;
+    letter-spacing: 1px;
+  }
+  .info-body .info-h {
+    font-size: 15px; font-weight: 700; line-height: 1.4;
+  }
+  .info-body .info-p {
+    font-size: 12px; margin-top: 4px; line-height: 1.5;
+    letter-spacing: 0.2px;
+  }
+  .slide.dark .info-body .info-h { color: #F2EDE3; }
+  .slide.dark .info-body .info-p { color: rgba(255,255,255,0.5); }
+  .slide.light .info-body .info-h { color: #1C1C1E; }
+  .slide.light .info-body .info-p { color: #7A7876; }
+
+  /* ─── 双栏对比（去掉填色块，只留细线分割） ─── */
+  .compare-row {
+    display: grid; grid-template-columns: 1fr 1px 1fr;
+    gap: 28px; align-items: stretch;
+  }
+  .compare-divider { width: 1px; }
+  .compare-divider.on-dark { background: rgba(255,255,255,0.12); }
+  .compare-divider.on-light { background: rgba(28,28,30,0.12); }
+  .compare-col { display: flex; flex-direction: column; gap: 12px; padding: 4px 0; }
+  .compare-col .col-h {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .compare-col.muted .col-h { color: rgba(255,255,255,0.4); }
+  .compare-col.muted-light .col-h { color: rgba(28,28,30,0.4); }
+  .compare-col.hero .col-h { color: #C4956A; }
+  .compare-row .row-item {
+    font-size: 13px; line-height: 1.5;
+    padding-left: 14px; position: relative;
+  }
+  .compare-row .row-item::before {
+    content: ''; position: absolute; left: 0; top: 9px;
+    width: 5px; height: 1px; background: currentColor; opacity: 0.5;
+  }
+  .compare-col.muted .row-item { color: rgba(255,255,255,0.55); }
+  .compare-col.muted-light .row-item { color: #7A7876; }
+  .compare-col.hero .row-item { color: rgba(255,255,255,0.85); }
+  .compare-col.hero .row-item.featured { color: #C4956A; font-weight: 700; }
+
+  /* ─── 验证流程图（水平流） ─── */
+  .verify-flow {
+    display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+  }
+  .verify-flow .flow-card { flex-shrink: 0; }
+  .verify-flow .v-arrow {
+    font-size: 16px; padding: 0 10px; flex-shrink: 0; font-weight: 300;
+  }
+  .verify-flow .v-arrow.on-light { color: rgba(28,28,30,0.3); }
+  .verify-branches {
+    display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 0;
+  }
+  .verify-branch {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; line-height: 1.4;
+  }
+  .verify-branch .v-tag {
+    font-family: "SF Mono", monospace; font-size: 10px;
+    padding: 2px 8px; border-radius: 3px; letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .v-tag.ok { background: transparent; border: 1px solid rgba(76,175,80,0.5); color: #2E7D32; }
+  .v-tag.fix { background: transparent; border: 1px solid #C4956A; color: #C4956A; }
+  .v-tag.fail { background: transparent; border: 1px solid rgba(229,57,53,0.4); color: #C62828; }
+
+  .footer-quote {
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid rgba(28,28,30,0.1);
+    font-size: 13px; font-style: italic; color: #7A7876;
+    letter-spacing: 0.3px;
+  }
+  .footer-quote.on-dark {
+    border-top-color: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ─── 混合架构（pull-quote 替代渐变盒） ─── */
+  .pull-quote {
+    margin-top: 28px; padding: 14px 0 0 18px;
+    border-left: 2px solid #C4956A;
+  }
+  .pull-quote .pq-line1 {
+    font-size: 16px; font-weight: 600; line-height: 1.5;
+  }
+  .pull-quote .pq-line2 {
+    font-size: 16px; font-weight: 600; line-height: 1.5;
+    color: #C4956A; margin-top: 2px;
+  }
+  .pull-quote.on-light .pq-line1 { color: #1C1C1E; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="downloadAll()">全部下载 (ZIP)</button>
+</div>
+
+<!-- ╭─ 通用 brand SVG 复用 ─╮ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="brand-svg-light" viewBox="0 0 32 32">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </symbol>
+    <symbol id="brand-svg-dark" viewBox="0 0 32 32">
+      <circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ========== 配图 1：向量 RAG 的核心问题 ========== -->
+<div class="slide-label">配图 1 · 放在「整个思路就不对」之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="ghost-num on-dark">52%</div>
+  <div class="brand on-dark"><svg width="18" height="18"><use href="#brand-svg-light"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-dark">01 / 06</div>
+  <div class="content">
+    <div class="kicker">THE PROBLEM</div>
+    <h2 class="h-title on-dark">向量 RAG 的三个致命问题</h2>
+    <p class="lede on-dark">为什么调参两周，准确率最多到 61% 就卡住</p>
+    <div class="info-list">
+      <div class="info-item">
+        <div class="info-num">01</div>
+        <div class="info-body">
+          <div class="info-h">语义相似 ≠ 相关</div>
+          <div class="info-p">CEO 谈债务策略 0.89 vs 负债表 0.71，向量分不清</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-num">02</div>
+        <div class="info-body">
+          <div class="info-h">分块破坏结构</div>
+          <div class="info-p">"如表 3.2 所示"与表 3.2 分属两个 chunk</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-num">03</div>
+        <div class="info-body">
+          <div class="info-h">意图与表述不对齐</div>
+          <div class="info-p">用户问的措辞 ≠ 文档写的措辞</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 2：PageIndex 核心流程 ========== -->
+<div class="slide-label">配图 2 · 放在「PageIndex 本质就是把这个过程自动化了」之后</div>
+<div class="slide light" style="height:380px;">
+  <div class="bg-light"></div>
+  <div class="ghost-num on-light">02</div>
+  <div class="brand on-light"><svg width="18" height="18"><use href="#brand-svg-dark"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-light">02 / 06</div>
+  <div class="content">
+    <div class="kicker">CORE PIPELINE</div>
+    <h2 class="h-title on-light">PageIndex 两步核心流程</h2>
+    <p class="lede on-light">不分块，不 Embedding，模拟人翻文档的方式</p>
+    <div class="flow-row" style="margin-top:8px;">
+      <div class="flow-card on-light">
+        <div class="fc-title">PDF 文档</div>
+        <div class="fc-sub">120 页年报</div>
+      </div>
+      <div class="arrow on-light">→</div>
+      <div class="flow-card on-light accent">
+        <div class="fc-title">建目录树</div>
+        <div class="fc-sub">LLM 解析结构</div>
+      </div>
+      <div class="arrow on-light">→</div>
+      <div class="flow-card on-light accent">
+        <div class="fc-title">推理式搜索</div>
+        <div class="fc-sub">迭代循环导航</div>
+      </div>
+      <div class="arrow on-light">→</div>
+      <div class="flow-card on-light">
+        <div class="fc-title">精确答案</div>
+        <div class="fc-sub">附页码引用</div>
+      </div>
+    </div>
+    <div class="footer-quote">不需要 Embedding，不需要向量数据库，不需要分块。</div>
+  </div>
+</div>
+
+<!-- ========== 配图 3：三条路径降级 ========== -->
+<div class="slide-label">配图 3 · 放在「效果会降级，但不大会崩」之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="ghost-num on-dark">03</div>
+  <div class="brand on-dark"><svg width="18" height="18"><use href="#brand-svg-light"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-dark">03 / 06</div>
+  <div class="content">
+    <div class="kicker">FALLBACK PATHS</div>
+    <h2 class="h-title on-dark">三条处理路径，自动降级</h2>
+    <p class="lede on-dark">每条路径准确率 &lt; 60% 时，自动转向下一条</p>
+    <div class="info-list">
+      <div class="info-item">
+        <div class="info-num">①</div>
+        <div class="info-body">
+          <div class="info-h">有目录 + 有页码 <span style="font-size:10px;font-weight:600;letter-spacing:2px;color:#C4956A;margin-left:8px;">OPTIMAL</span></div>
+          <div class="info-p">process_toc_with_page_numbers — 直接解析</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-num">②</div>
+        <div class="info-body">
+          <div class="info-h">有目录 · 无页码</div>
+          <div class="info-p">process_toc_no_page_numbers — LLM 扫描定位</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-num">③</div>
+        <div class="info-body">
+          <div class="info-h">无目录 <span style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,0.35);margin-left:8px;">FALLBACK</span></div>
+          <div class="info-p">process_no_toc — LLM 从正文推断结构，自造目录</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 4：验证修复循环 ========== -->
+<div class="slide-label">配图 4 · 放在「是系统反复校验逼出来的」之后</div>
+<div class="slide light" style="height:380px;">
+  <div class="bg-light"></div>
+  <div class="ghost-num on-light">3×</div>
+  <div class="brand on-light"><svg width="18" height="18"><use href="#brand-svg-dark"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-light">04 / 06</div>
+  <div class="content">
+    <div class="kicker">VERIFY &amp; FIX</div>
+    <h2 class="h-title on-light">验证修复循环 · 最多 3 轮</h2>
+    <p class="lede on-light">98.7% 不是一次蒙对的，是反复校验逼出来的</p>
+    <div class="verify-flow" style="margin-top:8px;">
+      <div class="flow-card on-light"><div class="fc-title">生成树</div></div>
+      <div class="v-arrow on-light">→</div>
+      <div class="flow-card on-light"><div class="fc-title">并发验证</div><div class="fc-sub">所有节点</div></div>
+      <div class="v-arrow on-light">→</div>
+      <div class="verify-branches">
+        <div class="verify-branch">
+          <span class="v-tag ok">100%</span>
+          <span style="color:#1C1C1E;">直接采用</span>
+        </div>
+        <div class="verify-branch">
+          <span class="v-tag fix">&gt; 60%</span>
+          <span style="color:#1C1C1E;">局部修复 · 最多 3 轮</span>
+        </div>
+        <div class="verify-branch">
+          <span class="v-tag fail">&lt; 60%</span>
+          <span style="color:#1C1C1E;">降级到下条路径</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 5：向量 RAG vs PageIndex 对比 ========== -->
+<div class="slide-label">配图 5 · 放在「我的评价」表格之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="ghost-num on-dark">VS</div>
+  <div class="brand on-dark"><svg width="18" height="18"><use href="#brand-svg-light"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-dark">05 / 06</div>
+  <div class="content">
+    <div class="kicker">COMPARISON</div>
+    <h2 class="h-title on-dark">向量 RAG vs PageIndex</h2>
+    <p class="lede on-dark">两条路线的根本差异，不是参数，是范式</p>
+    <div class="compare-row" style="margin-top:8px;">
+      <div class="compare-col muted">
+        <div class="col-h">VECTOR RAG</div>
+        <div class="row-item">向量相似度搜索</div>
+        <div class="row-item">Embedding + 向量数据库</div>
+        <div class="row-item">固定大小分块</div>
+        <div class="row-item">准确率 ~ 50%</div>
+        <div class="row-item">适合大规模文档集合</div>
+      </div>
+      <div class="compare-divider on-dark"></div>
+      <div class="compare-col hero">
+        <div class="col-h">PAGEINDEX</div>
+        <div class="row-item">LLM 推理式树搜索</div>
+        <div class="row-item">层级树结构 (JSON)</div>
+        <div class="row-item">保留文档自然结构</div>
+        <div class="row-item featured">准确率 98.7%</div>
+        <div class="row-item">适合单篇复杂文档</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 6：混合架构 + 结论 ========== -->
+<div class="slide-label">配图 6 · 放在「写在最后」之后</div>
+<div class="slide light" style="height:380px;">
+  <div class="bg-light"></div>
+  <div class="ghost-num on-light">06</div>
+  <div class="brand on-light"><svg width="18" height="18"><use href="#brand-svg-dark"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-light">06 / 06</div>
+  <div class="content">
+    <div class="kicker">HYBRID ARCHITECTURE</div>
+    <h2 class="h-title on-light">推荐架构：向量 + 树推理</h2>
+    <p class="lede on-light">大规模用向量粗筛，单篇深查用 PageIndex</p>
+    <div class="flow-row" style="margin-top:8px;">
+      <div class="flow-card on-light">
+        <div class="fc-title">文档集合</div>
+        <div class="fc-sub">1000+ 份</div>
+      </div>
+      <div class="arrow on-light">→</div>
+      <div class="flow-card on-light">
+        <div class="fc-title">向量搜索</div>
+        <div class="fc-sub">粗筛目标文档</div>
+      </div>
+      <div class="arrow on-light">→</div>
+      <div class="flow-card on-light accent">
+        <div class="fc-title">PageIndex</div>
+        <div class="fc-sub">树推理精确检索</div>
+      </div>
+      <div class="arrow on-light">→</div>
+      <div class="flow-card on-light">
+        <div class="fc-title">精确答案</div>
+        <div class="fc-sub">附页码出处</div>
+      </div>
+    </div>
+    <div class="pull-quote on-light">
+      <div class="pq-line1">当任务需要理解结构、追踪逻辑</div>
+      <div class="pq-line2">推理确实比相似度好使</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const labels = ['问题分析', '核心流程', '三条路径', '验证循环', '对比', '混合架构'];
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await renderSlide(slides[i]);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`配图-medium-${i+1}-${labels[i]}.png`, blob);
+  }
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, 'pageindex-rag-配图-medium.zip');
+}
+</script>
+</body>
+</html>

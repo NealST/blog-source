@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配图 — PageIndex 无向量 RAG</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 60px; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; gap: 12px; }
+  .toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 14px 20px; display: flex; gap: 12px; justify-content: center; z-index: 100; backdrop-filter: blur(10px); }
+  .toolbar button { background: #C4956A; color: #1C1C1E; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .toolbar button:hover { background: #d4a57a; }
+
+  .slide-label { color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 24px; margin-bottom: 4px; letter-spacing: 0.5px; }
+  .slide { width: 800px; position: relative; overflow: hidden; border-radius: 8px; }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  .bg-light { position: absolute; inset: 0; background: #F2EDE3; }
+  .content { position: relative; z-index: 2; padding: 36px 44px; display: flex; flex-direction: column; }
+
+  /* 品牌角标 */
+  .brand { position: absolute; top: 16px; left: 20px; display: flex; align-items: center; gap: 6px; z-index: 3; }
+  .brand svg { width: 20px; height: 20px; }
+  .brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+  .brand.light .brand-text { color: rgba(255,255,255,0.35); }
+  .brand.dark .brand-text { color: rgba(28,28,30,0.35); }
+  .page-num { position: absolute; bottom: 14px; right: 20px; font-size: 11px; z-index: 3; }
+  .page-num.light { color: rgba(255,255,255,0.25); }
+  .page-num.dark { color: rgba(28,28,30,0.25); }
+
+  .section-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 4px 12px; border-radius: 4px; margin-bottom: 14px; align-self: flex-start; }
+  .section-tag.on-dark { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+  .section-tag.on-light { background: rgba(28,28,30,0.06); color: rgba(28,28,30,0.45); }
+
+  .title-dark { font-size: 26px; font-weight: 800; color: #F2EDE3; margin-bottom: 20px; line-height: 1.3; }
+  .title-light { font-size: 26px; font-weight: 800; color: #1C1C1E; margin-bottom: 20px; line-height: 1.3; }
+
+  /* 流程卡片 */
+  .flow-row { display: flex; align-items: center; gap: 0; justify-content: center; flex-wrap: wrap; }
+  .flow-card { width: 130px; min-height: 72px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 8px; text-align: center; }
+  .flow-card.gold { background: rgba(196,149,106,0.15); border: 1.5px solid rgba(196,149,106,0.3); }
+  .flow-card.ghost { background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1); }
+  .flow-card.ghost-dark { background: rgba(28,28,30,0.06); border: 1.5px solid rgba(28,28,30,0.12); }
+  .flow-card .fc-title { font-size: 13px; font-weight: 800; }
+  .flow-card .fc-sub { font-size: 10px; margin-top: 4px; }
+  .flow-card.gold .fc-title { color: #F2EDE3; }
+  .flow-card.gold .fc-sub { color: rgba(255,255,255,0.4); }
+  .flow-card.ghost .fc-title { color: rgba(255,255,255,0.8); }
+  .flow-card.ghost .fc-sub { color: rgba(255,255,255,0.35); }
+  .flow-card.ghost-dark .fc-title { color: #1C1C1E; }
+  .flow-card.ghost-dark .fc-sub { color: rgba(28,28,30,0.5); }
+  .arrow { color: rgba(255,255,255,0.2); font-size: 22px; padding: 0 6px; flex-shrink: 0; }
+  .arrow-dark { color: rgba(28,28,30,0.2); font-size: 22px; padding: 0 6px; flex-shrink: 0; }
+  .arrow-gold { color: rgba(196,149,106,0.5); font-size: 22px; padding: 0 6px; flex-shrink: 0; }
+
+  /* 对比双栏 */
+  .compare-row { display: flex; gap: 20px; }
+  .compare-col { flex: 1; border-radius: 12px; padding: 20px; }
+  .compare-col.left { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); }
+  .compare-col.right { background: rgba(196,149,106,0.08); border: 1px solid rgba(196,149,106,0.2); }
+  .compare-col .col-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+  .compare-col.left .col-title { color: rgba(255,255,255,0.6); }
+  .compare-col.right .col-title { color: #C4956A; }
+  .compare-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+  .compare-item .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+  .compare-item .dot.white { background: rgba(255,255,255,0.3); }
+  .compare-item .dot.gold { background: #C4956A; }
+  .compare-item .text { font-size: 13px; line-height: 1.5; }
+  .compare-item .text.dim { color: rgba(255,255,255,0.55); }
+  .compare-item .text.bright { color: rgba(255,255,255,0.8); }
+
+  /* 信息行 */
+  .info-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .info-row .dot { width: 6px; height: 6px; border-radius: 50%; background: #C4956A; flex-shrink: 0; }
+  .info-row .text { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.5; }
+  .info-row .text .hl { color: #C4956A; font-weight: 700; }
+
+  /* 大数字 */
+  .big-num { font-size: 56px; font-weight: 900; color: #C4956A; line-height: 1; }
+  .big-label { font-size: 18px; font-weight: 700; color: #F2EDE3; margin-top: 4px; }
+
+  /* 编号列表 */
+  .num-list { display: flex; flex-direction: column; gap: 14px; }
+  .num-item { display: flex; align-items: flex-start; gap: 14px; }
+  .num-badge { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+  .num-badge.gold { background: rgba(196,149,106,0.2); color: #C4956A; }
+  .num-badge.dark { background: rgba(28,28,30,0.1); color: #1C1C1E; }
+  .num-item .ni-content { display: flex; flex-direction: column; }
+  .num-item .ni-title { font-size: 14px; font-weight: 700; line-height: 1.4; }
+  .num-item .ni-desc { font-size: 12px; margin-top: 2px; line-height: 1.5; }
+
+  /* 验证循环 */
+  .loop-box { border-radius: 12px; padding: 20px 24px; margin-top: 10px; }
+  .loop-box.dark { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="downloadAll()">全部下载 (ZIP)</button>
+</div>
+
+<!-- ========== 配图 1：向量 RAG 的核心问题 ========== -->
+<div class="slide-label">配图 1 · 放在「整个思路就不对」之后</div>
+<div class="slide" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand light"><svg viewBox="0 0 32 32" fill="none" style="width:20px;height:20px"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text" style="color:rgba(255,255,255,0.35)">墨筝</span></div>
+  <div class="page-num light">1/6</div>
+  <div class="content">
+    <div class="section-tag on-dark">THE PROBLEM</div>
+    <div class="title-dark">向量 RAG 的三个致命问题</div>
+    <div class="compare-row">
+      <div style="flex:1;display:flex;flex-direction:column;gap:16px;">
+        <div class="info-row"><div class="dot"></div><div class="text" style="color:rgba(255,255,255,0.75)"><span class="hl">语义相似 ≠ 相关</span><br><span style="font-size:11px;color:rgba(255,255,255,0.4)">CEO 谈债务策略 0.89 vs 负债表 0.71</span></div></div>
+        <div class="info-row"><div class="dot"></div><div class="text" style="color:rgba(255,255,255,0.75)"><span class="hl">分块破坏结构</span><br><span style="font-size:11px;color:rgba(255,255,255,0.4)">"如表 3.2 所示"与表 3.2 分属不同块</span></div></div>
+        <div class="info-row"><div class="dot"></div><div class="text" style="color:rgba(255,255,255,0.75)"><span class="hl">意图与表述不对齐</span><br><span style="font-size:11px;color:rgba(255,255,255,0.4)">用户问的 ≠ 文档写的措辞</span></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;">
+        <div style="font-size:48px;font-weight:900;color:rgba(255,255,255,0.15);">52%</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.25);margin-top:4px;">→</div>
+        <div style="font-size:48px;font-weight:900;color:rgba(255,255,255,0.25);">61%</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:6px;">调参两周的极限</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 2：PageIndex 核心流程 ========== -->
+<div class="slide-label">配图 2 · 放在「PageIndex 本质就是把这个过程自动化了」之后</div>
+<div class="slide" style="height:400px;">
+  <div class="bg-light"></div>
+  <div class="brand dark"><svg viewBox="0 0 32 32" fill="none" style="width:20px;height:20px"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text" style="color:rgba(28,28,30,0.35)">墨筝</span></div>
+  <div class="page-num dark">2/6</div>
+  <div class="content">
+    <div class="section-tag on-light">CORE PIPELINE</div>
+    <div class="title-light">PageIndex 两步核心流程</div>
+    <div style="display:flex;flex-direction:column;gap:18px;align-items:center;">
+      <div class="flow-row">
+        <div class="flow-card ghost-dark" style="width:120px;"><div class="fc-title" style="color:#1C1C1E">PDF 文档</div><div class="fc-sub" style="color:rgba(28,28,30,0.45)">120 页年报</div></div>
+        <div class="arrow-dark">→</div>
+        <div class="flow-card" style="width:140px;background:rgba(196,149,106,0.12);border:1.5px solid rgba(196,149,106,0.25);"><div class="fc-title" style="color:#1C1C1E">建目录树</div><div class="fc-sub" style="color:rgba(28,28,30,0.5)">LLM 解析结构</div></div>
+        <div class="arrow-dark">→</div>
+        <div class="flow-card" style="width:140px;background:rgba(196,149,106,0.12);border:1.5px solid rgba(196,149,106,0.25);"><div class="fc-title" style="color:#1C1C1E">推理式搜索</div><div class="fc-sub" style="color:rgba(28,28,30,0.5)">迭代循环导航</div></div>
+        <div class="arrow-dark">→</div>
+        <div class="flow-card ghost-dark" style="width:120px;"><div class="fc-title" style="color:#1C1C1E">精确答案</div><div class="fc-sub" style="color:rgba(28,28,30,0.45)">附页码引用</div></div>
+      </div>
+      <div style="display:flex;gap:40px;margin-top:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:rgba(28,28,30,0.35);letter-spacing:1px;margin-bottom:4px;">不需要</div>
+          <div style="display:flex;gap:8px;">
+            <div style="padding:4px 10px;border-radius:4px;background:rgba(28,28,30,0.06);font-size:12px;color:rgba(28,28,30,0.4);text-decoration:line-through;">Embedding</div>
+            <div style="padding:4px 10px;border-radius:4px;background:rgba(28,28,30,0.06);font-size:12px;color:rgba(28,28,30,0.4);text-decoration:line-through;">向量数据库</div>
+            <div style="padding:4px 10px;border-radius:4px;background:rgba(28,28,30,0.06);font-size:12px;color:rgba(28,28,30,0.4);text-decoration:line-through;">分块</div>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#C4956A;letter-spacing:1px;margin-bottom:4px;">核心思路</div>
+          <div style="padding:4px 12px;border-radius:4px;background:rgba(196,149,106,0.1);font-size:12px;color:#C4956A;font-weight:600;">模拟人类翻文档的方式</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 3：三条路径降级 ========== -->
+<div class="slide-label">配图 3 · 放在「效果会降级，但不大会崩」之后</div>
+<div class="slide" style="height:440px;">
+  <div class="bg-dark"></div>
+  <div class="brand light"><svg viewBox="0 0 32 32" fill="none" style="width:20px;height:20px"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text" style="color:rgba(255,255,255,0.35)">墨筝</span></div>
+  <div class="page-num light">3/6</div>
+  <div class="content">
+    <div class="section-tag on-dark">FALLBACK PATHS</div>
+    <div class="title-dark">三条处理路径 · 自动降级</div>
+    <div class="num-list">
+      <div class="num-item">
+        <div class="num-badge gold">1</div>
+        <div class="ni-content">
+          <div class="ni-title" style="color:#F2EDE3">有目录 + 有页码 <span style="color:#C4956A;font-size:12px;margin-left:6px;">★ 最优</span></div>
+          <div class="ni-desc" style="color:rgba(255,255,255,0.4)">process_toc_with_page_numbers — 直接解析</div>
+        </div>
+      </div>
+      <div style="padding-left:14px;"><div style="width:1px;height:16px;background:rgba(196,149,106,0.2);margin-left:0;"></div><div style="font-size:10px;color:rgba(255,255,255,0.25);padding:2px 0 2px 8px;">准确率 < 60% → 降级</div><div style="width:1px;height:8px;background:rgba(196,149,106,0.2);margin-left:0;"></div></div>
+      <div class="num-item">
+        <div class="num-badge gold">2</div>
+        <div class="ni-content">
+          <div class="ni-title" style="color:#F2EDE3">有目录 · 无页码</div>
+          <div class="ni-desc" style="color:rgba(255,255,255,0.4)">process_toc_no_page_numbers — LLM 扫描定位页码</div>
+        </div>
+      </div>
+      <div style="padding-left:14px;"><div style="width:1px;height:16px;background:rgba(196,149,106,0.2);margin-left:0;"></div><div style="font-size:10px;color:rgba(255,255,255,0.25);padding:2px 0 2px 8px;">准确率 < 60% → 降级</div><div style="width:1px;height:8px;background:rgba(196,149,106,0.2);margin-left:0;"></div></div>
+      <div class="num-item">
+        <div class="num-badge gold">3</div>
+        <div class="ni-content">
+          <div class="ni-title" style="color:#F2EDE3">无目录 <span style="color:rgba(255,255,255,0.3);font-size:12px;margin-left:6px;">兜底</span></div>
+          <div class="ni-desc" style="color:rgba(255,255,255,0.4)">process_no_toc — LLM 从正文推断结构，自动发明目录</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 4：验证修复循环 ========== -->
+<div class="slide-label">配图 4 · 放在「是系统反复校验逼出来的」之后</div>
+<div class="slide" style="height:400px;">
+  <div class="bg-light"></div>
+  <div class="brand dark"><svg viewBox="0 0 32 32" fill="none" style="width:20px;height:20px"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text" style="color:rgba(28,28,30,0.35)">墨筝</span></div>
+  <div class="page-num dark">4/6</div>
+  <div class="content">
+    <div class="section-tag on-light">VERIFY & FIX</div>
+    <div class="title-light">验证修复循环 · 最多 3 轮</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-top:8px;">
+      <div class="flow-card ghost-dark" style="width:100px;min-height:60px;"><div class="fc-title" style="color:#1C1C1E;font-size:12px;">生成树</div></div>
+      <div class="arrow-dark">→</div>
+      <div class="flow-card ghost-dark" style="width:120px;min-height:60px;"><div class="fc-title" style="color:#1C1C1E;font-size:12px;">并发验证</div><div class="fc-sub" style="color:rgba(28,28,30,0.4);font-size:10px;">所有节点</div></div>
+      <div class="arrow-dark">→</div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
+        <div class="flow-card" style="width:130px;min-height:50px;background:rgba(76,175,80,0.1);border:1.5px solid rgba(76,175,80,0.25);"><div class="fc-title" style="color:#4CAF50;font-size:12px;">100%？直接用</div></div>
+        <div style="font-size:10px;color:rgba(28,28,30,0.3);">否 ↓</div>
+        <div class="flow-card" style="width:130px;min-height:50px;background:rgba(196,149,106,0.1);border:1.5px solid rgba(196,149,106,0.2);"><div class="fc-title" style="color:#C4956A;font-size:12px;">> 60%？修复</div><div class="fc-sub" style="color:rgba(28,28,30,0.4);font-size:10px;">最多 3 轮</div></div>
+        <div style="font-size:10px;color:rgba(28,28,30,0.3);">否 ↓</div>
+        <div class="flow-card" style="width:130px;min-height:50px;background:rgba(244,67,54,0.08);border:1.5px solid rgba(244,67,54,0.15);"><div class="fc-title" style="color:#E53935;font-size:12px;">降级重来</div></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:13px;color:rgba(28,28,30,0.5);">98.7% 不是一次蒙对的，是反复校验逼出来的</div>
+  </div>
+</div>
+
+<!-- ========== 配图 5：向量 RAG vs PageIndex 对比 ========== -->
+<div class="slide-label">配图 5 · 放在「我的评价」表格之后</div>
+<div class="slide" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand light"><svg viewBox="0 0 32 32" fill="none" style="width:20px;height:20px"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text" style="color:rgba(255,255,255,0.35)">墨筝</span></div>
+  <div class="page-num light">5/6</div>
+  <div class="content">
+    <div class="section-tag on-dark">COMPARISON</div>
+    <div class="title-dark">向量 RAG vs PageIndex</div>
+    <div class="compare-row">
+      <div class="compare-col left">
+        <div class="col-title">传统向量 RAG</div>
+        <div class="compare-item"><div class="dot white"></div><div class="text dim">向量相似度搜索</div></div>
+        <div class="compare-item"><div class="dot white"></div><div class="text dim">Embedding + 向量数据库</div></div>
+        <div class="compare-item"><div class="dot white"></div><div class="text dim">固定大小分块</div></div>
+        <div class="compare-item"><div class="dot white"></div><div class="text dim">准确率 ~50%</div></div>
+        <div class="compare-item"><div class="dot white"></div><div class="text dim">适合大规模文档集合</div></div>
+      </div>
+      <div class="compare-col right">
+        <div class="col-title">PageIndex</div>
+        <div class="compare-item"><div class="dot gold"></div><div class="text bright">LLM 推理式树搜索</div></div>
+        <div class="compare-item"><div class="dot gold"></div><div class="text bright">层级树结构 (JSON)</div></div>
+        <div class="compare-item"><div class="dot gold"></div><div class="text bright">保留文档自然结构</div></div>
+        <div class="compare-item"><div class="dot gold"></div><div class="text bright" style="color:#C4956A;font-weight:700;">准确率 98.7%</div></div>
+        <div class="compare-item"><div class="dot gold"></div><div class="text bright">适合单篇复杂文档</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 6：混合架构 + 结论 ========== -->
+<div class="slide-label">配图 6 · 放在「写在最后」之后</div>
+<div class="slide" style="height:380px;">
+  <div class="bg-light"></div>
+  <div class="brand dark"><svg viewBox="0 0 32 32" fill="none" style="width:20px;height:20px"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text" style="color:rgba(28,28,30,0.35)">墨筝</span></div>
+  <div class="page-num dark">6/6</div>
+  <div class="content">
+    <div class="section-tag on-light">HYBRID ARCHITECTURE</div>
+    <div class="title-light">推荐架构：向量 + 树推理</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-top:10px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="flow-card ghost-dark" style="width:130px;"><div class="fc-title" style="color:#1C1C1E">文档集合</div><div class="fc-sub" style="color:rgba(28,28,30,0.45)">1000+ 份文档</div></div>
+      </div>
+      <div class="arrow-dark">→</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="flow-card ghost-dark" style="width:140px;"><div class="fc-title" style="color:#1C1C1E">向量搜索</div><div class="fc-sub" style="color:rgba(28,28,30,0.45)">锁定目标文档</div></div>
+        <div style="font-size:10px;color:rgba(28,28,30,0.3);">粗筛</div>
+      </div>
+      <div class="arrow-dark">→</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="flow-card" style="width:140px;background:rgba(196,149,106,0.12);border:1.5px solid rgba(196,149,106,0.25);"><div class="fc-title" style="color:#C4956A;font-weight:800;">PageIndex</div><div class="fc-sub" style="color:rgba(28,28,30,0.5)">树推理精确检索</div></div>
+        <div style="font-size:10px;color:#C4956A;">精查</div>
+      </div>
+      <div class="arrow-dark">→</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="flow-card ghost-dark" style="width:120px;"><div class="fc-title" style="color:#1C1C1E">精确答案</div><div class="fc-sub" style="color:rgba(28,28,30,0.45)">附页码出处</div></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:24px;padding:12px 20px;border-radius:8px;background:rgba(196,149,106,0.08);border:1px solid rgba(196,149,106,0.15);">
+      <div style="font-size:15px;font-weight:700;color:#1C1C1E;">当任务需要理解结构、追踪逻辑</div>
+      <div style="font-size:15px;font-weight:700;color:#C4956A;margin-top:4px;">推理确实比相似度好使</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const labels = ['问题分析', '核心流程', '三条路径', '验证循环', '对比', '混合架构'];
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await renderSlide(slides[i]);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`配图-${i+1}-${labels[i]}.png`, blob);
+  }
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, 'pageindex-rag-配图.zip');
+}
+</script>
+</body>
+</html>

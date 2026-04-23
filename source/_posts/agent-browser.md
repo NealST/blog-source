@@ -12,6 +12,9 @@ categories: tools
 
 ## 先看成品：一条六步的自动化文档流水线
 
+以 claude code 官网为例，我给了它一条 document this website 的指令，它就帮我生成了整个网站的说明文档并有配图说明和标注。
+<video >
+
 整个 skill 执行流程分为 6 步，流程如下：
 
 | 阶段 | AI 干了什么 | 用到的命令 |

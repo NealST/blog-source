@@ -183,6 +183,12 @@ export function fixHtmlForWechat(html: string): string {
   fixed = fixed.replace(/<figure([^>]*)>/gi, '<section$1>');
   fixed = fixed.replace(/<\/figure>/gi, '</section>');
 
+  // Strip whitespace/newlines between list tags — WeChat editor interprets
+  // text nodes between </li> and <li> as empty bullet points
+  fixed = fixed.replace(/(<\/li>)\s+(<li[\s>])/gi, '$1$2');
+  fixed = fixed.replace(/(<[uo]l[^>]*>)\s+(<li[\s>])/gi, '$1$2');
+  fixed = fixed.replace(/(<\/li>)\s+(<\/[uo]l>)/gi, '$1$2');
+
   // Normalize <img> styles for WeChat compatibility
   fixed = fixed.replace(/<img([^>]*?)>/gi, (_match, attrs: string) => {
     // Remove existing style attribute
@@ -244,7 +250,7 @@ export async function uploadLocalImagesInHtml(html: string, token: string): Prom
   return processed;
 }
 
-export function extractArticleContent(htmlPath: string): { content: string; styles: string } {
+export function extractArticleContent(htmlPath: string): { content: string; styles: string; hasOuterDiv: boolean } {
   const html = fs.readFileSync(htmlPath, 'utf-8');
 
   // Extract <style> blocks
@@ -254,24 +260,40 @@ export function extractArticleContent(htmlPath: string): { content: string; styl
     return inner.trim();
   }).join('\n');
 
+  // Detect if CSS is inlined (no <style> blocks or they're empty → premailer removed them)
+  const hasInlineStyles = styles.trim() === '' || html.includes('style="');
+
   // Priority: #output → .content → <body>
 
   // 1. Extract #output content (md-to-wechat output)
   const outputMatch = html.match(/<div[^>]*id=["']output["'][^>]*>([\s\S]*?)<\/div>\s*(?:<\/body>|<script|$)/i);
   if (outputMatch) {
-    return { content: stripTipElements(outputMatch[1].trim()), styles };
+    return { content: stripTipElements(outputMatch[1].trim()), styles, hasOuterDiv: false };
   }
 
   // 2. Extract .content container (md2wechat_formatter _preview.html)
-  const contentMatch = html.match(/<div[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*>([\s\S]*?)<\/div>\s*(?:<\/body>|<script|$)/i);
-  if (contentMatch) {
-    return { content: stripTipElements(contentMatch[1].trim()), styles };
+  // When CSS is inlined, extract the ENTIRE .content div (preserving inline styles like background-color)
+  // When CSS is in <style> blocks, extract only inner HTML (styles applied via class selectors)
+  const contentOuterMatch = html.match(/(<div[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*>[\s\S]*?<\/div>)\s*(?:<\/body>|<script|$)/i);
+  if (contentOuterMatch) {
+    const outerDiv = contentOuterMatch[1];
+    // Check if the .content div has inline style (i.e. premailer inlined CSS)
+    const hasInlineStyle = /<div[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*style=["'][^"']+["']/i.test(outerDiv);
+    if (hasInlineStyle) {
+      // Return the entire .content div with its inline styles intact
+      return { content: stripTipElements(outerDiv), styles, hasOuterDiv: true };
+    }
+    // No inline style: extract inner HTML only (will be re-wrapped)
+    const innerMatch = outerDiv.match(/<div[^>]*>([\s\S]*)<\/div>$/i);
+    if (innerMatch) {
+      return { content: stripTipElements(innerMatch[1].trim()), styles, hasOuterDiv: false };
+    }
   }
 
   // 3. Fallback: extract <body> content
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   if (bodyMatch) {
-    return { content: stripTipElements(bodyMatch[1].trim()), styles };
+    return { content: stripTipElements(bodyMatch[1].trim()), styles, hasOuterDiv: false };
   }
 
   throw new Error('Could not extract article content from HTML');
@@ -279,7 +301,9 @@ export function extractArticleContent(htmlPath: string): { content: string; styl
 
 /** Remove .tip elements (e.g. "全选复制粘贴到公众号编辑器" hint bars) */
 function stripTipElements(html: string): string {
-  return html.replace(/<div[^>]*class=["'][^"']*\btip\b[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '').trim();
+  return html
+    .replace(/<(?:div|section)[^>]*class=["'][^"']*\btip\b[^"']*["'][^>]*>[\s\S]*?<\/(?:div|section)>/gi, '')
+    .trim();
 }
 
 export function processHtmlWithImages(
@@ -389,7 +413,10 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
   console.log('  [wechat-api] Using pre-rendered HTML');
   const extracted = extractArticleContent(wechatData.html!);
   // Wrap in .content div so CSS selectors (.content h1, .content p, etc.) still match
-  let htmlContent = `<div class="content">${extracted.content}</div>`;
+  // Skip wrapping if content already includes the .content div (inline CSS mode)
+  let htmlContent = extracted.hasOuterDiv
+    ? extracted.content
+    : `<div class="content">${extracted.content}</div>`;
   const title = wechatData.title || manifest.title;
   const author = wechatData.author;
   const digest = wechatData.digest;

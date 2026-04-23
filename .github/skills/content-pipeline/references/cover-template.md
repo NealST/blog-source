@@ -371,3 +371,173 @@ python3 md2wechat_formatter.py [文章路径] --theme mozheng --font-size medium
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 ```
+
+---
+
+## 七、Medium 风格变体（推荐：深度长文/技术深度文）
+
+> 当文章用 `--layout medium` 排版时，封面 / 配图也应跟进。
+> 核心原则：**少即多** — 一句话主张、一个焦点视觉、一处颜色强调。
+
+### 设计七诫
+
+1. **左对齐，不居中** — 标题贴左边距 60-80px，留右侧 35-45% 给焦点视觉
+2. **一个 hero，不堆四件** — 删掉「主标题+副标题+keyword 框+底标签」的四件套，只留「编辑标签 + 主标题 + 一句话」
+3. **数字反差** — 标题里的关键数据放到 1.4-1.8 倍主字号，正文文字反而缩小，让对比说话
+4. **装饰即主角** — 单个 SVG/插图放右侧，opacity ≥ 0.55；不再用 0.10 的「背景噪音」
+5. **一处筝弦金** — 整张封面/配图，筝弦金只许出现在 1 个元素上（首选：标题里的关键数字 / 配图的 section-tag 横线）
+6. **字重降一档** — 标题 800（不是 900），副标题 400 italic（Medium 副标题习惯用斜体）
+7. **字距收紧** — 大标题 letter-spacing: `-0.022em`；section-tag 反向放宽 `0.18em`
+
+### 封面（900×383）规范
+
+| 字段 | 数值 |
+|---|---|
+| 内容容器 | `display:flex; align-items:center; padding:0 60px;` 左对齐 |
+| 编辑标签 | `font-size:11px; font-weight:700; letter-spacing:0.18em; color:#C4956A;` 上方 1px 金色横线 width: 32px |
+| 主标题 | `font-size:64px; font-weight:800; letter-spacing:-0.022em; line-height:1.15; color:#F2EDE3;` 最多 2 行 |
+| 标题中关键数字 | `font-size:88px; color:#C4956A;`（仅当 hook 是数字时用） |
+| 一句话副标题 | `font-size:18px; font-weight:400; font-style:italic; color:rgba(255,255,255,0.55); margin-top:18px; max-width:520px;` |
+| 焦点视觉 | 右侧绝对定位，居中垂直，宽 280-360px，`opacity:0.7-0.85`，不再加渐变遮罩 |
+| 品牌角标 | 保留，左上角，缩小到 `22×22`，`brand-text` 改 11px |
+| ❌ 删掉 | keyword-row 框、bottom-tags、左/右双装饰 SVG、bg-gradient |
+
+**HTML 骨架：**
+
+```html
+<div class="cover" id="cover-main">
+  <div class="bg-dark"></div>
+  <!-- 焦点视觉：单个 SVG/插图，撑满右侧约 35% -->
+  <div class="hero-art">
+    <svg width="320" height="260" viewBox="..." style="opacity:0.75">...</svg>
+  </div>
+  <!-- 品牌角标 left-top -->
+  <div class="brand">...</div>
+  <!-- 内容：左对齐 -->
+  <div class="content">
+    <div class="kicker">章节标签·主题</div>
+    <h1 class="title">主标题，<span class="hook">数字</span> 后半句</h1>
+    <p class="lede">一句话补足主张的 lede，控制在 30 字以内</p>
+  </div>
+</div>
+```
+
+**关键 CSS：**
+
+```css
+.cover { width:900px; height:383px; position:relative; overflow:hidden; background:#1C1C1E; }
+.hero-art { position:absolute; right:48px; top:50%; transform:translateY(-50%); z-index:1; }
+.content { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:0 380px 0 70px; z-index:2; }
+.kicker {
+  font-size:11px; font-weight:700; letter-spacing:0.18em; color:#C4956A;
+  text-transform:uppercase; padding-top:10px; position:relative;
+}
+.kicker::before {
+  content:''; position:absolute; top:0; left:0; width:32px; height:1px; background:#C4956A;
+}
+.title {
+  font-size:64px; font-weight:800; letter-spacing:-0.022em; line-height:1.15;
+  color:#F2EDE3; margin-top:18px;
+}
+.title .hook { color:#C4956A; font-size:88px; font-weight:900; letter-spacing:-0.03em; }
+.lede {
+  font-size:18px; font-weight:400; font-style:italic;
+  color:rgba(255,255,255,0.55); margin-top:18px; max-width:520px; line-height:1.5;
+}
+```
+
+> **次图（200×200）裁剪策略**：因主图左对齐，次图改为「裁主标题左下角 200×200 区块」（含金线 kicker + 标题首两字 + 数字 hook 的一部分），更有识别度。
+
+### 配图（800×420）规范
+
+主要差异：section-tag 改成「金色细横线 + 小写字距」编辑风格，丢弃灰盒。
+
+| 字段 | 暗底 | 浅底 |
+|---|---|---|
+| section-tag | 上方 1px `#C4956A` 横线 width:28px + 11px 0.18em letter-spacing 文字 `#C4956A` | 同左，颜色不变 |
+| 标题 | 32-36px / 800 / `-0.018em` / `#F2EDE3` | 32-36px / 800 / `-0.018em` / `#1C1C1E` |
+| 副标题（可选） | 14px italic / 400 / `rgba(255,255,255,0.55)` | 14px italic / 400 / `#7A7876` |
+| 装饰大数字 | opacity 0.06（不是 0.15），靠右下，不抢戏 | 同 |
+| 卡片间距 | `gap:24px`（比原来宽 8px），呼吸感 | 同 |
+| 筝弦金使用 | **每张图只 1 处**：首选 section-tag 横线 | 同 |
+
+**section-tag 模板：**
+
+```html
+<div class="section-tag-medium">
+  <div class="kicker-line"></div>
+  SECTION TAG
+</div>
+```
+
+```css
+.section-tag-medium {
+  display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.18em;
+  color:#C4956A; text-transform:uppercase; padding-top:10px; position:relative;
+}
+.section-tag-medium .kicker-line {
+  position:absolute; top:0; left:0; width:28px; height:1px; background:#C4956A;
+}
+```
+
+### 何时用 Medium 风格 vs 默认风格
+
+| 文章类型 | 推荐 |
+|---|---|
+| 技术深度文 / 长文（用 `--layout medium` 排版） | **Medium 风格** |
+| 教程 / 工具速记 / 资源列表 | 默认风格（信息密度高，多卡片） |
+| 暖亮主题（女性力量等） | 五B 暖亮风格 |
+| 游戏 / 测评（带产品截图） | 默认风格 + 截图背景 |
+
+> 决定后写在 manifest.json 的 `cover.style` / `illustrations.style` 字段（值：`mozheng` / `medium` / `warm`），方便后续重新生成对齐。
+
+### Medium 配图常见 bug 与防护（务必遵守）
+
+写 Medium 风格配图时，下列两类错误高频出现，已造成过线上效果问题：
+
+**1. 暗底/浅底文字颜色失效（文字与背景同色）**
+
+错误根源：用 `.on-dark .x-h { color: #F2EDE3 }` 这类选择器，但 `.on-dark` 只挂在 `.brand` / `.ghost-num` 这种局部元素上，根 `.slide` 容器没有 `.on-dark`，正文文字选择不中。
+
+✅ **正确做法**：把 `dark` / `light` 直接打到 `.slide` 根上，所有内文颜色用根类前缀作用域：
+
+```html
+<div class="slide dark" style="height:420px;">  <!-- 根容器决定主题 -->
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">...</div>          <!-- on-dark 仅给品牌/页码用 -->
+  <div class="content">
+    <h2 class="h-title">...</h2>                <!-- 不再加 on-dark 后缀 -->
+    <div class="info-body"><div class="info-h">...</div></div>
+  </div>
+</div>
+```
+
+```css
+.slide.dark .info-h { color: #F2EDE3; }
+.slide.light .info-h { color: #1C1C1E; }
+```
+
+每个 slide 在生成时**必须**带上 `dark` 或 `light`，不能省略。
+
+**2. 流程图模块重叠**
+
+错误根源：`display: grid` 设了 `grid-template-columns: 110px 16px 130px ...`，但子元素 `.flow-card` 又设 `min-width: 130px`，第一列被撑爆压住相邻列。
+
+✅ **正确做法**：流程图统一用 `flex` + `flex-shrink: 0`，让每个卡片按内容宽度自然撑开，不要混用 grid 固定列宽与 flex-card min-width：
+
+```css
+.flow-row { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+.flow-row .flow-card { flex-shrink: 0; }       /* 关键：不被压缩 */
+.flow-row .arrow { flex-shrink: 0; padding: 0 10px; }
+```
+
+**3. 通用自检清单（Medium 配图生成后必查）**
+
+- [ ] 每个 `.slide` 都有 `dark` 或 `light` 根类
+- [ ] 浏览器打开后所有文字可读（暗底白字、浅底黑字）
+- [ ] 流程图无元素重叠（用 flex，禁用 grid 与 min-width 混搭）
+- [ ] section-tag 上方金色横线渲染正常（不被 `overflow:hidden` 切掉）
+- [ ] 装饰大数字（ghost-num）不遮挡正文（`pointer-events:none` + 右下角，opacity ≤ 0.06）
+- [ ] 整张图筝弦金 `#C4956A` 出现次数 ≤ 2
+
+

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配图 — AI 自动化区域</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; gap: 12px; }
+
+  .toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); padding: 12px 20px; display: flex; gap: 10px; z-index: 100; justify-content: center; }
+  .toolbar button { padding: 8px 20px; border-radius: 6px; border: 1.5px solid rgba(196,149,106,0.5); background: rgba(196,149,106,0.12); color: #C4956A; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .toolbar button:hover { background: rgba(196,149,106,0.25); }
+
+  .slide-label { color: rgba(255,255,255,0.4); font-size: 13px; margin-top: 28px; margin-bottom: 4px; align-self: center; }
+  .slide { width: 800px; position: relative; overflow: hidden; border-radius: 8px; }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  .bg-light { position: absolute; inset: 0; background: #F2EDE3; }
+  .bg-gradient-dark { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(44,42,40,1) 0%, #1C1C1E 70%); }
+
+  .content { position: relative; z-index: 2; padding: 36px 44px; width: 100%; height: 100%; display: flex; flex-direction: column; }
+
+  /* 品牌角标 */
+  .brand { position: absolute; top: 16px; left: 20px; display: flex; align-items: center; gap: 6px; z-index: 3; }
+  .brand svg { width: 18px; height: 18px; }
+  .brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+  .brand.light .brand-text { color: rgba(255,255,255,0.45); }
+  .brand.dark .brand-text { color: rgba(28,28,30,0.4); }
+
+  /* 页码 */
+  .page-num { position: absolute; bottom: 16px; right: 20px; font-size: 11px; font-weight: 600; letter-spacing: 1px; z-index: 3; }
+  .page-num.light { color: rgba(255,255,255,0.25); }
+  .page-num.dark { color: rgba(28,28,30,0.25); }
+
+  /* Section Tag */
+  .section-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 4px 12px; border-radius: 4px; margin-bottom: 14px; align-self: flex-start; }
+  .section-tag.on-dark { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+  .section-tag.on-light { background: rgba(28,28,30,0.06); color: rgba(28,28,30,0.45); }
+
+  /* 标题 */
+  .title-dark { font-size: 26px; font-weight: 800; color: #F2EDE3; line-height: 1.35; margin-bottom: 16px; }
+  .title-light { font-size: 26px; font-weight: 800; color: #1C1C1E; line-height: 1.35; margin-bottom: 16px; }
+
+  /* 金色强调 */
+  .gold { color: #C4956A; }
+  .gold-border { border: 1.5px solid rgba(196,149,106,0.4); border-radius: 6px; padding: 3px 10px; color: #C4956A; font-weight: 700; }
+
+  /* 正文 */
+  .text-dark { color: rgba(255,255,255,0.7); font-size: 13px; line-height: 1.7; }
+  .text-light { color: rgba(28,28,30,0.7); font-size: 13px; line-height: 1.7; }
+
+  /* 卡片 */
+  .card-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px; }
+  .card-light { background: rgba(255,255,255,0.85); border: 1px solid rgba(28,28,30,0.08); border-radius: 10px; padding: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+
+  /* 箭头 */
+  .arrow { color: rgba(255,255,255,0.2); font-size: 22px; display: flex; align-items: center; justify-content: center; }
+  .arrow-light { color: rgba(28,28,30,0.2); font-size: 22px; display: flex; align-items: center; justify-content: center; }
+  .arrow-down { writing-mode: vertical-lr; }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="downloadAll()">全部下载 (ZIP)</button>
+    <button onclick="downloadOne(currentSlide)">下载当前</button>
+  </div>
+
+  <!--========== 配图 1 · PASF 四区域纵览 ==========-->
+  <div class="slide-label">配图 1 · 放在「四个区域，像四层楼」之后</div>
+  <div class="slide" style="height:460px;">
+    <div class="bg-dark"></div>
+    <div class="brand light">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num light">1/10</div>
+    <div class="content">
+      <div class="section-tag on-dark">PASF FRAMEWORK</div>
+      <div class="title-dark">四个自动化区域</div>
+      <div style="display:flex; gap:14px; flex:1; margin-top:6px;">
+        <!-- Zone I -->
+        <div style="flex:1; display:flex; flex-direction:column; gap:0;">
+          <div style="background:rgba(196,149,106,0.9); border-radius:10px 10px 0 0; padding:14px 16px; text-align:center;">
+            <div style="font-size:32px; font-weight:900; color:#1C1C1E;">I</div>
+            <div style="font-size:11px; font-weight:700; color:#1C1C1E; letter-spacing:1px;">纯体力活</div>
+          </div>
+          <div style="flex:1; background:rgba(196,149,106,0.12); border-radius:0 0 10px 10px; padding:12px 14px; border:1px solid rgba(196,149,106,0.2); border-top:0;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6;">数据录入<br>文件归档<br>基础交易处理</div>
+            <div style="margin-top:10px;font-size:20px;font-weight:900;color:#C4956A;">~12%</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">AI 午饭搞定</div>
+          </div>
+        </div>
+        <!-- Zone II -->
+        <div style="flex:1; display:flex; flex-direction:column; gap:0;">
+          <div style="background:rgba(196,149,106,0.55); border-radius:10px 10px 0 0; padding:14px 16px; text-align:center;">
+            <div style="font-size:32px; font-weight:900; color:#1C1C1E;">II</div>
+            <div style="font-size:11px; font-weight:700; color:#1C1C1E; letter-spacing:1px;">流程活</div>
+          </div>
+          <div style="flex:1; background:rgba(196,149,106,0.08); border-radius:0 0 10px 10px; padding:12px 14px; border:1px solid rgba(196,149,106,0.15); border-top:0;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6;">标准流程<br>协调跟踪<br>工单处理</div>
+            <div style="margin-top:10px;font-size:20px;font-weight:900;color:#C4956A;">~33%</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">Agent 可处理</div>
+          </div>
+        </div>
+        <!-- Zone III -->
+        <div style="flex:1; display:flex; flex-direction:column; gap:0;">
+          <div style="background:rgba(196,149,106,0.3); border-radius:10px 10px 0 0; padding:14px 16px; text-align:center;">
+            <div style="font-size:32px; font-weight:900; color:#F2EDE3;">III</div>
+            <div style="font-size:11px; font-weight:700; color:#F2EDE3; letter-spacing:1px;">判断活</div>
+          </div>
+          <div style="flex:1; background:rgba(255,255,255,0.04); border-radius:0 0 10px 10px; padding:12px 14px; border:1px solid rgba(255,255,255,0.08); border-top:0;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6;">上下文理解<br>模糊判断<br>架构决策</div>
+            <div style="margin-top:10px;font-size:20px;font-weight:900;color:#C4956A;">~44%</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">AI 翻车高发区</div>
+          </div>
+        </div>
+        <!-- Zone IV -->
+        <div style="flex:1; display:flex; flex-direction:column; gap:0;">
+          <div style="background:rgba(255,255,255,0.12); border-radius:10px 10px 0 0; padding:14px 16px; text-align:center;">
+            <div style="font-size:32px; font-weight:900; color:#F2EDE3;">IV</div>
+            <div style="font-size:11px; font-weight:700; color:#F2EDE3; letter-spacing:1px;">拍板活</div>
+          </div>
+          <div style="flex:1; background:rgba(255,255,255,0.03); border-radius:0 0 10px 10px; padding:12px 14px; border:1px solid rgba(255,255,255,0.06); border-top:0;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6;">战略决策<br>监管解释<br>最终问责</div>
+            <div style="margin-top:10px;font-size:20px;font-weight:900;color:#C4956A;">~12%</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">必须是人</div>
+          </div>
+        </div>
+      </div>
+      <!-- 底部天花板线 -->
+      <div style="display:flex; align-items:center; margin-top:14px; gap:8px;">
+        <div style="flex:0 0 auto; font-size:11px; color:rgba(255,255,255,0.35); font-weight:600; letter-spacing:1px;">当前天花板</div>
+        <div style="flex:1; height:2px; background:linear-gradient(90deg, #C4956A 35%, rgba(255,255,255,0.1) 35%); border-radius:1px;"></div>
+        <div style="flex:0 0 auto; font-size:16px; font-weight:900; color:#C4956A;">35%</div>
+      </div>
+    </div>
+  </div>
+
+  <!--========== 配图 2 · 俄罗斯轮盘赌比喻 ==========-->
+  <div class="slide-label">配图 2 · 放在「左轮手枪」比喻段落之后</div>
+  <div class="slide" style="height:400px;">
+    <div class="bg-light"></div>
+    <div class="brand dark">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num dark">2/10</div>
+    <div class="content" style="align-items:center; justify-content:center;">
+      <div class="section-tag on-light">ZONE III · THE GAMBLE</div>
+      <div style="display:flex; align-items:center; gap:40px; margin-top:16px;">
+        <!-- 左轮图 -->
+        <div style="position:relative; width:180px; height:180px;">
+          <svg viewBox="0 0 180 180" style="width:180px;height:180px;">
+            <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(28,28,30,0.12)" stroke-width="3"/>
+            <!-- 6 chambers -->
+            <circle cx="90" cy="28" r="14" fill="rgba(28,28,30,0.06)" stroke="rgba(28,28,30,0.15)" stroke-width="1.5"/>
+            <circle cx="144" cy="58" r="14" fill="rgba(28,28,30,0.06)" stroke="rgba(28,28,30,0.15)" stroke-width="1.5"/>
+            <circle cx="144" cy="122" r="14" fill="rgba(28,28,30,0.06)" stroke="rgba(28,28,30,0.15)" stroke-width="1.5"/>
+            <circle cx="90" cy="152" r="14" fill="rgba(28,28,30,0.06)" stroke="rgba(28,28,30,0.15)" stroke-width="1.5"/>
+            <circle cx="36" cy="122" r="14" fill="rgba(28,28,30,0.06)" stroke="rgba(28,28,30,0.15)" stroke-width="1.5"/>
+            <!-- 那颗子弹 -->
+            <circle cx="36" cy="58" r="14" fill="rgba(196,149,106,0.3)" stroke="#C4956A" stroke-width="2"/>
+            <circle cx="36" cy="58" r="5" fill="#C4956A"/>
+            <!-- 5 个 ✓ -->
+            <text x="90" y="33" text-anchor="middle" fill="rgba(28,28,30,0.3)" font-size="14" font-weight="700">✓</text>
+            <text x="144" y="63" text-anchor="middle" fill="rgba(28,28,30,0.3)" font-size="14" font-weight="700">✓</text>
+            <text x="144" y="127" text-anchor="middle" fill="rgba(28,28,30,0.3)" font-size="14" font-weight="700">✓</text>
+            <text x="90" y="157" text-anchor="middle" fill="rgba(28,28,30,0.3)" font-size="14" font-weight="700">✓</text>
+            <text x="36" y="127" text-anchor="middle" fill="rgba(28,28,30,0.3)" font-size="14" font-weight="700">✓</text>
+          </svg>
+        </div>
+        <!-- 右侧说明 -->
+        <div style="max-width:360px;">
+          <div style="font-size:22px; font-weight:800; color:#1C1C1E; line-height:1.4; margin-bottom:16px;">六次里有五次打空<br><span style="color:#C4956A;">第六次抹掉全部成果</span></div>
+          <div style="font-size:13px; color:rgba(28,28,30,0.55); line-height:1.7;">Zone III 的判断性工作，当前 AI 翻车率极高。每次调用就像扣一次扳机——大部分时候没事，但一次失败就可能让前面的成功全部归零。</div>
+          <div style="margin-top:16px; padding:10px 14px; background:rgba(196,149,106,0.08); border-radius:8px; border-left:3px solid #C4956A;">
+            <div style="font-size:12px; color:rgba(28,28,30,0.6); font-style:italic;">"你在拿公司玩俄罗斯轮盘。"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--========== 配图 3 · 127 个任务分布 ==========-->
+  <div class="slide-label">配图 3 · 放在「127 个任务跑完，数字来了」表格之后</div>
+  <div class="slide" style="height:420px;">
+    <div class="bg-dark"></div>
+    <div class="brand light">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num light">3/10</div>
+    <div class="content">
+      <div class="section-tag on-dark">10 ROLES × 127 TASKS</div>
+      <div class="title-dark" style="font-size:22px;">四区域平均分布</div>
+      <!-- 横向堆叠条 -->
+      <div style="margin-top:10px;">
+        <div style="display:flex; height:56px; border-radius:8px; overflow:hidden; margin-bottom:12px;">
+          <div style="width:11.88%; background:#C4956A; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+            <div style="font-size:14px; font-weight:900; color:#1C1C1E;">12%</div>
+          </div>
+          <div style="width:32.77%; background:rgba(196,149,106,0.4); display:flex; align-items:center; justify-content:center;">
+            <div style="font-size:14px; font-weight:900; color:#F2EDE3;">33%</div>
+          </div>
+          <div style="width:43.56%; background:rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center;">
+            <div style="font-size:14px; font-weight:900; color:#F2EDE3;">44%</div>
+          </div>
+          <div style="width:11.82%; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center;">
+            <div style="font-size:13px; font-weight:800; color:rgba(255,255,255,0.5);">12%</div>
+          </div>
+        </div>
+        <div style="display:flex; margin-bottom:24px;">
+          <div style="width:11.88%; text-align:center; font-size:10px; color:rgba(255,255,255,0.4);">Zone I</div>
+          <div style="width:32.77%; text-align:center; font-size:10px; color:rgba(255,255,255,0.4);">Zone II</div>
+          <div style="width:43.56%; text-align:center; font-size:10px; color:rgba(255,255,255,0.4);">Zone III</div>
+          <div style="width:11.82%; text-align:center; font-size:10px; color:rgba(255,255,255,0.4);">Zone IV</div>
+        </div>
+      </div>
+
+      <!-- 关键数字卡片行 -->
+      <div style="display:flex; gap:14px;">
+        <div class="card-dark" style="flex:1; text-align:center;">
+          <div style="font-size:36px; font-weight:900; color:#C4956A;">10</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.45); margin-top:4px;">白领岗位</div>
+        </div>
+        <div class="card-dark" style="flex:1; text-align:center;">
+          <div style="font-size:36px; font-weight:900; color:#C4956A;">127</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.45); margin-top:4px;">拆解任务</div>
+        </div>
+        <div class="card-dark" style="flex:1; text-align:center;">
+          <div style="font-size:36px; font-weight:900; color:#C4956A;">76%</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.45); margin-top:4px;">Zone II+III 重心</div>
+        </div>
+        <div class="card-dark" style="flex:1; text-align:center;">
+          <div style="font-size:36px; font-weight:900; color:#C4956A;">35%</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.45); margin-top:4px;">当前天花板</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px; font-size:12px; color:rgba(255,255,255,0.35); text-align:center;">数据来源：O*NET（美国劳工部）+ ESCO（欧盟职业框架）</div>
+    </div>
+  </div>
+
+  <!--========== 配图 4 · 行政助理拆解 ==========-->
+  <div class="slide-label">配图 4 · 放在「行政助理：一半能自动化」之后</div>
+  <div class="slide" style="height:420px;">
+    <div class="bg-light"></div>
+    <div class="brand dark">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num dark">4/10</div>
+    <div class="content">
+      <div class="section-tag on-light">ADMIN ASSISTANT</div>
+      <div class="title-light" style="font-size:22px;">行政助理 · Zone 拆解</div>
+      <div style="display:flex; gap:20px; flex:1;">
+        <!-- 左侧环形图模拟 -->
+        <div style="width:200px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div style="position:relative; width:160px; height:160px;">
+            <svg viewBox="0 0 160 160" style="width:160px;height:160px; transform:rotate(-90deg);">
+              <!-- Zone I: 55.1% -->
+              <circle cx="80" cy="80" r="65" fill="none" stroke="#C4956A" stroke-width="18" stroke-dasharray="225.5 183.5" stroke-linecap="round"/>
+              <!-- Zone II: 20.4% -->
+              <circle cx="80" cy="80" r="65" fill="none" stroke="rgba(196,149,106,0.4)" stroke-width="18" stroke-dasharray="83.4 325.6" stroke-dashoffset="-225.5" stroke-linecap="round"/>
+              <!-- Zone III: 24.5% -->
+              <circle cx="80" cy="80" r="65" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="18" stroke-dasharray="100.2 308.8" stroke-dashoffset="-308.9" stroke-linecap="round"/>
+            </svg>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+              <div style="font-size:28px; font-weight:900; color:#C4956A;">55%</div>
+              <div style="font-size:10px; color:rgba(28,28,30,0.4);">可自动化</div>
+            </div>
+          </div>
+        </div>
+        <!-- 右侧明细卡片 -->
+        <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+          <div class="card-light" style="padding:12px 16px; display:flex; align-items:center; gap:12px;">
+            <div style="width:8px; height:8px; border-radius:50%; background:#C4956A; flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#1C1C1E;">Zone I · 55.1%</div>
+              <div style="font-size:11px; color:rgba(28,28,30,0.5); margin-top:2px;">日程、会议、差旅、文档、报销</div>
+            </div>
+          </div>
+          <div class="card-light" style="padding:12px 16px; display:flex; align-items:center; gap:12px;">
+            <div style="width:8px; height:8px; border-radius:50%; background:rgba(196,149,106,0.5); flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#1C1C1E;">Zone II · 20.4%</div>
+              <div style="font-size:11px; color:rgba(28,28,30,0.5); margin-top:2px;">跨部门协调、流程性沟通</div>
+            </div>
+          </div>
+          <div class="card-light" style="padding:12px 16px; display:flex; align-items:center; gap:12px;">
+            <div style="width:8px; height:8px; border-radius:50%; background:rgba(28,28,30,0.15); flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#1C1C1E;">Zone III · 24.5%</div>
+              <div style="font-size:11px; color:rgba(28,28,30,0.5); margin-top:2px;">理解真实需求、预判组织政治、利益方斡旋</div>
+            </div>
+          </div>
+          <div style="padding:10px 14px; background:rgba(196,149,106,0.08); border-radius:8px; border-left:3px solid #C4956A; margin-top:4px;">
+            <div style="font-size:11px; color:rgba(28,28,30,0.6);">Zone IV 为零——行政助理不承担最终决策责任</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--========== 配图 5 · 软件工程师 83% Zone III ==========-->
+  <div class="slide-label">配图 5 · 放在「软件工程师：83% Zone III」之后</div>
+  <div class="slide" style="height:420px;">
+    <div class="bg-dark"></div>
+    <div class="brand light">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num light">5/10</div>
+    <div class="content">
+      <div class="section-tag on-dark">SOFTWARE ENGINEER</div>
+      <div class="title-dark" style="font-size:22px;">软件工程师 · <span class="gold">83%</span> 安全区</div>
+      <div style="display:flex; gap:16px; margin-top:12px; flex:1;">
+        <!-- 大数字 -->
+        <div style="width:200px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div style="font-size:80px; font-weight:900; color:#C4956A; line-height:1;">83</div>
+          <div style="font-size:14px; font-weight:600; color:#F2EDE3; margin-top:4px;">% Zone III</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-top:8px;">判断性工作</div>
+        </div>
+        <!-- 右侧详情 -->
+        <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+          <div class="card-dark" style="padding:14px 16px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+              <div style="font-size:11px; font-weight:700; color:#C4956A; letter-spacing:1px;">ZONE II · 16.9%</div>
+            </div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.5); line-height:1.6;">遵循开发流程 · 写文档 · 在既有架构里码功能</div>
+          </div>
+          <div class="card-dark" style="padding:14px 16px; border:1px solid rgba(196,149,106,0.2); background:rgba(196,149,106,0.06);">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+              <div style="font-size:11px; font-weight:700; color:#C4956A; letter-spacing:1px;">ZONE III · 83.1%</div>
+            </div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.6); line-height:1.6;">架构设计 · 非典型 Bug 调试 · 理解利益方真实需求 · 权衡技术债 · 能跑 vs 写得好</div>
+          </div>
+          <div style="padding:12px 14px; background:rgba(196,149,106,0.1); border-radius:8px; margin-top:auto;">
+            <div style="font-size:12px; color:#C4956A; font-weight:700;">⚠️ 初级工程师困境</div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-top:4px; line-height:1.6;">AI 包办 Zone I+II → 新人入行路径被截断 → 无法积累 Zone III 判断力</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--========== 配图 6 · 法律顾问 100% 安全 ==========-->
+  <div class="slide-label">配图 6 · 放在「法律顾问：100% Zone III + IV」之后</div>
+  <div class="slide" style="height:380px;">
+    <div class="bg-light"></div>
+    <div class="brand dark">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num dark">6/10</div>
+    <div class="content" style="align-items:center; justify-content:center;">
+      <div class="section-tag on-light">LEGAL COUNSEL</div>
+      <div class="title-light" style="font-size:22px; text-align:center;">法律顾问 · <span class="gold">100%</span> 人类不可替代</div>
+      <div style="display:flex; gap:24px; margin-top:24px;">
+        <!-- 左：Zone III -->
+        <div style="width:240px; text-align:center;">
+          <div style="width:120px; height:120px; border-radius:50%; background:rgba(196,149,106,0.1); border:2.5px solid #C4956A; display:flex; align-items:center; justify-content:center; flex-direction:column; margin:0 auto;">
+            <div style="font-size:32px; font-weight:900; color:#C4956A;">51%</div>
+            <div style="font-size:10px; color:rgba(28,28,30,0.5);">Zone III</div>
+          </div>
+          <div style="margin-top:14px; font-size:13px; font-weight:700; color:#1C1C1E;">判断性工作</div>
+          <div style="margin-top:6px; font-size:11px; color:rgba(28,28,30,0.5); line-height:1.6;">法规解读 · 案例推演<br>合规风险评估</div>
+        </div>
+        <!-- 分隔 -->
+        <div style="width:2px; background:rgba(28,28,30,0.08); border-radius:1px; align-self:stretch;"></div>
+        <!-- 右：Zone IV -->
+        <div style="width:240px; text-align:center;">
+          <div style="width:120px; height:120px; border-radius:50%; background:rgba(28,28,30,0.04); border:2.5px solid rgba(28,28,30,0.2); display:flex; align-items:center; justify-content:center; flex-direction:column; margin:0 auto;">
+            <div style="font-size:32px; font-weight:900; color:#1C1C1E;">49%</div>
+            <div style="font-size:10px; color:rgba(28,28,30,0.5);">Zone IV</div>
+          </div>
+          <div style="margin-top:14px; font-size:13px; font-weight:700; color:#1C1C1E;">问责性工作</div>
+          <div style="margin-top:6px; font-size:11px; color:rgba(28,28,30,0.5); line-height:1.6;">签字画押 · 最终责任承担<br>有约束力的法律意见</div>
+        </div>
+      </div>
+      <div style="margin-top:20px; font-size:12px; color:rgba(28,28,30,0.4); text-align:center;">Zone I 和 Zone II 统统为零 · 当前技术基本无能为力</div>
+    </div>
+  </div>
+
+  <!--========== 配图 7 · 保险理赔混合 ==========-->
+  <div class="slide-label">配图 7 · 放在「保险理赔员」之后</div>
+  <div class="slide" style="height:400px;">
+    <div class="bg-dark"></div>
+    <div class="brand light">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num light">7/10</div>
+    <div class="content">
+      <div class="section-tag on-dark">INSURANCE CLAIMS</div>
+      <div class="title-dark" style="font-size:22px;">保险理赔 · 自动化流程，留人处理例外</div>
+      <div style="display:flex; gap:10px; margin-top:16px; flex:1;">
+        <!-- 四列 -->
+        <div style="flex:8.3; display:flex; flex-direction:column;">
+          <div style="background:#C4956A; border-radius:8px 8px 0 0; padding:8px; text-align:center;">
+            <div style="font-size:18px; font-weight:900; color:#1C1C1E;">8%</div>
+          </div>
+          <div style="flex:1; background:rgba(196,149,106,0.15); border-radius:0 0 8px 8px; padding:10px 8px; text-align:center;">
+            <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.5);">Zone I</div>
+            <div style="font-size:9px; color:rgba(255,255,255,0.35); margin-top:6px; line-height:1.5;">基础<br>录入</div>
+          </div>
+        </div>
+        <div style="flex:50; display:flex; flex-direction:column;">
+          <div style="background:rgba(196,149,106,0.5); border-radius:8px 8px 0 0; padding:8px; text-align:center;">
+            <div style="font-size:18px; font-weight:900; color:#1C1C1E;">50%</div>
+          </div>
+          <div style="flex:1; background:rgba(196,149,106,0.1); border-radius:0 0 8px 8px; padding:10px 8px; text-align:center;">
+            <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.5);">Zone II</div>
+            <div style="font-size:9px; color:rgba(255,255,255,0.35); margin-top:6px; line-height:1.5;">收文件 · 查保障 · 标准评估<br>协调定损 · AI 可大幅提速</div>
+          </div>
+        </div>
+        <div style="flex:27; display:flex; flex-direction:column;">
+          <div style="background:rgba(255,255,255,0.12); border-radius:8px 8px 0 0; padding:8px; text-align:center;">
+            <div style="font-size:18px; font-weight:900; color:#F2EDE3;">27%</div>
+          </div>
+          <div style="flex:1; background:rgba(255,255,255,0.04); border-radius:0 0 8px 8px; padding:10px 8px; text-align:center;">
+            <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.5);">Zone III</div>
+            <div style="font-size:9px; color:rgba(255,255,255,0.35); margin-top:6px; line-height:1.5;">模糊理赔 · 欺诈识别<br>争议处理 · 经验直觉</div>
+          </div>
+        </div>
+        <div style="flex:14; display:flex; flex-direction:column;">
+          <div style="background:rgba(255,255,255,0.06); border-radius:8px 8px 0 0; padding:8px; text-align:center;">
+            <div style="font-size:18px; font-weight:900; color:rgba(255,255,255,0.6);">14%</div>
+          </div>
+          <div style="flex:1; background:rgba(255,255,255,0.02); border-radius:0 0 8px 8px; padding:10px 8px; text-align:center;">
+            <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.5);">Zone IV</div>
+            <div style="font-size:9px; color:rgba(255,255,255,0.35); margin-top:6px; line-height:1.5;">赔付决定<br>准备金</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px; text-align:center; font-size:12px; color:rgba(255,255,255,0.35);">典型的"混合型"岗位 · 自动化流程，留人处理例外</div>
+    </div>
+  </div>
+
+  <!--========== 配图 8 · 自动化压力排行 ==========-->
+  <div class="slide-label">配图 8 · 放在「自动化压力排行」表格之后</div>
+  <div class="slide" style="height:480px;">
+    <div class="bg-light"></div>
+    <div class="brand dark">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num dark">8/10</div>
+    <div class="content">
+      <div class="section-tag on-light">AUTOMATION PRESSURE</div>
+      <div class="title-light" style="font-size:22px;">自动化压力排行榜</div>
+      <div style="display:flex; flex-direction:column; gap:7px; margin-top:10px;">
+        <!-- 每行一个岗位 -->
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">行政助理</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:65%; height:100%; background:linear-gradient(90deg, #C4956A, rgba(196,149,106,0.6)); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">~65%</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);">最高</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">客服专员</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:55%; height:100%; background:linear-gradient(90deg, #C4956A, rgba(196,149,106,0.5)); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">高</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">IT 服务台</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:52%; height:100%; background:linear-gradient(90deg, #C4956A, rgba(196,149,106,0.5)); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">高</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">保险理赔</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:45%; height:100%; background:linear-gradient(90deg, rgba(196,149,106,0.7), rgba(196,149,106,0.4)); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">中高</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">HR 专员</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:38%; height:100%; background:linear-gradient(90deg, rgba(196,149,106,0.6), rgba(196,149,106,0.3)); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">中</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">采购专员</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:35%; height:100%; background:linear-gradient(90deg, rgba(196,149,106,0.5), rgba(196,149,106,0.25)); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">中</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">销售运营</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:28%; height:100%; background:linear-gradient(90deg, rgba(196,149,106,0.4), rgba(196,149,106,0.2)); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">中低</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">金融分析师</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:17%; height:100%; background:rgba(196,149,106,0.25); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">低</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">软件工程师</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:17%; height:100%; background:rgba(196,149,106,0.25); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">低</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:80px; font-size:12px; font-weight:700; color:#1C1C1E; text-align:right;">法律顾问</div>
+          <div style="flex:1; height:22px; background:rgba(28,28,30,0.06); border-radius:4px; overflow:hidden; position:relative;">
+            <div style="width:0%; height:100%; background:rgba(196,149,106,0.15); border-radius:4px;"></div>
+            <div style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#1C1C1E;">最低</div>
+          </div>
+          <div style="width:40px; font-size:10px; color:rgba(28,28,30,0.4);"></div>
+        </div>
+      </div>
+      <div style="margin-top:12px; font-size:11px; color:rgba(28,28,30,0.4); text-align:center;">自动化压力最高 ≠ 认知要求最低 · 压力取决于任务构成中结构化工作的占比</div>
+    </div>
+  </div>
+
+  <!--========== 配图 9 · 天花板突破路径 ==========-->
+  <div class="slide-label">配图 9 · 放在「那道天花板不是永久的」之后</div>
+  <div class="slide" style="height:400px;">
+    <div class="bg-dark"></div>
+    <div class="brand light">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num light">9/10</div>
+    <div class="content">
+      <div class="section-tag on-dark">BREAKING THE CEILING</div>
+      <div class="title-dark" style="font-size:22px;">Zone III 突破路径</div>
+      <!-- 流程图 -->
+      <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-top:24px;">
+        <div style="width:150px; padding:18px 14px; background:rgba(196,149,106,0.12); border:1.5px solid rgba(196,149,106,0.3); border-radius:12px; text-align:center;">
+          <div style="font-size:22px; margin-bottom:6px;">🎯</div>
+          <div style="font-size:12px; font-weight:800; color:#F2EDE3;">目标导向治理</div>
+          <div style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:6px; line-height:1.5;">知道能力边界<br>超出就停下问人</div>
+        </div>
+        <div class="arrow">→</div>
+        <div style="width:150px; padding:18px 14px; background:rgba(196,149,106,0.12); border:1.5px solid rgba(196,149,106,0.3); border-radius:12px; text-align:center;">
+          <div style="font-size:22px; margin-bottom:6px;">💰</div>
+          <div style="font-size:12px; font-weight:800; color:#F2EDE3;">Token 经济优化</div>
+          <div style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:6px; line-height:1.5;">最小化调用成本<br>规模化可负担</div>
+        </div>
+        <div class="arrow">→</div>
+        <div style="width:150px; padding:18px 14px; background:rgba(196,149,106,0.2); border:1.5px solid #C4956A; border-radius:12px; text-align:center;">
+          <div style="font-size:22px; margin-bottom:6px;">🧠</div>
+          <div style="font-size:12px; font-weight:800; color:#C4956A;">神经符号系统</div>
+          <div style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:6px; line-height:1.5;">灵活性 + 可靠性<br>自我优化 + 受治理</div>
+        </div>
+      </div>
+      <!-- 底部总结 -->
+      <div style="margin-top:28px; padding:14px 20px; background:rgba(255,255,255,0.05); border-radius:10px; text-align:center;">
+        <div style="font-size:13px; color:rgba(255,255,255,0.6); line-height:1.6;">天花板从来不是永久的——它只是当前技术、治理框架和风险容忍度共同画出的一条边界线</div>
+      </div>
+    </div>
+  </div>
+
+  <!--========== 配图 10 · 结尾金句 ==========-->
+  <div class="slide-label">配图 10 · 放在文章结尾</div>
+  <div class="slide" style="height:400px;">
+    <div class="bg-gradient-dark" style="background: radial-gradient(ellipse at 50% 50%, rgba(60,50,40,1) 0%, #1C1C1E 80%);"></div>
+    <div class="brand light">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+    <div class="page-num light">10/10</div>
+    <div class="content" style="align-items:center; justify-content:center;">
+      <div style="max-width:600px; text-align:center;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:3px; color:rgba(255,255,255,0.3); margin-bottom:24px;">THE TAKEAWAY</div>
+        <div style="font-size:24px; font-weight:800; color:#F2EDE3; line-height:1.6; margin-bottom:20px;">
+          拼职场，输出<span style="color:#C4956A;">判断力</span>和<span style="color:#C4956A;">责任承担</span><br>
+          不拼职场，找到<span style="color:#C4956A;">独特性</span>，然后<span style="color:#C4956A;">产品化自己</span>
+        </div>
+        <div style="width:40px; height:2px; background:#C4956A; margin:20px auto;"></div>
+        <div style="font-size:13px; color:rgba(255,255,255,0.4); line-height:1.7;">
+          这条路无可替代
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script>
+    let currentSlide = 0;
+
+    function flattenAlpha(canvas, bgColor) {
+      const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+      const flat = document.createElement('canvas');
+      flat.width = canvas.width; flat.height = canvas.height;
+      const ctx = flat.getContext('2d');
+      ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+      ctx.fillRect(0, 0, flat.width, flat.height);
+      ctx.drawImage(canvas, 0, 0);
+      return flat;
+    }
+
+    async function renderSlide(el) {
+      const origRadius = el.style.borderRadius;
+      el.style.borderRadius = '0';
+      const bgEl = el.querySelector('.bg-light, .bg-dark, .bg-gradient-dark');
+      const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+      const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+      el.style.borderRadius = origRadius;
+      return flattenAlpha(raw, bg);
+    }
+
+    const labels = [
+      '配图-1-PASF四区域',
+      '配图-2-俄罗斯轮盘',
+      '配图-3-127任务分布',
+      '配图-4-行政助理拆解',
+      '配图-5-软件工程师',
+      '配图-6-法律顾问',
+      '配图-7-保险理赔',
+      '配图-8-自动化压力排行',
+      '配图-9-天花板突破',
+      '配图-10-结尾金句'
+    ];
+
+    async function downloadOne(idx) {
+      const slides = document.querySelectorAll('.slide');
+      if (idx === undefined) idx = 0;
+      const flat = await renderSlide(slides[idx]);
+      flat.toBlob(blob => saveAs(blob, labels[idx] + '.png'), 'image/png');
+    }
+
+    async function downloadAll() {
+      const slides = document.querySelectorAll('.slide');
+      const zip = new JSZip();
+      for (let i = 0; i < slides.length; i++) {
+        const flat = await renderSlide(slides[i]);
+        const blob = await new Promise(r => flat.toBlob(r, 'image/png'));
+        zip.file(labels[i] + '.png', blob);
+      }
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, 'ai-job-automation-zones-配图.zip');
+    }
+  </script>
+</body>
+</html>
