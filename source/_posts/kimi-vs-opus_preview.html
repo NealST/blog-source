@@ -13,6 +13,7 @@
 <p style="margin:0; text-align:left" align="left">Kilo Code 团队用一份硬核的工作流编排规范（1042行）同时考察了刚刚发布的 Kimi 2.6 和前沿模型 Claude Opus 4.7。评测过程和结果也有收获，故而分享给大家，原文地址：https://blog.kilo.ai/p/we-gave-claude-opus-47-and-kimi-k26。</p>
 </blockquote>
 <p style="margin:21px 0 0; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">TL;DR：</strong> 在同一套测试构建中，Claude Opus 4.7 获得了 91/100 分，Kimi 2.6 获得了 68/100 分。Kimi 2.6 仅花了 Claude Opus 19% 的成本就达到了其 75% 的分数，这 25 分的差距主要体现在租约处理（任务的锁定与超时回收机制）、任务调度和实时流推送上。</p>
+<!-- IMAGE:配图-1-成绩单.png -->
 <p style="margin:52px 0; text-align:center; color:rgba(0, 0, 0, 0.54); font-size:28px; letter-spacing:16px; line-height:1" align="center">···</p>
 <p style="margin:21px 0 0; text-align:left" align="left"><a href="https://www.kimi.com/blog/kimi-k2-6" style="color:rgba(0, 0, 0, 0.84); text-decoration:underline; border-bottom:none; word-break:break-all">Kimi 2.6</a> 在 2026 年 4 月 20 日上线，这个时候离 Anthropic 放出 <a href="https://www.anthropic.com/news/claude-opus-4-7" style="color:rgba(0, 0, 0, 0.84); text-decoration:underline; border-bottom:none; word-break:break-all">Claude Opus 4.7</a> 只有四天。我们把同一份名为 FlowGraph 的规范丢给了它们。这是一个要落盘到数据库的工作流引擎，里面涉及到任务的有向无环图（DAG）校验、防并发抢占、租约超时恢复、暂停和取消，还得支持服务端推送（SSE）。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">等它们各自把代码写完，除了看测试绿不绿，我们还人工做了一遍 code review，专门造了一些极端场景去撞它们的防护网。</p>
@@ -29,6 +30,7 @@
 <p style="margin:21px 0 0; text-align:left" align="left">在这些环节上，代码行就是行，不行就是不行。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">此外，这份满编 1,042 行的设计规范里还制定了一些规则：把 SQLite 作为唯一的数据源（source of truth）、保证对所有待办任务执行确定性的调度、以及必须满足“至少执行一次（at-least-once）”的语义。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">整个工作流用例集完整包括了工作流定义、运行实例、Worker 流水线、事件推送和健康看板在内的整整 20 个接口。</p>
+<!-- IMAGE:配图-2-考点.png -->
 <h2 style='font-size:20px; font-weight:700; color:rgba(0, 0, 0, 0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:40px 0 12px; padding-bottom:0; border-bottom:none; letter-spacing:-0.022em; line-height:1.3'>我们怎么测的</h2>
 <p style="margin:21px 0 0; text-align:left" align="left">我们在 Kilo CLI 里，给两个模型喂了完全相同的 prompt：</p>
 <blockquote style="margin:24px 0; padding:4px 0 4px 20px; border-left:4px solid #C4956A; background:rgba(196, 149, 106, 0.06); color:rgba(0, 0, 0, 0.68); border-radius:0; font-style:italic; font-size:17px; line-height:1.7; letter-spacing:-0.003em">
@@ -64,15 +66,18 @@
 <figure style="margin:24px 0; text-align:center" align="center"><img alt="" src="https://substackcdn.com/image/fetch/$s_!kx6e!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F52105575-cea2-4065-8e2d-c2ae18964a2a_1994x276.png" style="max-width:100%; height:auto; border-radius:4px; margin:0 auto" height="auto"></figure>
 <p style="margin:21px 0 0; text-align:left" align="left">我们在库里塞了任务 a（最多重试 1 次）和任务 b（最多重试 2 次），让它们同时过期重跑。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">本来工作流已经因为 a 重试耗尽而彻底失败，b 应该被锁住调用。结果 b 居然又活过来了，下一次 Worker 请求过来时，它会重新执行。</p>
+<!-- IMAGE:配图-3-Claude恢复bug.png -->
 <p style="margin:21px 0 0; text-align:left" align="left">Claude Opus 4.7 写的测试用例中就只包含了一个超时任务的场景。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">（另外在代码审查时还揪出 Claude 两处不严谨的地方，比如拉取任务的列表存在被挤占的风险以及SSE 推送在处理未知游标时没有做任何校验，这些都无伤大雅）</p>
 <h2 style='font-size:20px; font-weight:700; color:rgba(0, 0, 0, 0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:40px 0 12px; padding-bottom:0; border-bottom:none; letter-spacing:-0.022em; line-height:1.3'>Kimi 2.6 的 6 个 bug</h2>
 <p style="margin:21px 0 0; text-align:left" align="left">相比之下，Kimi 2.6 的问题就严重的多。</p>
+<!-- IMAGE:配图-4-Kimi-6bug.png -->
 <p style="margin:21px 0 0; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">1. 抢任务不顾全局优先级</strong>
 规范明确要求：多个任务一起排队时，先看 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:rgba(0, 0, 0, 0.05); border:1px solid rgba(0, 0, 0, 0.08); border-radius:3px; padding:2px 5px; color:rgba(0, 0, 0, 0.84); word-break:break-all'>priority</code>（优先级降序），再看 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:rgba(0, 0, 0, 0.05); border:1px solid rgba(0, 0, 0, 0.08); border-radius:3px; padding:2px 5px; color:rgba(0, 0, 0, 0.84); word-break:break-all'>availableAt</code>（可用时间升序），跨越所有的工作流进行全局统筹。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">但 Kimi 2.6 的结果只在一个工作流内部排序，然后完全听任数据库查询返回的先后，轮着处理每个工作流。</p>
 <figure style="margin:24px 0; text-align:center" align="center"><img alt="" src="https://substackcdn.com/image/fetch/$s_!qSqZ!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F969de824-79bf-47e6-9b12-64e756b69c02_1994x1082.png" style="max-width:100%; height:auto; border-radius:4px; margin:0 auto" height="auto"></figure>
 <p style="margin:21px 0 0; text-align:left" align="left">我们用两个独立的工作流复现：一个里面留了个优先级 10 的任务，另一个里面留了个优先级 100 的任务，系统先把那个优先级 10 的任务扔了过来。</p>
+<!-- IMAGE:配图-5-调度对比.png -->
 <p style="margin:21px 0 0; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">2. 说好的实时数据流，变成了播放录像</strong>
 规范要求访问 SSE 事件流接口时，先重播数据库里以往的事件，然后切成保持连接的长连接，推送新产生的事件。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">Kimi 2.6 的代码里则是：一次性从表里查出旧数据，塞进流里，接着就原地开启一个定时器发 keepalive 心跳，没有任何机制去监听后续的事件。</p>
@@ -118,6 +123,7 @@
 <p style="margin:21px 0 0; text-align:left" align="left">开源权重的另一大爽点是：如果你有数据合规要求、定制化工作流，或者就是单纯用量太大导致接 API 太烧钱，你完全可以拿 Kimi 2.6 自己去跑服务和做微调。这一点是 Claude Opus 4.7 无法做到的。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">这些优势当然没法抹平在上面的技术缺陷，但确实给了我们看问题的新视角。掏 $0.67，换一套初具规模的代码加上你自己的人手 code review，Kimi 2.6 现在绝对是一张能打的牌。掏 $3.56，希望更少的 bug、用着踏实，Claude Opus 4.7 依然是更稳当的选择。选哪条路，全看经济基础。</p>
 <p style="margin:21px 0 0; text-align:left" align="left">但至少有的选，要知道在一年之前，面对这种复杂度的需求，我们甚至根本没得选。</p>
+<!-- IMAGE:配图-6-选谁.png -->
 <h2 style='font-size:20px; font-weight:700; color:rgba(0, 0, 0, 0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:40px 0 12px; padding-bottom:0; border-bottom:none; letter-spacing:-0.022em; line-height:1.3'>结论</h2>
 <p style="margin:21px 0 0; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">用来搭复杂后端的脚手架：</strong> Kimi 2.6 的质量已经是 qualified。大体骨架、库表结构、路由接口都 OK，测试用例也都跑得通。如果是要探探设计思路、快速搭个业务原型测试，或是干脆想要个起手式留着自己仔细 review，这 $0.67 花得很值。</p>
 <p style="margin:21px 0 0; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">用来做极其考验状态机的核心系统：</strong> Claude Opus 4.7 明显领先了一个身位。两套代码乍一看相差不多，但一卷到那些平时很难随手测到的深水区（租约过期、跨批次调度、SSE 流、拒绝过期租约），差距立马显现。如果你的项目涉及到比较复杂的控制逻辑和状态管理且你不想投入太多人力，Claude Opus 4.7 给的产物更接近直接上线的标准。</p>

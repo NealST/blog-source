@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配图（Medium 风格）— Claude Opus 4.7 vs Kimi 2.6</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0E0E10; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 80px 20px 60px; gap: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  }
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.92); padding: 14px 20px;
+    display: flex; gap: 12px; justify-content: center; z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .toolbar button {
+    background: #C4956A; color: #1C1C1E; border: none;
+    padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 700;
+    cursor: pointer;
+  }
+  .toolbar button:hover { background: #d4a57a; }
+
+  .slide-label {
+    color: rgba(255,255,255,0.45); font-size: 12px;
+    margin-top: 28px; margin-bottom: 6px; letter-spacing: 0.5px;
+  }
+  .slide {
+    width: 800px; position: relative; overflow: hidden; border-radius: 8px;
+  }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  .bg-light { position: absolute; inset: 0; background: #F2EDE3; }
+  .content {
+    position: relative; z-index: 2; padding: 44px 56px;
+    display: flex; flex-direction: column;
+  }
+
+  /* 品牌角标 */
+  .brand {
+    position: absolute; top: 18px; left: 22px;
+    display: flex; align-items: center; gap: 6px; z-index: 3;
+  }
+  .brand svg { width: 18px; height: 18px; }
+  .brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+  .brand.on-dark .brand-text { color: rgba(255,255,255,0.32); }
+  .brand.on-light .brand-text { color: rgba(28,28,30,0.32); }
+
+  .page-num {
+    position: absolute; bottom: 16px; right: 22px;
+    font-size: 11px; z-index: 3;
+    font-family: "SF Mono", Menlo, monospace; letter-spacing: 1px;
+  }
+  .page-num.on-dark { color: rgba(255,255,255,0.22); }
+  .page-num.on-light { color: rgba(28,28,30,0.22); }
+
+  /* section tag */
+  .kicker {
+    display: inline-block; align-self: flex-start;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    color: #C4956A; text-transform: uppercase;
+    padding-top: 11px; position: relative;
+    margin-bottom: 18px;
+  }
+  .kicker::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 28px; height: 1px; background: #C4956A;
+  }
+
+  .h-title {
+    font-size: 30px; font-weight: 800; letter-spacing: -0.018em;
+    line-height: 1.25; margin-bottom: 8px;
+  }
+  .slide.dark .h-title { color: #F2EDE3; }
+  .slide.light .h-title { color: #1C1C1E; }
+
+  .lede {
+    font-size: 14px; font-weight: 400; font-style: italic;
+    line-height: 1.55; margin-bottom: 26px;
+    letter-spacing: 0.2px;
+  }
+  .slide.dark .lede { color: rgba(255,255,255,0.5); }
+  .slide.light .lede { color: #7A7876; }
+
+  .ghost-num {
+    position: absolute; bottom: 20px; right: 30px;
+    font-size: 110px; font-weight: 900; line-height: 1;
+    letter-spacing: -0.04em; pointer-events: none; user-select: none;
+  }
+  .ghost-num.on-dark { color: rgba(242,237,227,0.06); }
+  .ghost-num.on-light { color: rgba(28,28,30,0.06); }
+
+  /* ─── Scoreboard（双柱对比） ─── */
+  .scoreboard {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 32px; margin-top: 4px;
+  }
+  .score-card {
+    padding: 22px 24px; border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 8px; position: relative;
+  }
+  .score-card.hero { border-color: #C4956A; }
+  .score-card .sc-name {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.5); text-transform: uppercase;
+  }
+  .score-card.hero .sc-name { color: #C4956A; }
+  .score-card .sc-num {
+    font-size: 64px; font-weight: 900; letter-spacing: -0.04em;
+    line-height: 1; margin: 8px 0 4px;
+    color: rgba(255,255,255,0.85);
+  }
+  .score-card.hero .sc-num { color: #F2EDE3; }
+  .score-card .sc-num .sc-unit {
+    font-size: 22px; font-weight: 600; color: rgba(255,255,255,0.4);
+    letter-spacing: 0; margin-left: 4px;
+  }
+  .score-card .sc-meta {
+    font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5;
+    margin-top: 10px; font-style: italic;
+  }
+  .score-card .sc-cost {
+    margin-top: 16px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .sc-cost .cl { font-size: 10px; letter-spacing: 0.16em;
+    color: rgba(255,255,255,0.4); text-transform: uppercase; font-weight: 700; }
+  .sc-cost .cv { font-family: "SF Mono", Menlo, monospace;
+    font-size: 14px; color: #F2EDE3; font-weight: 700; }
+
+  /* ─── Spec coverage chips ─── */
+  .chip-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 12px 16px; margin-top: 6px;
+  }
+  .chip {
+    padding: 14px 16px; border: 1px solid rgba(28,28,30,0.14);
+    border-radius: 6px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .chip.accent { border-color: #C4956A; }
+  .chip .ch-tag {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 10px; letter-spacing: 1px; color: #C4956A; font-weight: 700;
+  }
+  .chip .ch-h {
+    font-size: 14px; font-weight: 700; color: #1C1C1E;
+  }
+  .chip .ch-p {
+    font-size: 12px; color: #7A7876; line-height: 1.5;
+  }
+
+  /* ─── 情况流程（双行 timeline） ─── */
+  .timeline {
+    margin-top: 4px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .tl-row {
+    display: grid; grid-template-columns: 88px 1fr;
+    gap: 14px; align-items: flex-start;
+  }
+  .tl-tag {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 10px; letter-spacing: 1px; font-weight: 700;
+    padding: 5px 8px; border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7);
+    text-align: center;
+  }
+  .tl-row.bad .tl-tag { border-color: #C4956A; color: #C4956A; }
+  .tl-row.good .tl-tag { border-color: rgba(168,201,127,0.5); color: #A8C97F; }
+  .tl-body .tl-h {
+    font-size: 14px; font-weight: 700; color: #F2EDE3; line-height: 1.4;
+  }
+  .tl-body .tl-p {
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    line-height: 1.55; margin-top: 4px; letter-spacing: 0.2px;
+  }
+  .tl-body .tl-code {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 11px; color: #C4956A;
+  }
+
+  /* ─── Bug list（带编号 + 严重度小条） ─── */
+  .bug-list { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
+  .bug-row {
+    display: grid; grid-template-columns: 30px 1fr 70px;
+    gap: 14px; align-items: center;
+    padding: 12px 16px; border: 1px solid rgba(28,28,30,0.10);
+    border-radius: 6px; background: transparent;
+  }
+  .bug-num {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 16px; font-weight: 800; color: #C4956A;
+    letter-spacing: 0.5px;
+  }
+  .bug-body .bug-h { font-size: 13px; font-weight: 700; color: #1C1C1E; line-height: 1.4; }
+  .bug-body .bug-p { font-size: 11px; color: #7A7876; line-height: 1.5; margin-top: 2px; }
+  .bug-sev {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-align: center; padding: 4px 0; border-radius: 3px;
+  }
+  .bug-sev.high { background: rgba(196,73,73,0.10); color: #B85450; border: 1px solid rgba(184,84,80,0.4); }
+  .bug-sev.mid { background: rgba(196,149,106,0.10); color: #C4956A; border: 1px solid rgba(196,149,106,0.4); }
+
+  /* ─── Compare two columns ─── */
+  .compare-row {
+    display: grid; grid-template-columns: 1fr 1px 1fr;
+    gap: 28px; align-items: stretch; margin-top: 4px;
+  }
+  .compare-divider { width: 1px; }
+  .compare-divider.on-dark { background: rgba(255,255,255,0.12); }
+  .compare-divider.on-light { background: rgba(28,28,30,0.12); }
+  .compare-col { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+  .compare-col .col-h {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .compare-col.muted .col-h { color: rgba(255,255,255,0.4); }
+  .compare-col.hero .col-h { color: #C4956A; }
+  .compare-row .row-item {
+    font-size: 13px; line-height: 1.55;
+    padding-left: 14px; position: relative;
+  }
+  .compare-row .row-item::before {
+    content: ''; position: absolute; left: 0; top: 9px;
+    width: 5px; height: 1px; background: currentColor; opacity: 0.5;
+  }
+  .compare-col.muted .row-item { color: rgba(255,255,255,0.55); }
+  .compare-col.hero .row-item { color: rgba(255,255,255,0.85); }
+  .compare-col .row-item.featured { color: #C4956A; font-weight: 700; }
+
+  /* ─── Verdict 决策 ─── */
+  .verdict-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-top: 4px;
+  }
+  .verdict-card {
+    padding: 22px; border-radius: 6px;
+    border: 1px solid rgba(28,28,30,0.12);
+    display: flex; flex-direction: column;
+  }
+  .verdict-card.hero { border-color: #C4956A; }
+  .vc-tag {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    color: rgba(28,28,30,0.4);
+  }
+  .verdict-card.hero .vc-tag { color: #C4956A; }
+  .vc-name {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.01em;
+    color: #1C1C1E; margin-top: 6px;
+  }
+  .vc-price {
+    margin-top: 10px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 14px; color: #1C1C1E; font-weight: 700;
+  }
+  .vc-price .vp-unit {
+    font-family: -apple-system, sans-serif;
+    color: #7A7876; font-weight: 400; font-size: 12px;
+    margin-left: 4px; letter-spacing: 0.2px;
+  }
+  .vc-list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .vc-list .vl-item {
+    font-size: 12px; color: #7A7876; line-height: 1.5;
+    padding-left: 12px; position: relative;
+  }
+  .vc-list .vl-item::before {
+    content: ''; position: absolute; left: 0; top: 8px;
+    width: 5px; height: 1px; background: #C4956A;
+  }
+
+  .pull-quote {
+    margin-top: 24px; padding: 12px 0 0 18px;
+    border-left: 2px solid #C4956A;
+  }
+  .pull-quote .pq-line1 { font-size: 15px; font-weight: 600; line-height: 1.5; color: #1C1C1E; }
+  .pull-quote .pq-line2 { font-size: 15px; font-weight: 600; line-height: 1.5; color: #C4956A; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="downloadAll()">全部下载 (ZIP)</button>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="brand-svg-light" viewBox="0 0 32 32">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </symbol>
+    <symbol id="brand-svg-dark" viewBox="0 0 32 32">
+      <circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ========== 配图 1：成绩单 ========== -->
+<div class="slide-label">配图 1 · 放在 TL;DR 之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="ghost-num on-dark">91</div>
+  <div class="brand on-dark"><svg width="18" height="18"><use href="#brand-svg-light"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-dark">01 / 06</div>
+  <div class="content">
+    <div class="kicker">SCOREBOARD</div>
+    <h2 class="h-title">同一份规范，分数差出 23 分</h2>
+    <p class="lede">FlowGraph · 1042 行 · 各自独立 SQLite · 测试均跑通</p>
+    <div class="scoreboard">
+      <div class="score-card hero">
+        <div class="sc-name">CLAUDE OPUS 4.7</div>
+        <div class="sc-num">91<span class="sc-unit">/ 100</span></div>
+        <div class="sc-meta">仅 1 处恢复机制 bug · 多租约同时过期</div>
+        <div class="sc-cost">
+          <span class="cl">Run cost</span>
+          <span class="cv">$3.56</span>
+        </div>
+      </div>
+      <div class="score-card">
+        <div class="sc-name">KIMI 2.6</div>
+        <div class="sc-num">68<span class="sc-unit">/ 100</span></div>
+        <div class="sc-meta">6 处逻辑 bug · 集中在租约 / 调度 / SSE</div>
+        <div class="sc-cost">
+          <span class="cl">Run cost</span>
+          <span class="cv">$0.67</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 2：考点覆盖 ========== -->
+<div class="slide-label">配图 2 · 放在「为什么要用工作流来当考题」一节</div>
+<div class="slide light" style="height:380px;">
+  <div class="bg-light"></div>
+  <div class="ghost-num on-light">20</div>
+  <div class="brand on-light"><svg width="18" height="18"><use href="#brand-svg-dark"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-light">02 / 06</div>
+  <div class="content">
+    <div class="kicker">FLOWGRAPH SPEC</div>
+    <h2 class="h-title">1042 行规范的核心考点</h2>
+    <p class="lede">20 个接口 · SQLite 唯一数据源 · at-least-once 语义</p>
+    <div class="chip-grid">
+      <div class="chip accent">
+        <div class="ch-tag">DAG</div>
+        <div class="ch-h">有向无环图校验</div>
+        <div class="ch-p">环路检测、依赖拓扑、版本切换</div>
+      </div>
+      <div class="chip accent">
+        <div class="ch-tag">CONCURRENCY</div>
+        <div class="ch-h">原子抢占</div>
+        <div class="ch-p">条件 updateMany 防并发争抢</div>
+      </div>
+      <div class="chip accent">
+        <div class="ch-tag">LEASE</div>
+        <div class="ch-h">租约超时恢复</div>
+        <div class="ch-p">心跳续约、过期回收、重新分发</div>
+      </div>
+      <div class="chip accent">
+        <div class="ch-tag">SSE</div>
+        <div class="ch-h">服务端推送事件流</div>
+        <div class="ch-p">历史重播 + 实时推送长连接</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 3：Claude 的恢复 bug 时序 ========== -->
+<div class="slide-label">配图 3 · 放在「Claude 的翻车点」一节</div>
+<div class="slide dark" style="height:440px;">
+  <div class="bg-dark"></div>
+  <div class="ghost-num on-dark">A&amp;B</div>
+  <div class="brand on-dark"><svg width="18" height="18"><use href="#brand-svg-light"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-dark">03 / 06</div>
+  <div class="content">
+    <div class="kicker">RECOVERY BUG</div>
+    <h2 class="h-title">两个租约同时过期，状态被改回</h2>
+    <p class="lede">runRecovery() 第二轮 SQL 只看 id，没做状态兜底</p>
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-tag">T0</div>
+        <div class="tl-body">
+          <div class="tl-h">任务 a 与任务 b 同时过期 · 进入恢复流</div>
+          <div class="tl-p">a 重试 1/1 已耗尽 · b 重试 1/2 仍可恢复</div>
+        </div>
+      </div>
+      <div class="tl-row good">
+        <div class="tl-tag">T1</div>
+        <div class="tl-body">
+          <div class="tl-h">第一轮：处理 a · failRunDueToDeadStep()</div>
+          <div class="tl-p">工作流置 <span class="tl-code">failed</span> · 待办步骤 b 被锁为 <span class="tl-code">blocked</span> ✓</div>
+        </div>
+      </div>
+      <div class="tl-row bad">
+        <div class="tl-tag">T2</div>
+        <div class="tl-body">
+          <div class="tl-h">第二轮：处理 b · handleLeaseExpiry()</div>
+          <div class="tl-p">SQL 只用 <span class="tl-code">id</span> 匹配，未校验状态 ✗</div>
+        </div>
+      </div>
+      <div class="tl-row bad">
+        <div class="tl-tag">RESULT</div>
+        <div class="tl-body">
+          <div class="tl-h">已 blocked 的 b 被改回 waiting_retry</div>
+          <div class="tl-p">下一次 Worker 拉取时 · b 居然又跑了起来</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 4：Kimi 的 6 个 bug ========== -->
+<div class="slide-label">配图 4 · 放在「Kimi 2.6 的 6 个 bug」一节</div>
+<div class="slide light" style="height:640px;">
+  <div class="bg-light"></div>
+  <div class="ghost-num on-light">06</div>
+  <div class="brand on-light"><svg width="18" height="18"><use href="#brand-svg-dark"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-light">04 / 06</div>
+  <div class="content">
+    <div class="kicker">KIMI 2.6 · BUG SHEET</div>
+    <h2 class="h-title">6 处问题，扎堆深水区</h2>
+    <p class="lede">3 个高危 · 集中在调度、租约校验、实时推送</p>
+    <div class="bug-list">
+      <div class="bug-row">
+        <div class="bug-num">01</div>
+        <div class="bug-body">
+          <div class="bug-h">抢任务不顾全局优先级</div>
+          <div class="bug-p">仅在单个工作流内排序 · 跨流程优先级失效</div>
+        </div>
+        <div class="bug-sev high">HIGH</div>
+      </div>
+      <div class="bug-row">
+        <div class="bug-num">02</div>
+        <div class="bug-body">
+          <div class="bug-h">SSE 实时流变成了播放录像</div>
+          <div class="bug-p">仅重播历史事件 · 路由层未调用 emitAndBroadcast</div>
+        </div>
+        <div class="bug-sev high">HIGH</div>
+      </div>
+      <div class="bug-row">
+        <div class="bug-num">03</div>
+        <div class="bug-body">
+          <div class="bug-h">过期任务仍可被结算为成功</div>
+          <div class="bug-p">complete / fail 接口缺少 leaseExpiresAt 校验</div>
+        </div>
+        <div class="bug-sev high">HIGH</div>
+      </div>
+      <div class="bug-row">
+        <div class="bug-num">04</div>
+        <div class="bug-body">
+          <div class="bug-h">缺少版本时返回 404 而非 409</div>
+          <div class="bug-p">未实现规范要求的状态码语义</div>
+        </div>
+        <div class="bug-sev mid">MID</div>
+      </div>
+      <div class="bug-row">
+        <div class="bug-num">05</div>
+        <div class="bug-body">
+          <div class="bug-h">JSON Schema 死板，合规数组被弹回</div>
+          <div class="bug-p">input/output 限制为 z.record(z.any())，丢掉数组</div>
+        </div>
+        <div class="bug-sev mid">MID</div>
+      </div>
+      <div class="bug-row">
+        <div class="bug-num">06</div>
+        <div class="bug-body">
+          <div class="bug-h">npm run build 失败 · 隐式类型报错</div>
+          <div class="bug-p">npm start 直跑 dist/index.js · 未跑前序构建</div>
+        </div>
+        <div class="bug-sev mid">MID</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 5：调度差异对比 ========== -->
+<div class="slide-label">配图 5 · 放在「抢任务不顾全局优先级」段落</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="ghost-num on-dark">P</div>
+  <div class="brand on-dark"><svg width="18" height="18"><use href="#brand-svg-light"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-dark">05 / 06</div>
+  <div class="content">
+    <div class="kicker">SCHEDULING</div>
+    <h2 class="h-title">规范要的全局优先级 vs Kimi 的内部排序</h2>
+    <p class="lede">priority 100 的任务被 priority 10 的先抢走</p>
+    <div class="compare-row">
+      <div class="compare-col muted">
+        <div class="col-h">KIMI 2.6 · ACTUAL</div>
+        <div class="row-item">仅在单个工作流内部排序</div>
+        <div class="row-item">轮询每个 workflow 的待办</div>
+        <div class="row-item">数据库返回顺序决定下发</div>
+        <div class="row-item">priority 跨流程不参与排序</div>
+        <div class="row-item">高优任务可被低优挤占</div>
+      </div>
+      <div class="compare-divider on-dark"></div>
+      <div class="compare-col hero">
+        <div class="col-h">SPEC · EXPECTED</div>
+        <div class="row-item">priority 降序 · 全局统筹</div>
+        <div class="row-item">availableAt 升序 · 跨流程排序</div>
+        <div class="row-item">每次抓取都是全局最优</div>
+        <div class="row-item featured">优先级跨工作流生效</div>
+        <div class="row-item">高优任务优先获取 Worker</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 6：选谁？ ========== -->
+<div class="slide-label">配图 6 · 放在「结论」一节</div>
+<div class="slide light" style="height:540px;">
+  <div class="bg-light"></div>
+  <div class="ghost-num on-light">$</div>
+  <div class="brand on-light"><svg width="18" height="18"><use href="#brand-svg-dark"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-light">06 / 06</div>
+  <div class="content">
+    <div class="kicker">VERDICT</div>
+    <h2 class="h-title">花什么钱，做什么事</h2>
+    <p class="lede">脚手架找性价比，状态机找稳健</p>
+    <div class="verdict-row">
+      <div class="verdict-card">
+        <div class="vc-tag">KIMI 2.6</div>
+        <div class="vc-name">脚手架 / 原型</div>
+        <div class="vc-price">$0.67 <span class="vp-unit">/ 跑完一次</span></div>
+        <div class="vc-list">
+          <div class="vl-item">骨架完整 · 库表 / 接口 / 测试齐全</div>
+          <div class="vl-item">权重开源 · 可私有部署微调</div>
+          <div class="vl-item">深水区 bug 较多 · 需人工 review</div>
+        </div>
+      </div>
+      <div class="verdict-card hero">
+        <div class="vc-tag">CLAUDE OPUS 4.7</div>
+        <div class="vc-name">核心状态机</div>
+        <div class="vc-price">$3.56 <span class="vp-unit">/ 跑完一次</span></div>
+        <div class="vc-list">
+          <div class="vl-item">租约 / 调度 / SSE 边界拿捏稳</div>
+          <div class="vl-item">代码更接近直接上线的标准</div>
+          <div class="vl-item">复杂控制逻辑 · 投入更省心</div>
+        </div>
+      </div>
+    </div>
+    <div class="pull-quote">
+      <div class="pq-line1">测试全绿 ≠ 代码写对</div>
+      <div class="pq-line2">两个模型都没覆盖到自己的逻辑盲区</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const labels = ['成绩单', '考点', 'Claude恢复bug', 'Kimi-6bug', '调度对比', '选谁'];
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await renderSlide(slides[i]);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`配图-${i+1}-${labels[i]}.png`, blob);
+  }
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, 'kimi-vs-opus-配图.zip');
+}
+</script>
+</body>
+</html>
