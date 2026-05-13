@@ -1,10 +1,11 @@
 {
   "version": "1.0",
   "created": "2026-04-15T00:00:00+08:00",
+  "source": "source/_posts/ai-job-automation-zones.md",
   "title": "10 个白领岗位、127 个任务，AI 能干掉多少？答案让人扎心",
   "outputs": {
     "wechat": {
-      "html": "source/_posts/ai-job-automation-zones_preview.html",
+      "html": "content/ai-job-automation-zones/preview.html",
       "cover_image": "/Users/nealkaffrey/Downloads/ai-job-automation-zones-头图.png",
       "title": "10 个白领岗位、127 个任务，AI 能干掉多少？答案让人扎心",
       "author": "墨筝",
@@ -12,5 +13,12 @@
       "markdown": "source/_posts/ai-job-automation-zones.md",
       "images": []
     }
+  },
+  "cover": {
+    "html": "content/ai-job-automation-zones/cover.html",
+    "size": "900x383"
+  },
+  "illustrations": {
+    "html": "content/ai-job-automation-zones/illustrations.html"
   }
 }

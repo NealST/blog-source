@@ -119,16 +119,15 @@ export async function publishToXiaohongshu(manifest: Manifest, preview: boolean)
   const { cdp, chrome } = launchResult;
 
   try {
-    await sleep(8000); // Wait for page load + potential redirects
-
-    // Retry session acquisition (page may still be navigating)
+    // Wait for page load with retry-based session acquisition
     let session: ChromeSession | null = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await sleep(2000);
       try {
         session = await getPageSession(cdp, 'xiaohongshu.com');
         break;
       } catch {
-        await sleep(3000);
+        // Page still navigating, retry
       }
     }
     if (!session) {
@@ -139,16 +138,29 @@ export async function publishToXiaohongshu(manifest: Manifest, preview: boolean)
       };
     }
 
+    // Proactive login detection — check before any operations
+    const currentUrl = await evaluate<string>(session, 'window.location.href');
+    if (currentUrl.includes('login') || currentUrl.includes('auth')) {
+      return {
+        platform: 'xhs',
+        status: 'assisted',
+        message: 'Login required. Please log in to Xiaohongshu creator platform, then run /distribute again.',
+      };
+    }
     const isLoggedIn = await evaluate<boolean>(session, `!!document.querySelector('${SELECTORS.loginIndicator}')`);
     if (!isLoggedIn) {
-      // Check if we're on login page
-      const currentUrl = await evaluate<string>(session, 'window.location.href');
-      if (currentUrl.includes('login')) {
-        return {
-          platform: 'xhs',
-          status: 'assisted',
-          message: 'Login required. Please log in to Xiaohongshu, then run /distribute again.',
-        };
+      // Wait a bit more — avatar may load asynchronously
+      await sleep(3000);
+      const retryLogin = await evaluate<boolean>(session, `!!document.querySelector('${SELECTORS.loginIndicator}')`);
+      if (!retryLogin) {
+        const retryUrl = await evaluate<string>(session, 'window.location.href');
+        if (retryUrl.includes('login') || retryUrl.includes('auth')) {
+          return {
+            platform: 'xhs',
+            status: 'assisted',
+            message: 'Login required. Please log in to Xiaohongshu, then run /distribute again.',
+          };
+        }
       }
     }
 

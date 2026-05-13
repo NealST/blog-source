@@ -7,11 +7,12 @@
 
 ## 一、排版（Markdown → 公众号 HTML）
 
-使用 md-formatter 排版工具，墨筝主题：
+使用 md-formatter 排版工具（统一墨筝主题，CSS 自动内联）：
 
 ```bash
 cd "$MD_FORMATTER_DIR"
-python3 md2wechat_formatter.py [文章路径] --theme mozheng --font-size medium -o [输出HTML路径]
+python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
+# 可选：--font-size large（默认 16px）或 medium（15px）
 ```
 
 > `$MD_FORMATTER_DIR` 需在 `local/.env` 或环境变量中配置。
@@ -376,7 +377,7 @@ python3 md2wechat_formatter.py [文章路径] --theme mozheng --font-size medium
 
 ## 七、Medium 风格变体（推荐：深度长文/技术深度文）
 
-> 当文章用 `--layout medium` 排版时，封面 / 配图也应跟进。
+> 当文章偏深度长文/技术分析时，封面和配图可采用 Medium 风格。排版本身已融合 Medium 排版精华，此处仅影响头图/配图的设计风格。
 > 核心原则：**少即多** — 一句话主张、一个焦点视觉、一处颜色强调。
 
 ### 设计七诫
@@ -484,7 +485,7 @@ python3 md2wechat_formatter.py [文章路径] --theme mozheng --font-size medium
 
 | 文章类型 | 推荐 |
 |---|---|
-| 技术深度文 / 长文（用 `--layout medium` 排版） | **Medium 风格** |
+| 技术深度文 / 长文 | **Medium 风格** |
 | 教程 / 工具速记 / 资源列表 | 默认风格（信息密度高，多卡片） |
 | 暖亮主题（女性力量等） | 五B 暖亮风格 |
 | 游戏 / 测评（带产品截图） | 默认风格 + 截图背景 |

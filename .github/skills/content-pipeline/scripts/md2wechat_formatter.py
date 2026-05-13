@@ -5,7 +5,8 @@ md2wechat_formatter.py — Markdown → WeChat HTML 排版工具
 产出 _preview.html，浏览器打开 → 全选复制 → 粘贴到公众号编辑器。
 
 用法：
-  python3 md2wechat_formatter.py article.md --theme mozheng --font-size medium
+  python3 md2wechat_formatter.py article.md
+  python3 md2wechat_formatter.py article.md --font-size medium
   python3 md2wechat_formatter.py article.md -o output.html
 """
 
@@ -35,123 +36,39 @@ try:
 except ImportError:
     HAS_PREMAILER = False
 
-# ─── Themes ───
+# ─── Theme ───
+# 墨筝（mozheng）统一主题 — 融合 mozheng 品牌色 + medium 排版精华
+# 墨（近黑微暖 #1C1C1E）+ 筝（古筝丝弦哑光金 #C4956A）+ 宣纸底 #F2EDE3
 
-THEMES = {
-    # 墨筝（mozheng）— 公众号「墨筝」专属配色
-    # 取意：墨（近黑微暖 #1C1C1E）+ 筝（古筝丝弦哑光金 #C4956A）+ 宣纸底 #F2EDE3
-    'mozheng': {
-        'bg':               '#F2EDE3',
-        'text':             '#333333',
-        'heading':          '#1C1C1E',
-        'accent':           '#C4956A',
-        'link':             '#C4956A',
-        'mark_bg':          'rgba(196,149,106,0.28)',
-        'code_bg':          '#f0ece4',
-        'code_border':      '#ddd8ce',
-        'code_text':        '#1C1C1E',
-        'pre_bg':           '#1C1C1E',
-        'pre_border':       'rgba(196,149,106,0.15)',
-        'pre_text':         '#F2EDE3',
-        'syntax': {
-            'keyword':  '#C4956A',   # 筝弦金 — 关键字
-            'string':   '#A8C97F',   # 苔绿 — 字符串
-            'comment':  '#7A7876',   # 淡墨 — 注释
-            'number':   '#D4A76A',   # 暖金 — 数字
-            'func':     '#8FBCBB',   # 青瓷 — 函数名
-            'type':     '#B48EAD',   # 藤紫 — 类型
-            'operator': '#9A8A7B',   # 淡棕 — 操作符
-        },
-        'blockquote_border':'#1C1C1E',
-        'blockquote_bg':    '#f0ece4',
-        'table_header_bg':  '#1C1C1E',
-        'table_header_text':'#F2EDE3',
-        'table_stripe':     '#f0ece4',
-        'table_border':     '#d5d0c6',
-        'hr_color':         '#C4956A',
+THEME = {
+    'bg':               '#F2EDE3',
+    'text':             '#333333',
+    'heading':          '#1C1C1E',
+    'accent':           '#C4956A',
+    'link':             '#C4956A',
+    'mark_bg':          'rgba(196,149,106,0.28)',
+    'code_bg':          '#f0ece4',
+    'code_border':      '#ddd8ce',
+    'code_text':        '#1C1C1E',
+    'pre_bg':           '#1C1C1E',
+    'pre_border':       'rgba(196,149,106,0.15)',
+    'pre_text':         '#F2EDE3',
+    'syntax': {
+        'keyword':  '#C4956A',   # 筝弦金 — 关键字
+        'string':   '#A8C97F',   # 苔绿 — 字符串
+        'comment':  '#7A7876',   # 淡墨 — 注释
+        'number':   '#D4A76A',   # 暖金 — 数字
+        'func':     '#8FBCBB',   # 青瓷 — 函数名
+        'type':     '#B48EAD',   # 藤紫 — 类型
+        'operator': '#9A8A7B',   # 淡棕 — 操作符
     },
-    'chinese': {
-        'bg':               '#F9F5F1',
-        'text':             '#333333',
-        'heading':          '#8B0000',
-        'accent':           '#C41E3A',
-        'link':             '#C41E3A',
-        'code_bg':          '#FFF8F0',
-        'code_border':      '#E8D5C4',
-        'code_text':        '#8B0000',
-        'blockquote_border':'#8B0000',
-        'blockquote_bg':    '#FFF8F0',
-        'table_header_bg':  '#8B0000',
-        'table_header_text':'#FFFFFF',
-        'table_stripe':     '#FFF8F0',
-        'table_border':     '#E8D5C4',
-        'hr_color':         '#C41E3A',
-    },
-    'apple': {
-        'bg':               '#FFFFFF',
-        'text':             '#1D1D1F',
-        'heading':          '#1D1D1F',
-        'accent':           '#0066CC',
-        'link':             '#0066CC',
-        'code_bg':          '#F5F5F7',
-        'code_border':      '#E5E5E5',
-        'code_text':        '#1D1D1F',
-        'blockquote_border':'#0066CC',
-        'blockquote_bg':    '#F5F5F7',
-        'table_header_bg':  '#1D1D1F',
-        'table_header_text':'#FFFFFF',
-        'table_stripe':     '#F5F5F7',
-        'table_border':     '#E5E5E5',
-        'hr_color':         '#D2D2D7',
-    },
-    # Medium 风格 — 参考 github.com/lucagez/medium.css
-    # 衬线正文、大字号、宽行距、极简装饰，搭配墨筝品牌色点缀
-    'medium': {
-        'bg':               '#FFFFFF',
-        'text':             'rgba(0,0,0,0.84)',
-        'heading':          'rgba(0,0,0,0.84)',
-        'accent':           '#C4956A',
-        'link':             'rgba(0,0,0,0.84)',
-        'mark_bg':          '#7DFFB3',
-        'code_bg':          'rgba(0,0,0,0.05)',
-        'code_border':      'rgba(0,0,0,0.08)',
-        'code_text':        'rgba(0,0,0,0.84)',
-        'pre_bg':           '#1C1C1E',
-        'pre_border':       'rgba(196,149,106,0.15)',
-        'pre_text':         '#F2EDE3',
-        'syntax': {
-            'keyword':  '#C4956A',
-            'string':   '#A8C97F',
-            'comment':  '#7A7876',
-            'number':   '#D4A76A',
-            'func':     '#8FBCBB',
-            'type':     '#B48EAD',
-            'operator': '#9A8A7B',
-        },
-        'blockquote_border':'rgba(0,0,0,0.84)',
-        'blockquote_bg':    'rgba(196,149,106,0.06)',
-        'table_header_bg':  'rgba(0,0,0,0.84)',
-        'table_header_text':'#FFFFFF',
-        'table_stripe':     '#FAFAFA',
-        'table_border':     '#E6E6E6',
-        'hr_color':         'rgba(0,0,0,0.15)',
-        'default_layout':   'medium',
-    },
-}
-
-# 主题主用 mozheng；chinese / apple 不指定 default_layout，默认 standard
-for _name in ('mozheng', 'chinese', 'apple'):
-    THEMES[_name].setdefault('default_layout', 'standard')
-
-# ─── Layouts ─── 字体/字号/间距等排版规则（与配色解耦）
-
-LAYOUTS = {
-    'standard': {
-        'medium_typography': False,
-    },
-    'medium': {
-        'medium_typography': True,
-    },
+    'blockquote_border':'#C4956A',
+    'blockquote_bg':    '#f0ece4',
+    'table_header_bg':  '#1C1C1E',
+    'table_header_text':'#F2EDE3',
+    'table_stripe':     '#f0ece4',
+    'table_border':     '#d5d0c6',
+    'hr_color':         '#C4956A',
 }
 
 FONT_SIZES = {
@@ -162,28 +79,25 @@ FONT_SIZES = {
 
 # ─── CSS Builder ───
 
-def build_css(theme_name, font_size_name, layout_name=None):
-    t = THEMES[theme_name]
-    if layout_name is None:
-        layout_name = t.get('default_layout', 'standard')
-    layout = LAYOUTS.get(layout_name, LAYOUTS['standard'])
+def _hex_tint(hex_color, factor=0.7):
+    """Blend a hex color toward white by `factor` (0=original, 1=white)."""
+    hex_color = hex_color.lstrip('#')
+    r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+    r2 = int(r + (255 - r) * factor)
+    g2 = int(g + (255 - g) * factor)
+    b2 = int(b + (255 - b) * factor)
+    return f'#{r2:02x}{g2:02x}{b2:02x}'
+
+
+def build_css(font_size_name='large'):
+    t = THEME
     fs = FONT_SIZES[font_size_name]
     lh = '1.8' if font_size_name == 'large' else '1.75'
-    is_medium = layout.get('medium_typography', False)
-
-    # Medium 排版：覆写字号/行高/字间距
-    if is_medium:
-        fs = '16px'
-        lh = '1.7'
-        # 微信不支持外部字体，中文 serif 系统字体覆盖率极低（Android 无宋体）
-        # 用无衬线保证一致性，靠字号/行高/间距传递 Medium 质感
-        body_font = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'PingFang HK', 'Noto Sans SC', 'Microsoft YaHei', 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"
-    else:
-        body_font = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'PingFang HK', 'Microsoft YaHei', 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"
+    body_font = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'PingFang HK', 'Noto Sans SC', 'Microsoft YaHei', 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"
     heading_font = body_font
 
     css = f"""
-/* md2wechat_formatter — theme={theme_name} layout={layout_name} */
+/* md2wechat_formatter — mozheng unified theme */
 * {{ margin: 0; padding: 0; }}
 body {{
   background: {t['bg']};
@@ -210,40 +124,42 @@ body {{
   color: {t['text']};
   word-wrap: break-word;
   overflow-wrap: break-word;
-  letter-spacing: {'-.003em' if is_medium else '0.5px'};
+  letter-spacing: 0.3px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }}
 .content h1 {{
-  font-size: {'24px' if is_medium else '24px'};
-  font-weight: {'800' if is_medium else '700'};
+  font-size: 24px;
+  font-weight: 800;
   color: {t['heading']};
   font-family: {heading_font};
-  margin: {'40px 0 16px' if is_medium else '36px 0 16px'};
-  padding-bottom: {'0' if is_medium else '8px'};
-  border-bottom: {'none' if is_medium else f"2px solid {t['accent']}"};
-  letter-spacing: {'-.015em' if is_medium else '1px'};
-  line-height: {'1.25' if is_medium else 'inherit'};
+  margin: 40px 0 16px;
+  padding-bottom: 0;
+  border-bottom: none;
+  border-left: 4px solid {t['accent']};
+  padding-left: 14px;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
 }}
 .content h2 {{
-  font-size: {'20px' if is_medium else '20px'};
+  font-size: 20px;
   font-weight: 700;
   color: {t['heading']};
   font-family: {heading_font};
-  margin: {'40px 0 12px' if is_medium else '32px 0 14px'};
-  padding-bottom: {'0' if is_medium else '6px'};
-  border-bottom: {'none' if is_medium else f"1px solid {t['accent']}"};
-  letter-spacing: {'-.022em' if is_medium else '0.5px'};
-  line-height: {'1.3' if is_medium else 'inherit'};
+  margin: 36px 0 12px;
+  padding-bottom: 0;
+  border-bottom: none;
+  letter-spacing: 0.3px;
+  line-height: 1.35;
 }}
 .content h3 {{
-  font-size: {'17px' if is_medium else '17px'};
-  font-weight: {'700' if is_medium else '600'};
+  font-size: 17px;
+  font-weight: 700;
   color: {t['heading']};
   font-family: {heading_font};
-  margin: {'24px 0 8px' if is_medium else '24px 0 10px'};
-  line-height: {'1.3' if is_medium else 'inherit'};
+  margin: 24px 0 10px;
+  line-height: 1.3;
 }}
 .content h4, .content h5, .content h6 {{
   font-size: {fs};
@@ -253,17 +169,17 @@ body {{
   margin: 20px 0 8px;
 }}
 .content p {{
-  margin: {'21px 0 0' if is_medium else '0 0 16px'};
-  text-align: {'left' if is_medium else 'justify'};
+  margin: 0 0 18px;
+  text-align: left;
 }}
 .content a {{
   color: {t['link']};
-  text-decoration: {'underline' if is_medium else 'none'};
-  border-bottom: {'none' if is_medium else f"1px solid {t['link']}"};
+  text-decoration: none;
+  border-bottom: 1px solid {t['link']};
   word-break: break-all;
 }}
 .content mark {{
-  background: {t.get('mark_bg', 'rgba(196,149,106,0.25)')};
+  background: {t['mark_bg']};
   color: inherit;
   padding: 0 2px;
 }}
@@ -283,13 +199,14 @@ body {{
   padding: 2px 5px;
   color: {t['code_text']};
   word-break: break-all;
+  word-break: break-all;
 }}
 .code-wrap {{
   margin: 0 0 16px;
   border-radius: 6px;
   overflow: hidden;
-  border: 1px solid {t.get('pre_border', t['code_border'])};
-  background: {t.get('pre_bg', t['code_bg'])};
+  border: 1px solid {t['pre_border']};
+  background: {t['pre_bg']};
 }}
 .code-badge {{
   display: block;
@@ -304,7 +221,7 @@ body {{
   border-bottom: 1px solid rgba(196,149,106,0.18);
 }}
 .code-wrap pre {{
-  background: {t.get('pre_bg', t['code_bg'])};
+  background: {t['pre_bg']};
   border: none;
   border-radius: 0;
   padding: 14px 16px;
@@ -313,8 +230,8 @@ body {{
   -webkit-overflow-scrolling: touch;
 }}
 .content pre {{
-  background: {t.get('pre_bg', t['code_bg'])};
-  border: 1px solid {t.get('pre_border', t['code_border'])};
+  background: {t['pre_bg']};
+  border: 1px solid {t['pre_border']};
   border-radius: 6px;
   padding: 14px 16px;
   overflow-x: auto;
@@ -328,19 +245,17 @@ body {{
   border-radius: 0;
   font-size: 13px;
   line-height: 1.6;
-  color: {t.get('pre_text', t['text'])};
+  color: {t['pre_text']};
+  word-break: break-all;
 }}
 .content blockquote {{
-  margin: {'24px 0' if is_medium else '0 0 16px'};
-  padding: {'4px 0 4px 20px' if is_medium else '12px 16px'};
-  border-left: {'4px solid #C4956A' if is_medium else f"4px solid {t['blockquote_border']}"};
+  margin: 16px 0 20px;
+  padding: 12px 16px;
+  border-left: 4px solid {t['blockquote_border']};
   background: {t['blockquote_bg']};
-  color: {'rgba(0,0,0,0.68)' if is_medium else '#666'};
-  border-radius: {'0' if is_medium else '0 4px 4px 0'};
-  font-style: {'italic' if is_medium else 'normal'};
-  font-size: {'17px' if is_medium else 'inherit'};
-  line-height: {'1.7' if is_medium else 'inherit'};
-  letter-spacing: {'-.003em' if is_medium else 'inherit'};
+  color: #666;
+  border-radius: 0 4px 4px 0;
+  font-style: italic;
 }}
 .content blockquote p {{
   margin: 0;
@@ -352,8 +267,8 @@ body {{
   display: block;
   margin-top: 12px;
   font-style: normal;
-  font-size: {'15px' if is_medium else '13px'};
-  color: {'rgba(0,0,0,0.54)' if is_medium else '#999'};
+  font-size: 13px;
+  color: #999;
   letter-spacing: 0.3px;
 }}
 .content ul, .content ol {{
@@ -379,7 +294,7 @@ body {{
 .content table {{
   width: 100%;
   border-collapse: collapse;
-  margin: {'21px 0 32px' if is_medium else '0 0 16px'};
+  margin: 0 0 24px;
   font-size: 14px;
   table-layout: auto;
 }}
@@ -401,15 +316,15 @@ body {{
 }}
 .content hr {{
   border: none;
-  height: {'auto' if is_medium else '2px'};
-  background: {'transparent' if is_medium else t['hr_color']};
-  margin: {'52px 0' if is_medium else '28px 0'};
-  opacity: {'1' if is_medium else '0.3'};
+  height: auto;
+  background: transparent;
+  margin: 40px 0;
   text-align: center;
-  color: rgba(0,0,0,0.54);
-  font-size: {'28px' if is_medium else '0'};
-  letter-spacing: 16px;
+  color: {t['accent']};
+  font-size: 16px;
+  letter-spacing: 14px;
   line-height: 1;
+  opacity: 0.5;
 }}
 .content figure {{
   margin: 24px 0;
@@ -420,8 +335,8 @@ body {{
 }}
 .content figcaption {{
   margin-top: 8px;
-  font-size: {'14px' if is_medium else '13px'};
-  color: {'rgba(0,0,0,0.54)' if is_medium else '#999'};
+  font-size: 14px;
+  color: #999;
   font-style: italic;
   line-height: 1.5;
   letter-spacing: 0.2px;
@@ -429,7 +344,7 @@ body {{
 .content img {{
   max-width: 100%;
   height: auto;
-  border-radius: 4px;
+  border-radius: 8px;
   margin: 8px 0;
 }}
 """
@@ -856,10 +771,10 @@ def wrap_code_with_badge(html):
             return full_pre
         lang = lang_match.group(1)
         return (
-            f'<div class="code-wrap">'
-            f'<div class="code-badge">{lang}</div>'
+            f'<section class="code-wrap">'
+            f'<section class="code-badge">{lang}</section>'
             f'{full_pre}'
-            f'</div>'
+            f'</section>'
         )
     return re.sub(r'<pre><code\s+class="[^"]+">[\s\S]*?</code></pre>', _wrap, html)
 
@@ -896,19 +811,102 @@ def wrap_blockquote_cite(html):
     return re.sub(r'<blockquote>([\s\S]*?)</blockquote>', _wrap, html)
 
 
-def postprocess_content(html, is_medium):
+def add_heading_decorations(html, theme):
+    """Inject a small accent dot before h2 text for visual hierarchy."""
+    if not theme:
+        return html
+    accent = theme['accent']
+    dot_span = (
+        f'<span style="color:{accent};margin-right:8px;'
+        f'font-size:10px;vertical-align:middle;">\u25cf</span>'
+    )
+    html = re.sub(
+        r'<h2([^>]*)>',
+        lambda m: f'<h2{m.group(1)}>{dot_span}',
+        html,
+    )
+    return html
+
+
+def add_blockquote_decoration(html, theme):
+    """Inject a large decorative quote mark at the top of blockquotes."""
+    if not theme:
+        return html
+    accent = theme['accent']
+    quote_span = (
+        f'<span style="display:block;font-size:32px;line-height:1;'
+        f"font-family:Georgia,'Times New Roman',serif;"
+        f'color:{accent};opacity:0.5;margin-bottom:4px;">'
+        '\u201c</span>'
+    )
+    html = re.sub(
+        r'<blockquote([^>]*)>\s*<p',
+        lambda m: f'<blockquote{m.group(1)}>{quote_span}<p',
+        html,
+    )
+    return html
+
+
+def convert_mark_to_span(html, theme):
+    """Convert <mark> and raw ==text== to <span> with inline styles for WeChat compatibility.
+
+    The python-markdown library doesn't support ==highlight== syntax,
+    so raw ==text== may appear as literal text in the HTML output.
+    """
+    mark_bg = '#e8d8c6'
+    if theme:
+        raw_bg = theme.get('mark_bg', 'rgba(196,149,106,0.28)')
+        if raw_bg.startswith('rgba'):
+            mark_bg = _rgba_to_hex(raw_bg)
+        else:
+            mark_bg = raw_bg
+    styled = (
+        f'<span style="background:{mark_bg};'
+        f'color:inherit;padding:2px 4px;">'
+    )
+    html = re.sub(
+        r'<mark>(.*?)</mark>',
+        lambda m: f'{styled}{m.group(1)}</span>',
+        html,
+    )
+    html = re.sub(
+        r'(?<!=)==(?!=)(.+?)(?<!=)==(?!=)',
+        lambda m: f'{styled}{m.group(1)}</span>',
+        html,
+    )
+    return html
+
+
+def add_end_mark(html, theme):
+    """Append a centered END mark at the bottom of the article."""
+    accent = '#C4956A'
+    if theme:
+        accent = theme.get('accent', accent)
+    end_html = (
+        f'<p style="text-align:center;color:{accent};font-size:13px;'
+        f'margin:40px 0 0;letter-spacing:3px;opacity:0.6;">'
+        '\u2014 END \u2014</p>'
+    )
+    return html + '\n' + end_html
+
+
+def postprocess_content(html, theme=None):
     """Run all content-level post-processing steps in the right order."""
     html = wrap_code_with_badge(html)
     html = wrap_image_caption(html)
     html = wrap_blockquote_cite(html)
-    if is_medium:
-        # Medium-only: replace <hr> with inline-DOM section dots (sanitizer-safe)
-        dots_html = (
-            '<p style="text-align:center;color:rgba(0,0,0,0.54);'
-            'font-size:28px;letter-spacing:16px;line-height:1;margin:52px 0;">'
-            '\u00b7\u00b7\u00b7</p>'
-        )
-        html = re.sub(r'<hr\s*/?\s*>', dots_html, html)
+    html = add_blockquote_decoration(html, theme)
+    html = convert_mark_to_span(html, theme)
+    html = add_heading_decorations(html, theme)
+    accent = theme['accent'] if theme else '#C4956A'
+    dots_html = (
+        f'<p style="text-align:center;color:{accent};'
+        f'font-size:16px;letter-spacing:14px;line-height:1;'
+        f'margin:40px 0;opacity:0.5;">'
+        '\u00b7\u00b7\u00b7</p>'
+    )
+    html = re.sub(r'<hr\s*/?\s*>', dots_html, html)
+    html = add_end_mark(html, theme)
     return html
 
 
@@ -934,7 +932,7 @@ def sanitize_for_wechat(html_str, theme=None):
     WeChat editor quirks:
     - Strips <style> blocks entirely
     - Strips styles on <div> (must use <section>)
-    - Removes border-radius, letter-spacing, overflow-x, -webkit-*, word-wrap, overflow-wrap
+    - Removes overflow-x, -webkit-*, word-wrap, overflow-wrap
     - Doesn't understand rgba() — convert to hex
     - :nth-child cannot be inlined — apply stripe bg directly to even <tr> rows
     """
@@ -956,8 +954,6 @@ def sanitize_for_wechat(html_str, theme=None):
         r'word-wrap\s*:\s*[^;]+;?\s*',
         r'table-layout\s*:\s*[^;]+;?\s*',
         r'border-collapse\s*:\s*[^;]+;?\s*',
-        r'letter-spacing\s*:\s*[^;]+;?\s*',
-        r'border-radius\s*:\s*[^;]+;?\s*',
     ]
     for prop_re in unsupported_props:
         result = re.sub(prop_re, '', result)
@@ -1017,9 +1013,9 @@ def build_html(content_html, css, title=''):
 </head>
 <body>
 <div class="tip">全选下方内容 → 复制 → 粘贴到公众号编辑器（此行不会被复制）</div>
-<div class="content">
+<section class="content">
 {content_html}
-</div>
+</section>
 </body>
 </html>"""
 
@@ -1030,23 +1026,20 @@ def main():
     parser = argparse.ArgumentParser(
         description='Markdown → WeChat HTML 排版工具',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='示例：python3 md2wechat_formatter.py article.md --theme mozheng --font-size medium',
+        epilog='示例：python3 md2wechat_formatter.py article.md --font-size medium',
     )
     parser.add_argument('input', help='Markdown 文件路径')
-    parser.add_argument('--theme', choices=list(THEMES.keys()), default='mozheng',
-                        help='配色主题 (default: mozheng)')
-    parser.add_argument('--layout', choices=list(LAYOUTS.keys()), default=None,
-                        help='排版布局 (default: 跟随主题的 default_layout)')
-    parser.add_argument('--font-size', choices=list(FONT_SIZES.keys()), default='medium',
-                        help='正文字号 (default: medium = 15px)')
+    parser.add_argument('--font-size', choices=list(FONT_SIZES.keys()), default='large',
+                        help='正文字号 (default: large = 16px)')
     parser.add_argument('-o', '--output', help='输出路径 (default: [input]_preview.html)')
-    parser.add_argument('--no-inline', dest='inline', action='store_false',
-                        help='不内联 CSS（仅用于本地预览）')
-    parser.set_defaults(inline=True)
     args = parser.parse_args()
 
     if not os.path.isfile(args.input):
         print(f'Error: 找不到文件 {args.input}', file=sys.stderr)
+        sys.exit(1)
+
+    if not HAS_PREMAILER:
+        print('Error: 需要 premailer 包：pip3 install premailer', file=sys.stderr)
         sys.exit(1)
 
     with open(args.input, 'r', encoding='utf-8') as f:
@@ -1066,37 +1059,30 @@ def main():
             title = h1.group(1).strip()
 
     # Convert
-    theme_dict = THEMES[args.theme]
-    layout_name = args.layout or theme_dict.get('default_layout', 'standard')
-    is_medium = LAYOUTS[layout_name].get('medium_typography', False)
+    theme_dict = THEME
     content_html = convert_md_to_html(md_text, theme_dict)
-    content_html = postprocess_content(content_html, is_medium=is_medium)
+    content_html = postprocess_content(content_html, theme=theme_dict)
 
-    css = build_css(args.theme, args.font_size, layout_name)
+    css = build_css(args.font_size)
     full_html = build_html(content_html, css, title)
 
-    # Inline CSS if requested (for WeChat API which strips <style> blocks)
-    if args.inline:
-        if not HAS_PREMAILER:
-            print('Error: --inline 需要 premailer 包：pip3 install premailer', file=sys.stderr)
-            sys.exit(1)
-        full_html = premailer_transform(
-            full_html,
-            remove_classes=False,
-            strip_important=True,
-            keep_style_tags=False,
-            cssutils_logging_level='CRITICAL',
-        )
-        # WeChat editor strips newlines inside <pre> — convert \n to <br>
-        def _fix_pre_newlines(m):
-            inner = m.group(1)
-            inner = inner.replace('\n', '<br>')
-            return f'<code{m.group(0).split("<code")[1].split(">")[0]}>{inner}</code>'
-        full_html = re.sub(
-            r'<pre[^>]*>\s*<code([^>]*)>([\s\S]*?)</code>\s*</pre>',
-            lambda m: f'<pre{m.group(0).split("<pre")[1].split(">")[0]}><code{m.group(1)}>{m.group(2).replace(chr(10), "<br>")}</code></pre>',
-            full_html,
-        )
+    # Inline CSS (WeChat strips <style> blocks)
+    full_html = premailer_transform(
+        full_html,
+        remove_classes=False,
+        strip_important=True,
+        keep_style_tags=False,
+        cssutils_logging_level='CRITICAL',
+    )
+    # WeChat editor strips newlines inside <pre> — convert \n to <br>
+    full_html = re.sub(
+        r'<pre[^>]*>\s*<code([^>]*)>([\s\S]*?)</code>\s*</pre>',
+        lambda m: f'<pre{m.group(0).split("<pre")[1].split(">")[0]}><code{m.group(1)}>{m.group(2).replace(chr(10), "<br>")}</code></pre>',
+        full_html,
+    )
+
+    # Sanitize for WeChat: div→section, rgba→hex, strip unsupported CSS, table stripes
+    full_html = sanitize_for_wechat(full_html, theme=theme_dict)
 
     # Output
     if args.output:
@@ -1110,7 +1096,7 @@ def main():
         f.write(full_html)
 
     print(f'✓ {out_path}')
-    print(f'  theme={args.theme}  font-size={args.font_size} ({FONT_SIZES[args.font_size]})')
+    print(f'  font-size={args.font_size} ({FONT_SIZES[args.font_size]})')
     if not HAS_MARKDOWN:
         print('  ⚠ 使用内置转换器（安装 markdown 包可获得更好效果：pip3 install markdown）')
 

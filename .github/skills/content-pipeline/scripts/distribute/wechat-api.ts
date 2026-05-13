@@ -189,12 +189,27 @@ export function fixHtmlForWechat(html: string): string {
   fixed = fixed.replace(/(<[uo]l[^>]*>)\s+(<li[\s>])/gi, '$1$2');
   fixed = fixed.replace(/(<\/li>)\s+(<\/[uo]l>)/gi, '$1$2');
 
-  // Normalize <img> styles for WeChat compatibility
+  // Ensure <img> has WeChat-safe defaults without losing formatter styles
   fixed = fixed.replace(/<img([^>]*?)>/gi, (_match, attrs: string) => {
-    // Remove existing style attribute
-    const cleanAttrs = attrs.replace(/\s*style="[^"]*"/gi, '').replace(/\s*style='[^']*'/gi, '');
-    const wechatStyle = 'style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;"';
-    return `<img${cleanAttrs} ${wechatStyle}>`;
+    const styleMatch = attrs.match(/style=["']([^"']*)["']/i);
+    const existingStyle = styleMatch ? styleMatch[1].replace(/;\s*$/, '') : '';
+    const defaults: Record<string, string> = {
+      'max-width': '100%',
+      'height': 'auto',
+      'display': 'block',
+      'margin': '0 auto',
+      'border-radius': '8px',
+    };
+    // Only add defaults for properties not already set
+    if (existingStyle) {
+      for (const key of Object.keys(defaults)) {
+        if (existingStyle.includes(key)) delete defaults[key];
+      }
+    }
+    const extra = Object.entries(defaults).map(([k, v]) => `${k}:${v}`).join(';');
+    const merged = existingStyle ? `${existingStyle};${extra}` : extra;
+    const cleanAttrs = attrs.replace(/\s*style=["'][^"']*["']/gi, '');
+    return `<img${cleanAttrs} style="${merged}">`;
   });
 
   return fixed;
@@ -250,6 +265,75 @@ export async function uploadLocalImagesInHtml(html: string, token: string): Prom
   return processed;
 }
 
+/** Download remote images (http/https) in HTML, upload to WeChat CDN, and replace src URLs */
+export async function uploadRemoteImagesInHtml(html: string, token: string): Promise<string> {
+  const remoteImgRegex = /src=["'](https?:\/\/[^"']+\.(?:png|jpg|jpeg|gif|webp|bmp)(?:\?[^"']*)?)["']/gi;
+  const matches: Array<{ full: string; remoteUrl: string }> = [];
+
+  let match: RegExpExecArray | null;
+  while ((match = remoteImgRegex.exec(html)) !== null) {
+    const url = match[1];
+    if (url.includes('mmbiz.qpic.cn')) continue;
+    matches.push({ full: match[0], remoteUrl: url });
+  }
+
+  if (matches.length === 0) return html;
+
+  console.log(`  [wechat-api] Found ${matches.length} remote image(s) to upload...`);
+
+  let processed = html;
+  let uploaded = 0;
+  let failed = 0;
+  const tmpDir = os.tmpdir();
+
+  for (const { full, remoteUrl } of matches) {
+    let tmpPath: string | null = null;
+    try {
+      const res = await fetchWithRetry(remoteUrl, { ...BUN_FETCH_OPTS });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Determine extension from URL path, Content-Type header, or fallback to png
+      let ext = 'png';
+      try {
+        const urlPath = new URL(remoteUrl).pathname;
+        const urlExt = path.extname(urlPath).slice(1).toLowerCase();
+        if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'].includes(urlExt)) {
+          ext = urlExt;
+        }
+      } catch {}
+      if (ext === 'png') {
+        const ct = res.headers.get('content-type') || '';
+        if (ct.includes('jpeg') || ct.includes('jpg')) ext = 'jpg';
+        else if (ct.includes('gif')) ext = 'gif';
+        else if (ct.includes('webp')) ext = 'webp';
+      }
+
+      const fileName = `wechat-remote-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      tmpPath = path.join(tmpDir, fileName);
+      const buffer = Buffer.from(await res.arrayBuffer());
+      fs.writeFileSync(tmpPath, buffer);
+
+      const cdnUrl = await uploadContentImage(token, tmpPath);
+      processed = processed.replace(full, `src="${cdnUrl}"`);
+      uploaded++;
+
+      const displayName = remoteUrl.length > 60 ? remoteUrl.slice(0, 57) + '...' : remoteUrl;
+      console.log(`  [wechat-api]   ✓ ${displayName}`);
+    } catch (err) {
+      const displayName = remoteUrl.length > 60 ? remoteUrl.slice(0, 57) + '...' : remoteUrl;
+      console.warn(`  [wechat-api]   ✗ ${displayName}: ${err instanceof Error ? err.message : err}`);
+      failed++;
+    } finally {
+      if (tmpPath && fs.existsSync(tmpPath)) {
+        try { fs.unlinkSync(tmpPath); } catch {}
+      }
+    }
+  }
+
+  console.log(`  [wechat-api] Remote images: ${uploaded} uploaded, ${failed} failed`);
+  return processed;
+}
+
 export function extractArticleContent(htmlPath: string): { content: string; styles: string; hasOuterDiv: boolean } {
   const html = fs.readFileSync(htmlPath, 'utf-8');
 
@@ -272,19 +356,15 @@ export function extractArticleContent(htmlPath: string): { content: string; styl
   }
 
   // 2. Extract .content container (md2wechat_formatter _preview.html)
-  // When CSS is inlined, extract the ENTIRE .content div (preserving inline styles like background-color)
-  // When CSS is in <style> blocks, extract only inner HTML (styles applied via class selectors)
-  const contentOuterMatch = html.match(/(<div[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*>[\s\S]*?<\/div>)\s*(?:<\/body>|<script|$)/i);
+  // Matches both <div> and <section> — formatter now outputs <section> for WeChat compatibility
+  const contentOuterMatch = html.match(/(<(?:div|section)[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*>[\s\S]*?<\/(?:div|section)>)\s*(?:<\/body>|<script|$)/i);
   if (contentOuterMatch) {
-    const outerDiv = contentOuterMatch[1];
-    // Check if the .content div has inline style (i.e. premailer inlined CSS)
-    const hasInlineStyle = /<div[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*style=["'][^"']+["']/i.test(outerDiv);
+    const outerEl = contentOuterMatch[1];
+    const hasInlineStyle = /<(?:div|section)[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*style=["'][^"']+["']/i.test(outerEl);
     if (hasInlineStyle) {
-      // Return the entire .content div with its inline styles intact
-      return { content: stripTipElements(outerDiv), styles, hasOuterDiv: true };
+      return { content: stripTipElements(outerEl), styles, hasOuterDiv: true };
     }
-    // No inline style: extract inner HTML only (will be re-wrapped)
-    const innerMatch = outerDiv.match(/<div[^>]*>([\s\S]*)<\/div>$/i);
+    const innerMatch = outerEl.match(/<(?:div|section)[^>]*>([\s\S]*)<\/(?:div|section)>$/i);
     if (innerMatch) {
       return { content: stripTipElements(innerMatch[1].trim()), styles, hasOuterDiv: false };
     }
@@ -308,7 +388,7 @@ function stripTipElements(html: string): string {
 
 export function processHtmlWithImages(
   content: string,
-  styles: string,
+  _styles: string,
   imageMap: Map<string, string>,
 ): string {
   // Fix HTML structures for WeChat compatibility first
@@ -322,10 +402,6 @@ export function processHtmlWithImages(
     );
   }
 
-  // Wrap with styles if present
-  if (styles) {
-    return `<style>${styles}</style>\n${processed}`;
-  }
   return processed;
 }
 
@@ -391,7 +467,7 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
       'Markdown-only mode is no longer supported in wechat-api.ts.\n' +
       'Please convert markdown to HTML first using md2wechat_formatter.py:\n' +
       '  cd "$MD_FORMATTER_DIR"\n' +
-      '  python3 md2wechat_formatter.py [article.md] --theme 01fish --font-size medium\n' +
+      '  python3 md2wechat_formatter.py [article.md]\n' +
       'Then set wechat.html in the manifest to the generated _preview.html path.'
     );
   }
@@ -412,11 +488,11 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
   // 3. Extract content from pre-rendered HTML
   console.log('  [wechat-api] Using pre-rendered HTML');
   const extracted = extractArticleContent(wechatData.html!);
-  // Wrap in .content div so CSS selectors (.content h1, .content p, etc.) still match
-  // Skip wrapping if content already includes the .content div (inline CSS mode)
+  // Wrap in .content section so inline styles are preserved by WeChat
+  // Skip wrapping if content already includes the .content container (inline CSS mode)
   let htmlContent = extracted.hasOuterDiv
     ? extracted.content
-    : `<div class="content">${extracted.content}</div>`;
+    : `<section class="content">${extracted.content}</section>`;
   const title = wechatData.title || manifest.title;
   const author = wechatData.author;
   const digest = wechatData.digest;
@@ -427,6 +503,9 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
 
   // 5. Upload local images referenced in HTML to WeChat CDN
   let contentWithCdnImages = await uploadLocalImagesInHtml(finalContent, token);
+
+  // 5.1 Download and upload remote images to WeChat CDN
+  contentWithCdnImages = await uploadRemoteImagesInHtml(contentWithCdnImages, token);
 
   // 5.5 Upload manifest images and insert into article content
   if (wechatData.images && wechatData.images.length > 0) {

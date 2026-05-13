@@ -6,12 +6,19 @@
   "outputs": {
     "wechat": {
       "markdown": "source/_posts/pageindex-vectorless-rag.md",
-      "html": "source/_posts/pageindex-vectorless-rag_preview.html",
+      "html": "content/pageindex-vectorless-rag/preview.html",
       "cover_image": "/Users/nealkaffrey/Downloads/pageindex-rag-头图.png",
       "title": "一种新的思路，我把传统向量 RAG 检索准确度从 61% 提升到了 94%",
       "author": "墨筝",
       "digest": "向量 RAG 在金融年报上只有 52% 准确率，PageIndex 不分块不 Embedding，用目录树+推理搜索做到 98.7%。拆解原理与实战。",
       "images": []
     }
+  },
+  "cover": {
+    "html": "content/pageindex-vectorless-rag/cover.html",
+    "size": "900x383"
+  },
+  "illustrations": {
+    "html": "content/pageindex-vectorless-rag/illustrations.html"
   }
 }

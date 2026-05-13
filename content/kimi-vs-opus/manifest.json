@@ -6,7 +6,7 @@
   "outputs": {
     "wechat": {
       "markdown": "source/_posts/kimi-vs-opus.md",
-      "html": "source/_posts/kimi-vs-opus_preview.html",
+      "html": "content/kimi-vs-opus/preview.html",
       "cover_image": "/Users/mozheng/Downloads/kimi-vs-opus-头图.png",
       "title": "同一套工作流评测规范：深度对比 Claude Opus 4.7 与 Kimi 2.6",
       "author": "墨筝",
@@ -23,12 +23,12 @@
   },
   "cover": {
     "style": "medium",
-    "html": "source/_posts/kimi-vs-opus_cover.html",
+    "html": "content/kimi-vs-opus/cover.html",
     "size": "900x383"
   },
   "illustrations": {
     "style": "medium",
-    "html": "source/_posts/kimi-vs-opus_illustrations.html"
+    "html": "content/kimi-vs-opus/illustrations.html"
   },
   "layout": {
     "theme": "medium",

@@ -1,11 +1,12 @@
 {
   "version": "1.0",
   "created": "2026-04-12T20:00:00Z",
+  "source": "source/_posts/advisor-model.md",
   "title": "从 Claude Twitter 贴到 UC 伯克利大学论文，深入浅出顾问模型背后的思路",
   "outputs": {
     "wechat": {
-      "markdown": "/Users/nealkaffrey/projects/blog-source/source/_posts/advisor-model.md",
-      "html": "/Users/nealkaffrey/projects/blog-source/source/_posts/advisor-model_preview.html",
+      "markdown": "source/_posts/advisor-model.md",
+      "html": "content/advisor-model/preview.html",
       "cover_image": "/Users/nealkaffrey/Downloads/advisor-model-头图-900x383.png",
       "title": "从 Claude Twitter 贴到 UC 伯克利大学论文，深入浅出顾问模型背后的思路",
       "author": "墨筝",
@@ -15,5 +16,9 @@
     "moments": {
       "copy": "Claude 官方说让 Opus 当军师，给 Sonnet 和 Haiku 出主意，遇事不决问军师，整体智商直接拉升。\n\n其实 UC 伯克利今年 2 月就发了论文，用强化学习训一个小模型专门给大模型写提示词，在便宜模型上练完直接迁移到 GPT-5 上用，税务推理准确率从 31% 拉到 53%。\n\n两条路子同一个思路，写了篇文章把这事从头到尾捋了一遍。"
     }
+  },
+  "cover": {
+    "html": "content/advisor-model/cover.html",
+    "size": "900x383"
   }
 }
