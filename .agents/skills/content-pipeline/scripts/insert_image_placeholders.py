@@ -65,11 +65,21 @@ def insert_placeholders(preview_path: str, anchors: dict[int, str]) -> int:
                 break
 
         if section_end is None:
-            # Last section — insert before </body>
+            # Last section — insert before END marker or </section>, not </body>
             for j in range(len(lines) - 1, heading_line, -1):
-                if '</body>' in lines[j]:
+                if '— END —' in lines[j] or '-- END --' in lines[j]:
                     section_end = j
                     break
+            if section_end is None:
+                for j in range(len(lines) - 1, heading_line, -1):
+                    if '</section>' in lines[j]:
+                        section_end = j
+                        break
+            if section_end is None:
+                for j in range(len(lines) - 1, heading_line, -1):
+                    if '</body>' in lines[j]:
+                        section_end = j
+                        break
             if section_end is None:
                 section_end = len(lines) - 1
 

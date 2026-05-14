@@ -500,6 +500,6 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 2. **代码块换行**：`\n` 转为 `<br>`，配合 `white-space: pre-wrap; word-break: break-word` 实现自动折行
 3. **代码徽章**：`.code-badge` 用暖暗色 `#2C2A28`，分割线 `#3D3632`，代码区域 `border: none`（避免 rgba 转 hex 后出现白线）
 4. **段落分割线**：`---` 转为居中点状 `· · ·`，筝弦金色，18px，opacity 0.55
-5. **标题装饰**：h2 前用竖条（4px × 20px 筝弦金圆角条），不用圆点
+5. **标题装饰**：h2 用 `border-left: 4px solid #C4956A; padding-left: 12px` 实现筝弦金竖条。禁止用空 `<span>` 模拟竖条——微信编辑器会剥离没有文本内容的 inline-block 元素
 
 
