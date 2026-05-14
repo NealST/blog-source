@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>配图 - Claude Code 的 48 条实用技巧与最佳实践</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 12px 24px; display: flex; gap: 12px; z-index: 999; }
+.toolbar button { padding: 8px 16px; border: none; border-radius: 6px; background: #C4956A; color: #fff; font-size: 14px; cursor: pointer; font-weight: 600; }
+.toolbar button:hover { background: #b8845a; }
+.slide-label { color: rgba(255,255,255,0.5); font-size: 13px; margin: 40px 0 12px; align-self: flex-start; max-width: 800px; width: 100%; text-align: left; padding-left: calc(50% - 400px); }
+.slide-label:first-of-type { margin-top: 0; }
+.slide { width: 800px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 8px; }
+
+/* 背景 */
+.bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+.bg-light { position: absolute; inset: 0; background: #FFFFFF; }
+
+/* 品牌角标 */
+.brand { position: absolute; top: 18px; left: 22px; display: flex; align-items: center; gap: 6px; z-index: 3; }
+.brand svg { width: 20px; height: 20px; }
+.brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+.brand.on-dark .brand-text { color: rgba(255,255,255,0.5); }
+.brand.on-light .brand-text { color: rgba(28,28,30,0.4); }
+
+/* 页码 */
+.page-num { position: absolute; bottom: 18px; right: 22px; font-size: 11px; z-index: 3; }
+.slide.dark .page-num { color: rgba(255,255,255,0.2); }
+.slide.light .page-num { color: rgba(28,28,30,0.2); }
+
+/* Medium 风格 section-tag */
+.section-tag-medium { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative; margin-bottom: 16px; }
+.section-tag-medium::before { content: ''; position: absolute; top: 0; left: 0; width: 28px; height: 1px; background: #C4956A; }
+
+/* 标题 */
+.slide.dark .h-title { color: #F2EDE3; }
+.slide.light .h-title { color: #1C1C1E; }
+.h-title { font-size: 32px; font-weight: 800; letter-spacing: -0.018em; line-height: 1.3; margin-bottom: 24px; }
+
+/* 内容区域 */
+.content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 50px 60px; z-index: 2; }
+
+/* 流程图 */
+.flow-row { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; justify-content: center; }
+.flow-card { flex-shrink: 0; width: 120px; padding: 14px 10px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.slide.dark .flow-card { background: rgba(196,149,106,0.12); border: 1.5px solid rgba(196,149,106,0.25); }
+.slide.light .flow-card { background: rgba(28,28,30,0.06); border: 1.5px solid rgba(28,28,30,0.12); }
+.flow-card .fc-title { font-size: 12px; font-weight: 700; }
+.slide.dark .flow-card .fc-title { color: #F2EDE3; }
+.slide.light .flow-card .fc-title { color: #1C1C1E; }
+.flow-card .fc-desc { font-size: 10px; margin-top: 4px; }
+.slide.dark .flow-card .fc-desc { color: rgba(255,255,255,0.45); }
+.slide.light .flow-card .fc-desc { color: rgba(28,28,30,0.5); }
+.arrow { flex-shrink: 0; font-size: 18px; padding: 0 6px; }
+.slide.dark .arrow { color: rgba(255,255,255,0.25); }
+.slide.light .arrow { color: rgba(28,28,30,0.25); }
+
+/* 网格卡片 */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; }
+.g-card { padding: 18px 16px; border-radius: 10px; }
+.slide.dark .g-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+.slide.light .g-card { background: #F2EDE3; border: 1px solid rgba(28,28,30,0.06); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.g-card .gc-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.slide.dark .g-card .gc-title { color: #F2EDE3; }
+.slide.light .g-card .gc-title { color: #1C1C1E; }
+.g-card .gc-desc { font-size: 11px; line-height: 1.5; }
+.slide.dark .g-card .gc-desc { color: rgba(255,255,255,0.55); }
+.slide.light .g-card .gc-desc { color: rgba(28,28,30,0.6); }
+
+/* 信息行 */
+.info-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+.info-dot { width: 6px; height: 6px; border-radius: 50%; background: #C4956A; flex-shrink: 0; margin-top: 5px; }
+.slide.dark .info-text { color: rgba(255,255,255,0.8); font-size: 13px; line-height: 1.6; }
+.slide.light .info-text { color: rgba(28,28,30,0.8); font-size: 13px; line-height: 1.6; }
+
+/* 大数字 */
+.big-num { font-size: 64px; font-weight: 900; color: #C4956A; line-height: 1; }
+.big-num-desc { font-size: 20px; font-weight: 700; margin-top: 8px; }
+.slide.dark .big-num-desc { color: #F2EDE3; }
+.slide.light .big-num-desc { color: #1C1C1E; }
+
+/* 对比双栏 */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 100%; }
+.compare-col { padding: 20px; border-radius: 10px; }
+.compare-col.bad { background: rgba(255,95,87,0.08); border: 1px solid rgba(255,95,87,0.2); }
+.compare-col.good { background: rgba(196,149,106,0.08); border: 1px solid rgba(196,149,106,0.2); }
+.compare-col .cc-label { font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+.compare-col.bad .cc-label { color: #FF5F57; }
+.compare-col.good .cc-label { color: #C4956A; }
+.compare-col .cc-text { font-size: 12px; line-height: 1.7; }
+.slide.dark .compare-col .cc-text { color: rgba(255,255,255,0.7); }
+.slide.light .compare-col .cc-text { color: rgba(28,28,30,0.7); }
+
+/* ghost 数字 */
+.ghost-num { position: absolute; right: 30px; bottom: 20px; font-size: 120px; font-weight: 900; opacity: 0.04; pointer-events: none; z-index: 1; }
+.slide.dark .ghost-num { color: #F2EDE3; }
+.slide.light .ghost-num { color: #1C1C1E; }
+
+/* 键盘快捷键 */
+.kbd { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: monospace; }
+.slide.dark .kbd { background: rgba(255,255,255,0.1); color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15); }
+.slide.light .kbd { background: rgba(28,28,30,0.06); color: #1C1C1E; border: 1px solid rgba(28,28,30,0.12); }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button onclick="downloadCurrent()">下载当前</button>
+</div>
+
+<!-- ===== 配图 1：基础操作篇 - 核心快捷键 ===== -->
+<div class="slide-label">配图 1 · 放在「基础操作篇」标题之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">1/10</div>
+  <div class="ghost-num">01</div>
+  <div class="content">
+    <div class="section-tag-medium">ESSENTIALS</div>
+    <div class="h-title">核心快捷键速查</div>
+    <div class="grid-3">
+      <div class="g-card">
+        <div class="gc-title"><span class="kbd">!</span> 前缀</div>
+        <div class="gc-desc">内联执行 bash 命令<br>跳过意图识别</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-title"><span class="kbd">Esc</span></div>
+        <div class="gc-desc">停止当前操作<br>保留上下文</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-title"><span class="kbd">Esc×2</span></div>
+        <div class="gc-desc">回滚检查点<br>代码+对话可选</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-title"><span class="kbd">Shift+Tab</span></div>
+        <div class="gc-desc">切换权限模式<br>Normal/Auto/Plan</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-title"><span class="kbd">Ctrl+S</span></div>
+        <div class="gc-desc">暂存提示词草稿<br>类似 git stash</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-title"><span class="kbd">Ctrl+B</span></div>
+        <div class="gc-desc">任务放入后台<br>继续聊天</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 2：反馈循环 ===== -->
+<div class="slide-label">配图 2 · 放在「给 Claude 提供反馈循环」之后</div>
+<div class="slide light" style="height:420px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">2/10</div>
+  <div class="ghost-num">02</div>
+  <div class="content">
+    <div class="section-tag-medium">FEEDBACK LOOP</div>
+    <div class="h-title">反馈闭环：2-3 倍质量提升</div>
+    <div class="flow-row">
+      <div class="flow-card">
+        <div class="fc-title">提示词</div>
+        <div class="fc-desc">包含测试命令</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card">
+        <div class="fc-title">执行</div>
+        <div class="fc-desc">Claude 跑测试</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card">
+        <div class="fc-title">观察</div>
+        <div class="fc-desc">发现失败用例</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card">
+        <div class="fc-title">修复</div>
+        <div class="fc-desc">自行纠正代码</div>
+      </div>
+      <div class="arrow">↺</div>
+    </div>
+    <div style="margin-top: 28px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">UI 变更 → 配置 Playwright MCP → 浏览器验证行为</div>
+      </div>
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">逻辑变更 → 运行测试套件 → 修复所有失败用例再提交</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 3：工作流优化 - Worktree 并行 ===== -->
+<div class="slide-label">配图 3 · 放在「用 --worktree 进行隔离式并行开发」之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">3/10</div>
+  <div class="ghost-num">03</div>
+  <div class="content">
+    <div class="section-tag-medium">PARALLEL WORKFLOW</div>
+    <div class="h-title">Worktree 并行开发</div>
+    <div class="grid-3" style="margin-top:8px;">
+      <div class="g-card" style="text-align:center;">
+        <div class="gc-title" style="color:#C4956A;">Worktree A</div>
+        <div class="gc-desc" style="margin-top:8px;">feature-auth<br>独立分支<br>独立会话</div>
+      </div>
+      <div class="g-card" style="text-align:center;">
+        <div class="gc-title" style="color:#C4956A;">Worktree B</div>
+        <div class="gc-desc" style="margin-top:8px;">fix-payment<br>独立分支<br>独立会话</div>
+      </div>
+      <div class="g-card" style="text-align:center;">
+        <div class="gc-title" style="color:#C4956A;">Worktree C</div>
+        <div class="gc-desc" style="margin-top:8px;">refactor-db<br>独立分支<br>独立会话</div>
+      </div>
+    </div>
+    <div style="margin-top:24px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">每个 worktree 拥有独立的文件系统、git 分支和 Claude 会话</div>
+      </div>
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">Claude Code 团队称这是最大的生产力提升点之一</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 4：上下文管理 - 压缩策略 ===== -->
+<div class="slide-label">配图 4 · 放在「用指令引导上下文压缩」之后</div>
+<div class="slide light" style="height:420px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">4/10</div>
+  <div class="ghost-num">04</div>
+  <div class="content">
+    <div class="section-tag-medium">CONTEXT MANAGEMENT</div>
+    <div class="h-title">上下文压缩的正确姿势</div>
+    <div class="compare">
+      <div class="compare-col bad">
+        <div class="cc-label">✗ 无引导压缩</div>
+        <div class="cc-text">丢失文件修改列表<br>遗忘关键约束<br>重复犯错<br>需要反复提醒</div>
+      </div>
+      <div class="compare-col good">
+        <div class="cc-label">✓ 带指令压缩</div>
+        <div class="cc-text">/compact 聚焦 API 变更<br>保留修改文件清单<br>记住硬性约束<br>压缩后无感继续</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">在 CLAUDE.md 中写常驻规则，每次压缩自动遵守</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 5：CLAUDE.md 上下文层次 ===== -->
+<div class="slide-label">配图 5 · 放在「用 @imports 保持 CLAUDE.md 精简」之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">5/10</div>
+  <div class="ghost-num">05</div>
+  <div class="content">
+    <div class="section-tag-medium">CONTEXT LAYERS</div>
+    <div class="h-title">上下文的四层架构</div>
+    <div class="flow-row" style="flex-direction:column; gap:12px; align-items:stretch; max-width:500px; margin:0 auto;">
+      <div class="flow-card" style="width:100%; flex-direction:row; justify-content:space-between; padding:14px 20px;">
+        <div class="fc-title">CLAUDE.md</div>
+        <div class="fc-desc">每次加载 · 项目铁律</div>
+      </div>
+      <div class="flow-card" style="width:100%; flex-direction:row; justify-content:space-between; padding:14px 20px;">
+        <div class="fc-title">.claude/rules/</div>
+        <div class="fc-desc">条件加载 · 按文件类型</div>
+      </div>
+      <div class="flow-card" style="width:100%; flex-direction:row; justify-content:space-between; padding:14px 20px;">
+        <div class="fc-title">@imports</div>
+        <div class="fc-desc">按需读取 · 不占主空间</div>
+      </div>
+      <div class="flow-card" style="width:100%; flex-direction:row; justify-content:space-between; padding:14px 20px;">
+        <div class="fc-title">Skills</div>
+        <div class="fc-desc">智能触发 · 任务相关时加载</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 6：权限模型 ===== -->
+<div class="slide-label">配图 6 · 放在「用 /sandbox 让 Claude 放手干活又不怕出事」之后</div>
+<div class="slide light" style="height:420px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">6/10</div>
+  <div class="ghost-num">06</div>
+  <div class="content">
+    <div class="section-tag-medium">SECURITY</div>
+    <div class="h-title">权限安全三层防护</div>
+    <div class="grid-3">
+      <div class="g-card" style="text-align:center;">
+        <div class="gc-title">/permissions</div>
+        <div class="gc-desc" style="margin-top:6px;">白名单命令<br>免确认执行<br>保持流畅</div>
+      </div>
+      <div class="g-card" style="text-align:center;">
+        <div class="gc-title">/sandbox</div>
+        <div class="gc-desc" style="margin-top:6px;">OS 级隔离<br>文件写入受限<br>网络白名单</div>
+      </div>
+      <div class="g-card" style="text-align:center;">
+        <div class="gc-title">Hooks</div>
+        <div class="gc-desc" style="margin-top:6px;">拦截危险命令<br>自动格式化<br>保持关键上下文</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">macOS 底层用 Seatbelt，Linux 用 bubblewrap 实现进程沙箱</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 7：Hooks 系统 ===== -->
+<div class="slide-label">配图 7 · 放在「用 PostToolUse Hook 实现自动格式化」之后</div>
+<div class="slide dark" style="height:440px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">7/10</div>
+  <div class="ghost-num">07</div>
+  <div class="content">
+    <div class="section-tag-medium">HOOKS SYSTEM</div>
+    <div class="h-title">四种 Hook 时机</div>
+    <div class="grid-2">
+      <div class="g-card">
+        <div class="gc-title">PreToolUse</div>
+        <div class="gc-desc">工具执行前触发<br>拦截 rm -rf、drop table<br>在破坏发生前阻止</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-title">PostToolUse</div>
+        <div class="gc-desc">工具执行后触发<br>自动格式化代码<br>运行 ESLint --fix</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-title">Notification</div>
+        <div class="gc-desc">压缩时触发<br>重新注入关键上下文<br>防止丢失任务焦点</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-title">Stop</div>
+        <div class="gc-desc">响应完成时触发<br>播放提示音<br>切出去干别的</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 8：高阶 - 多会话协作模式 ===== -->
+<div class="slide-label">配图 8 · 放在「Agent Teams 做多会话协同」之后</div>
+<div class="slide light" style="height:420px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">8/10</div>
+  <div class="ghost-num">08</div>
+  <div class="content">
+    <div class="section-tag-medium">ADVANCED PATTERNS</div>
+    <div class="h-title">多会话协作模式</div>
+    <div class="grid-2">
+      <div class="g-card" style="text-align:center;">
+        <div class="gc-title">Agent Teams</div>
+        <div class="gc-desc" style="margin-top:8px;">Team Lead 分配任务<br>3-5 个 Teammate<br>独立上下文 + 共享任务列表<br>并行重构多模块</div>
+      </div>
+      <div class="g-card" style="text-align:center;">
+        <div class="gc-title">写+审分离</div>
+        <div class="gc-desc" style="margin-top:8px;">Session A 实现功能<br>Session B 做 Code Review<br>审查者零妥协偏见<br>对话式深入讨论</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">避免不同 Teammate 修改同一文件，以免相互覆盖</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 9：批量操作模式 ===== -->
+<div class="slide-label">配图 9 · 放在「用 claude -p 进行批量操作」之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">9/10</div>
+  <div class="ghost-num">09</div>
+  <div class="content">
+    <div class="section-tag-medium">BATCH MODE</div>
+    <div class="h-title">交互 vs 非交互模式</div>
+    <div class="compare">
+      <div class="compare-col bad" style="background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12);">
+        <div class="cc-label" style="color:rgba(255,255,255,0.6);">交互模式（默认）</div>
+        <div class="cc-text">你打一句，它回一句<br>适合探索性任务<br>需要人类在场<br>单文件处理</div>
+      </div>
+      <div class="compare-col good">
+        <div class="cc-label">非交互 claude -p</div>
+        <div class="cc-text">传入提示词，执行完退出<br>可嵌入 shell 脚本<br>--allowedTools 限制操作<br>& 并行 + wait 等待</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">适用于：批量迁移、格式转换、逐文件的重复性操作</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 10：核心心得总结 ===== -->
+<div class="slide-label">配图 10 · 放在「写在最后」之后</div>
+<div class="slide dark" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">10/10</div>
+  <div class="content" style="align-items:center; text-align:center;">
+    <div class="section-tag-medium">TAKEAWAY</div>
+    <div class="big-num">ROI</div>
+    <div class="big-num-desc" style="margin-top:16px;">提示词与上下文管理</div>
+    <div style="margin-top:20px; max-width:500px;">
+      <div class="info-row" style="justify-content:center;">
+        <div class="info-dot"></div>
+        <div class="info-text" style="text-align:left;">投入在"元工作"上的时间，回报率远高于具体编码</div>
+      </div>
+      <div class="info-row" style="justify-content:center;">
+        <div class="info-dot"></div>
+        <div class="info-text" style="text-align:left;">大任务拆小步骤 + 清晰验收标准 > 一个模糊的大需求</div>
+      </div>
+      <div class="info-row" style="justify-content:center;">
+        <div class="info-dot"></div>
+        <div class="info-text" style="text-align:left;">纠缠两次无果 → /clear 重开，融入已有经验</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await renderSlide(slides[i]);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`配图-${String(i+1).padStart(2,'0')}.png`, blob);
+  }
+  const content = await zip.generateAsync({type: 'blob'});
+  saveAs(content, 'claude-code-tips-配图.zip');
+}
+
+async function downloadCurrent() {
+  const slides = document.querySelectorAll('.slide');
+  const idx = Math.round(window.scrollY / 500);
+  const target = slides[Math.min(idx, slides.length - 1)];
+  const canvas = await renderSlide(target);
+  canvas.toBlob(blob => saveAs(blob, `配图-${idx+1}.png`), 'image/png');
+}
+</script>
+</body>
+</html>

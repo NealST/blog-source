@@ -61,7 +61,7 @@
   }
 
   /* === 浅底 === */
-  .bg-light { position: absolute; inset: 0; background: #F2EDE3; }
+  .bg-light { position: absolute; inset: 0; background: #FFFFFF; }  /* 纯白，与宣纸底页面区分 */
 
   /* === 内容层 === */
   .content {

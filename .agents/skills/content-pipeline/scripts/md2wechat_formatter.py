@@ -150,6 +150,8 @@ body {{
   margin: 36px 0 12px;
   padding-bottom: 0;
   border-bottom: none;
+  border-left: 4px solid {t['accent']};
+  padding-left: 12px;
   letter-spacing: 0.3px;
   line-height: 1.35;
 }}
@@ -205,12 +207,12 @@ body {{
   margin: 0 0 16px;
   border-radius: 6px;
   overflow: hidden;
-  border: 1px solid {t['pre_border']};
+  border: none;
   background: {t['pre_bg']};
 }}
 .code-badge {{
   display: block;
-  background: rgba(196,149,106,0.12);
+  background: #2C2A28;
   color: {t['accent']};
   font-family: 'SF Mono', Menlo, Consolas, monospace;
   font-size: 11px;
@@ -218,16 +220,7 @@ body {{
   padding: 6px 14px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(196,149,106,0.18);
-}}
-.code-wrap pre {{
-  background: {t['pre_bg']};
-  border: none;
-  border-radius: 0;
-  padding: 14px 16px;
-  margin: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid #3D3632;
 }}
 .content pre {{
   background: {t['pre_bg']};
@@ -238,6 +231,15 @@ body {{
   margin: 0 0 16px;
   -webkit-overflow-scrolling: touch;
 }}
+.code-wrap pre {{
+  background: {t['pre_bg']};
+  border: none;
+  border-radius: 0;
+  padding: 14px 16px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}}
 .content pre code {{
   background: none;
   border: none;
@@ -246,7 +248,7 @@ body {{
   font-size: 13px;
   line-height: 1.6;
   color: {t['pre_text']};
-  word-break: break-all;
+  word-break: break-word;
 }}
 .content blockquote {{
   margin: 16px 0 20px;
@@ -812,19 +814,7 @@ def wrap_blockquote_cite(html):
 
 
 def add_heading_decorations(html, theme):
-    """Inject a small accent dot before h2 text for visual hierarchy."""
-    if not theme:
-        return html
-    accent = theme['accent']
-    dot_span = (
-        f'<span style="color:{accent};margin-right:8px;'
-        f'font-size:10px;vertical-align:middle;">\u25cf</span>'
-    )
-    html = re.sub(
-        r'<h2([^>]*)>',
-        lambda m: f'<h2{m.group(1)}>{dot_span}',
-        html,
-    )
+    """No-op: h2 decoration now uses border-left in CSS (inline-block spans get stripped by WeChat)."""
     return html
 
 
@@ -901,9 +891,9 @@ def postprocess_content(html, theme=None):
     accent = theme['accent'] if theme else '#C4956A'
     dots_html = (
         f'<p style="text-align:center;color:{accent};'
-        f'font-size:16px;letter-spacing:14px;line-height:1;'
-        f'margin:40px 0;opacity:0.5;">'
-        '\u00b7\u00b7\u00b7</p>'
+        f'font-size:18px;letter-spacing:18px;line-height:1;'
+        f'margin:24px 0;opacity:0.55;">'
+        '\u00b7\u00a0\u00b7\u00a0\u00b7</p>'
     )
     html = re.sub(r'<hr\s*/?\s*>', dots_html, html)
     html = add_end_mark(html, theme)
@@ -948,12 +938,12 @@ def sanitize_for_wechat(html_str, theme=None):
 
     # 3. Strip CSS properties WeChat editor doesn't support
     unsupported_props = [
-        r'overflow-x\s*:\s*[^;]+;?\s*',
-        r'-webkit-overflow-scrolling\s*:\s*[^;]+;?\s*',
-        r'overflow-wrap\s*:\s*[^;]+;?\s*',
-        r'word-wrap\s*:\s*[^;]+;?\s*',
-        r'table-layout\s*:\s*[^;]+;?\s*',
-        r'border-collapse\s*:\s*[^;]+;?\s*',
+        r'overflow-x\s*:\s*[^;"\']+;?\s*',
+        r'-webkit-overflow-scrolling\s*:\s*[^;"\']+;?\s*',
+        r'overflow-wrap\s*:\s*[^;"\']+;?\s*',
+        r'word-wrap\s*:\s*[^;"\']+;?\s*',
+        r'table-layout\s*:\s*[^;"\']+;?\s*',
+        r'border-collapse\s*:\s*[^;"\']+;?\s*',
     ]
     for prop_re in unsupported_props:
         result = re.sub(prop_re, '', result)
@@ -1074,10 +1064,30 @@ def main():
         keep_style_tags=False,
         cssutils_logging_level='CRITICAL',
     )
-    # WeChat editor strips newlines inside <pre> — convert \n to <br>
+    # WeChat editor strips newlines and collapses spaces inside <pre> —
+    # convert \n to <br> and spaces in text nodes to &nbsp;
+    def _fix_code_for_wechat(m):
+        pre_attrs, code_attrs, code_body = m.group(1), m.group(2), m.group(3)
+        code_body = code_body.replace(chr(10), '<br>')
+        # Replace spaces in text nodes only (not inside HTML tag attributes)
+        fixed = []
+        in_tag = False
+        for ch in code_body:
+            if ch == '<':
+                in_tag = True
+                fixed.append(ch)
+            elif ch == '>':
+                in_tag = False
+                fixed.append(ch)
+            elif ch == ' ' and not in_tag:
+                fixed.append('&nbsp;')
+            else:
+                fixed.append(ch)
+        return f'<pre{pre_attrs}><code{code_attrs}>{"".join(fixed)}</code></pre>'
+
     full_html = re.sub(
-        r'<pre[^>]*>\s*<code([^>]*)>([\s\S]*?)</code>\s*</pre>',
-        lambda m: f'<pre{m.group(0).split("<pre")[1].split(">")[0]}><code{m.group(1)}>{m.group(2).replace(chr(10), "<br>")}</code></pre>',
+        r'<pre([^>]*)>\s*<code([^>]*)>([\s\S]*?)</code>\s*</pre>',
+        _fix_code_for_wechat,
         full_html,
     )
 
