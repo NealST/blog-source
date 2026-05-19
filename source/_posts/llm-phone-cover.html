@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>LLM Phone — 头图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; font-family: -apple-system, 'PingFang SC', sans-serif;
+         display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; }
+  .toolbar { position: fixed; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 999; }
+  .toolbar button { padding: 8px 16px; background: #C4956A; color: #1C1C1E; border: none;
+                    border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 13px; }
+  .toolbar button:hover { background: #d4a878; }
+  .cover-wrap { display: flex; flex-direction: column; gap: 32px; align-items: center; }
+  .cover-label { color: #888; font-size: 13px; letter-spacing: 1px; }
+
+  .cover { width: 900px; height: 383px; position: relative; overflow: hidden; border-radius: 8px; }
+  .bg-dark { position: absolute; inset: 0; background:
+    radial-gradient(ellipse at 78% 50%, #2C2A28 0%, #1C1C1E 60%); }
+
+  .brand { position: absolute; top: 26px; left: 32px; display: flex; align-items: center; gap: 8px; z-index: 5; }
+  .brand-text { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 2px; font-weight: 600; }
+
+  .content { position: absolute; inset: 0; padding: 0 60px; display: flex; align-items: center; z-index: 2; }
+  .left { flex: 1; max-width: 550px; }
+  .editor-tag { display: inline-flex; align-items: center; gap: 10px;
+                font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #C4956A; margin-bottom: 18px; }
+  .editor-tag::before { content: ''; width: 32px; height: 1px; background: #C4956A; }
+  .title { font-size: 56px; font-weight: 800; letter-spacing: -0.022em;
+           line-height: 1.16; color: #F2EDE3; }
+  .title .gold { color: #C4956A; }
+  .subtitle { font-size: 17px; font-weight: 400; font-style: italic;
+              color: rgba(255,255,255,0.55); margin-top: 18px; max-width: 520px; line-height: 1.5; }
+
+  .right { width: 250px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone {
+    width: 130px; height: 230px; border-radius: 24px;
+    background: #2C2A28; border: 2px solid rgba(196,149,106,0.45);
+    position: relative; padding: 16px 12px;
+    box-shadow: 0 0 60px rgba(196,149,106,0.18);
+  }
+  .phone::before {
+    content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 36px; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.15);
+  }
+  .phone .screen {
+    margin-top: 14px; height: calc(100% - 22px); border-radius: 12px;
+    background: linear-gradient(180deg, #1C1C1E 0%, #0a0a0a 100%);
+    padding: 14px 10px; display: flex; flex-direction: column; gap: 8px;
+    border: 1px solid rgba(196,149,106,0.18);
+  }
+  .phone .bubble {
+    font-size: 9px; padding: 6px 8px; border-radius: 6px;
+    color: rgba(242,237,227,0.85); font-family: 'SF Mono', monospace;
+  }
+  .bubble.user { background: rgba(196,149,106,0.18); align-self: flex-end; max-width: 72%; }
+  .bubble.ai { background: rgba(255,255,255,0.06); align-self: flex-start; max-width: 88%; }
+  .bubble.ai .typing { color: #C4956A; }
+  .stat-row { display: flex; gap: 14px; align-items: center; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 18px; font-weight: 800; color: #C4956A; line-height: 1; }
+  .stat .lbl { font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 1px; margin-top: 4px; }
+
+  .footer-tags { position: absolute; bottom: 22px; right: 32px; display: flex; gap: 10px; z-index: 4; }
+  .tag { font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 1px; }
+
+  /* secondary 200x200 cover */
+  .cover-sec { width: 200px; height: 200px; position: relative; overflow: hidden; border-radius: 8px; }
+  .cover-sec .bg-dark { position: absolute; inset: 0; background:
+    radial-gradient(ellipse at center, #2C2A28 0%, #1C1C1E 70%); }
+  .cover-sec .sec-content { position: absolute; inset: 0; display: flex; flex-direction: column;
+                            align-items: center; justify-content: center; gap: 8px; z-index: 2; padding: 16px; }
+  .cover-sec .sec-tag { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: #C4956A; }
+  .cover-sec .sec-title { font-size: 22px; font-weight: 800; color: #F2EDE3; line-height: 1.2; text-align: center; }
+  .cover-sec .sec-bar { width: 28px; height: 2px; background: #C4956A; }
+  .cover-sec .sec-data { font-size: 11px; color: rgba(255,255,255,0.55); }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="downloadCover('cover-main','llm-phone-cover-main')">下载主图 900×383</button>
+  <button onclick="downloadCover('cover-secondary','llm-phone-cover-sec')">下载次图 200×200</button>
+</div>
+
+<div class="cover-wrap">
+  <div>
+    <div class="cover-label">主头图（公众号头条 900 × 383）</div>
+    <div class="cover" id="cover-main">
+      <div class="bg-dark"></div>
+      <div class="brand">
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+          <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+          <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+          <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+          <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+          <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+        </svg>
+        <div class="brand-text">墨筝</div>
+      </div>
+
+      <div class="content">
+        <div class="left">
+          <div class="editor-tag">DEPLOY · ON-DEVICE</div>
+          <div class="title">把大模型<br/><span class="gold">塞进手机</span></div>
+          <div class="subtitle">iOS / Android 全离线部署 — Unsloth + TorchAO + ExecuTorch 实战</div>
+        </div>
+        <div class="right">
+          <div class="phone">
+            <div class="screen">
+              <div class="bubble user">Qwen3 在手机上能跑多快？</div>
+              <div class="bubble ai">实测 <span class="typing">▍</span></div>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><div class="num">40</div><div class="lbl">TOK/S</div></div>
+            <div class="stat"><div class="num">472M</div><div class="lbl">SIZE</div></div>
+            <div class="stat"><div class="num">100%</div><div class="lbl">OFFLINE</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-tags">
+        <div class="tag">EXECUTORCH</div>
+        <div class="tag">·</div>
+        <div class="tag">QWEN3 · GEMMA3 · LLAMA3</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="cover-label">次图（200 × 200）</div>
+    <div class="cover-sec" id="cover-secondary">
+      <div class="bg-dark"></div>
+      <div class="sec-content">
+        <div class="sec-tag">ON-DEVICE LLM</div>
+        <div class="sec-title">塞进<br/>手机</div>
+        <div class="sec-bar"></div>
+        <div class="sec-data">40 tok/s · 离线</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+async function downloadCover(id, fname) {
+  const el = document.getElementById(id);
+  const orig = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-dark');
+  const bg = bgEl ? '#1C1C1E' : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = orig;
+  const flat = flattenAlpha(raw, bg);
+  flat.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = fname + '.png';
+    a.click(); URL.revokeObjectURL(url);
+  }, 'image/png');
+}
+</script>
+</body>
+</html>

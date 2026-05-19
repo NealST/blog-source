@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "created": "2026-05-11T10:00:00+08:00",
+  "source": "source/_posts/openclaw-hermes.md",
+  "title": "Hermes 与 OpenClaw：怎么选",
+  "outputs": {
+    "wechat": {
+      "markdown": "source/_posts/openclaw-hermes.md",
+      "html": "source/_posts/openclaw-hermes_preview.html",
+      "cover_image": "/Users/nealkaffrey/Downloads/openclaw-hermes-头图.png",
+      "title": "Hermes 与 OpenClaw：怎么选",
+      "author": "墨筝",
+      "digest": "Hermes 是学习型智能体优先，OpenClaw 是消息网关优先。前者偏执行面，后者偏控制面——选型不必二选一，分层组合才是正解。",
+      "images": [
+        "/Users/nealkaffrey/Downloads/openclaw-hermes-配图/配图-1-一句话区分.png",
+        "/Users/nealkaffrey/Downloads/openclaw-hermes-配图/配图-2-Hermes能力.png",
+        "/Users/nealkaffrey/Downloads/openclaw-hermes-配图/配图-3-OpenClaw渠道.png",
+        "/Users/nealkaffrey/Downloads/openclaw-hermes-配图/配图-4-各自问题.png",
+        "/Users/nealkaffrey/Downloads/openclaw-hermes-配图/配图-5-选型建议.png",
+        "/Users/nealkaffrey/Downloads/openclaw-hermes-配图/配图-6-分层架构.png"
+      ]
+    }
+  },
+  "cover": {
+    "style": "medium",
+    "html": "source/_posts/openclaw-hermes_cover.html",
+    "size": "900x383"
+  },
+  "illustrations": {
+    "style": "medium",
+    "html": "source/_posts/openclaw-hermes_illustrations.html"
+  },
+  "layout": {
+    "theme": "medium",
+    "font_size": "medium"
+  }
+}

@@ -250,6 +250,82 @@ export async function uploadLocalImagesInHtml(html: string, token: string): Prom
   return processed;
 }
 
+/** Scan HTML for remote image URLs (non-mmbiz) and re-upload them through WeChat CDN */
+export async function uploadRemoteImagesInHtml(html: string, token: string): Promise<string> {
+  // Match <img src="http(s)://..."> where the host is NOT a WeChat CDN
+  const remoteImgRegex = /<img\b[^>]*\bsrc=["'](https?:\/\/[^"']+)["'][^>]*>/gi;
+  const tasks: Array<{ full: string; url: string }> = [];
+
+  let match: RegExpExecArray | null;
+  while ((match = remoteImgRegex.exec(html)) !== null) {
+    const rawUrl = match[1];
+    // HTML attributes escape & as &amp; — fetch needs the decoded URL or it returns 400.
+    const url = rawUrl
+      .replace(/&amp;/g, '&')
+      .replace(/&#x2F;/gi, '/')
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"');
+    // Skip URLs that are already on a WeChat CDN
+    if (/mmbiz\.qpic\.cn|mmbiz\.qlogo\.cn|mp\.weixin\.qq\.com/i.test(url)) continue;
+    tasks.push({ full: match[0], url });
+  }
+
+  if (tasks.length === 0) return html;
+
+  console.log(`  [wechat-api] Found ${tasks.length} remote image(s) to mirror to WeChat CDN...`);
+
+  let processed = html;
+  let uploaded = 0;
+  let failed = 0;
+
+  for (const { full, url } of tasks) {
+    try {
+      // Download the remote image — many CDNs (e.g. gitbook) require browser-like
+      // UA + Referer, otherwise they return 400/403.
+      let referer: string;
+      try {
+        const u = new URL(url);
+        referer = `${u.protocol}//${u.host}/`;
+      } catch {
+        referer = url;
+      }
+      const downloadHeaders = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+        'Referer': referer,
+      };
+      const res = await fetchWithRetry(url, { ...BUN_FETCH_OPTS, headers: downloadHeaders });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const buf = Buffer.from(await res.arrayBuffer());
+      const contentType = res.headers.get('content-type') || 'image/png';
+      const extFromCT = contentType.split('/')[1]?.split(';')[0] || 'png';
+      const ext = (extFromCT === 'jpeg' ? 'jpg' : extFromCT).toLowerCase();
+      const safeExt = ['png', 'jpg', 'gif', 'webp', 'bmp'].includes(ext) ? ext : 'png';
+
+      // Write to a temp file so we can reuse uploadContentImage(form-data path)
+      const tmpPath = path.join(os.tmpdir(), `wxremote-${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExt}`);
+      fs.writeFileSync(tmpPath, buf);
+
+      try {
+        const cdnUrl = await uploadContentImage(token, tmpPath);
+        // Replace just the src attribute inside this <img> tag
+        const replaced = full.replace(/\bsrc=["'][^"']+["']/i, `src="${cdnUrl}"`);
+        processed = processed.replace(full, replaced);
+        uploaded++;
+        console.log(`  [wechat-api]   ✓ ${url.slice(0, 80)}${url.length > 80 ? '…' : ''}`);
+      } finally {
+        try { fs.unlinkSync(tmpPath); } catch {}
+      }
+    } catch (err) {
+      console.warn(`  [wechat-api]   ✗ ${url.slice(0, 80)}: ${err instanceof Error ? err.message : err}`);
+      failed++;
+    }
+  }
+
+  console.log(`  [wechat-api] Remote images: ${uploaded} uploaded, ${failed} failed`);
+  return processed;
+}
+
 export function extractArticleContent(htmlPath: string): { content: string; styles: string; hasOuterDiv: boolean } {
   const html = fs.readFileSync(htmlPath, 'utf-8');
 
@@ -428,6 +504,9 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
   // 5. Upload local images referenced in HTML to WeChat CDN
   let contentWithCdnImages = await uploadLocalImagesInHtml(finalContent, token);
 
+  // 5a. Mirror remote (non-mmbiz) images to WeChat CDN — WeChat strips外链图片
+  contentWithCdnImages = await uploadRemoteImagesInHtml(contentWithCdnImages, token);
+
   // 5.5 Upload manifest images and insert into article content
   if (wechatData.images && wechatData.images.length > 0) {
     console.log(`  [wechat-api] Uploading ${wechatData.images.length} article image(s)...`);
@@ -457,7 +536,7 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
       let insertedCount = 0;
 
       for (const { cdnUrl, fileName } of uploadedImages) {
-        const imgTag = `<section style="text-align:center;margin:20px 0;"><img src="${cdnUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" /></section>`;
+        const imgTag = `<section style="text-align:center;margin:8px 0;"><img src="${cdnUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" /></section>`;
 
         // Try placeholder comment: <!-- IMAGE:配图-1.png -->
         const placeholder = `<!-- IMAGE:${fileName} -->`;
@@ -481,7 +560,7 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
       if (insertedCount === 0) {
         console.log(`  [wechat-api] No image placeholders found in HTML, appending ${uploadedImages.length} image(s) at end`);
         const allImgTags = uploadedImages
-          .map(({ cdnUrl }) => `<section style="text-align:center;margin:20px 0;"><img src="${cdnUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" /></section>`)
+          .map(({ cdnUrl }) => `<section style="text-align:center;margin:8px 0;"><img src="${cdnUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" /></section>`)
           .join('\n');
         contentWithCdnImages += '\n' + allImgTags;
       } else {

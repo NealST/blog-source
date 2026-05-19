@@ -5,7 +5,7 @@ md2wechat_formatter.py — Markdown → WeChat HTML 排版工具
 产出 _preview.html，浏览器打开 → 全选复制 → 粘贴到公众号编辑器。
 
 用法：
-  python3 md2wechat_formatter.py article.md --theme mozheng --font-size medium
+  python3 md2wechat_formatter.py article.md --theme medium --font-size medium
   python3 md2wechat_formatter.py article.md -o output.html
 """
 
@@ -285,7 +285,7 @@ body {{
   word-break: break-all;
 }}
 .code-wrap {{
-  margin: 0 0 16px;
+  margin: 16px 0;
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid {t.get('pre_border', t['code_border'])};
@@ -318,7 +318,7 @@ body {{
   border-radius: 6px;
   padding: 14px 16px;
   overflow-x: auto;
-  margin: 0 0 16px;
+  margin: 16px 0;
   -webkit-overflow-scrolling: touch;
 }}
 .content pre code {{
@@ -338,7 +338,7 @@ body {{
   color: {'rgba(0,0,0,0.68)' if is_medium else '#666'};
   border-radius: {'0' if is_medium else '0 4px 4px 0'};
   font-style: {'italic' if is_medium else 'normal'};
-  font-size: {'17px' if is_medium else 'inherit'};
+  font-size: {'15px' if is_medium else 'inherit'};
   line-height: {'1.7' if is_medium else 'inherit'};
   letter-spacing: {'-.003em' if is_medium else 'inherit'};
 }}
@@ -412,14 +412,14 @@ body {{
   line-height: 1;
 }}
 .content figure {{
-  margin: 24px 0;
+  margin: 12px 0;
   text-align: center;
 }}
 .content figure img {{
   margin: 0 auto;
 }}
 .content figcaption {{
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: {'14px' if is_medium else '13px'};
   color: {'rgba(0,0,0,0.54)' if is_medium else '#999'};
   font-style: italic;
@@ -430,7 +430,7 @@ body {{
   max-width: 100%;
   height: auto;
   border-radius: 4px;
-  margin: 8px 0;
+  margin: 4px 0;
 }}
 """
     return css
@@ -856,10 +856,10 @@ def wrap_code_with_badge(html):
             return full_pre
         lang = lang_match.group(1)
         return (
-            f'<div class="code-wrap">'
-            f'<div class="code-badge">{lang}</div>'
+            f'<section class="code-wrap">'
+            f'<section class="code-badge">{lang}</section>'
             f'{full_pre}'
-            f'</div>'
+            f'</section>'
         )
     return re.sub(r'<pre><code\s+class="[^"]+">[\s\S]*?</code></pre>', _wrap, html)
 
@@ -1030,11 +1030,11 @@ def main():
     parser = argparse.ArgumentParser(
         description='Markdown → WeChat HTML 排版工具',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='示例：python3 md2wechat_formatter.py article.md --theme mozheng --font-size medium',
+        epilog='示例：python3 md2wechat_formatter.py article.md --theme medium --font-size medium',
     )
     parser.add_argument('input', help='Markdown 文件路径')
-    parser.add_argument('--theme', choices=list(THEMES.keys()), default='mozheng',
-                        help='配色主题 (default: mozheng)')
+    parser.add_argument('--theme', choices=list(THEMES.keys()), default='medium',
+                        help='配色主题 (default: medium)')
     parser.add_argument('--layout', choices=list(LAYOUTS.keys()), default=None,
                         help='排版布局 (default: 跟随主题的 default_layout)')
     parser.add_argument('--font-size', choices=list(FONT_SIZES.keys()), default='medium',
