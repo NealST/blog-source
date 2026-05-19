@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>小红书图片 - Claude Code 48条实用技巧</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 30px 20px 80px;
+    padding-top: 70px;
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+
+  .slide {
+    width: 540px; height: 720px;
+    position: relative; overflow: hidden;
+    border-radius: 8px; margin-bottom: 40px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+
+  .bg-dark {
+    position: absolute; inset: 0; background: #1C1C1E;
+  }
+  .bg-dark::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 80% 15%, rgba(255,255,255,0.03) 0%, transparent 50%),
+      radial-gradient(circle at 20% 85%, rgba(0,0,0,0.08) 0%, transparent 50%);
+  }
+
+  .bg-light { position: absolute; inset: 0; background: #FFFFFF; }
+
+  .brand-tag {
+    position: absolute; top: 24px; left: 28px;
+    display: flex; align-items: center; gap: 8px; z-index: 3;
+  }
+  .brand-tag svg { width: 22px; height: 22px; }
+  .brand-tag span { font-size: 12px; font-weight: 600; letter-spacing: 1px; }
+  .brand-tag.light span { color: rgba(255,255,255,0.5); }
+  .brand-tag.dark span { color: rgba(28,28,30,0.4); }
+
+  .page-num {
+    position: absolute; bottom: 24px; right: 28px;
+    font-size: 12px; z-index: 3;
+  }
+  .page-num.light { color: rgba(255,255,255,0.2); }
+  .page-num.dark { color: rgba(28,28,30,0.2); }
+
+  .content {
+    position: absolute; inset: 0; padding: 28px;
+    display: flex; flex-direction: column; z-index: 2;
+  }
+
+  .accent-bar { width: 36px; height: 3px; background: #C4956A; border-radius: 2px; margin-bottom: 20px; }
+  .spacer { flex: 1; }
+
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(17,17,17,0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px; display: flex; align-items: center;
+    justify-content: center; gap: 12px;
+  }
+  .toolbar .btn {
+    background: #1C1C1E; color: #F2EDE3; border: none;
+    padding: 10px 24px; border-radius: 8px; font-size: 14px;
+    font-weight: 600; cursor: pointer;
+  }
+  .toolbar .btn.accent { background: #C4956A; }
+  .toolbar .progress { font-size: 13px; color: rgba(255,255,255,0.5); min-width: 100px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button class="btn" onclick="downloadOne()">下载当前</button>
+  <span class="progress" id="progress"></span>
+</div>
+
+<!-- 第 1 张：封面 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="justify-content:center;align-items:center;text-align:center;padding:60px 40px;">
+    <div style="font-size:72px;font-weight:900;color:#C4956A;line-height:1;margin-bottom:12px;">48</div>
+    <div style="font-size:36px;font-weight:900;color:#F2EDE3;line-height:1.3;letter-spacing:2px;">条 Claude Code<br>实用技巧</div>
+    <div style="width:48px;height:3px;background:#C4956A;border-radius:2px;margin:28px auto;"></div>
+    <div style="font-size:17px;color:rgba(242,237,227,0.6);line-height:1.8;letter-spacing:1px;">
+      半年日用沉淀 + 官方文档<br>+ 核心开发者分享
+    </div>
+    <div style="height:40px;"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+      <div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:6px 14px;font-size:12px;color:rgba(242,237,227,0.5);">基础操作</div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:6px 14px;font-size:12px;color:rgba(242,237,227,0.5);">工作流优化</div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:6px 14px;font-size:12px;color:rgba(242,237,227,0.5);">上下文管理</div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:6px 14px;font-size:12px;color:rgba(242,237,227,0.5);">高阶技巧</div>
+    </div>
+  </div>
+  <div class="page-num light">1/9</div>
+</div>
+
+<!-- 第 2 张：基础操作 Top 5 -->
+<div class="slide">
+  <div class="bg-light"></div>
+  <div class="brand-tag dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="white"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C4956A;margin-bottom:8px;">BASICS</div>
+    <div style="font-size:26px;font-weight:800;color:#1C1C1E;line-height:1.3;margin-bottom:6px;">基础操作篇</div>
+    <div style="font-size:13px;color:rgba(28,28,30,0.4);margin-bottom:18px;">先把这 5 个搞定，体验直接翻倍</div>
+    <div class="accent-bar"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="width:28px;height:28px;border-radius:50%;background:#C4956A;color:#F2EDE3;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">1</div>
+        <div><div style="font-size:14px;font-weight:700;color:#1C1C1E;">alias cc='claude'</div><div style="font-size:11px;color:#7A7876;margin-top:2px;">两个字母启动，省时省心</div></div>
+      </div>
+      <div style="display:flex;align-items:center;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="width:28px;height:28px;border-radius:50%;background:#C4956A;color:#F2EDE3;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">2</div>
+        <div><div style="font-size:14px;font-weight:700;color:#1C1C1E;">! 前缀直接跑命令</div><div style="font-size:11px;color:#7A7876;margin-top:2px;">!git status 立即执行，不浪费 token</div></div>
+      </div>
+      <div style="display:flex;align-items:center;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="width:28px;height:28px;border-radius:50%;background:#C4956A;color:#F2EDE3;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">3</div>
+        <div><div style="font-size:14px;font-weight:700;color:#1C1C1E;">Esc 停止，Esc+Esc 回滚</div><div style="font-size:11px;color:#7A7876;margin-top:2px;">大胆试，不行就撤</div></div>
+      </div>
+      <div style="display:flex;align-items:center;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="width:28px;height:28px;border-radius:50%;background:#C4956A;color:#F2EDE3;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">4</div>
+        <div><div style="font-size:14px;font-weight:700;color:#1C1C1E;">给反馈闭环，质量提升 2-3x</div><div style="font-size:11px;color:#7A7876;margin-top:2px;">让 Claude 跑测试→看结果→自己修</div></div>
+      </div>
+      <div style="display:flex;align-items:center;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="width:28px;height:28px;border-radius:50%;background:#C4956A;color:#F2EDE3;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">5</div>
+        <div><div style="font-size:14px;font-weight:700;color:#1C1C1E;">"ultrathink" 触发深度推理</div><div style="font-size:11px;color:#7A7876;margin-top:2px;">疑难问题先想清楚再动手</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num dark">2/9</div>
+</div>
+
+<!-- 第 3 张：工作流优化 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C4956A;margin-bottom:8px;">WORKFLOW</div>
+    <div style="font-size:26px;font-weight:800;color:#F2EDE3;line-height:1.3;margin-bottom:6px;">工作流优化篇</div>
+    <div style="font-size:13px;color:rgba(242,237,227,0.4);margin-bottom:18px;">让效率再上一个台阶</div>
+    <div class="accent-bar"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;">
+        <div style="font-size:22px;margin-bottom:8px;">🌲</div>
+        <div style="font-size:13px;color:#F2EDE3;font-weight:700;">--worktree</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.6;margin-top:4px;">隔离式并行开发<br>同时开 3-5 个任务</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;">
+        <div style="font-size:22px;margin-bottom:8px;">📋</div>
+        <div style="font-size:13px;color:#F2EDE3;font-weight:700;">Plan 模式</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.6;margin-top:4px;">复杂任务先规划<br>Shift+Tab 切换</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;">
+        <div style="font-size:22px;margin-bottom:8px;">🧹</div>
+        <div style="font-size:13px;color:#F2EDE3;font-weight:700;">/clear</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.6;margin-top:4px;">切换任务前清上下文<br>避免信息干扰</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;">
+        <div style="font-size:22px;margin-bottom:8px;">👥</div>
+        <div style="font-size:13px;color:#F2EDE3;font-weight:700;">Agent Teams</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.6;margin-top:4px;">多会话协同<br>3-5人分工</div>
+      </div>
+    </div>
+    <div style="background:rgba(196,149,106,0.12);border:1px solid rgba(196,149,106,0.25);border-radius:10px;padding:14px 16px;">
+      <div style="font-size:13px;color:rgba(242,237,227,0.8);line-height:1.7;">
+        <span style="color:#C4956A;font-weight:700;">核心原则：</span>纠缠两次没搞定？<br>果断 /clear 重开，别在烂上下文里挣扎
+      </div>
+    </div>
+  </div>
+  <div class="page-num light">3/9</div>
+</div>
+
+<!-- 第 4 张：上下文管理 -->
+<div class="slide">
+  <div class="bg-light"></div>
+  <div class="brand-tag dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="white"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C4956A;margin-bottom:8px;">CONTEXT</div>
+    <div style="font-size:26px;font-weight:800;color:#1C1C1E;line-height:1.3;margin-bottom:6px;">上下文是第一生产力</div>
+    <div style="font-size:13px;color:rgba(28,28,30,0.4);margin-bottom:18px;">管好上下文 = 管好 Claude 的输出质量</div>
+    <div class="accent-bar"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:18px;flex-shrink:0;">📎</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">@ 直接引用文件</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:3px;line-height:1.5;">跳过搜索，直接命中目标<br>省 token 省时间</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:18px;flex-shrink:0;">📦</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">CLAUDE.md 精简再精简</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:3px;line-height:1.5;">有效指令上限 ~150 条<br>超出后遵从度断崖下降</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:18px;flex-shrink:0;">🔗</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">@imports 按需加载</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:3px;line-height:1.5;">不让主文件臃肿<br>需要时才读取详情</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:18px;flex-shrink:0;">🗜️</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">/compact 带指令压缩</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:3px;line-height:1.5;">告诉 Claude 保留什么<br>防止压缩丢失关键信息</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num dark">4/9</div>
+</div>
+
+<!-- 第 5 张：Hooks 体系 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C4956A;margin-bottom:8px;">HOOKS</div>
+    <div style="font-size:26px;font-weight:800;color:#F2EDE3;line-height:1.3;margin-bottom:6px;">Hooks = 自动化的灵魂</div>
+    <div style="font-size:13px;color:rgba(242,237,227,0.4);margin-bottom:18px;">在关键节点自动触发脚本</div>
+    <div class="accent-bar"></div>
+    <!-- 模拟终端 -->
+    <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:18px;margin-bottom:14px;">
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);"></div>
+        <span style="font-size:9px;color:rgba(255,255,255,0.3);margin-left:6px;">settings.json</span>
+      </div>
+      <div style="font-size:11px;line-height:2;color:rgba(255,255,255,0.5);font-family:'SF Mono','Menlo',monospace;">
+        <span style="color:#C4956A;">PostToolUse</span>: Edit|Write<br>
+        → prettier --write <span style="color:#A8C97F;">"$FILE"</span><br><br>
+        <span style="color:#C4956A;">PreToolUse</span>: Bash<br>
+        → 拦截 rm -rf / drop table<br><br>
+        <span style="color:#C4956A;">Stop</span>: *<br>
+        → 播放提示音 🔔
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <div style="flex:1;background:rgba(196,149,106,0.12);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:#C4956A;font-weight:700;">自动格式化</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;">每次编辑后运行</div>
+      </div>
+      <div style="flex:1;background:rgba(196,149,106,0.12);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:#C4956A;font-weight:700;">安全防护</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;">危险命令直接拦截</div>
+      </div>
+      <div style="flex:1;background:rgba(196,149,106,0.12);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:#C4956A;font-weight:700;">上下文保持</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;">压缩后重注入</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num light">5/9</div>
+</div>
+
+<!-- 第 6 张：并行开发 -->
+<div class="slide">
+  <div class="bg-light"></div>
+  <div class="brand-tag dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="white"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C4956A;margin-bottom:8px;">PARALLEL</div>
+    <div style="font-size:26px;font-weight:800;color:#1C1C1E;line-height:1.3;margin-bottom:6px;">一个人开 5 条线</div>
+    <div style="font-size:13px;color:rgba(28,28,30,0.4);margin-bottom:18px;">Claude Code 团队说这是最大的效率提升点</div>
+    <div class="accent-bar"></div>
+    <!-- 流程图 -->
+    <div style="display:flex;flex-direction:column;gap:0;align-items:center;margin-bottom:20px;">
+      <div style="background:#1C1C1E;border-radius:10px;padding:14px 20px;text-align:center;width:100%;">
+        <div style="font-size:13px;color:#F2EDE3;font-weight:700;">claude --worktree feature-auth</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;">独立分支 + 独立文件系统 + 独立会话</div>
+      </div>
+      <div style="color:rgba(28,28,30,0.25);font-size:20px;padding:6px 0;">↓</div>
+      <div style="display:flex;gap:8px;width:100%;">
+        <div style="flex:1;background:rgba(28,28,30,0.06);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#1C1C1E;">Session A</div>
+          <div style="font-size:10px;color:#7A7876;margin-top:4px;">重构 auth</div>
+        </div>
+        <div style="flex:1;background:rgba(28,28,30,0.06);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#1C1C1E;">Session B</div>
+          <div style="font-size:10px;color:#7A7876;margin-top:4px;">写测试</div>
+        </div>
+        <div style="flex:1;background:rgba(28,28,30,0.06);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#1C1C1E;">Session C</div>
+          <div style="font-size:10px;color:#7A7876;margin-top:4px;">修 bug</div>
+        </div>
+      </div>
+    </div>
+    <div style="border-left:3px solid #C4956A;padding:10px 14px;background:rgba(28,28,30,0.04);border-radius:0 8px 8px 0;">
+      <div style="font-size:13px;color:#1C1C1E;line-height:1.7;">
+        <strong>搭配技巧：</strong><br>
+        • <span style="color:#C4956A;font-weight:600;">claude -p</span> 批量模式处理重复任务<br>
+        • <span style="color:#C4956A;font-weight:600;">/rename</span> + <span style="color:#C4956A;font-weight:600;">/color</span> 快速识别各会话<br>
+        • <span style="color:#C4956A;font-weight:600;">Ctrl+B</span> 长任务放后台
+      </div>
+    </div>
+  </div>
+  <div class="page-num dark">6/9</div>
+</div>
+
+<!-- 第 7 张：安全篇 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C4956A;margin-bottom:8px;">SAFETY</div>
+    <div style="font-size:26px;font-weight:800;color:#F2EDE3;line-height:1.3;margin-bottom:6px;">放手≠放任</div>
+    <div style="font-size:13px;color:rgba(242,237,227,0.4);margin-bottom:18px;">让 Claude 自主执行，但画好边界</div>
+    <div class="accent-bar"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="font-size:20px;">🏖️</div>
+          <div style="font-size:15px;font-weight:700;color:#F2EDE3;">/sandbox</div>
+        </div>
+        <div style="font-size:12px;color:rgba(242,237,227,0.6);line-height:1.7;">
+          操作系统层面画地为牢<br>
+          文件只能写项目内，网络只走白名单<br>
+          <span style="color:#C4956A;">搭配 auto-allow = 最佳体验</span>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="font-size:20px;">🤖</div>
+          <div style="font-size:15px;font-weight:700;color:#F2EDE3;">自定义 Agent</div>
+        </div>
+        <div style="font-size:12px;color:rgba(242,237,227,0.6);line-height:1.7;">
+          安全审查员（只读）/ 快速搜索（Haiku）<br>
+          <span style="color:#C4956A;">isolation: worktree</span> 隔离修改
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="font-size:20px;">⚠️</div>
+          <div style="font-size:15px;font-weight:700;color:#F2EDE3;">人工必审区</div>
+        </div>
+        <div style="font-size:12px;color:rgba(242,237,227,0.6);line-height:1.7;">
+          认证 · 支付 · 数据变更 · 破坏性操作<br>
+          这些永远需要人类把关
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num light">7/9</div>
+</div>
+
+<!-- 第 8 张：高阶技巧 -->
+<div class="slide">
+  <div class="bg-light"></div>
+  <div class="brand-tag dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="white"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C4956A;margin-bottom:8px;">ADVANCED</div>
+    <div style="font-size:26px;font-weight:800;color:#1C1C1E;line-height:1.3;margin-bottom:6px;">玩出花的高阶操作</div>
+    <div style="font-size:13px;color:rgba(28,28,30,0.4);margin-bottom:18px;">用好这些，生产力拉满</div>
+    <div class="accent-bar"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:24px;">🔀</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">/branch 会话分叉</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:2px;">高风险尝试？分一个出来试</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:24px;">🎤</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">让 Claude 采访你写规格</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:2px;">用 AskUserQuestion 深挖需求</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:24px;">👁️</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">双 Claude 交叉审查</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:2px;">一个写代码，另一个 Review</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:24px;">📱</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">手机远程操控</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:2px;">remote-control + claude.ai/code</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;background:rgba(28,28,30,0.05);">
+        <div style="font-size:24px;">🎯</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E;">Ctrl+G 编辑 Claude 的计划</div>
+          <div style="font-size:11px;color:#7A7876;margin-top:2px;">像 git rebase -i 一样精修执行步骤</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num dark">8/9</div>
+</div>
+
+<!-- 第 9 张：金句 + CTA -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="justify-content:center;align-items:center;text-align:center;padding:60px 40px;">
+    <div style="border-left:3px solid #C4956A;padding:16px 24px;margin-bottom:36px;text-align:left;">
+      <div style="font-size:18px;color:#F2EDE3;line-height:1.8;font-weight:600;">
+        投入在提示词和上下文管理上的时间，<br>回报率远高于投入在具体编码上的时间。
+      </div>
+    </div>
+    <div style="font-size:14px;color:rgba(242,237,227,0.5);line-height:1.8;margin-bottom:36px;">
+      一段精准的起始提示词<br>一份维护良好的 CLAUDE.md<br>一个恰到好处的反馈闭环<br>——这些"元工作"决定了输出质量的上限
+    </div>
+    <div style="width:48px;height:2px;background:rgba(196,149,106,0.4);border-radius:1px;margin:0 auto 28px;"></div>
+    <div style="border:1px solid rgba(242,237,227,0.2);border-radius:10px;padding:16px 24px;margin-bottom:16px;">
+      <div style="font-size:11px;color:rgba(242,237,227,0.3);margin-bottom:6px;letter-spacing:2px;">完整 48 条 · 公众号</div>
+      <div style="font-size:14px;color:#C4956A;font-weight:600;">墨筝</div>
+    </div>
+    <div style="font-size:12px;color:rgba(242,237,227,0.3);">收藏 + 关注 = 不迷路 ✦</div>
+  </div>
+  <div class="page-num light">9/9</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE = 2;
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+async function renderSlide(s) {
+  const origRadius = s.style.borderRadius;
+  s.style.borderRadius = '0';
+  const bgEl = s.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(s).backgroundColor;
+  const raw = await html2canvas(s, { scale: SCALE, useCORS: true, backgroundColor: null, width: 540, height: 720, logging: false });
+  s.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+function canvasToBlob(c) { return new Promise(r => c.toBlob(r, 'image/png')); }
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    progress.textContent = `渲染第 ${i+1}/${slides.length} 张...`;
+    const canvas = await renderSlide(slides[i]);
+    zip.file(`小红书-${String(i+1).padStart(2,'0')}.png`, await canvasToBlob(canvas));
+  }
+  progress.textContent = '打包中...';
+  saveAs(await zip.generateAsync({type:'blob'}), 'claude-code-tips-小红书.zip');
+  progress.textContent = `${slides.length} 张已下载`;
+}
+
+async function downloadOne() {
+  const slides = document.querySelectorAll('.slide');
+  const vc = window.innerHeight / 2;
+  let idx = 0, min = Infinity;
+  slides.forEach((s,i) => {
+    const d = Math.abs(s.getBoundingClientRect().top + 360 - vc);
+    if (d < min) { min = d; idx = i; }
+  });
+  const canvas = await renderSlide(slides[idx]);
+  saveAs(await canvasToBlob(canvas), `小红书-${String(idx+1).padStart(2,'0')}.png`);
+}
+</script>
+</body>
+</html>

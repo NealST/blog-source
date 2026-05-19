@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "created": "2026-05-19T12:00:00+08:00",
+  "title": "详解 Claude Code 的 /goal 命令：构建全自动编码工作流",
+  "outputs": {
+    "wechat": {
+      "html": "content/claude-code-goals/preview.html",
+      "cover_image": "content/claude-code-goals/cover.png",
+      "title": "详解 Claude Code 的 /goal 命令：构建全自动编码工作流",
+      "author": "墨筝",
+      "digest": "Claude Code 2.1.138 新引入的 /goal 命令把「按回车确认」交给了独立评估模型，配合 Auto Mode 实现真正的无人值守长程任务循环。本文拆解评估机制、条件设计原则、四类自动化机制对比及 SMART 落地实践。",
+      "markdown": "source/_posts/claude-code-goals.md",
+      "images": [
+        "content/claude-code-goals/配图-1.png",
+        "content/claude-code-goals/配图-2.png",
+        "content/claude-code-goals/配图-3.png",
+        "content/claude-code-goals/配图-4.png",
+        "content/claude-code-goals/配图-5.png"
+      ]
+    }
+  }
+}

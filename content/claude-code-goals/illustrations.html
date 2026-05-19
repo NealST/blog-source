@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>配图 - 详解 Claude Code 的 /goal 命令</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 12px 24px; display: flex; gap: 12px; z-index: 999; }
+.toolbar button { padding: 8px 16px; border: none; border-radius: 6px; background: #C4956A; color: #fff; font-size: 14px; cursor: pointer; font-weight: 600; }
+.toolbar button:hover { background: #b8845a; }
+.slide-label { color: rgba(255,255,255,0.5); font-size: 13px; margin: 40px 0 12px; align-self: flex-start; max-width: 800px; width: 100%; text-align: left; padding-left: calc(50% - 400px); }
+.slide-label:first-of-type { margin-top: 0; }
+.slide { width: 800px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 8px; }
+
+.bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+
+.brand { position: absolute; top: 18px; left: 22px; display: flex; align-items: center; gap: 6px; z-index: 3; }
+.brand svg { width: 20px; height: 20px; }
+.brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: rgba(255,255,255,0.5); }
+
+.page-num { position: absolute; bottom: 18px; right: 22px; font-size: 11px; z-index: 3; color: rgba(255,255,255,0.2); }
+
+.section-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative; margin-bottom: 16px; }
+.section-tag::before { content: ''; position: absolute; top: 0; left: 0; width: 28px; height: 1px; background: #C4956A; }
+
+.h-title { font-size: 28px; font-weight: 800; letter-spacing: -0.018em; line-height: 1.3; margin-bottom: 22px; color: #F2EDE3; }
+
+.content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 46px 56px; z-index: 2; }
+
+/* 评估循环图 */
+.loop-row { display: flex; align-items: center; gap: 8px; justify-content: center; flex-wrap: nowrap; margin-top: 8px; }
+.loop-card { flex-shrink: 0; width: 140px; padding: 16px 12px; border-radius: 10px; background: rgba(196,149,106,0.12); border: 1.5px solid rgba(196,149,106,0.28); text-align: center; }
+.loop-card.eval { background: rgba(168,201,127,0.10); border-color: rgba(168,201,127,0.32); }
+.loop-card .lc-icon { font-size: 18px; margin-bottom: 6px; }
+.loop-card .lc-title { font-size: 13px; font-weight: 700; color: #F2EDE3; }
+.loop-card .lc-desc { font-size: 10px; margin-top: 4px; color: rgba(255,255,255,0.5); line-height: 1.4; }
+.arrow { flex-shrink: 0; font-size: 18px; color: rgba(255,255,255,0.3); }
+.loop-return { display: flex; align-items: center; justify-content: center; margin-top: 18px; gap: 8px; color: rgba(196,149,106,0.6); font-size: 12px; font-family: monospace; }
+
+/* 对比双栏 */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; width: 100%; }
+.compare-col { padding: 18px; border-radius: 10px; }
+.compare-col.bad { background: rgba(255,95,87,0.07); border: 1px solid rgba(255,95,87,0.22); }
+.compare-col.good { background: rgba(168,201,127,0.07); border: 1px solid rgba(168,201,127,0.28); }
+.cc-label { font-size: 11px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.1em; }
+.compare-col.bad .cc-label { color: #FF7A73; }
+.compare-col.good .cc-label { color: #A8C97F; }
+.cc-cmd { font-family: 'SF Mono', monospace; font-size: 11px; background: rgba(0,0,0,0.35); padding: 8px 10px; border-radius: 5px; color: #F2EDE3; margin-bottom: 10px; line-height: 1.5; word-break: break-word; }
+.cc-note { font-size: 11px; line-height: 1.55; color: rgba(255,255,255,0.65); }
+
+/* 网格卡片 */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; }
+.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 100%; }
+.g-card { padding: 18px 16px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+.g-card .gc-tag { display: inline-block; font-size: 10px; font-weight: 700; color: #C4956A; letter-spacing: 0.12em; margin-bottom: 8px; }
+.g-card .gc-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: #F2EDE3; }
+.g-card .gc-desc { font-size: 11px; line-height: 1.55; color: rgba(255,255,255,0.55); }
+
+/* SMART 卡片 */
+.smart-card { padding: 14px 10px; border-radius: 10px; background: rgba(196,149,106,0.08); border: 1px solid rgba(196,149,106,0.28); text-align: center; }
+.smart-card .sm-letter { font-size: 32px; font-weight: 900; color: #C4956A; line-height: 1; }
+.smart-card .sm-word { font-size: 10px; font-weight: 700; color: #F2EDE3; margin-top: 8px; letter-spacing: 0.05em; }
+.smart-card .sm-desc { font-size: 9.5px; color: rgba(255,255,255,0.55); margin-top: 5px; line-height: 1.45; }
+
+/* ghost 编号 */
+.ghost-num { position: absolute; right: 30px; bottom: 16px; font-size: 110px; font-weight: 900; opacity: 0.04; color: #F2EDE3; pointer-events: none; z-index: 1; line-height: 1; }
+
+.kbd-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.kbd { display: inline-block; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; font-family: 'SF Mono', monospace; background: rgba(255,255,255,0.08); color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15); }
+</style>
+
+<script>
+function brandSvg() {
+  return `<svg viewBox="0 0 32 32" fill="none">
+    <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+    <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+    <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+    <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+    <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+    <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+  </svg>`;
+}
+</script>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button onclick="downloadCurrent()">下载当前</button>
+</div>
+
+<!-- ===== 配图 1：评估循环机制 ===== -->
+<div class="slide-label">配图 1 · 放在「评估流转机制」段落之后</div>
+<div class="slide" style="height:440px;">
+  <div class="bg-dark"></div>
+  <div class="brand"><span class="brand-svg"></span><span class="brand-text">墨筝</span></div>
+  <div class="content">
+    <div class="section-tag">EVALUATOR LOOP</div>
+    <h2 class="h-title">/goal 评估循环：一轮一判，直到收敛</h2>
+    <div class="loop-row">
+      <div class="loop-card">
+        <div class="lc-icon">⌨️</div>
+        <div class="lc-title">定义条件</div>
+        <div class="lc-desc">声明可验证<br/>的终态</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="loop-card">
+        <div class="lc-icon">🤖</div>
+        <div class="lc-title">Agent 执行</div>
+        <div class="lc-desc">读文件 / 跑命令<br/>/ 改代码</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="loop-card eval">
+        <div class="lc-icon">🔍</div>
+        <div class="lc-title">评估模型</div>
+        <div class="lc-desc">Haiku 读日志<br/>不调工具</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="loop-card">
+        <div class="lc-icon">✓</div>
+        <div class="lc-title">判定收敛</div>
+        <div class="lc-desc">达成则停止<br/>否则下一轮</div>
+      </div>
+    </div>
+    <div class="loop-return">↩  未达成则回到 Agent 继续执行</div>
+  </div>
+  <div class="page-num">01 / 05</div>
+  <div class="ghost-num">01</div>
+</div>
+
+<!-- ===== 配图 2：好/坏条件对比 ===== -->
+<div class="slide-label">配图 2 · 放在「编写可验证的条件标准」段落之后</div>
+<div class="slide" style="height:460px;">
+  <div class="bg-dark"></div>
+  <div class="brand"><span class="brand-svg"></span><span class="brand-text">墨筝</span></div>
+  <div class="content">
+    <div class="section-tag">CONDITION DESIGN</div>
+    <h2 class="h-title">好的条件 vs 失败的条件</h2>
+    <div class="compare">
+      <div class="compare-col bad">
+        <div class="cc-label">✗ 模糊命题</div>
+        <div class="cc-cmd">/goal the app is production-ready</div>
+        <div class="cc-note">「生产就绪」无法量化，没有任何命令的输出能证明，评估模型容易陷入死循环或产生幻觉。</div>
+        <div style="height:10px"></div>
+        <div class="cc-cmd">/goal refactor the codebase</div>
+        <div class="cc-note">没有终态、没有约束、没有断路器，等于让 Agent 永远在打转。</div>
+      </div>
+      <div class="compare-col good">
+        <div class="cc-label">✓ 可验证条件</div>
+        <div class="cc-cmd">/goal all tests in test/auth pass<br/>and the lint step is clean</div>
+        <div class="cc-note">最终态可由 stdout 直接观测，Lint 与测试结果都在日志流里清晰可校验。</div>
+        <div style="height:10px"></div>
+        <div class="cc-cmd">/goal every call site migrated<br/>and build succeeds, stop after 20 turns</div>
+        <div class="cc-note">终态明确 + 内置断路器，避免无限制重试与 Token 失控。</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">02 / 05</div>
+  <div class="ghost-num">02</div>
+</div>
+
+<!-- ===== 配图 3：四种自动化机制对比 ===== -->
+<div class="slide-label">配图 3 · 放在「内置工作流对比」段落之后</div>
+<div class="slide" style="height:460px;">
+  <div class="bg-dark"></div>
+  <div class="brand"><span class="brand-svg"></span><span class="brand-text">墨筝</span></div>
+  <div class="content">
+    <div class="section-tag">AUTONOMY MATRIX</div>
+    <h2 class="h-title">四种自动化机制：各司其职</h2>
+    <div class="grid-2">
+      <div class="g-card" style="border-color: rgba(196,149,106,0.35); background: rgba(196,149,106,0.08);">
+        <span class="gc-tag">/GOAL</span>
+        <div class="gc-title">模型仲裁的状态机循环</div>
+        <div class="gc-desc">跨轮次保持会话活跃，直至评估模型判定收敛。适配迁移、重构、测试修复等具备明确终态的任务。</div>
+      </div>
+      <div class="g-card">
+        <span class="gc-tag">/LOOP</span>
+        <div class="gc-title">时钟周期的心跳轮询</div>
+        <div class="gc-desc">按 5min、1h 等节拍重跑同一 prompt。适配 CI 嗅探、动态摘要，不适合「完成某段代码」这类收敛型任务。</div>
+      </div>
+      <div class="g-card">
+        <span class="gc-tag">STOP HOOKS</span>
+        <div class="gc-title">配置层的钩子断点</div>
+        <div class="gc-desc">挂载在 settings 中，作用域内每个会话触发。可执行确定性脚本或模型评估，灵活度高但前置配置较重。</div>
+      </div>
+      <div class="g-card">
+        <span class="gc-tag">AUTO MODE</span>
+        <div class="gc-title">免确认的自动应答</div>
+        <div class="gc-desc">移除单步工具调用的人工放行，但不驱动新轮次。需与 /goal 绑定才能形成真正的无人值守闭环。</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">03 / 05</div>
+  <div class="ghost-num">03</div>
+</div>
+
+<!-- ===== 配图 4：接入最佳实践三件套 ===== -->
+<div class="slide-label">配图 4 · 放在「项目接入最佳实践」段落之后</div>
+<div class="slide" style="height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand"><span class="brand-svg"></span><span class="brand-text">墨筝</span></div>
+  <div class="content">
+    <div class="section-tag">PROJECT SETUP</div>
+    <h2 class="h-title">提升 /goal 达成率的三件套</h2>
+    <div class="grid-3">
+      <div class="g-card">
+        <span class="gc-tag">① CONTEXT</span>
+        <div class="gc-title">CLAUDE.md 知识库</div>
+        <div class="gc-desc">在项目根目录沉淀架构决策、编码规范与 PR 准入标准，确保 30+ 轮的长程任务记忆一致。</div>
+      </div>
+      <div class="g-card">
+        <span class="gc-tag">② VALIDATE</span>
+        <div class="gc-title">PostToolUse Hooks</div>
+        <div class="gc-desc">在每次文件编辑后自动触发 Lint / 类型检查，将异常拦截前置，缩短发现到修复的链路。</div>
+      </div>
+      <div class="g-card">
+        <span class="gc-tag">③ UNATTENDED</span>
+        <div class="gc-title">Auto Mode 强开启</div>
+        <div class="gc-desc">移除文件 IO 等单步人工确认。Auto + /goal 的组合，是真正实现无干预编排的最后一块拼图。</div>
+      </div>
+    </div>
+    <div class="kbd-row" style="margin-top:20px; justify-content:center;">
+      <span class="kbd">CLAUDE.md</span>
+      <span class="kbd">PostToolUse</span>
+      <span class="kbd">Auto Mode</span>
+      <span class="kbd">/goal</span>
+    </div>
+  </div>
+  <div class="page-num">04 / 05</div>
+  <div class="ghost-num">04</div>
+</div>
+
+<!-- ===== 配图 5：SMART 原则 ===== -->
+<div class="slide-label">配图 5 · 放在「写在最后」段落之后</div>
+<div class="slide" style="height:440px;">
+  <div class="bg-dark"></div>
+  <div class="brand"><span class="brand-svg"></span><span class="brand-text">墨筝</span></div>
+  <div class="content">
+    <div class="section-tag">SMART PRINCIPLE</div>
+    <h2 class="h-title">用 SMART 原则定义 /goal 条件</h2>
+    <div class="grid-5">
+      <div class="smart-card">
+        <div class="sm-letter">S</div>
+        <div class="sm-word">Specific</div>
+        <div class="sm-desc">具体到模块、文件、命令</div>
+      </div>
+      <div class="smart-card">
+        <div class="sm-letter">M</div>
+        <div class="sm-word">Measurable</div>
+        <div class="sm-desc">stdout / exit code 可量化</div>
+      </div>
+      <div class="smart-card">
+        <div class="sm-letter">A</div>
+        <div class="sm-word">Achievable</div>
+        <div class="sm-desc">单轮可推进的合理粒度</div>
+      </div>
+      <div class="smart-card">
+        <div class="sm-letter">R</div>
+        <div class="sm-word">Relevant</div>
+        <div class="sm-desc">与当前任务紧密相关</div>
+      </div>
+      <div class="smart-card">
+        <div class="sm-letter">T</div>
+        <div class="sm-word">Time-bound</div>
+        <div class="sm-desc">stop after N turns 断路</div>
+      </div>
+    </div>
+    <div style="margin-top: 24px; padding: 14px 18px; border-radius: 8px; background: rgba(168,201,127,0.08); border: 1px solid rgba(168,201,127,0.25); font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.6;">
+      <strong style="color: #A8C97F;">关键洞察：</strong>把人类的「按回车确认」拆为两件事 —— <span style="color:#F2EDE3;">人定义验收标准</span>，<span style="color:#F2EDE3;">评估模型负责判定 match</span>。复杂任务拆子任务，逐个用 SMART 描述。
+    </div>
+  </div>
+  <div class="page-num">05 / 05</div>
+  <div class="ghost-num">05</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+document.querySelectorAll('.brand-svg').forEach(el => { el.outerHTML = brandSvg(); });
+
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+let currentIdx = 0;
+async function downloadCurrent() {
+  const slides = document.querySelectorAll('.slide');
+  const el = slides[currentIdx % slides.length];
+  const canvas = await renderSlide(el);
+  canvas.toBlob(blob => saveAs(blob, `配图-${currentIdx + 1}.png`), 'image/png');
+  currentIdx++;
+}
+
+async function downloadAll() {
+  const zip = new JSZip();
+  const slides = document.querySelectorAll('.slide');
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await renderSlide(slides[i]);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`配图-${i + 1}.png`, blob);
+  }
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, 'claude-code-goals-illustrations.zip');
+}
+</script>
+</body>
+</html>

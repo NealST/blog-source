@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "created": "2026-05-14T17:16:00+08:00",
+  "source": "https://blog.kilo.ai/p/we-tested-deepseek-v4-pro-and-flash",
+  "title": "同一套工作流规范再战：DeepSeek V4 Pro/Flash 对决 Claude Opus 4.7 与 Kimi 2.6",
+  "outputs": {
+    "wechat": {
+      "html": "/Users/mozheng/projects/nealst-blog-site/content/deepseek-v4-benchmark/preview.html",
+      "cover_image": "/Users/mozheng/projects/nealst-blog-site/content/deepseek-v4-benchmark/cover.png",
+      "title": "同一套工作流规范再战：DeepSeek V4 Pro/Flash 对决 Claude Opus 4.7 与 Kimi 2.6",
+      "author": "墨筝",
+      "digest": "同一套规范测四款模型，成本从$0.02到$17.89，分数从60到91。DeepSeek V4加入战局。",
+      "images": [
+        "/Users/mozheng/projects/nealst-blog-site/content/deepseek-v4-benchmark/配图-1.png",
+        "/Users/mozheng/projects/nealst-blog-site/content/deepseek-v4-benchmark/配图-2.png",
+        "/Users/mozheng/projects/nealst-blog-site/content/deepseek-v4-benchmark/配图-3.png",
+        "/Users/mozheng/projects/nealst-blog-site/content/deepseek-v4-benchmark/配图-4.png",
+        "/Users/mozheng/projects/nealst-blog-site/content/deepseek-v4-benchmark/配图-5.png",
+        "/Users/mozheng/projects/nealst-blog-site/content/deepseek-v4-benchmark/配图-6.png"
+      ]
+    }
+  }
+}
