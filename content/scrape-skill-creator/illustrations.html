@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>配图 - Scrape Skill Creator</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 12px 24px; display: flex; gap: 12px; z-index: 999; }
+.toolbar button { padding: 8px 16px; border: none; border-radius: 6px; background: #C4956A; color: #fff; font-size: 14px; cursor: pointer; font-weight: 600; }
+.toolbar button:hover { background: #b8845a; }
+.slide-label { color: rgba(255,255,255,0.5); font-size: 13px; margin: 40px 0 12px; align-self: flex-start; max-width: 800px; width: 100%; text-align: left; padding-left: calc(50% - 400px); }
+.slide-label:first-of-type { margin-top: 0; }
+.slide { width: 800px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 8px; }
+
+/* 背景 */
+.bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+.bg-light { position: absolute; inset: 0; background: #FFFFFF; }
+
+/* 品牌角标 */
+.brand { position: absolute; top: 18px; left: 22px; display: flex; align-items: center; gap: 6px; z-index: 3; }
+.brand svg { width: 20px; height: 20px; }
+.brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+.brand.on-dark .brand-text { color: rgba(255,255,255,0.5); }
+.brand.on-light .brand-text { color: rgba(28,28,30,0.4); }
+
+/* 页码 */
+.page-num { position: absolute; bottom: 18px; right: 22px; font-size: 11px; z-index: 3; }
+.slide.dark .page-num { color: rgba(255,255,255,0.2); }
+.slide.light .page-num { color: rgba(28,28,30,0.2); }
+
+/* Medium 风格 section-tag */
+.section-tag-medium { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative; margin-bottom: 16px; }
+.section-tag-medium::before { content: ''; position: absolute; top: 0; left: 0; width: 28px; height: 1px; background: #C4956A; }
+
+/* 标题 */
+.slide.dark .h-title { color: #F2EDE3; }
+.slide.light .h-title { color: #1C1C1E; }
+.h-title { font-size: 32px; font-weight: 800; letter-spacing: -0.018em; line-height: 1.3; margin-bottom: 24px; }
+
+/* 内容区域 */
+.content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 50px 60px; z-index: 2; }
+
+/* 流程图 */
+.flow-row { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; justify-content: center; }
+.flow-card { flex-shrink: 0; width: 130px; padding: 16px 10px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.slide.dark .flow-card { background: rgba(196,149,106,0.12); border: 1.5px solid rgba(196,149,106,0.25); }
+.slide.light .flow-card { background: rgba(28,28,30,0.06); border: 1.5px solid rgba(28,28,30,0.12); }
+.flow-card .fc-num { font-size: 10px; font-weight: 700; color: #C4956A; letter-spacing: 1px; margin-bottom: 4px; }
+.flow-card .fc-title { font-size: 13px; font-weight: 700; }
+.slide.dark .flow-card .fc-title { color: #F2EDE3; }
+.slide.light .flow-card .fc-title { color: #1C1C1E; }
+.flow-card .fc-desc { font-size: 10px; margin-top: 6px; line-height: 1.4; }
+.slide.dark .flow-card .fc-desc { color: rgba(255,255,255,0.45); }
+.slide.light .flow-card .fc-desc { color: rgba(28,28,30,0.5); }
+.arrow { flex-shrink: 0; font-size: 18px; padding: 0 4px; }
+.slide.dark .arrow { color: rgba(255,255,255,0.25); }
+.slide.light .arrow { color: rgba(28,28,30,0.25); }
+
+/* 网格卡片 */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; }
+.g-card { padding: 18px 16px; border-radius: 10px; }
+.slide.dark .g-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+.slide.light .g-card { background: #F2EDE3; border: 1px solid rgba(28,28,30,0.06); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.g-card .gc-tag { display: inline-block; font-size: 10px; font-weight: 700; color: #C4956A; letter-spacing: 1px; margin-bottom: 8px; }
+.g-card .gc-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.slide.dark .g-card .gc-title { color: #F2EDE3; }
+.slide.light .g-card .gc-title { color: #1C1C1E; }
+.g-card .gc-desc { font-size: 11px; line-height: 1.6; }
+.slide.dark .g-card .gc-desc { color: rgba(255,255,255,0.55); }
+.slide.light .g-card .gc-desc { color: rgba(28,28,30,0.6); }
+
+/* 信息行 */
+.info-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.info-dot { width: 6px; height: 6px; border-radius: 50%; background: #C4956A; flex-shrink: 0; margin-top: 6px; }
+.slide.dark .info-text { color: rgba(255,255,255,0.8); font-size: 13px; line-height: 1.6; }
+.slide.light .info-text { color: rgba(28,28,30,0.8); font-size: 13px; line-height: 1.6; }
+
+/* 对比双栏 */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+.compare-col { padding: 20px; border-radius: 10px; }
+.compare-col.bad { background: rgba(255,95,87,0.08); border: 1px solid rgba(255,95,87,0.22); }
+.compare-col.good { background: rgba(168,201,127,0.08); border: 1px solid rgba(168,201,127,0.25); }
+.compare-col .cc-label { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+.compare-col.bad .cc-label { color: #FF7B73; }
+.compare-col.good .cc-label { color: #8FB667; }
+.compare-col .cc-item { font-size: 12px; line-height: 1.7; margin-bottom: 6px; padding-left: 12px; position: relative; }
+.compare-col.bad .cc-item::before { content: '✗'; position: absolute; left: 0; color: #FF7B73; font-weight: 700; }
+.compare-col.good .cc-item::before { content: '✓'; position: absolute; left: 0; color: #8FB667; font-weight: 700; }
+.slide.dark .compare-col .cc-item { color: rgba(255,255,255,0.75); }
+.slide.light .compare-col .cc-item { color: rgba(28,28,30,0.75); }
+
+/* ghost 数字 */
+.ghost-num { position: absolute; right: 30px; bottom: 20px; font-size: 120px; font-weight: 900; opacity: 0.04; pointer-events: none; z-index: 1; }
+.slide.dark .ghost-num { color: #F2EDE3; }
+.slide.light .ghost-num { color: #1C1C1E; }
+
+/* 终端块 */
+.terminal { background: rgba(0,0,0,0.45); border: 1px solid rgba(196,149,106,0.25); border-radius: 8px; padding: 16px 18px; font-family: 'SF Mono', Menlo, monospace; font-size: 12px; line-height: 1.7; color: #F2EDE3; }
+.terminal .t-prompt { color: #C4956A; }
+.terminal .t-out { color: rgba(255,255,255,0.55); }
+.terminal .t-ok { color: #A8C97F; }
+.terminal .t-hl { color: #F2EDE3; }
+.terminal .t-dim { color: rgba(255,255,255,0.35); }
+
+/* 文件树 */
+.tree { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; line-height: 1.8; }
+.slide.dark .tree { color: rgba(255,255,255,0.7); }
+.slide.light .tree { color: rgba(28,28,30,0.75); }
+.tree .t-dir { color: #C4956A; font-weight: 700; }
+.tree .t-file { }
+.tree .t-cmt { color: rgba(255,255,255,0.35); margin-left: 12px; }
+.slide.light .tree .t-cmt { color: rgba(28,28,30,0.4); }
+
+/* kbd */
+.kbd { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: monospace; }
+.slide.dark .kbd { background: rgba(255,255,255,0.1); color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15); }
+.slide.light .kbd { background: rgba(28,28,30,0.06); color: #1C1C1E; border: 1px solid rgba(28,28,30,0.12); }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button onclick="downloadCurrent()">下载当前</button>
+</div>
+
+<!-- ===== 配图 1：三大使用场景 ===== -->
+<div class="slide-label">配图 1 · 放在「它能帮你做什么？」一节之后</div>
+<div class="slide dark" style="height:440px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">1/5</div>
+  <div class="ghost-num">01</div>
+  <div class="content">
+    <div class="section-tag-medium">USE CASES</div>
+    <div class="h-title">三大典型场景</div>
+    <div class="grid-3">
+      <div class="g-card">
+        <div class="gc-tag">SCENE 01</div>
+        <div class="gc-title">内部 API 文档</div>
+        <div class="gc-desc">内网 Wiki 上的 RPC 框架文档→Skill。AI 写出符合公司框架的代码，不再瞎编参数。</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-tag">SCENE 02</div>
+        <div class="gc-title">第三方 SDK 新版</div>
+        <div class="gc-desc">SDK 刚发新版本，训练数据没覆盖到？几分钟内，AI 助手就掌握了最新版用法。</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-tag">SCENE 03</div>
+        <div class="gc-title">整套文档站</div>
+        <div class="gc-desc">十几个模块的大型文档？自动识别侧边栏，按模块拆分，生成多个独立 Skill。</div>
+      </div>
+    </div>
+    <div style="margin-top:22px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">支持 Docusaurus / VitePress / Nextra / GitBook / Mintlify 等主流文档框架</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 2：为什么不直接丢给 AI ===== -->
+<div class="slide-label">配图 2 · 放在「为什么不直接把文档丢给 AI？」一节之后</div>
+<div class="slide light" style="height:440px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">2/5</div>
+  <div class="ghost-num">02</div>
+  <div class="content">
+    <div class="section-tag-medium">WHY NOT JUST PASTE</div>
+    <div class="h-title">把网页粘进对话 vs 沉淀成 Skill</div>
+    <div class="compare">
+      <div class="compare-col bad">
+        <div class="cc-label">粘贴网页内容</div>
+        <div class="cc-item">上下文窗口塞不下几万字 API</div>
+        <div class="cc-item">每次开新会话都得重新粘贴</div>
+        <div class="cc-item">夹杂导航、页脚、广告</div>
+        <div class="cc-item">AI 难从一坨文字里精确定位方法</div>
+      </div>
+      <div class="compare-col good">
+        <div class="cc-label">沉淀为 Skill</div>
+        <div class="cc-item">自动过滤导航、页脚等噪音</div>
+        <div class="cc-item">结构化为逐方法 Markdown</div>
+        <div class="cc-item">按需加载，不占对话上下文</div>
+        <div class="cc-item">一次生成，永久可用，团队共享</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 3：五步流水线 ===== -->
+<div class="slide-label">配图 3 · 放在「它是怎么工作的？」一节之后</div>
+<div class="slide dark" style="height:460px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">3/5</div>
+  <div class="ghost-num">03</div>
+  <div class="content">
+    <div class="section-tag-medium">PIPELINE</div>
+    <div class="h-title">五步全自动流水线</div>
+    <div class="flow-row">
+      <div class="flow-card">
+        <div class="fc-num">STEP 1</div>
+        <div class="fc-title">智能发现</div>
+        <div class="fc-desc">分析侧边栏<br>找出文档结构树</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card">
+        <div class="fc-num">STEP 2</div>
+        <div class="fc-title">深度爬取</div>
+        <div class="fc-desc">展开 details<br>点 Tab、滚到底</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card">
+        <div class="fc-num">STEP 3</div>
+        <div class="fc-title">结构化解析</div>
+        <div class="fc-desc">参数表+代码<br>逐方法 Markdown</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card">
+        <div class="fc-num">STEP 4</div>
+        <div class="fc-title">生成 Skill</div>
+        <div class="fc-desc">Claude Code<br>+ Copilot 双兼容</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card" style="background:rgba(168,201,127,0.12); border-color:rgba(168,201,127,0.35);">
+        <div class="fc-num" style="color:#A8C97F;">STEP 5</div>
+        <div class="fc-title">自动校验</div>
+        <div class="fc-desc">frontmatter<br>链接、编码</div>
+      </div>
+    </div>
+    <div style="margin-top:30px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">使用 agent-browser 模拟真实浏览器，处理 Cookie 弹窗、懒加载和限速重试</div>
+      </div>
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text"><span class="kbd">doctor.py</span> 会告诉你哪里要修，避免内容过期或链接失效</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 4：输出文件结构 ===== -->
+<div class="slide-label">配图 4 · 放在「生成标准 Skill」段落之后，或紧跟流水线图</div>
+<div class="slide light" style="height:440px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">4/5</div>
+  <div class="ghost-num">04</div>
+  <div class="content">
+    <div class="section-tag-medium">OUTPUT</div>
+    <div class="h-title">双体系兼容的 Skill 结构</div>
+    <div class="grid-2">
+      <div class="g-card">
+        <div class="gc-tag">CLAUDE CODE</div>
+        <div class="gc-title">.claude/skills/</div>
+        <pre class="tree" style="margin-top:8px; font-size:11.5px;"><span class="t-dir">vue-router/</span>
+├── SKILL.md
+└── <span class="t-dir">references/</span>
+    └── api.md</pre>
+      </div>
+      <div class="g-card">
+        <div class="gc-tag">GITHUB COPILOT</div>
+        <div class="gc-title">.agents/skills/</div>
+        <pre class="tree" style="margin-top:8px; font-size:11.5px;"><span class="t-dir">vue-router/</span>
+├── SKILL.md
+└── <span class="t-dir">references/</span>
+    └── api.md</pre>
+      </div>
+    </div>
+    <div style="margin-top:22px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">同时输出两套文件，Claude Code 和 Copilot 同一份知识库无缝复用</div>
+      </div>
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text">支持安装为项目级（团队共享）或用户级（全局通用）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 配图 5：五条使用建议 ===== -->
+<div class="slide-label">配图 5 · 放在「一些使用建议」一节之后</div>
+<div class="slide dark" style="height:480px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num">5/5</div>
+  <div class="ghost-num">05</div>
+  <div class="content">
+    <div class="section-tag-medium">BEST PRACTICES</div>
+    <div class="h-title">五条避坑建议</div>
+    <div class="grid-3" style="margin-bottom:16px;">
+      <div class="g-card">
+        <div class="gc-tag">TIP 01</div>
+        <div class="gc-title">别只爬一页</div>
+        <div class="gc-desc">让工具自动发现侧边栏结构，由它建议爬取范围。</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-tag">TIP 02</div>
+        <div class="gc-title">锁定版本号</div>
+        <div class="gc-desc">用 <span class="kbd">/v3/api</span> 而不是 <span class="kbd">/latest</span>，避免过期。</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-tag">TIP 03</div>
+        <div class="gc-title">大站点拆分</div>
+        <div class="gc-desc">超过 20 页的模块拆成多个 Skill，每个职责清晰。</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="g-card">
+        <div class="gc-tag">TIP 04</div>
+        <div class="gc-title">定期更新流水线</div>
+        <div class="gc-desc">文档更新后重新跑一次，保持 Skill 与源站同步。</div>
+      </div>
+      <div class="g-card">
+        <div class="gc-tag">TIP 05</div>
+        <div class="gc-title">不局限于文档站</div>
+        <div class="gc-desc">优质踩坑博客、实践总结都可以提取成 Skill。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await renderSlide(slides[i]);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`配图-${String(i+1).padStart(2,'0')}.png`, blob);
+  }
+  const content = await zip.generateAsync({type: 'blob'});
+  saveAs(content, 'scrape-skill-creator-配图.zip');
+}
+
+async function downloadCurrent() {
+  const slides = document.querySelectorAll('.slide');
+  const idx = Math.round(window.scrollY / 500);
+  const target = slides[Math.min(idx, slides.length - 1)];
+  const canvas = await renderSlide(target);
+  canvas.toBlob(blob => saveAs(blob, `配图-${idx+1}.png`), 'image/png');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>封面 - Scrape Skill Creator</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 12px 24px; display: flex; gap: 12px; z-index: 999; }
+.toolbar button { padding: 8px 16px; border: none; border-radius: 6px; background: #C4956A; color: #fff; font-size: 14px; cursor: pointer; font-weight: 600; }
+.toolbar button:hover { background: #b8845a; }
+.cover { width: 900px; height: 383px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 40px; }
+.bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+.bg-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse at 28% 60%, rgba(196,149,106,0.08) 0%, transparent 60%), radial-gradient(ellipse at 82% 25%, rgba(196,149,106,0.05) 0%, transparent 55%); }
+
+/* Medium 风格：左对齐 */
+.content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 360px 0 70px; z-index: 2; }
+.kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative; }
+.kicker::before { content: ''; position: absolute; top: 0; left: 0; width: 32px; height: 1px; background: #C4956A; }
+.title { font-size: 50px; font-weight: 800; letter-spacing: -0.022em; line-height: 1.15; color: #F2EDE3; margin-top: 18px; }
+.title .hook { color: #C4956A; font-weight: 900; }
+.lede { font-size: 16px; font-weight: 400; font-style: italic; color: rgba(255,255,255,0.55); margin-top: 18px; max-width: 480px; line-height: 1.5; }
+
+/* 右侧焦点视觉 */
+.hero-art { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); z-index: 1; opacity: 0.82; }
+
+/* 品牌角标 */
+.brand { position: absolute; top: 20px; left: 24px; display: flex; align-items: center; gap: 8px; z-index: 3; }
+.brand svg { width: 22px; height: 22px; }
+.brand-text { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); letter-spacing: 1px; }
+
+.subtitle { position: absolute; bottom: 24px; right: 30px; font-size: 12px; color: rgba(255,255,255,0.3); z-index: 3; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="downloadCover('main')">下载头图 (900x383)</button>
+  <button onclick="downloadCover('secondary')">下载次图 (200x200)</button>
+</div>
+
+<div class="cover" id="cover-main">
+  <div class="bg-dark"></div>
+  <div class="bg-gradient"></div>
+
+  <!-- 右侧焦点视觉：URL → Skill 的转化 -->
+  <div class="hero-art">
+    <svg width="310" height="260" viewBox="0 0 310 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- 浏览器窗口：源站点 -->
+      <rect x="6" y="14" width="160" height="120" rx="10" fill="rgba(44,42,40,0.85)" stroke="rgba(196,149,106,0.3)" stroke-width="1.4"/>
+      <rect x="6" y="14" width="160" height="22" rx="10" fill="rgba(60,57,53,0.95)"/>
+      <rect x="6" y="28" width="160" height="8" fill="rgba(60,57,53,0.95)"/>
+      <circle cx="18" cy="25" r="3" fill="#FF5F57"/>
+      <circle cx="28" cy="25" r="3" fill="#FFBD2E"/>
+      <circle cx="38" cy="25" r="3" fill="#28CA42"/>
+      <rect x="50" y="20" width="108" height="10" rx="3" fill="rgba(255,255,255,0.08)"/>
+      <text x="55" y="28" font-size="7" fill="rgba(196,149,106,0.7)" font-family="monospace">https://docs.example.com</text>
+      <!-- 文档侧边栏 -->
+      <rect x="14" y="44" width="44" height="82" rx="3" fill="rgba(255,255,255,0.04)"/>
+      <rect x="18" y="50" width="34" height="4" rx="1" fill="rgba(196,149,106,0.5)"/>
+      <rect x="18" y="58" width="28" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="18" y="65" width="32" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="18" y="72" width="26" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="18" y="79" width="30" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="18" y="86" width="28" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="18" y="93" width="24" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <!-- 文档正文 -->
+      <rect x="64" y="50" width="92" height="6" rx="1" fill="rgba(242,237,227,0.4)"/>
+      <rect x="64" y="62" width="80" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="64" y="68" width="86" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="64" y="74" width="70" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="64" y="84" width="92" height="32" rx="2" fill="rgba(196,149,106,0.08)" stroke="rgba(196,149,106,0.2)" stroke-width="0.5"/>
+      <text x="68" y="94" font-size="5" fill="rgba(196,149,106,0.7)" font-family="monospace">$ npm install</text>
+      <text x="68" y="103" font-size="5" fill="rgba(168,201,127,0.8)" font-family="monospace">  installed.</text>
+      <text x="68" y="112" font-size="5" fill="rgba(255,255,255,0.4)" font-family="monospace">--&gt; ready</text>
+
+      <!-- 箭头 -->
+      <path d="M178 75 L208 75" stroke="#C4956A" stroke-width="2" stroke-linecap="round"/>
+      <path d="M200 69 L210 75 L200 81" stroke="#C4956A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <text x="180" y="65" font-size="8" fill="rgba(196,149,106,0.8)" font-family="monospace" font-weight="700">scrape</text>
+
+      <!-- Skill 文件夹 -->
+      <rect x="220" y="14" width="86" height="120" rx="10" fill="rgba(28,28,30,0.6)" stroke="rgba(196,149,106,0.5)" stroke-width="1.4"/>
+      <!-- 文件夹标签 -->
+      <path d="M226 26 L226 22 Q226 18 230 18 L246 18 L250 22 L296 22 Q300 22 300 26 L300 30 L226 30 Z" fill="rgba(196,149,106,0.25)" stroke="rgba(196,149,106,0.4)" stroke-width="0.8"/>
+      <text x="263" y="48" text-anchor="middle" font-size="9" fill="#C4956A" font-family="monospace" font-weight="700">SKILL</text>
+      <!-- skill 内容行 -->
+      <rect x="230" y="56" width="66" height="3" rx="1" fill="rgba(255,255,255,0.25)"/>
+      <rect x="230" y="63" width="56" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="230" y="70" width="62" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="230" y="80" width="66" height="22" rx="2" fill="rgba(168,201,127,0.08)" stroke="rgba(168,201,127,0.25)" stroke-width="0.5"/>
+      <text x="234" y="89" font-size="4.5" fill="rgba(168,201,127,0.7)" font-family="monospace">name: api-docs</text>
+      <text x="234" y="96" font-size="4.5" fill="rgba(168,201,127,0.7)" font-family="monospace">tools: [...]</text>
+      <rect x="230" y="108" width="48" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="230" y="115" width="58" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+      <rect x="230" y="122" width="40" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+
+      <!-- 底部说明：自动流水线五步 -->
+      <g transform="translate(0,160)">
+        <circle cx="20" cy="20" r="13" fill="rgba(196,149,106,0.18)" stroke="rgba(196,149,106,0.5)" stroke-width="1"/>
+        <text x="20" y="24" text-anchor="middle" font-size="11" fill="#C4956A" font-family="monospace" font-weight="700">1</text>
+        <text x="20" y="46" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">发现</text>
+
+        <line x1="35" y1="20" x2="55" y2="20" stroke="rgba(196,149,106,0.4)" stroke-width="1" stroke-dasharray="2 2"/>
+
+        <circle cx="70" cy="20" r="13" fill="rgba(196,149,106,0.18)" stroke="rgba(196,149,106,0.5)" stroke-width="1"/>
+        <text x="70" y="24" text-anchor="middle" font-size="11" fill="#C4956A" font-family="monospace" font-weight="700">2</text>
+        <text x="70" y="46" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">爬取</text>
+
+        <line x1="85" y1="20" x2="105" y2="20" stroke="rgba(196,149,106,0.4)" stroke-width="1" stroke-dasharray="2 2"/>
+
+        <circle cx="120" cy="20" r="13" fill="rgba(196,149,106,0.18)" stroke="rgba(196,149,106,0.5)" stroke-width="1"/>
+        <text x="120" y="24" text-anchor="middle" font-size="11" fill="#C4956A" font-family="monospace" font-weight="700">3</text>
+        <text x="120" y="46" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">解析</text>
+
+        <line x1="135" y1="20" x2="155" y2="20" stroke="rgba(196,149,106,0.4)" stroke-width="1" stroke-dasharray="2 2"/>
+
+        <circle cx="170" cy="20" r="13" fill="rgba(196,149,106,0.18)" stroke="rgba(196,149,106,0.5)" stroke-width="1"/>
+        <text x="170" y="24" text-anchor="middle" font-size="11" fill="#C4956A" font-family="monospace" font-weight="700">4</text>
+        <text x="170" y="46" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">生成</text>
+
+        <line x1="185" y1="20" x2="205" y2="20" stroke="rgba(196,149,106,0.4)" stroke-width="1" stroke-dasharray="2 2"/>
+
+        <circle cx="220" cy="20" r="13" fill="rgba(168,201,127,0.22)" stroke="rgba(168,201,127,0.6)" stroke-width="1"/>
+        <text x="220" y="24" text-anchor="middle" font-size="11" fill="#A8C97F" font-family="monospace" font-weight="700">5</text>
+        <text x="220" y="46" text-anchor="middle" font-size="7" fill="rgba(168,201,127,0.7)">校验</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 品牌角标 -->
+  <div class="brand">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+
+  <!-- 内容：左对齐 Medium 风格 -->
+  <div class="content">
+    <div class="kicker">SKILL · OPEN SOURCE</div>
+    <h1 class="title">把任意<span class="hook">文档站</span><br>变成 AI 技能</h1>
+    <p class="lede">一个 URL，五步流水线，几分钟生成一个可被 Agent 调用的 Skill</p>
+  </div>
+
+  <div class="subtitle">Scrape Skill Creator</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadCover(type) {
+  const el = document.getElementById('cover-main');
+  const canvas = await renderSlide(el);
+
+  if (type === 'main') {
+    canvas.toBlob(blob => saveAs(blob, 'cover-900x383.png'), 'image/png');
+  } else {
+    // 次图：从左下角裁 200x200（Medium 风格，含 kicker + 标题首字）
+    const crop = document.createElement('canvas');
+    crop.width = 400; crop.height = 400;
+    const ctx = crop.getContext('2d');
+    const sx = 80, sy = (canvas.height - 400) / 2;
+    ctx.drawImage(canvas, sx, sy, 400, 400, 0, 0, 400, 400);
+    crop.toBlob(blob => saveAs(blob, 'cover-200x200.png'), 'image/png');
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "created": "2026-05-20T17:20:00+08:00",
+  "title": "Scrape Skill Creator，把任意文档网站变成 AI 编程助手的 skill",
+  "outputs": {
+    "wechat": {
+      "html": "content/scrape-skill-creator/preview.html",
+      "cover_image": "content/scrape-skill-creator/cover.png",
+      "title": "Scrape Skill Creator，把任意文档网站变成 AI 编程助手的 skill",
+      "author": "墨筝",
+      "digest": "公司内部框架文档只有网页？SDK 刚发新版 Claude 训练数据没覆盖？给一个 URL，五步全自动流水线，几分钟就能生成可被 Claude Code 和 GitHub Copilot 调用的 Skill。",
+      "images": [
+        "content/scrape-skill-creator/配图-1.png",
+        "content/scrape-skill-creator/配图-2.png",
+        "content/scrape-skill-creator/配图-3.png",
+        "content/scrape-skill-creator/配图-4.png",
+        "content/scrape-skill-creator/配图-5.png"
+      ],
+      "markdown": "source/_posts/scrape-skill-creator.md"
+    }
+  }
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrape Skill Creator，把任意文档网站变成 AI 编程助手的 skill</title>
+
+</head>
+<body style="background:#F2EDE3; padding:0; margin:0">
+<section class="tip" style='background:#eee; padding:10px; text-align:center; font-size:13px; color:#999; margin-bottom:0; font-family:-apple-system, "PingFang SC", sans-serif' align="center">全选下方内容 → 复制 → 粘贴到公众号编辑器（此行不会被复制）</section>
+<section class="content" style='max-width:100%; margin:0 auto; padding:24px 16px 40px; background-color:#F2EDE3; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-size:16px; line-height:1.8; color:#333; letter-spacing:0.3px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale' bgcolor="#F2EDE3">
+<h1 style='font-size:24px; font-weight:800; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:40px 0 16px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:14px; letter-spacing:0.5px; line-height:1.3'>Scrape Skill Creator，把任意文档网站变成 AI 编程助手的 skill</h1>
+<p style="margin:0 0 18px; text-align:left" align="left">最近在公司内部做一些 agent 基建，但遇到一个问题：公司内部很多技术框架和组件的资料只提供了网站可以查看，没有任何可被 AI 消费的文档素材。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">这就导致 agent 无法写出与内部框架和组件相契合的代码，达不到生产级的水准。于是，我写了一个 Skill —— Scrape Skill Creator</p>
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>它能帮你做什么？</h2>
+<p style="margin:0 0 18px; text-align:left" align="left">一句话：<strong style="color:#C4956A; font-weight:600">只需要给一个网站 URL，它就能自动生成一个 AI Agent 可调用的 Skill。</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left">具体来说：</p>
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">场景 1：内部 API 文档 → AI 技能</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left">公司有一套内部 RPC 框架，文档在内网 Wiki 上。装上这个 skill 后：</p>
+<pre style="background:#1C1C1E; border:1px solid #f6efe8; border-radius:6px; padding:14px 16px; margin:0 0 16px; "><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'>/scrape-skill-creator&nbsp;https://wiki.internal.com/rpc-api<br></code></pre>
+<p style="margin:0 0 18px; text-align:left" align="left">AI 助手就能直接调用正确的 API，知道入参、返回值、错误码，不再瞎编。</p>
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">场景 2：第三方 SDK 文档 → AI 技能</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left">某个 SDK 刚发了新版本，Claude 的训练数据还没覆盖到：</p>
+<pre style="background:#1C1C1E; border:1px solid #f6efe8; border-radius:6px; padding:14px 16px; margin:0 0 16px; "><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'>/scrape-skill-creator&nbsp;https://docs.newservice.io/v3/api<br></code></pre>
+<p style="margin:0 0 18px; text-align:left" align="left">几分钟后，你的 AI 助手就掌握了最新版的用法。</p>
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">场景 3：一整套文档站 → 多个专项技能</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left">一个文档站有十几个模块？它会自动识别侧边栏结构，按模块拆分，每个模块生成独立的 skill，互不干扰。</p>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<!-- IMAGE:配图-1.png -->
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>为什么不直接把文档丢给 AI？</h2>
+<p style="margin:0 0 18px; text-align:left" align="left">你可能会想：我直接把网页内容粘到对话里不就行了？</p>
+<p style="margin:0 0 18px; text-align:left" align="left">问题是：</p>
+<ol style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">上下文窗口有限</strong> —— 一个完整的 API 文档有可能动辄几万字，塞不进去</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">每次对话都要重复</strong> —— 下次开新会话又得重新粘贴</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">格式混乱</strong> —— 网页直接复制的文本夹杂导航栏、页脚、广告</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">没有结构</strong> —— AI 很难从一坨文字里精确定位到你要的那个方法</li>
+</ol>
+<p style="margin:0 0 18px; text-align:left" align="left">Scrape Skill Creator 可以自动解决这些问题：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">自动过滤导航、页脚、弹窗等噪音内容</li>
+<li style="margin-bottom:6px">结构化为逐方法的 Markdown（参数表格、代码示例、错误码）</li>
+<li style="margin-bottom:6px">生成标准 Skill 格式，AI 助手按需加载，不占用对话上下文</li>
+<li style="margin-bottom:6px">一次生成，永久可用，团队共享</li>
+</ul>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<!-- IMAGE:配图-2.png -->
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>它是怎么工作的？</h2>
+<p style="margin:0 0 18px; text-align:left" align="left">整个流程分五步，全自动：</p>
+<pre style="background:#1C1C1E; border:1px solid #f6efe8; border-radius:6px; padding:14px 16px; margin:0 0 16px; "><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'>发现站点结构&nbsp;→&nbsp;爬取页面&nbsp;→&nbsp;解析内容&nbsp;→&nbsp;生成&nbsp;Skill&nbsp;→&nbsp;校验输出<br></code></pre>
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">第一步：智能发现</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left">给定一个 URL，它不只爬这一页。它会分析侧边栏，找出整个文档的结构树：</p>
+<pre style="background:#1C1C1E; border:1px solid #f6efe8; border-radius:6px; padding:14px 16px; margin:0 0 16px; "><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'>发现&nbsp;23&nbsp;个页面：<br>&nbsp;&nbsp;Router&nbsp;模块（当前）:&nbsp;createRouter,&nbsp;useRoute,&nbsp;useRouter<br>&nbsp;&nbsp;Store&nbsp;模块:&nbsp;createStore,&nbsp;defineStore,&nbsp;storeToRefs<br>&nbsp;&nbsp;Composables:&nbsp;useFetch,&nbsp;useHead,&nbsp;useState<br>建议爬取:&nbsp;Router&nbsp;模块（3&nbsp;页）。其他模块可作为独立&nbsp;skill。<br>继续？<br></code></pre>
+<p style="margin:0 0 18px; text-align:left" align="left">支持 Docusaurus、VitePress、Nextra、GitBook、Mintlify 等主流文档框架。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">如果发现有不支持的，可以在 issue 中贴反馈。</p>
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">第二步：深度爬取</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left">不是简单的 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>fetch</code> 请求。它用 agent-browser 模拟真实浏览器：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">自动展开折叠的 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>&lt;details&gt;</code> 区块</li>
+<li style="margin-bottom:6px">点击所有 Tab 面板，抓取每个标签页的内容</li>
+<li style="margin-bottom:6px">关闭 Cookie 弹窗、登录遮罩</li>
+<li style="margin-bottom:6px">滚动到底部触发懒加载</li>
+<li style="margin-bottom:6px">智能重试 + 限速，不会被封 IP</li>
+</ul>
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">第三步：结构化解析</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left">把原始文本变成 AI 友好的格式：</p>
+<section class="code-wrap" style="margin:0 0 16px; border-radius:6px; overflow:hidden; border:none; background:#1C1C1E"><section class="code-badge" style='display:block; background:#2C2A28; color:#C4956A; font-family:"SF Mono", Menlo, Consolas, monospace; font-size:11px; font-weight:600; padding:6px 14px; letter-spacing:1px; text-transform:uppercase; border-bottom:1px solid #3D3632'>markdown</section><pre style="background:#1C1C1E; border:none; border-radius:0; padding:14px 16px; margin:0; white-space:pre-wrap; word-break:break-word"><code class="language-markdown" style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'>###&nbsp;Router.push<br><br>异步方法，导航到指定路由。<br><br>|&nbsp;参数&nbsp;|&nbsp;类型&nbsp;|&nbsp;必填&nbsp;|&nbsp;说明&nbsp;|<br>|------|------|------|------|<br>|&nbsp;to&nbsp;|&nbsp;RouteLocationRaw&nbsp;|&nbsp;是&nbsp;|&nbsp;目标路由&nbsp;|<br><br>​```ts<br>import&nbsp;{&nbsp;useRouter&nbsp;}&nbsp;from&nbsp;'vue-router'<br>const&nbsp;router&nbsp;=&nbsp;useRouter()<br>await&nbsp;router.push('/users/1')<br>​```<br></code></pre></section>
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">第四步：生成标准 Skill</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left">输出兼容 Claude Code 和 GitHub Copilot 两套体系的文件结构：</p>
+<pre style="background:#1C1C1E; border:1px solid #f6efe8; border-radius:6px; padding:14px 16px; margin:0 0 16px; "><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'>.claude/skills/vue-router/<br>├──&nbsp;<span style="color:#8FBCBB">SKILL.md</span><br>└──&nbsp;<span style="color:#8FBCBB">references</span>/<br>&nbsp;&nbsp;&nbsp;&nbsp;└──&nbsp;<span style="color:#8FBCBB">api.md</span><br><br>.agents/skills/vue-router/<br>├──&nbsp;<span style="color:#8FBCBB">SKILL.md</span><br>└──&nbsp;<span style="color:#8FBCBB">references</span>/<br>&nbsp;&nbsp;&nbsp;&nbsp;└──&nbsp;<span style="color:#8FBCBB">api.md</span><br></code></pre>
+<!-- IMAGE:配图-4.png -->
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">第五步：自动校验</strong></p>
+<p style="margin:0 0 18px; text-align:left" align="left"><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>doctor.py</code> 会检查：frontmatter 格式、文件编码、链接有效性、内容是否过期。有问题直接告诉你哪里要修。</p>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<!-- IMAGE:配图-3.png -->
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>怎么安装？</h2>
+<h3 style='font-size:17px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:24px 0 10px; line-height:1.3'>1. 安装依赖</h3>
+<section class="code-wrap" style="margin:0 0 16px; border-radius:6px; overflow:hidden; border:none; background:#1C1C1E"><section class="code-badge" style='display:block; background:#2C2A28; color:#C4956A; font-family:"SF Mono", Menlo, Consolas, monospace; font-size:11px; font-weight:600; padding:6px 14px; letter-spacing:1px; text-transform:uppercase; border-bottom:1px solid #3D3632'>bash</section><pre style="background:#1C1C1E; border:none; border-radius:0; padding:14px 16px; margin:0; white-space:pre-wrap; word-break:break-word"><code class="language-bash" style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'><span style="color:#7A7876">#&nbsp;agent-browser（用于爬取网页）<br></span>brew&nbsp;install&nbsp;agent-browser&nbsp;<span style="color:#9A8A7B">&amp;&amp;</span>&nbsp;agent-browser&nbsp;install<br><span style="color:#7A7876">#&nbsp;或<br></span>npm&nbsp;install&nbsp;-g&nbsp;agent-browser&nbsp;<span style="color:#9A8A7B">&amp;&amp;</span>&nbsp;agent-browser&nbsp;install<br></code></pre></section>
+<h3 style='font-size:17px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:24px 0 10px; line-height:1.3'>2. 安装 Skill</h3>
+<section class="code-wrap" style="margin:0 0 16px; border-radius:6px; overflow:hidden; border:none; background:#1C1C1E"><section class="code-badge" style='display:block; background:#2C2A28; color:#C4956A; font-family:"SF Mono", Menlo, Consolas, monospace; font-size:11px; font-weight:600; padding:6px 14px; letter-spacing:1px; text-transform:uppercase; border-bottom:1px solid #3D3632'>bash</section><pre style="background:#1C1C1E; border:none; border-radius:0; padding:14px 16px; margin:0; white-space:pre-wrap; word-break:break-word"><code class="language-bash" style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'><span style="color:#7A7876">#&nbsp;安装为项目级&nbsp;skill<br></span>git&nbsp;clone&nbsp;https://github.com/NealST/scrape-skill-creator.git&nbsp;<span style="color:#D4A76A">\<br></span>&nbsp;&nbsp;.claude/skills/scrape-skill-creator<br><br><span style="color:#7A7876">#&nbsp;或安装为用户级&nbsp;skill（所有项目通用）<br></span>git&nbsp;clone&nbsp;https://github.com/NealST/scrape-skill-creator.git&nbsp;<span style="color:#D4A76A">\<br></span>&nbsp;&nbsp;~/.claude/skills/scrape-skill-creator<br></code></pre></section>
+<p style="margin:0 0 18px; text-align:left" align="left">安装完成，重启 Claude Code 即可使用。</p>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>怎么用？</h2>
+<h3 style='font-size:17px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:24px 0 10px; line-height:1.3'>最简单的方式：交互式向导</h3>
+<section class="code-wrap" style="margin:0 0 16px; border-radius:6px; overflow:hidden; border:none; background:#1C1C1E"><section class="code-badge" style='display:block; background:#2C2A28; color:#C4956A; font-family:"SF Mono", Menlo, Consolas, monospace; font-size:11px; font-weight:600; padding:6px 14px; letter-spacing:1px; text-transform:uppercase; border-bottom:1px solid #3D3632'>bash</section><pre style="background:#1C1C1E; border:none; border-radius:0; padding:14px 16px; margin:0; white-space:pre-wrap; word-break:break-word"><code class="language-bash" style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'>python3&nbsp;scripts/wizard.py<br></code></pre></section>
+<p style="margin:0 0 18px; text-align:left" align="left">向导会一步步引导你完成全部流程。</p>
+<h3 style='font-size:17px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:24px 0 10px; line-height:1.3'>在 Claude Code 中直接调用</h3>
+<pre style="background:#1C1C1E; border:1px solid #f6efe8; border-radius:6px; padding:14px 16px; margin:0 0 16px; "><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'>/scrape-skill-creator&nbsp;https://docs.example.com/api&nbsp;my-api-skill<br></code></pre>
+<p style="margin:0 0 18px; text-align:left" align="left">或者用自然语言触发：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">“从这个网站做一个 skill”</li>
+<li style="margin-bottom:6px">“把这个文档变成 skill”</li>
+<li style="margin-bottom:6px">“scrape this site into a skill”</li>
+</ul>
+<h3 style='font-size:17px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:24px 0 10px; line-height:1.3'>手动精细控制</h3>
+<section class="code-wrap" style="margin:0 0 16px; border-radius:6px; overflow:hidden; border:none; background:#1C1C1E"><section class="code-badge" style='display:block; background:#2C2A28; color:#C4956A; font-family:"SF Mono", Menlo, Consolas, monospace; font-size:11px; font-weight:600; padding:6px 14px; letter-spacing:1px; text-transform:uppercase; border-bottom:1px solid #3D3632'>bash</section><pre style="background:#1C1C1E; border:none; border-radius:0; padding:14px 16px; margin:0; white-space:pre-wrap; word-break:break-word"><code class="language-bash" style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:13px; background:none; border:none; border-radius:0; padding:0; color:#F2EDE3; word-break:break-word; line-height:1.6'><span style="color:#7A7876">#&nbsp;发现<br></span>python3&nbsp;scripts/discover.py&nbsp;https://docs.example.com/api&nbsp;--out&nbsp;discovered.json<br><br><span style="color:#7A7876">#&nbsp;爬取<br></span>python3&nbsp;scripts/crawl.py&nbsp;urls.json&nbsp;--out&nbsp;/tmp/pages&nbsp;--qps&nbsp;<span style="color:#D4A76A">1</span>.0<br><br><span style="color:#7A7876">#&nbsp;生成<br></span>python3&nbsp;scripts/gen_skills.py&nbsp;manifest.json&nbsp;--pages&nbsp;/tmp/pages&nbsp;--out&nbsp;./skills/<br><br><span style="color:#7A7876">#&nbsp;校验<br></span>python3&nbsp;scripts/doctor.py&nbsp;./skills/<br></code></pre></section>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>一些使用建议</h2>
+<ol style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">不要只爬一页</strong> —— 工具会自动发现侧边栏结构，让它帮你决定爬取范围</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">锁定版本号</strong> —— 用 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/v3/api</code> 而不是 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/latest/api</code>，避免内容过期</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">大站点拆分</strong> —— 超过 20 页的模块建议拆成多个 skill，每个职责清晰</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">定期更新</strong> —— 文档更新后重新跑一次流水线，保持 skill 与源站同步</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">不用局限于特定网站</strong> —— 比如你可以把看到的一些优质踩坑和实践总结的博客也提取下来变成 skill。</li>
+</ol>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<!-- IMAGE:配图-5.png -->
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>写在最后</h2>
+<p style="margin:0 0 18px; text-align:left" align="left">AI 编程助手的能力边界，除了模型本身，还取决于它能获取到的知识。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">Scrape Skill Creator 做的事情很简单：把网上的知识，变成 AI 能用的 Skill。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">项目开源，欢迎 Star 和贡献：</p>
+<p style="margin:0 0 18px; text-align:left" align="left">GitHub: https://github.com/NealST/scrape-skill-creator</p>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<p style="margin:0 0 18px; text-align:left" align="left"><em style="font-style:italic">如果觉得有用，欢迎转发给你的团队。有问题可以在 GitHub Issues 中反馈。</em></p>
+<p style="margin:40px 0 0; text-align:center; color:#C4956A; font-size:13px; letter-spacing:3px; opacity:0.6" align="center">— END —</p>
+</section>
+</body>
+</html>
