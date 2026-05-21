@@ -536,7 +536,7 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
       let insertedCount = 0;
 
       for (const { cdnUrl, fileName } of uploadedImages) {
-        const imgTag = `<section style="text-align:center;margin:20px 0;"><img src="${cdnUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" /></section>`;
+        const imgTag = `<section style="text-align:center;margin:8px 0;"><img src="${cdnUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" /></section>`;
 
         // Try placeholder comment: <!-- IMAGE:配图-1.png -->
         const placeholder = `<!-- IMAGE:${fileName} -->`;
@@ -560,7 +560,7 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
       if (insertedCount === 0) {
         console.log(`  [wechat-api] No image placeholders found in HTML, appending ${uploadedImages.length} image(s) at end`);
         const allImgTags = uploadedImages
-          .map(({ cdnUrl }) => `<section style="text-align:center;margin:20px 0;"><img src="${cdnUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" /></section>`)
+          .map(({ cdnUrl }) => `<section style="text-align:center;margin:8px 0;"><img src="${cdnUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" /></section>`)
           .join('\n');
         contentWithCdnImages += '\n' + allImgTags;
       } else {

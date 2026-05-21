@@ -204,7 +204,7 @@ body {{
   word-break: break-all;
 }}
 .code-wrap {{
-  margin: 0 0 16px;
+  margin: 16px 0;
   border-radius: 6px;
   overflow: hidden;
   border: none;
@@ -228,7 +228,7 @@ body {{
   border-radius: 6px;
   padding: 14px 16px;
   overflow-x: auto;
-  margin: 0 0 16px;
+  margin: 16px 0;
   -webkit-overflow-scrolling: touch;
 }}
 .code-wrap pre {{
@@ -329,7 +329,7 @@ body {{
   opacity: 0.5;
 }}
 .content figure {{
-  margin: 24px 0;
+  margin: 12px 0;
   text-align: center;
 }}
 .content figure img {{
@@ -346,8 +346,13 @@ body {{
 .content img {{
   max-width: 100%;
   height: auto;
+<<<<<<< HEAD:.github/skills/content-pipeline/scripts/md2wechat_formatter.py
+  border-radius: 4px;
+  margin: 4px 0;
+=======
   border-radius: 8px;
   margin: 8px 0;
+>>>>>>> be1f5dd518d4803700fbb6df366a0fd70964e867:.agents/skills/content-pipeline/scripts/md2wechat_formatter.py
 }}
 """
     return css

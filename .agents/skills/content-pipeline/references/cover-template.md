@@ -128,7 +128,10 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 
 ### 尺寸
 
-- 宽度固定 `800px`，高度按内容 `380-500px`
+- 宽度固定 `800px`
+- 高度按内容自适应：使用 `min-height` 而**不是固定** `height`，并配合 `padding-bottom: 56px` 留底部呼吸位
+- ❌ 错误：`<div class="slide" style="height:420px;">` — 内容溢出会被裁掉
+- ✅ 正确：`<div class="slide" style="min-height:420px;">` 且 `.slide` CSS 中已含 `padding: 48px 56px`
 - 导出 2x（`1600px` 宽）
 
 ### 设计规范
@@ -160,7 +163,7 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
   </div>
 
   <div class="slide-label">配图 N · 放在「xxx」之后</div>
-  <div class="slide" style="height:420px;">
+  <div class="slide" style="min-height:420px;">
     <div class="bg-dark"></div>  <!-- 或 bg-light -->
     <div class="brand light"></div>  <!-- 或 brand dark -->
     <div class="page-num light">1/N</div>
