@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>小红书图片 - Claude Code /goal</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 30px 20px 80px;
+    padding-top: 70px;
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+
+  .slide {
+    width: 540px; height: 720px;
+    position: relative; overflow: hidden;
+    border-radius: 8px; margin-bottom: 40px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+
+  .bg-dark {
+    position: absolute; inset: 0; background: #1C1C1E;
+  }
+  .bg-dark::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 80% 15%, rgba(255,255,255,0.03) 0%, transparent 50%),
+      radial-gradient(circle at 20% 85%, rgba(0,0,0,0.08) 0%, transparent 50%);
+  }
+
+  .bg-light { position: absolute; inset: 0; background: #FFFFFF; }
+
+  .brand-tag {
+    position: absolute; top: 24px; left: 28px;
+    display: flex; align-items: center; gap: 8px; z-index: 3;
+  }
+  .brand-tag svg { width: 22px; height: 22px; }
+  .brand-tag span { font-size: 12px; font-weight: 600; letter-spacing: 1px; }
+  .brand-tag.light span { color: rgba(255,255,255,0.5); }
+  .brand-tag.dark span { color: rgba(28,28,30,0.4); }
+
+  .page-num {
+    position: absolute; bottom: 24px; right: 28px;
+    font-size: 12px; z-index: 3;
+  }
+  .page-num.light { color: rgba(255,255,255,0.2); }
+  .page-num.dark { color: rgba(28,28,30,0.2); }
+
+  .content {
+    position: absolute; inset: 0; padding: 28px;
+    display: flex; flex-direction: column; z-index: 2;
+  }
+
+  .cover-content {
+    justify-content: center; align-items: center;
+    text-align: center; padding: 60px 40px;
+  }
+  .cover-title {
+    font-size: 36px; font-weight: 900; color: #F2EDE3;
+    line-height: 1.4; letter-spacing: 2px; margin-bottom: 24px;
+  }
+  .cover-accent {
+    width: 48px; height: 3px;
+    background: #C4956A; border-radius: 2px; margin: 28px auto;
+  }
+  .cover-hook {
+    font-size: 18px; font-weight: 600; color: rgba(242,237,227,0.7);
+    line-height: 1.8; letter-spacing: 1px;
+  }
+
+  .slide-title {
+    font-size: 26px; font-weight: 800; color: #F2EDE3;
+    line-height: 1.3; margin-bottom: 6px; letter-spacing: 1px;
+  }
+  .slide-title.dark { color: #1C1C1E; }
+
+  .slide-subtitle {
+    font-size: 13px; color: rgba(242,237,227,0.4);
+    margin-bottom: 20px; letter-spacing: 1px;
+  }
+  .slide-subtitle.dark { color: rgba(28,28,30,0.4); }
+
+  .accent-bar {
+    width: 36px; height: 3px;
+    background: #C4956A; border-radius: 2px; margin-bottom: 20px;
+  }
+
+  .text-block {
+    font-size: 15px; color: rgba(242,237,227,0.8); line-height: 2; letter-spacing: 0.5px;
+  }
+  .text-block.dark { color: #333; }
+  .text-block strong { color: #F2EDE3; font-weight: 700; }
+  .text-block.dark strong { color: #1C1C1E; font-weight: 700; }
+  .text-block .red { color: #C4956A; font-weight: 700; }
+
+  .info-row {
+    display: flex; align-items: center;
+    padding: 12px 16px; border-radius: 8px; margin-bottom: 8px;
+  }
+  .info-row.on-dark { background: rgba(255,255,255,0.06); }
+  .info-row.on-light { background: rgba(28,28,30,0.06); }
+  .info-row .label {
+    font-size: 13px; font-weight: 700; min-width: 70px; color: #C4956A;
+  }
+  .info-row .value { font-size: 13px; flex: 1; }
+  .info-row.on-dark .value { color: rgba(242,237,227,0.7); }
+  .info-row.on-light .value { color: #555; }
+
+  .step { display: flex; gap: 14px; margin-bottom: 14px; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #C4956A; color: #F2EDE3;
+    font-size: 14px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .step-text { font-size: 14px; line-height: 1.7; }
+  .step-text.on-dark { color: rgba(242,237,227,0.8); }
+  .step-text.on-light { color: #444; }
+  .step-text strong { font-weight: 700; }
+  .step-text.on-dark strong { color: #F2EDE3; }
+  .step-text.on-light strong { color: #1C1C1E; }
+
+  .cta-box {
+    border: 1px solid rgba(242,237,227,0.2); border-radius: 10px;
+    padding: 16px 20px; text-align: center; margin-top: 12px;
+  }
+  .cta-box .cta-label {
+    font-size: 11px; color: rgba(242,237,227,0.3);
+    margin-bottom: 6px; letter-spacing: 2px;
+  }
+  .cta-box .cta-url {
+    font-size: 13px; color: #C4956A; font-weight: 600; word-break: break-all;
+  }
+
+  .spacer { flex: 1; }
+
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(17,17,17,0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px; display: flex; align-items: center;
+    justify-content: center; gap: 12px;
+  }
+  .toolbar .btn {
+    background: #1C1C1E; color: #F2EDE3; border: none;
+    padding: 10px 24px; border-radius: 8px; font-size: 14px;
+    font-weight: 600; cursor: pointer;
+  }
+  .toolbar .btn.accent { background: #C4956A; }
+  .toolbar .progress {
+    font-size: 13px; color: rgba(255,255,255,0.5);
+    min-width: 100px; text-align: center;
+  }
+
+  .code-block {
+    background: #1C1C1E; border-radius: 10px; padding: 16px;
+    font-family: 'SF Mono','Menlo',monospace;
+  }
+  .code-dots {
+    display: flex; gap: 6px; margin-bottom: 10px;
+  }
+  .code-dots div {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+  .code-text {
+    font-size: 11px; line-height: 1.8; color: rgba(242,237,227,0.6);
+  }
+  .code-text .kw { color: #C4956A; }
+  .code-text .str { color: #A8C97F; }
+  .code-text .cm { color: #7A7876; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button class="btn" onclick="downloadOne()">下载当前</button>
+  <span class="progress" id="progress"></span>
+</div>
+
+<!-- 第 1 张：封面 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content cover-content">
+    <div style="font-size:48px;margin-bottom:20px;">⚡</div>
+    <div class="cover-title">Claude Code<br>全自动编码<br>不用再敲"继续"了</div>
+    <div class="cover-accent"></div>
+    <div class="cover-hook">一个 /goal 命令<br>AI 自己干到完为止<br>碎片时间利用率直接拉满</div>
+  </div>
+  <div class="page-num light">1/9</div>
+</div>
+
+<!-- 第 2 张：痛点 -->
+<div class="slide">
+  <div class="bg-light"></div>
+  <div class="brand-tag dark">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="white"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:60px;">
+    <div class="slide-title dark">痛点：手动"续命"太累了</div>
+    <div class="slide-subtitle dark">跨文件重构时尤其崩溃</div>
+    <div class="accent-bar"></div>
+    <div class="text-block dark" style="margin-bottom:20px;">
+      Claude Code 默认做完一步就停<br>
+      等你说<span class="red">"继续"</span>才往下走<br><br>
+      做个大重构、跑测试修复<br>
+      你得在终端前<strong>反复手动输入</strong><br>
+      效率瓶颈拉满
+    </div>
+    <div style="background:#1C1C1E;border-radius:12px;padding:20px;text-align:center;">
+      <div style="font-size:14px;color:rgba(242,237,227,0.5);margin-bottom:12px;">你的日常：</div>
+      <div style="font-size:16px;color:#F2EDE3;line-height:2.2;">
+        AI 干完 → 停了 → 你敲"继续"<br>
+        AI 干完 → 停了 → 你敲"继续"<br>
+        AI 干完 → 停了 → 你敲"继续"<br>
+        <span style="color:#C4956A;font-weight:700;">× 无限循环</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-num dark">2/9</div>
+</div>
+
+<!-- 第 3 张：/goal 是什么 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div class="slide-title">/goal 一句话解释</div>
+    <div class="slide-subtitle">2026.5.11 版本 2.1.138 新增</div>
+    <div class="accent-bar"></div>
+    <div style="background:rgba(196,149,106,0.12);border:1px solid rgba(196,149,106,0.25);border-radius:12px;padding:24px;margin-bottom:20px;">
+      <div style="font-size:16px;color:#F2EDE3;line-height:1.9;text-align:center;">
+        你定义<span style="color:#C4956A;font-weight:700;">完成条件</span><br>
+        AI 自己干到满足为止<br>
+        中间不需要你盯着
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;color:rgba(242,237,227,0.4);margin-bottom:12px;letter-spacing:2px;">原理</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+        <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:12px 14px;text-align:center;">
+          <div style="font-size:22px;">🎯</div>
+          <div style="font-size:11px;color:rgba(242,237,227,0.6);margin-top:4px;">你定条件</div>
+        </div>
+        <div style="color:rgba(242,237,227,0.3);font-size:16px;">→</div>
+        <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:12px 14px;text-align:center;">
+          <div style="font-size:22px;">🤖</div>
+          <div style="font-size:11px;color:rgba(242,237,227,0.6);margin-top:4px;">Agent 执行</div>
+        </div>
+        <div style="color:rgba(242,237,227,0.3);font-size:16px;">→</div>
+        <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:12px 14px;text-align:center;">
+          <div style="font-size:22px;">🔍</div>
+          <div style="font-size:11px;color:rgba(242,237,227,0.6);margin-top:4px;">Haiku 评估</div>
+        </div>
+        <div style="color:rgba(242,237,227,0.3);font-size:16px;">→</div>
+        <div style="background:rgba(196,149,106,0.2);border:1px solid rgba(196,149,106,0.3);border-radius:8px;padding:12px 14px;text-align:center;">
+          <div style="font-size:22px;">✅</div>
+          <div style="font-size:11px;color:#C4956A;margin-top:4px;font-weight:600;">达标停止</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;text-align:center;">
+      <span style="font-size:12px;color:rgba(242,237,227,0.5);">评估模型无工具权限，只看日志判断</span>
+    </div>
+  </div>
+  <div class="page-num light">3/9</div>
+</div>
+
+<!-- 第 4 张：好条件 vs 坏条件 -->
+<div class="slide">
+  <div class="bg-light"></div>
+  <div class="brand-tag dark">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="white"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div class="slide-title dark">条件怎么写？这是关键</div>
+    <div class="slide-subtitle dark">可验证的终态 vs 模糊描述</div>
+    <div class="accent-bar"></div>
+    <div style="margin-bottom:16px;">
+      <div style="background:#e8f5e9;border-radius:10px;padding:16px;margin-bottom:10px;">
+        <div style="font-size:12px;color:#2e7d32;font-weight:700;margin-bottom:8px;">✅ 好条件 — 可验证</div>
+        <div style="font-size:12px;color:#333;line-height:1.8;font-family:'SF Mono','Menlo',monospace;">
+          /goal all tests in test/auth pass<br>and the lint step is clean
+        </div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:10px;padding:16px;margin-bottom:10px;">
+        <div style="font-size:12px;color:#2e7d32;font-weight:700;margin-bottom:8px;">✅ 好条件 — 有断路器</div>
+        <div style="font-size:12px;color:#333;line-height:1.8;font-family:'SF Mono','Menlo',monospace;">
+          /goal every call site migrated<br>and build succeeds, stop after 20 turns
+        </div>
+      </div>
+      <div style="background:#ffebee;border-radius:10px;padding:16px;">
+        <div style="font-size:12px;color:#c62828;font-weight:700;margin-bottom:8px;">❌ 坏条件 — 无法量化</div>
+        <div style="font-size:12px;color:#333;line-height:1.8;font-family:'SF Mono','Menlo',monospace;">
+          /goal the app is production-ready
+        </div>
+        <div style="font-size:11px;color:#999;margin-top:6px;">"生产就绪"谁说了算？没有可映射的 CLI 结果</div>
+      </div>
+    </div>
+    <div style="background:rgba(28,28,30,0.06);border-radius:8px;padding:14px;">
+      <div style="font-size:13px;color:#555;line-height:1.8;">
+        核心准则：<span style="color:#1C1C1E;font-weight:700;">条件必须绑定具体的日志输出</span><br>
+        评估模型从 stdout 中找证据做裁决
+      </div>
+    </div>
+  </div>
+  <div class="page-num dark">4/9</div>
+</div>
+
+<!-- 第 5 张：三种执行模式 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div class="slide-title">三种使用姿势</div>
+    <div class="accent-bar"></div>
+    <div style="height:8px"></div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text on-dark"><strong>交互模式</strong><br>终端里直接输入 /goal &lt;条件&gt;<br>立即开始无干预执行</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text on-dark"><strong>非交互模式</strong><br>命令行一行搞定：<br><span style="color:#C4956A;font-family:monospace;font-size:12px;">claude -p "/goal 条件"</span></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text on-dark"><strong>远程协作模式</strong><br>多人共享同一个 Agent<br>团队协作观测调度目标</div>
+    </div>
+    <div style="height:16px"></div>
+    <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:16px;text-align:center;">
+      <div style="font-size:13px;color:rgba(242,237,227,0.6);line-height:1.8;">
+        三种模式都有 <span style="color:#C4956A;font-weight:600;">/goal active</span> 面板<br>
+        实时看轮次、Token 消耗、判定结果
+      </div>
+    </div>
+  </div>
+  <div class="page-num light">5/9</div>
+</div>
+
+<!-- 第 6 张：四套自动化对比 -->
+<div class="slide">
+  <div class="bg-light"></div>
+  <div class="brand-tag dark">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="white"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div class="slide-title dark">别搞混了：四套自动化</div>
+    <div class="slide-subtitle dark">不同粒度，不同场景</div>
+    <div class="accent-bar"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:rgba(196,149,106,0.1);border:1px solid rgba(196,149,106,0.25);border-radius:10px;padding:14px;">
+        <div style="font-size:13px;color:#1C1C1E;font-weight:700;margin-bottom:6px;">/goal</div>
+        <div style="font-size:11px;color:#555;line-height:1.6;">模型仲裁<br>适合大重构<br>API 迁移<br>测试修复</div>
+      </div>
+      <div style="background:rgba(28,28,30,0.05);border-radius:10px;padding:14px;">
+        <div style="font-size:13px;color:#1C1C1E;font-weight:700;margin-bottom:6px;">/loop</div>
+        <div style="font-size:11px;color:#555;line-height:1.6;">时钟轮询<br>适合 CI 巡检<br>GitHub 动态<br>周期性任务</div>
+      </div>
+      <div style="background:rgba(28,28,30,0.05);border-radius:10px;padding:14px;">
+        <div style="font-size:13px;color:#1C1C1E;font-weight:700;margin-bottom:6px;">Stop Hooks</div>
+        <div style="font-size:11px;color:#555;line-height:1.6;">配置级<br>挂载外部脚本<br>确定性审计<br>需预配置</div>
+      </div>
+      <div style="background:rgba(28,28,30,0.05);border-radius:10px;padding:14px;">
+        <div style="font-size:13px;color:#1C1C1E;font-weight:700;margin-bottom:6px;">Auto Mode</div>
+        <div style="font-size:11px;color:#555;line-height:1.6;">跳过确认<br>不驱动会话<br>与 /goal 搭配<br>才是完全体</div>
+      </div>
+    </div>
+    <div style="height:12px"></div>
+    <div style="background:rgba(196,149,106,0.08);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-size:13px;color:#1C1C1E;font-weight:700;">
+        最优解 = <span style="color:#C4956A;">Auto Mode + /goal</span>
+      </div>
+      <div style="font-size:11px;color:#777;margin-top:4px;">微观畅顺 + 宏观兜底</div>
+    </div>
+  </div>
+  <div class="page-num dark">6/9</div>
+</div>
+
+<!-- 第 7 张：最佳实践 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div class="slide-title">三个基建做到位</div>
+    <div class="slide-subtitle">显著提升 /goal 达成率</div>
+    <div class="accent-bar"></div>
+    <div style="height:8px"></div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text on-dark"><strong>写好 CLAUDE.md</strong><br>固化技术栈、架构约束、PR 准入标尺<br>30+ 轮工作流中防止记忆偏差</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text on-dark"><strong>挂载 Hooks 做实时校验</strong><br>PostToolUse 卡点强制跑 ESLint / 类型检查<br>异常早发现，不等最后才炸</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text on-dark"><strong>开启 Auto Mode</strong><br>不开的话每步文件 IO 都会弹确认<br>这是全自动的最后一块拼图</div>
+    </div>
+    <div style="height:16px"></div>
+    <div style="border-left:3px solid #C4956A;padding:12px 16px;background:rgba(255,255,255,0.04);border-radius:0 8px 8px 0;">
+      <div style="font-size:13px;color:rgba(242,237,227,0.6);line-height:1.8;font-style:italic;">
+        "复杂任务拆解为串行的状态转移链路，<br>各节点独立可证"
+      </div>
+    </div>
+  </div>
+  <div class="page-num light">7/9</div>
+</div>
+
+<!-- 第 8 张：核心方法论 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="justify-content:center;align-items:center;text-align:center;padding:60px 36px;">
+    <div style="font-size:13px;color:rgba(242,237,227,0.3);letter-spacing:3px;margin-bottom:36px;">本质</div>
+    <div style="font-size:20px;color:#F2EDE3;line-height:2;margin-bottom:36px;font-weight:600;">
+      把人类做的<br>
+      <span style="color:#C4956A;font-size:24px;font-weight:900;">"确认是否继续"</span><br>
+      交给评估模型
+    </div>
+    <div style="width:48px;height:2px;background:rgba(242,237,227,0.15);margin:0 auto 36px;"></div>
+    <div style="font-size:15px;color:rgba(242,237,227,0.6);line-height:2;">
+      用好它的关键：<br>
+      <strong style="color:#F2EDE3;">拆解复杂任务</strong><br>
+      针对子任务定义可验证目标<br><br>
+      可以沿用 <span style="color:#C4956A;font-weight:700;">SMART 原则</span><br>
+      跟 AI 一起完成条件定义
+    </div>
+  </div>
+  <div class="page-num light">8/9</div>
+</div>
+
+<!-- 第 9 张：行动召唤 -->
+<div class="slide">
+  <div class="bg-dark"></div>
+  <div class="brand-tag light">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span>墨筝</span>
+  </div>
+  <div class="content" style="padding-top:56px;">
+    <div class="slide-title">试试全托管编码</div>
+    <div class="accent-bar"></div>
+
+    <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:13px;color:rgba(242,237,227,0.4);margin-bottom:12px;letter-spacing:1px;">快速上手</div>
+      <div class="code-block" style="padding:14px;">
+        <div class="code-text">
+          <span class="cm"># 开启 Auto Mode</span><br>
+          <span class="kw">/auto</span><br><br>
+          <span class="cm"># 设定目标</span><br>
+          <span class="kw">/goal</span> <span class="str">all tests pass, stop after 20 turns</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-box" style="margin-bottom:12px;">
+      <div class="cta-label">完整教程</div>
+      <div class="cta-url">链接见评论区</div>
+    </div>
+
+    <div class="cta-box" style="margin-bottom:12px;">
+      <div class="cta-label">公众号</div>
+      <div class="cta-url" style="font-size:20px;font-weight:900;letter-spacing:2px;">墨筝</div>
+    </div>
+
+    <div style="height:12px"></div>
+
+    <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.04);border-radius:10px;">
+      <div style="font-size:14px;color:rgba(242,237,227,0.7);line-height:1.8;margin-bottom:8px;">
+        碎片时间利用率直接拉满<br>
+        有其他使用技巧欢迎评论区交流
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div style="text-align:center;font-size:11px;color:rgba(242,237,227,0.2);line-height:1.8;">
+      Auto Mode + /goal = 全自动编码工作流 ⚡
+    </div>
+  </div>
+  <div class="page-num light">9/9</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE = 2;
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+async function renderSlide(s) {
+  const origRadius = s.style.borderRadius;
+  s.style.borderRadius = '0';
+  const bgEl = s.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(s).backgroundColor;
+  const raw = await html2canvas(s, { scale: SCALE, useCORS: true, backgroundColor: null, width: 540, height: 720, logging: false });
+  s.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+function canvasToBlob(c) { return new Promise(r => c.toBlob(r, 'image/png')); }
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    progress.textContent = `渲染第 ${i+1}/${slides.length} 张...`;
+    const canvas = await renderSlide(slides[i]);
+    zip.file(`小红书-goal-${String(i+1).padStart(2,'0')}.png`, await canvasToBlob(canvas));
+  }
+  progress.textContent = '打包中...';
+  saveAs(await zip.generateAsync({type:'blob'}), '小红书-goal-全部.zip');
+  progress.textContent = `${slides.length} 张已下载`;
+}
+
+async function downloadOne() {
+  const slides = document.querySelectorAll('.slide');
+  const vc = window.innerHeight / 2;
+  let idx = 0, min = Infinity;
+  slides.forEach((s,i) => {
+    const d = Math.abs(s.getBoundingClientRect().top + 360 - vc);
+    if (d < min) { min = d; idx = i; }
+  });
+  const canvas = await renderSlide(slides[idx]);
+  saveAs(await canvasToBlob(canvas), `小红书-goal-${String(idx+1).padStart(2,'0')}.png`);
+}
+</script>
+
+</body>
+</html>
