@@ -62,8 +62,9 @@ THEME = {
         'type':     '#B48EAD',   # 藤紫 — 类型
         'operator': '#9A8A7B',   # 淡棕 — 操作符
     },
-    'blockquote_border':'#C4956A',
-    'blockquote_bg':    '#f0ece4',
+    'blockquote_border':'#C4956A',     # 已弃用：金色左竖线与 H2 装饰冲突，保留供向后兼容
+    'blockquote_border_soft':'#e8dfd0', # 方案 B：浅米色四面边框，让卡片做"安静的信息容器"
+    'blockquote_bg':    '#f5efe4',
     'table_header_bg':  '#1C1C1E',
     'table_header_text':'#F2EDE3',
     'table_stripe':     '#f0ece4',
@@ -251,12 +252,13 @@ body {{
   word-break: break-word;
 }}
 .content blockquote {{
+  /* 方案 B：四面浅边框 + 圆角卡片，避免与 H2 的金色左竖线视觉冲突 */
   margin: 16px 0 20px;
-  padding: 12px 16px;
-  border-left: 4px solid {t['blockquote_border']};
+  padding: 14px 18px;
+  border: 1px solid {t['blockquote_border_soft']};
   background: {t['blockquote_bg']};
   color: #666;
-  border-radius: 0 4px 4px 0;
+  border-radius: 6px;
   font-style: italic;
 }}
 .content blockquote p {{
