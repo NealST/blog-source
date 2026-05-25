@@ -6,7 +6,7 @@ tags:
   - Design
 ---
 
-*本文译自 Yanli Liu 的博文《The EveryDESIGN.md Needs》，阅读时长约 10 分钟。*
+*本文译自 Yanli Liu 的博文《The EveryDESIGN.md Needs》，阅读时长约 10 分钟。* 原文地址：https://generativeai.pub/the-9-sections-every-design-md-needs-3a372dd7e7b1
 
 AI 编程智能体在编写代码方面表现出卓越的能力，但在维持视觉一致性方面，往往难以令人满意。
 
