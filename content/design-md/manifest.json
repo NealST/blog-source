@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "created": "2026-05-26T18:00:00+08:00",
+  "source": "source/_posts/design-md.md",
+  "title": "驯服 AI 审美：DESIGN.md 内容拆解与实践指南(译)",
+  "outputs": {
+    "wechat": {
+      "markdown": "source/_posts/design-md.md",
+      "html": "content/design-md/preview.html",
+      "cover_image": "",
+      "title": "驯服 AI 审美：DESIGN.md 内容拆解与实践指南(译)",
+      "author": "墨筝",
+      "digest": "Google 开源 DESIGN.md 规范，用 Markdown 定义设计系统约束 AI 输出。本文拆解 9 大核心模块、3 条上手路径与 5 项已知局限。",
+      "images": []
+    }
+  },
+  "cover": {
+    "style": "medium",
+    "html": "content/design-md/cover.html",
+    "size": "900x383"
+  },
+  "illustrations": {
+    "style": "medium",
+    "html": "content/design-md/illustrations.html",
+    "count": 7,
+    "items": [
+      { "slot": 1, "file": "配图-1-三类问题.png", "topic": "同质化样式 / 色彩失谐 / 样式漂移" },
+      { "slot": 2, "file": "配图-2-核心逻辑.png", "topic": "Design Tokens → DESIGN.md → 一致的 UI" },
+      { "slot": 3, "file": "配图-3-品牌设定.png", "topic": "Overview + Colors + Typography" },
+      { "slot": 4, "file": "配图-4-UI骨架.png", "topic": "Components + Layout + Elevation" },
+      { "slot": 5, "file": "配图-5-一致性守护.png", "topic": "Do's/Don'ts + Responsive + Iteration" },
+      { "slot": 6, "file": "配图-6-三条路径.png", "topic": "Path A 复用 / Path B 反向提取 / Path C 自建" },
+      { "slot": 7, "file": "配图-7-局限清单.png", "topic": "Token / 时效 / 执行力 / Figma / alpha" }
+    ]
+  }
+}

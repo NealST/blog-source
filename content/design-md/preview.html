@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>驯服 AI 审美：DESIGN.md 内容拆解与实践指南(译)</title>
+</head>
+<body style="background:#FFF; padding:0; margin:0">
+<div style='background:#eee; padding:10px; text-align:center; font-size:13px; color:#999; margin-bottom:0; font-family:-apple-system, "PingFang SC", sans-serif' align="center">全选下方内容 → 复制 → 粘贴到公众号编辑器（此行不会被复制）</div>
+<section style='max-width:100%; margin:0 auto; padding:24px 16px 40px; background-color:#FFF; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", sans-serif; font-size:16px; line-height:1.75; color:rgba(0,0,0,0.84); word-wrap:break-word; overflow-wrap:break-word; letter-spacing:-0.003em; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased' bgcolor="#FFFFFF">
+
+<p style="margin:21px 0 0; text-align:left" align="left">AI Agent 在编写代码方面表现卓越，但在维持视觉一致性方面就总是差强人意。对于不同的页面，AI 经常会给出完全不同的设计实现。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">如果独立审视每个页面，看起来似乎都没有明显瑕疵：页面布局清晰、色彩合理、整体具备现代感。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">但把它们放在一起看，就会暴露诸多问题：按钮风格相互冲突，灰度层级缺乏逻辑，排版间距不成体系等等。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left"><strong style="color:rgba(0,0,0,0.84); font-weight:700">单体页面的精致，无法掩盖整体工程的设计规则缺失。</strong></p>
+
+<p style="margin:21px 0 0; text-align:left" align="left"><code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:3px; padding:2px 5px; color:rgba(0,0,0,0.84)'>CLAUDE.md</code> 或 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:3px; padding:2px 5px; color:rgba(0,0,0,0.84)'>.cursorrules</code> 可以指导 AI 如何产出规范的代码，但无法赋予其设计层面的约束。同时，AI 系统尚不具备自主向开发者求证设计规范的能力。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">Google 于 4 月 21 日开源了一项名为 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 的规范，为这一难题提供了思路。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">随后，VoltAgent 基于该规范发布了 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>awesome-design-md</code> 项目，集中复刻了 423 个包括 Stripe、Notion、Airbnb 在内的知名品牌设计系统，并在五周内获得了 70,000 个 GitHub Stars。</p>
+
+<p style="margin:52px 0; text-align:center; color:rgba(0,0,0,0.54); font-size:28px; letter-spacing:16px; line-height:1" align="center">···</p>
+
+<!-- ═══════════ AI 处理设计的三类典型问题 ═══════════ -->
+
+<h2 style='font-size:20px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:40px 0 12px; padding:0 0 0 12px; border-left:4px solid #C4956A; letter-spacing:-0.022em; line-height:1.3'>AI 处理设计的三类典型问题</h2>
+
+<p style="margin:21px 0 0; text-align:left" align="left">AI 本身其实并不缺乏基础的设计审美，缺的主要是设计记忆。每一次输入提示词，都等同于一次从零开始。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">这种机制缺陷，在实际工程开发中会有三类比较典型的问题：</p>
+
+<!-- IMAGE:配图-1-三类问题.png -->
+
+<ol style="margin:16px 0; padding-left:24px">
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">同质化的默认样式</strong>：在缺乏设计上下文的情况下，AI 倾向于输出同质化的视觉方案：白色背景、蓝色主按钮、灰色文本、4px 圆角与系统默认字体栈。虽然长的也不丑，但缺乏品牌辨识度，让人一眼看出很重的 AI 味。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">色彩随机性与整体失谐</strong>：AI 会给每个元素配一个看起来合理的颜色，但无法建立整体的配色规则。比如说，红色在某页面可能是一个无关紧要的装饰色，在另一页面却作为关键的错误警报色。然后，局部色彩选择的合理性，在全局视角下可能会构成视觉噪音。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">样式漂移</strong>：这个问题可能是最高频的。同一 AI 工具，在不同的上下文中，对同一应用的同一组件会输出矛盾的代码。比如，周一生成的是直角边框，在周二可能就变成了大圆角；早晨设定的 8px 间距，下午就变成了 16px。</li>
+</ol>
+
+<!-- ═══════════ Design.md 背后的核心逻辑 ═══════════ -->
+
+<h2 style='font-size:20px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:40px 0 12px; padding:0 0 0 12px; border-left:4px solid #C4956A; letter-spacing:-0.022em; line-height:1.3'>Design.md 背后的核心逻辑</h2>
+
+<p style="margin:21px 0 0; text-align:left" align="left">解决 AI 设计一致性问题的关键，并非进一步等待模型的进步，而是为其提供<strong style="color:rgba(0,0,0,0.84); font-weight:700">明确的设计指引</strong>。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">过去几十年，从 IBM 的 Carbon 到 Shopify 的 Polaris，优秀的体系均遵循同一共识：<strong style="color:rgba(0,0,0,0.84); font-weight:700">一致性源于系统性约束，而非主观品味。</strong></p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">但核心问题是这些规则约束的表达方式对 AI Agent 并不友好。Design Tokens 依赖 JSON 格式解析和字段语义猜测，品牌规范在传统工作流中大多高度耦合于 Figma 等图形工具内，其他样式规范则潜藏在设计师的脑子里，AI 只能在信息缺失的状态下输出代码。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left"><code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 解决该问题的思路简单直接：采用大模型最具解析优势的载体 — Markdown，来结构化沉淀设计系统。Google 在其内部 AI 设计开发工具 Stitch 中也进一步验证了此理念：<strong style="color:rgba(0,0,0,0.84); font-weight:700">"受规范约束的 AI，比自由状态下的 AI 能产出更高一致性的结果。"</strong></p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">Markdown 结合了机器可读的精准度与自然语言的意图表达。相较于 JSON 文件仅提供 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:3px; padding:2px 5px; color:rgba(0,0,0,0.84)'>"primary": "#635bff"</code> 的键值对，<code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 可通过自然语言补充说明："<em style="color:rgba(0,0,0,0.68)">蓝紫色 (#635bff) 仅可用于承载核心操作与传递信任信号，禁止用作纯装饰元件及错误状态提示。</em>"</p>
+
+<!-- IMAGE:配图-2-核心逻辑.png -->
+
+<p style="margin:52px 0; text-align:center; color:rgba(0,0,0,0.54); font-size:28px; letter-spacing:16px; line-height:1" align="center">···</p>
+
+<!-- ═══════════ Design.md 的 9 个核心组成 ═══════════ -->
+
+<h2 style='font-size:20px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:40px 0 12px; padding:0 0 0 12px; border-left:4px solid #C4956A; letter-spacing:-0.022em; line-height:1.3'>Design.md 的 9 个核心组成</h2>
+
+<p style="margin:21px 0 0; text-align:left" align="left">以 Stripe（VoltAgent 复刻版）开放的 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 为例，该规范由 9 大核心规则构成，每一条都不可或缺。这 9 大规则可系统地归为 3 类。</p>
+
+<h3 style='font-size:17px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:30px 0 10px; line-height:1.3'>第一类：品牌设定</h3>
+
+<ol style="margin:16px 0; padding-left:24px">
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">视觉总览与氛围 (Overview)</strong>：负责界面风格的定调。Stripe 在开篇便明确了"金融基础设施"的视觉核心：由海军蓝底色（deep navy ink）、电光亮紫主色（electric indigo）以及横跨页面上方三分之一的标志性渐变网格（gradient mesh）构成。这类详尽描述为模型画出了清晰的品牌主色调边界。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">色彩体系与角色 (Colors)</strong>：彻底终结 AI 的配色难题。这条规则并不单纯罗列 HEX 色值，而是给每种颜色指派具体的"岗位角色"。Stripe 将 20 多种色值划分为品牌强调色、表面色、排版色等，并注明了严格的语义：<em style="color:rgba(0,0,0,0.68)">海军蓝（#0d253d）作为全局正文色，而亮紫色（#533afd）仅用作核心的行动号召按钮（CTA），全屏最多只能出现一个填充紫色的按钮。</em></li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">排版与字体规则 (Typography)</strong>：防止排版混乱，摆脱 AI 生成页面强烈的业余感。Stripe 的声明非常详尽：不仅定义了从巨幅标题（56px）到微缩文本（10px）的 15 个字号梯度，还给出了一些硬性约束：标题强制使用 300 细体字重搭配负字间距（-1.4px），这也是其招牌排版特征；并且只要涉及到金额和数字的单元格，必须强制开启 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:3px; padding:2px 5px; color:rgba(0,0,0,0.84)'>tnum</code>（等宽数字）特性。如果没有这些约束，AI 会直接用系统默认字体。</li>
+</ol>
+
+<!-- IMAGE:配图-3-品牌设定.png -->
+
+<h3 style='font-size:17px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:30px 0 10px; line-height:1.3'>第二类：UI 骨架构建</h3>
+
+<ol start="4" style="margin:16px 0; padding-left:24px">
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">组件定义 (Components)</strong>：为 AI 定义标准化的 UI 词汇库，包括按钮、卡片、输入框的多态变体。比如规定所有主按钮必须采用 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:3px; padding:2px 5px; color:rgba(0,0,0,0.84)'>button-primary-pill</code>（背景亮紫、白字、9999px 全圆角）。如果不写明这类前置条件，AI 会默认输出缺少交互反馈的死板方块，品牌特有的"交易丝滑感"将荡然无存。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">布局与栅格 (Layout)</strong>：确立界面的空间韵律。Stripe 采用了严格的 8px 基准间距单元，最大内容宽度大约 1200px，以及模块间高达 64-96px 的大范围留白哲学，避免 AI 随意发挥导致整体视觉崩塌。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">视觉深度与形状 (Elevation &amp; Shapes)</strong>：主要解决 AI 喜欢在所有元素上盲目套用扁平通用阴影的毛病。Stripe 定义了从扁平到深暗的 3 级阴影，并<strong style="color:rgba(0,0,0,0.84); font-weight:700">强制要求阴影必须携带蓝灰调（比如 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:3px; padding:2px 5px; color:rgba(0,0,0,0.84)'>rgba(0,55,112,0.08)</code>）</strong>。对于形状，Stripe 定义了从 4px 到 9999px 胶囊形的严格圆角标尺。</li>
+</ol>
+
+<!-- IMAGE:配图-4-UI骨架.png -->
+
+<h3 style='font-size:17px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:30px 0 10px; line-height:1.3'>第三类：视觉一致性守护</h3>
+
+<ol start="7" style="margin:16px 0; padding-left:24px">
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">令行禁止 (Do's and Don'ts)</strong>：主防御层。在 UI 设计侧，AI 通常会比较保守 — 用最安全普通的圆角矩形去替代品牌标志性的组件。Stripe 在此明确列出了 6 项"要（Do）"与 6 项"禁止（Don't）"。比如：<em style="color:rgba(0,0,0,0.68)">"不要把字重加粗到 300 以上，这会破坏品牌的编辑感"、"不准把按钮的胶囊形替换成普通的圆角矩形"</em>。这类防错清单有效地框定了模型的"行为禁区"。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">响应式行为 (Responsive Behavior)</strong>：向 AI 明确声明移动端绝不是单纯的"把桌面端缩小"。这个部分精确定义了 1440px / 1024px / 768px 的断点策略，定价卡片如何从 4 列折叠为单列，以及移动端触控热区必须大于 40x40px 的底线准则。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">迭代指南 (Iteration Guide)</strong>：彻底解决 AI 修改设计时的"上下文遗忘"难题。它要求 AI "每次只专注一个组件"、"编辑后必须跑 lint 脚本"、"直接引用定义的样式 Token"，确保 AI 在多轮对话中不会出现前述的"样式漂移"问题。</li>
+</ol>
+
+<!-- IMAGE:配图-5-一致性守护.png -->
+
+<p style="margin:52px 0; text-align:center; color:rgba(0,0,0,0.54); font-size:28px; letter-spacing:16px; line-height:1" align="center">···</p>
+
+<!-- ═══════════ 实操指南与应用路径 ═══════════ -->
+
+<h2 style='font-size:20px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:40px 0 12px; padding:0 0 0 12px; border-left:4px solid #C4956A; letter-spacing:-0.022em; line-height:1.3'>实操指南与应用路径</h2>
+
+<p style="margin:21px 0 0; text-align:left" align="left">根据项目起点，有三条上手 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 的路径可供选择：</p>
+
+<h3 style='font-size:17px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:30px 0 10px; line-height:1.3'>路径 A：直接复用开源品牌规范</h3>
+
+<p style="margin:21px 0 0; text-align:left" align="left">起步最快的方案。直接去 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>awesome-design-md</code> 仓库里找一个最符合你审美调性的品牌设计系统，直接引入项目：</p>
+
+<section style="margin:16px 0; border-radius:8px; overflow:hidden; border:1px solid rgba(196,149,106,0.15)">
+<div style='background:#2C2A28; color:rgba(255,255,255,0.45); font-size:12px; padding:6px 14px; font-family:"SF Mono", Menlo, Consolas, monospace; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #3D3632'><span>bash</span></div>
+<pre style='background:#1C1C1E; margin:0; padding:16px 18px; overflow-x:auto; font-size:13px; line-height:1.65; font-family:"SF Mono", Menlo, Consolas, monospace; color:#F2EDE3; white-space:pre-wrap; word-break:break-word; border:none'><span style="color:#7A7876"># Example: 使用 Stripe 的设计系统</span>
+curl -o DESIGN.md https://raw.githubusercontent.com/VoltAgent/awesome-design-md/main/design-md/stripe.com/DESIGN.md</pre>
+</section>
+
+<p style="margin:21px 0 0; text-align:left" align="left">库中目前收录了 423 个知名品牌的系统，包含 Stripe、Linear、Notion、Vercel、Airbnb、Spotify 等等。如果尚未配置专业设计师，又亟需打磨高完成度 UI 界面的原型开发或独立项目（side projects），这种方式的实战效果还是相当不错。</p>
+
+<h3 style='font-size:17px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:30px 0 10px; line-height:1.3'>路径 B：通过现有线上站点反向提取</h3>
+
+<p style="margin:21px 0 0; text-align:left" align="left">如果已有线上产品，Google 的 Stitch 工具支持直接通过网站 URL 自动提取出 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code>。该工具完全免费且免注册。Stitch 会爬取站点的 CSS 代码，逆向解析出底层的设计系统结构，最终输出一份结构清晰的 Markdown 文件。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">PS：反向提取的产物并不完美。需要针对"令行禁止"部分做人工审阅与重构，Stitch 只能推断那些它能观测到的表象，但无法读懂原设计师在创作时的思考边界，可以将其作为一份基础草稿不断迭代。</p>
+
+<h3 style='font-size:17px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:30px 0 10px; line-height:1.3'>路径 C：从零开始自主构建</h3>
+
+<p style="margin:21px 0 0; text-align:left" align="left">可以先从这四个最重要的核心规则开始：</p>
+
+<ul style="margin:16px 0; padding-left:24px">
+<li style="margin-bottom:10px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">视觉总览与氛围 (Overview)</strong>：用两三句话确切描述出所需界面的视觉气场。</li>
+<li style="margin-bottom:10px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">色彩体系与角色 (Colors)</strong>：定义主色、强调色、错误报警色以及中性色阶，并为其赋予严格的语义职责。</li>
+<li style="margin-bottom:10px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">组件定义 (Components)</strong>：首要定义按钮的多态变体（variants）以及卡片的硬性规格参数（specs）。</li>
+<li style="margin-bottom:10px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">令行禁止 (Do's and Don'ts)</strong>：为智能体设立五条永远不可逾越的"行为红线"。</li>
+</ul>
+
+<p style="margin:21px 0 0; text-align:left" align="left">这四个部分构成的设计约束足以封堵 Agent 最高频出现的失效场景。至于排版、布局栅格等剩余模块，可以等待后续开发过程中暴露出视觉偏离时再做动态增补。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left"><strong style="color:rgba(0,0,0,0.84); font-weight:700">即便是非常粗略的不完整版 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code>，也远胜让 AI 在完全无约束的环境下自由发挥。</strong></p>
+
+<!-- IMAGE:配图-6-三条路径.png -->
+
+<p style="margin:52px 0; text-align:center; color:rgba(0,0,0,0.54); font-size:28px; letter-spacing:16px; line-height:1" align="center">···</p>
+
+<!-- ═══════════ Design.md 的局限 ═══════════ -->
+
+<h2 style='font-size:20px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:40px 0 12px; padding:0 0 0 12px; border-left:4px solid #C4956A; letter-spacing:-0.022em; line-height:1.3'>Design.md 的局限</h2>
+
+<p style="margin:21px 0 0; text-align:left" align="left"><code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 并非银弹，它也有一些局限存在。</p>
+
+<ul style="margin:16px 0; padding-left:24px">
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">Token 成本</strong>：一份完整的 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 大约会消耗 30,000 个 tokens 的额度。如果上下文预算不够，可以优先保留核心的四个模块（主题、色彩、组件、红线），把其他部分作为补充参考文档，仅在 AI 需要时按需读取。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">文件时效</strong>：从线上站点提取或者早期编写的规范仅仅是当时的状态反馈。如果产品设计发生重要迭代，这份 Markdown 可能就会沦为过期文件。线上 CSS 与 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 之间不存在任何自动化同步机制，只能依靠人工维护，结果就会存在一定的滞后性。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">缺乏强制执行力</strong>：Design.md 的本质还是一段 Prompt，没有任何底层机制能绝对阻止它输出一句 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:3px; padding:2px 5px; color:rgba(0,0,0,0.84)'>border-radius: 16px</code>（即使你的红线里明文规定"绝对不可超过 8px"）。如果追求绝对严谨，就需要叠加使用一些 css lint 的工具。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">脱离 Figma 工作流</strong>：对个人开发者而言，维护一份 markdown 没啥问题。但如果上游还有一个设计师团队在用 Figma 编辑视觉稿，就很难保证视觉稿与这份文档的一致性。</li>
+<li style="margin-bottom:12px; line-height:1.75"><strong style="color:#C4956A; font-weight:600">规范尚不成熟</strong>：Google 目前给出的仍只是一份草案（alpha）。目前还缺乏对于动画、图标规范和无障碍标准的定义。如果需要，目前只能手动补齐。</li>
+</ul>
+
+<!-- IMAGE:配图-7-局限清单.png -->
+
+<p style="margin:52px 0; text-align:center; color:rgba(0,0,0,0.54); font-size:28px; letter-spacing:16px; line-height:1" align="center">···</p>
+
+<!-- ═══════════ 写在最后 ═══════════ -->
+
+<h2 style='font-size:20px; font-weight:700; color:rgba(0,0,0,0.84); font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin:40px 0 12px; padding:0 0 0 12px; border-left:4px solid #C4956A; letter-spacing:-0.022em; line-height:1.3'>写在最后</h2>
+
+<p style="margin:21px 0 0; text-align:left" align="left"><code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>CLAUDE.md</code> 或 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:3px; padding:2px 5px; color:rgba(0,0,0,0.84)'>AGENTS.md</code> 描述了项目的代码规范和工程指令，给 Agent 带来了条件约束和编码指引。现在的 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 在视觉工程上，同样复刻了这一创举，Claude Code 和 Cursor 也已经默认支持了 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code>。</p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">这种 markdown 文件能够奏效，主要是因为其契合 Agent 消耗信息的本质规律：<strong style="color:rgba(0,0,0,0.84); font-weight:700">在大模型海量的训练语料中，结构化的自然语言文本，是它最擅长理解意图与权衡的载体。</strong></p>
+
+<p style="margin:21px 0 0; text-align:left" align="left">Google 选择拥抱开源协议，意味着"用自然语言定义工程界面"正在从零星尝试走向行业标配。<code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>DESIGN.md</code> 未来大概也会成为跟 <code style='font-family:"SF Mono", Menlo, Consolas, monospace; font-size:0.88em; background:rgba(196,149,106,0.1); border:1px solid rgba(196,149,106,0.2); border-radius:3px; padding:2px 5px; color:#8a6a47'>CLAUDE.md</code> 一样的工程标准化设施。</p>
+
+<p style="margin:40px 0 0; text-align:center; color:#C4956A; font-size:13px; letter-spacing:3px; opacity:0.6" align="center">— END —</p>
+
+</section>
+</body>
+</html>

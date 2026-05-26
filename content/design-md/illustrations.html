@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配图 — 驯服 AI 审美 · DESIGN.md</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #2a2826; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 80px 20px 60px; gap: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  }
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.92); padding: 14px 20px;
+    display: flex; gap: 12px; justify-content: center; z-index: 100;
+    flex-wrap: wrap; backdrop-filter: blur(10px);
+  }
+  .toolbar button {
+    background: #C4956A; color: #1C1C1E; border: none;
+    padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .toolbar button:hover { background: #d4a57a; }
+  .toolbar button.all { background: #1C1C1E; color: #C4956A; border: 1px solid #C4956A; }
+
+  .slide-label {
+    color: rgba(255,255,255,0.45); font-size: 12px;
+    margin-top: 28px; margin-bottom: 6px; letter-spacing: 0.5px;
+  }
+  .slide {
+    width: 800px; position: relative; overflow: hidden; border-radius: 8px;
+  }
+  .slide.dark { color: #F2EDE3; }
+  .slide.light { color: #1C1C1E; }
+
+  .bg-dark {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 85% 15%, rgba(196,149,106,0.05), transparent 55%),
+      #1C1C1E;
+  }
+  .bg-light {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 85% 15%, rgba(196,149,106,0.06), transparent 55%),
+      #FFFFFF;
+  }
+  .content {
+    position: relative; z-index: 2;
+    padding: 48px 56px;
+  }
+
+  /* Brand badge */
+  .brand {
+    position: absolute; top: 20px; left: 24px; z-index: 3;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .brand-text { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
+  .brand.on-dark .brand-text { color: rgba(255,255,255,0.5); }
+  .brand.on-light .brand-text { color: rgba(28,28,30,0.4); }
+
+  /* Page number */
+  .page-num {
+    position: absolute; bottom: 16px; right: 24px; z-index: 3;
+    font-size: 11px; font-weight: 500;
+  }
+  .page-num.on-dark { color: rgba(255,255,255,0.2); }
+  .page-num.on-light { color: rgba(28,28,30,0.2); }
+
+  /* Ghost number */
+  .ghost-num {
+    position: absolute; bottom: 20px; right: 40px; z-index: 1;
+    font-size: 180px; font-weight: 900; opacity: 0.04; pointer-events: none; line-height: 1;
+  }
+  .slide.dark .ghost-num { color: #F2EDE3; }
+  .slide.light .ghost-num { color: #1C1C1E; }
+
+  /* Medium section tag */
+  .section-tag {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative;
+  }
+  .section-tag::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 28px; height: 1px; background: #C4956A;
+  }
+
+  /* Titles */
+  .slide.dark .h-title { color: #F2EDE3; }
+  .slide.light .h-title { color: #1C1C1E; }
+  .h-title {
+    font-size: 28px; font-weight: 800; letter-spacing: -0.018em;
+    line-height: 1.3; margin-top: 14px;
+  }
+  .h-sub {
+    font-size: 14px; font-weight: 400; font-style: italic;
+    margin-top: 8px;
+  }
+  .slide.dark .h-sub { color: rgba(255,255,255,0.45); }
+  .slide.light .h-sub { color: #7A7876; }
+
+  /* Card grid */
+  .card-row {
+    display: flex; gap: 16px; margin-top: 28px; flex-wrap: wrap;
+  }
+  .g-card {
+    flex: 1; min-width: 180px; border-radius: 10px; padding: 22px 20px;
+  }
+  .slide.dark .g-card {
+    background: rgba(242,237,227,0.06); border: 1px solid rgba(242,237,227,0.1);
+  }
+  .slide.light .g-card {
+    background: #F2EDE3; border: 1px solid rgba(196,149,106,0.12);
+  }
+  .g-card .g-num {
+    font-size: 32px; font-weight: 900; color: #C4956A; line-height: 1; margin-bottom: 8px;
+  }
+  .g-card .g-title {
+    font-size: 15px; font-weight: 700; margin-bottom: 6px;
+  }
+  .g-card .g-desc {
+    font-size: 12px; line-height: 1.6;
+  }
+  .slide.dark .g-card .g-title { color: #F2EDE3; }
+  .slide.dark .g-card .g-desc { color: rgba(255,255,255,0.55); }
+  .slide.light .g-card .g-title { color: #1C1C1E; }
+  .slide.light .g-card .g-desc { color: #7A7876; }
+
+  /* Flow row */
+  .flow-row {
+    display: flex; align-items: center; gap: 4px; margin-top: 24px; flex-wrap: nowrap;
+  }
+  .flow-card {
+    flex-shrink: 0; border-radius: 8px; padding: 14px 16px; text-align: center;
+  }
+  .slide.dark .flow-card {
+    background: rgba(196,149,106,0.12); border: 1px solid rgba(196,149,106,0.25);
+  }
+  .slide.light .flow-card {
+    background: #F2EDE3; border: 1px solid rgba(196,149,106,0.2);
+  }
+  .flow-card .fc-title { font-size: 13px; font-weight: 700; }
+  .flow-card .fc-sub { font-size: 10px; margin-top: 3px; }
+  .slide.dark .flow-card .fc-title { color: #F2EDE3; }
+  .slide.dark .flow-card .fc-sub { color: rgba(255,255,255,0.4); }
+  .slide.light .flow-card .fc-title { color: #1C1C1E; }
+  .slide.light .flow-card .fc-sub { color: #7A7876; }
+  .arrow { flex-shrink: 0; font-size: 18px; padding: 0 6px; }
+  .slide.dark .arrow { color: rgba(255,255,255,0.2); }
+  .slide.light .arrow { color: rgba(28,28,30,0.2); }
+
+  /* Info row */
+  .info-row {
+    display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px;
+  }
+  .info-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #C4956A;
+    flex-shrink: 0; margin-top: 6px;
+  }
+  .info-text { font-size: 13px; line-height: 1.6; }
+  .slide.dark .info-text { color: rgba(255,255,255,0.75); }
+  .slide.light .info-text { color: rgba(28,28,30,0.75); }
+
+  /* Numbered list */
+  .num-item { display: flex; gap: 16px; margin-bottom: 18px; align-items: flex-start; }
+  .num-badge {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800;
+  }
+  .slide.dark .num-badge { background: rgba(196,149,106,0.2); color: #C4956A; }
+  .slide.light .num-badge { background: rgba(196,149,106,0.15); color: #C4956A; }
+  .num-body { flex: 1; }
+  .num-body .nb-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .num-body .nb-desc { font-size: 12px; line-height: 1.6; }
+  .slide.dark .num-body .nb-title { color: #F2EDE3; }
+  .slide.dark .num-body .nb-desc { color: rgba(255,255,255,0.55); }
+  .slide.light .num-body .nb-title { color: #1C1C1E; }
+  .slide.light .num-body .nb-desc { color: #7A7876; }
+
+  /* Path cards */
+  .path-card {
+    border-radius: 10px; padding: 20px; margin-bottom: 14px;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .slide.light .path-card { background: #F2EDE3; border: 1px solid rgba(196,149,106,0.12); }
+  .path-label {
+    font-size: 20px; font-weight: 900; color: #C4956A;
+    width: 32px; flex-shrink: 0; line-height: 1.2;
+  }
+  .path-body { flex: 1; }
+  .path-body .pb-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .path-body .pb-desc { font-size: 12px; line-height: 1.6; }
+  .slide.light .path-body .pb-title { color: #1C1C1E; }
+  .slide.light .path-body .pb-desc { color: #7A7876; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="all" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button onclick="downloadOne(0)">下载 #1</button>
+  <button onclick="downloadOne(1)">下载 #2</button>
+  <button onclick="downloadOne(2)">下载 #3</button>
+  <button onclick="downloadOne(3)">下载 #4</button>
+  <button onclick="downloadOne(4)">下载 #5</button>
+  <button onclick="downloadOne(5)">下载 #6</button>
+  <button onclick="downloadOne(6)">下载 #7</button>
+</div>
+
+<!-- ============ Slide 1: 三类典型问题 (dark) ============ -->
+<div class="slide-label">配图 1 · 放在「AI 处理设计的三类典型问题」段首之后</div>
+<div class="slide dark" style="min-height:420px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num on-dark">1/7</div>
+  <div class="ghost-num">01</div>
+  <div class="content">
+    <div class="section-tag">THREE PROBLEMS</div>
+    <div class="h-title">AI 处理设计的三类典型问题</div>
+    <div class="h-sub">缺的不是审美，是设计记忆</div>
+    <div class="card-row">
+      <div class="g-card">
+        <div class="g-title">同质化默认样式</div>
+        <div class="g-desc">白色背景 + 蓝色按钮 + 灰色文本 + 4px 圆角 + 系统字体。不丑，但一眼就是 AI 味。</div>
+      </div>
+      <div class="g-card">
+        <div class="g-title">色彩随机失谐</div>
+        <div class="g-desc">每个元素的颜色单独看合理，但放在一起没有整体配色规则——局部合理，全局噪音。</div>
+      </div>
+      <div class="g-card">
+        <div class="g-title">样式漂移</div>
+        <div class="g-desc">周一直角边框，周二大圆角；早晨 8px 间距，下午变 16px。同一工具、同一组件、不同结果。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Slide 2: 核心逻辑 (light) ============ -->
+<div class="slide-label">配图 2 · 放在「Design.md 背后的核心逻辑」段末</div>
+<div class="slide light" style="min-height:380px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num on-light">2/7</div>
+  <div class="ghost-num">02</div>
+  <div class="content">
+    <div class="section-tag">CORE LOGIC</div>
+    <div class="h-title">一致性源于系统性约束，而非主观品味</div>
+    <div class="h-sub">用大模型最擅长理解的载体——Markdown——来定义设计系统</div>
+    <div class="flow-row" style="margin-top:32px;">
+      <div class="flow-card" style="min-width:110px;">
+        <div class="fc-title">Design Tokens</div>
+        <div class="fc-sub">JSON 键值对</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card" style="min-width:80px; opacity:0.5;">
+        <div class="fc-title" style="color:#ff6b6b;">缺语义</div>
+        <div class="fc-sub">只有色值，没有意图</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card" style="min-width:130px; border-color:rgba(196,149,106,0.5);">
+        <div class="fc-title" style="color:#C4956A;">DESIGN.md</div>
+        <div class="fc-sub">Markdown + 自然语言</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-card" style="min-width:100px;">
+        <div class="fc-title">一致的 UI</div>
+        <div class="fc-sub">受约束的输出</div>
+      </div>
+    </div>
+    <div style="margin-top:24px; padding:16px 20px; border-radius:8px; background:#F2EDE3; border-left:3px solid #C4956A;">
+      <div style="font-size:13px; font-style:italic; color:#7A7876; line-height:1.6;">"受规范约束的 AI，比自由状态下的 AI 能产出更高一致性的结果。" —— Google Stitch</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Slide 3: 品牌设定 (dark) ============ -->
+<div class="slide-label">配图 3 · 放在「第一类：品牌设定」段末</div>
+<div class="slide dark" style="min-height:480px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num on-dark">3/7</div>
+  <div class="ghost-num">03</div>
+  <div class="content">
+    <div class="section-tag">BRAND IDENTITY</div>
+    <div class="h-title">第一类：品牌设定</div>
+    <div class="h-sub">定义界面风格、色彩角色与排版规则</div>
+    <div style="margin-top:24px;">
+      <div class="num-item">
+        <div class="num-badge">1</div>
+        <div class="num-body">
+          <div class="nb-title">视觉总览与氛围 Overview</div>
+          <div class="nb-desc">界面风格定调。Stripe 开篇明确「金融基础设施」核心：海军蓝底 + 电光亮紫主色 + 渐变网格。画出品牌主色调边界。</div>
+        </div>
+      </div>
+      <div class="num-item">
+        <div class="num-badge">2</div>
+        <div class="num-body">
+          <div class="nb-title">色彩体系与角色 Colors</div>
+          <div class="nb-desc">不只罗列 HEX 色值，给每种颜色指派「岗位角色」。亮紫仅用作 CTA，全屏最多一个填充紫色按钮。</div>
+        </div>
+      </div>
+      <div class="num-item">
+        <div class="num-badge">3</div>
+        <div class="num-body">
+          <div class="nb-title">排版与字体规则 Typography</div>
+          <div class="nb-desc">15 个字号梯度 + 硬性约束：标题强制 300 字重 + 负字间距，金额数字必须开启等宽数字 tnum 特性。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Slide 4: UI 骨架构建 (light) ============ -->
+<div class="slide-label">配图 4 · 放在「第二类：UI 骨架构建」段末</div>
+<div class="slide light" style="min-height:480px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num on-light">4/7</div>
+  <div class="ghost-num">04</div>
+  <div class="content">
+    <div class="section-tag">UI SKELETON</div>
+    <div class="h-title">第二类：UI 骨架构建</div>
+    <div class="h-sub">组件词汇表、空间韵律与视觉深度</div>
+    <div style="margin-top:24px;">
+      <div class="num-item">
+        <div class="num-badge">4</div>
+        <div class="num-body">
+          <div class="nb-title">组件定义 Components</div>
+          <div class="nb-desc">标准化 UI 词汇库：按钮多态变体、卡片规格。主按钮必须用 button-primary-pill（背景亮紫 + 白字 + 9999px 全圆角）。</div>
+        </div>
+      </div>
+      <div class="num-item">
+        <div class="num-badge">5</div>
+        <div class="num-body">
+          <div class="nb-title">布局与栅格 Layout</div>
+          <div class="nb-desc">严格 8px 基准间距、最大内容宽 1200px、模块间 64-96px 大留白。避免 AI 随意发挥导致整体崩塌。</div>
+        </div>
+      </div>
+      <div class="num-item">
+        <div class="num-badge">6</div>
+        <div class="num-body">
+          <div class="nb-title">视觉深度与形状 Elevation</div>
+          <div class="nb-desc">3 级阴影系统，阴影必须携带蓝灰调 rgba(0,55,112,0.08)。圆角从 4px 到 9999px 胶囊形，严格标尺。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Slide 5: 视觉一致性守护 (dark) ============ -->
+<div class="slide-label">配图 5 · 放在「第三类：视觉一致性守护」段末</div>
+<div class="slide dark" style="min-height:480px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num on-dark">5/7</div>
+  <div class="ghost-num">05</div>
+  <div class="content">
+    <div class="section-tag">VISUAL GUARD</div>
+    <div class="h-title">第三类：视觉一致性守护</div>
+    <div class="h-sub">防错清单、响应式规则与迭代指南</div>
+    <div style="margin-top:24px;">
+      <div class="num-item">
+        <div class="num-badge">7</div>
+        <div class="num-body">
+          <div class="nb-title">令行禁止 Do's and Don'ts</div>
+          <div class="nb-desc">主防御层。6 项「要」+ 6 项「禁止」。如：不要把字重加粗到 300 以上，不准把胶囊按钮替换成普通圆角矩形。</div>
+        </div>
+      </div>
+      <div class="num-item">
+        <div class="num-badge">8</div>
+        <div class="num-body">
+          <div class="nb-title">响应式行为 Responsive</div>
+          <div class="nb-desc">移动端不是「把桌面端缩小」。1440/1024/768px 断点策略，定价卡从 4 列折叠为单列，触控热区 ≥ 40×40px。</div>
+        </div>
+      </div>
+      <div class="num-item">
+        <div class="num-badge">9</div>
+        <div class="num-body">
+          <div class="nb-title">迭代指南 Iteration</div>
+          <div class="nb-desc">解决多轮对话的「上下文遗忘」。要求 AI 每次只改一个组件、编辑后必须跑 lint、直接引用 Token。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Slide 6: 三条路径 (light) ============ -->
+<div class="slide-label">配图 6 · 放在「实操指南与应用路径」段末</div>
+<div class="slide light" style="min-height:440px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num on-light">6/7</div>
+  <div class="ghost-num">06</div>
+  <div class="content">
+    <div class="section-tag">GETTING STARTED</div>
+    <div class="h-title">三条上手路径</div>
+    <div class="h-sub">根据项目起点选择最适合的方案</div>
+    <div style="margin-top:24px;">
+      <div class="path-card">
+        <div class="path-label">A</div>
+        <div class="path-body">
+          <div class="pb-title">直接复用开源品牌规范</div>
+          <div class="pb-desc">从 awesome-design-md 仓库中选取 423 个品牌系统之一（Stripe / Linear / Notion …），curl 引入项目即可。起步最快，适合原型和 Side Project。</div>
+        </div>
+      </div>
+      <div class="path-card">
+        <div class="path-label">B</div>
+        <div class="path-body">
+          <div class="pb-title">通过线上站点反向提取</div>
+          <div class="pb-desc">用 Google Stitch 工具输入网站 URL，自动爬取 CSS 并逆向解析出 DESIGN.md。免费免注册，但需人工审阅「令行禁止」部分。</div>
+        </div>
+      </div>
+      <div class="path-card">
+        <div class="path-label">C</div>
+        <div class="path-body">
+          <div class="pb-title">从零开始自主构建</div>
+          <div class="pb-desc">先写 4 个核心模块：视觉总览、色彩体系、组件定义、令行禁止。这四个足以封堵最高频失效场景，其余后续动态增补。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Slide 7: 局限清单 (dark) ============ -->
+<div class="slide-label">配图 7 · 放在「Design.md 的局限」段末</div>
+<div class="slide dark" style="min-height:440px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="page-num on-dark">7/7</div>
+  <div class="ghost-num">07</div>
+  <div class="content">
+    <div class="section-tag">LIMITATIONS</div>
+    <div class="h-title">DESIGN.md 的局限</div>
+    <div class="h-sub">并非银弹，仍有五处边界</div>
+    <div style="margin-top:28px;">
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text"><strong style="color:#F2EDE3;">Token 成本</strong> — 完整规范约消耗 30,000 tokens。预算不够时优先保留主题、色彩、组件、红线四个核心模块。</div>
+      </div>
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text"><strong style="color:#F2EDE3;">文件时效</strong> — 早期编写的规范会随产品迭代过期。线上 CSS 与 DESIGN.md 之间不存在自动同步机制。</div>
+      </div>
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text"><strong style="color:#F2EDE3;">缺乏强制执行力</strong> — 本质仍是 Prompt，无底层机制绝对阻止违规输出。需叠加 CSS lint 工具实现硬约束。</div>
+      </div>
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text"><strong style="color:#F2EDE3;">脱离 Figma 工作流</strong> — 个人维护没问题，但团队协作时难保 Figma 视觉稿与 Markdown 文档的一致性。</div>
+      </div>
+      <div class="info-row">
+        <div class="info-dot"></div>
+        <div class="info-text"><strong style="color:#F2EDE3;">规范尚不成熟</strong> — Google 目前给出的仍是 alpha 草案，缺少动画、图标规范和无障碍标准的定义。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+const slides = () => document.querySelectorAll('.slide');
+const labels = [
+  '配图-1-三类问题', '配图-2-核心逻辑', '配图-3-品牌设定',
+  '配图-4-UI骨架', '配图-5-一致性守护', '配图-6-三条路径', '配图-7-局限清单'
+];
+
+async function downloadOne(i) {
+  const canvas = await renderSlide(slides()[i]);
+  canvas.toBlob(blob => saveAs(blob, labels[i] + '.png'));
+}
+
+async function downloadAll() {
+  const zip = new JSZip();
+  const els = slides();
+  for (let i = 0; i < els.length; i++) {
+    const canvas = await renderSlide(els[i]);
+    const dataUrl = canvas.toDataURL('image/png');
+    zip.file(labels[i] + '.png', dataUrl.split(',')[1], { base64: true });
+  }
+  const blob = await zip.generateAsync({ type: 'blob' });
+  saveAs(blob, 'design-md-配图.zip');
+}
+</script>
+</body>
+</html>
