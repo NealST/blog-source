@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "created": "2026-05-30T19:30:00+08:00",
+  "source": "source/_posts/ai-cost.md",
+  "title": "生成式 AI 未来会变得更贵吗？",
+  "outputs": {
+    "wechat": {
+      "html": "/Users/nealkaffrey/projects/blog-source/content/ai-cost/preview.html",
+      "cover_image": "/Users/nealkaffrey/projects/blog-source/content/ai-cost/cover.png",
+      "title": "生成式 AI 未来会变得更贵吗？",
+      "author": "墨筝",
+      "digest": "基础模型一路降价，单位推理成本两年降了280倍；可高级工作流持续涨价，真实业务的总账单反而越来越高。一场正在分叉的成本竞赛。",
+      "images": [
+        "/Users/nealkaffrey/projects/blog-source/content/ai-cost/配图-1.png",
+        "/Users/nealkaffrey/projects/blog-source/content/ai-cost/配图-2.png",
+        "/Users/nealkaffrey/projects/blog-source/content/ai-cost/配图-3.png",
+        "/Users/nealkaffrey/projects/blog-source/content/ai-cost/配图-4.png"
+      ]
+    }
+  }
+}
