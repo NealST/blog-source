@@ -504,7 +504,7 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 3. **代码徽章**：`.code-badge` 用暖暗色 `#2C2A28`，分割线 `#3D3632`，代码区域 `border: none`（避免 rgba 转 hex 后出现白线）
 4. **段落分割线**：`---` 转为居中点状 `· · ·`，筝弦金色，18px，opacity 0.55
 5. **标题装饰**：h2 用 `border-left: 4px solid #C4956A; padding-left: 12px` 实现筝弦金竖条。禁止用空 `<span>` 模拟竖条——微信编辑器会剥离没有文本内容的 inline-block 元素
-6. **文末 END 标识**：排版 HTML 的 `</section>` 闭合标签前必须插入筝弦金色居中收尾标记：
+6. **文末 END 标识**：`md2wechat_formatter.py` 已通过 `add_end_mark()` 自动在文末插入筝弦金色居中收尾标记。手工编写排版 HTML 时需自行在 `</section>` 闭合标签前补上：
    ```html
    <p style="margin:40px 0 0; text-align:center; color:#C4956A; font-size:13px; letter-spacing:3px; opacity:0.6" align="center">— END —</p>
    ```

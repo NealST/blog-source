@@ -279,6 +279,11 @@ export async function uploadRemoteImagesInHtml(html: string, token: string): Pro
 
   if (matches.length === 0) return html;
 
+  if (process.env.WECHAT_SKIP_REMOTE_IMAGES === '1') {
+    console.log(`  [wechat-api] Skipping ${matches.length} remote image upload(s) (WECHAT_SKIP_REMOTE_IMAGES=1)`);
+    return html;
+  }
+
   console.log(`  [wechat-api] Found ${matches.length} remote image(s) to upload...`);
 
   let processed = html;

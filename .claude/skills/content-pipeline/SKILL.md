@@ -307,6 +307,23 @@ python3 md2wechat_formatter.py [文章路径] -o content/[slug]/preview.html
 使用统一的「墨筝」主题——墨色 #1C1C1E + 筝弦金 #C4956A + 宣纸底 #F2EDE3，融合 Medium 排版精华。
 推荐字号：`large`（16px，默认）、`medium`（15px）
 
+### 排版避坑：视觉元素的"金色左竖线"冲突
+
+H2 标题使用 `border-left:4px solid #C4956A` 时，正文中的引用块（blockquote / 提示词卡片）**不要再用同款金色左竖线**，否则两块紧挨时视觉重复，H2 的"分章"地位被削弱。
+
+**正确分工**：
+- **H2 标题**：金色左竖线（4px）+ 12px 左 padding —— 负责"分段锚点"
+- **引用 / 提示词卡片**：四面浅边框 + 浅米底 + 圆角 —— 负责"信息容器"，安静不抢戏
+
+**推荐的引用卡片内联样式**（已验证）：
+```html
+<blockquote style="margin:0 0 16px; padding:14px 18px; border:1px solid #e8dfd0; background:#f5efe4; border-radius:6px; font-size:14px; line-height:1.7; color:#444">
+  <!-- 内容 -->
+</blockquote>
+```
+
+**双语提示词约定**：中文用正常样式，英文原文紧跟一行，颜色 `#7a6952` + `font-style:italic`，作为可静音的参考信息。
+
 ---
 
 ## Path B 流程：微信链接 → 多平台内容
