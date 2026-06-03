@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>配图 - 给 Claude Code 装上永久记忆</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 12px 24px; display: flex; gap: 12px; z-index: 999; }
+.toolbar button { padding: 8px 16px; border: none; border-radius: 6px; background: #C4956A; color: #fff; font-size: 14px; cursor: pointer; font-weight: 600; }
+.toolbar button:hover { background: #b8845a; }
+.slide-label { color: rgba(255,255,255,0.5); font-size: 13px; margin: 40px 0 12px; align-self: flex-start; max-width: 800px; width: 100%; text-align: left; padding-left: calc(50% - 400px); }
+.slide-label:first-of-type { margin-top: 0; }
+.slide { width: 800px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 8px; }
+.slide.dark { background: #1C1C1E; }
+.slide.light { background: #FFFFFF; }
+
+.bg-dark, .bg-light { display: none; }
+
+.brand { position: absolute; top: 18px; left: 22px; display: flex; align-items: center; gap: 6px; z-index: 3; }
+.brand svg { width: 20px; height: 20px; }
+.brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+.brand.on-dark .brand-text { color: rgba(255,255,255,0.5); }
+.brand.on-light .brand-text { color: rgba(28,28,30,0.4); }
+
+.page-num { position: absolute; bottom: 18px; right: 22px; font-size: 11px; z-index: 3; }
+.slide.dark .page-num { color: rgba(255,255,255,0.25); }
+.slide.light .page-num { color: rgba(28,28,30,0.25); }
+
+.section-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative; margin-bottom: 16px; }
+.section-tag::before { content: ''; position: absolute; top: 0; left: 0; width: 28px; height: 1px; background: #C4956A; }
+
+.h-title { font-size: 28px; font-weight: 800; letter-spacing: -0.018em; line-height: 1.3; margin-bottom: 8px; }
+.slide.dark .h-title { color: #F2EDE3; }
+.slide.light .h-title { color: #1C1C1E; }
+.h-sub { font-size: 13px; line-height: 1.5; margin-bottom: 18px; }
+.slide.dark .h-sub { color: rgba(255,255,255,0.5); }
+.slide.light .h-sub { color: rgba(28,28,30,0.55); }
+
+.content { position: relative; display: flex; flex-direction: column; padding: 60px 52px 60px; z-index: 2; }
+
+/* 流程卡片：节点 */
+.node { padding: 12px 16px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-width: 110px; }
+.node .nt { font-size: 13px; font-weight: 800; line-height: 1.25; }
+.node .nd { font-size: 10px; margin-top: 4px; line-height: 1.4; }
+.slide.dark .node { background: rgba(196,149,106,0.13); border: 1.5px solid rgba(196,149,106,0.32); }
+.slide.dark .node .nt { color: #F2EDE3; }
+.slide.dark .node .nd { color: rgba(255,255,255,0.5); }
+.slide.light .node { background: #F5EFE4; border: 1.5px solid rgba(196,149,106,0.32); }
+.slide.light .node .nt { color: #1C1C1E; }
+.slide.light .node .nd { color: rgba(28,28,30,0.55); }
+
+/* 节点变体：mono 终端字体 */
+.node.mono .nt { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; }
+
+/* 节点状态色 */
+.node.read { background: rgba(168,201,127,0.12); border-color: rgba(168,201,127,0.4); }
+.node.write { background: rgba(196,149,106,0.18); border-color: rgba(196,149,106,0.45); }
+.node.danger { background: rgba(255,95,87,0.10); border-color: rgba(255,95,87,0.35); }
+.node.danger .nt { color: #FF8478; }
+.node.success { background: rgba(168,201,127,0.16); border-color: rgba(168,201,127,0.45); }
+.node.success .nt { color: #BAD68F; }
+.node.muted { opacity: 0.42; }
+
+/* 箭头与标签 */
+.arrow { display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
+.slide.dark .arrow { color: rgba(255,255,255,0.32); }
+.slide.light .arrow { color: rgba(28,28,30,0.32); }
+.arrow-label { font-size: 10px; font-weight: 600; color: #C4956A; letter-spacing: 0.5px; }
+
+/* 行流程容器 */
+.flow-row { display: flex; align-items: center; gap: 8px; justify-content: center; }
+.flow-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+/* 大盒子：表示进程/边界 */
+.boundary { border: 1.5px dashed rgba(196,149,106,0.4); border-radius: 12px; padding: 18px 20px; position: relative; }
+.boundary-label { position: absolute; top: -10px; left: 16px; padding: 0 8px; font-size: 10px; font-weight: 700; letter-spacing: 1px; background: inherit; }
+.slide.dark .boundary { background: #1C1C1E; }
+.slide.dark .boundary-label { background: #1C1C1E; color: #C4956A; }
+.slide.light .boundary { background: #FFFFFF; }
+.slide.light .boundary-label { background: #FFFFFF; color: #C4956A; }
+
+/* 阶段标题 */
+.stage-title { font-size: 11px; font-weight: 800; color: #C4956A; letter-spacing: 1.5px; margin-bottom: 8px; text-transform: uppercase; text-align: center; }
+
+/* 决策菱形提示 */
+.decision { width: 130px; padding: 14px 8px; border-radius: 6px; transform: rotate(0); text-align: center; font-size: 11px; font-weight: 700; background: rgba(196,149,106,0.22); border: 1.5px solid #C4956A; color: #F2EDE3; }
+.slide.light .decision { color: #1C1C1E; background: #F5EFE4; }
+
+/* 双栏对比 */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.col-panel { padding: 18px; border-radius: 10px; }
+.col-panel.bad { background: rgba(255,95,87,0.08); border: 1px solid rgba(255,95,87,0.25); }
+.col-panel.good { background: rgba(168,201,127,0.10); border: 1px solid rgba(168,201,127,0.32); }
+.col-label { font-size: 11px; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; }
+.col-panel.bad .col-label { color: #FF8478; }
+.col-panel.good .col-label { color: #BAD68F; }
+
+/* 通用 mini step text */
+.step-text { font-size: 12px; line-height: 1.7; }
+.slide.dark .step-text { color: rgba(255,255,255,0.75); }
+.slide.light .step-text { color: rgba(28,28,30,0.75); }
+.step-text code { font-family: 'SF Mono', Menlo, monospace; font-size: 11px; padding: 1px 5px; border-radius: 3px; }
+.slide.dark .step-text code { background: rgba(196,149,106,0.18); color: #F2EDE3; }
+.slide.light .step-text code { background: #F5EFE4; color: #1C1C1E; }
+
+/* 编号圆点 */
+.num-dot { display: inline-flex; width: 18px; height: 18px; border-radius: 50%; background: #C4956A; color: #1C1C1E; font-size: 11px; font-weight: 800; align-items: center; justify-content: center; margin-right: 8px; flex-shrink: 0; }
+
+.footer-note { font-size: 11px; font-style: italic; margin-top: 16px; }
+.slide.dark .footer-note { color: rgba(255,255,255,0.4); }
+.slide.light .footer-note { color: rgba(28,28,30,0.5); }
+
+/* 品牌角标 SVG 共用 */
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button onclick="downloadCurrent()">下载当前</button>
+</div>
+
+<!-- ========== 配图 1：总览架构图 ========== -->
+<div class="slide-label">配图 1 · 放在「问题解法：入口召回，过程补召回，退出时捕获」之后</div>
+<div class="slide dark" style="min-height:480px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num">1/8</div>
+  <div class="content">
+    <div class="section-tag">ARCHITECTURE</div>
+    <div class="h-title">三个 Hook 撑起的会话生命周期</div>
+    <div class="h-sub">两次"读"夹一次"写"，记忆在合适的时机自动进入上下文</div>
+
+    <!-- 整体时间轴 -->
+    <div style="margin-top: 8px;">
+      <div class="flow-row" style="align-items: stretch;">
+        <div class="node read" style="min-width:130px;">
+          <div class="nt">SessionStart</div>
+          <div class="nd">打开会话<br>注入项目召回指令</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node read" style="min-width:130px;">
+          <div class="nt">UserPromptSubmit</div>
+          <div class="nd">每条消息扫描<br>跨项目补召回</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node write" style="min-width:130px;">
+          <div class="nt">SessionEnd</div>
+          <div class="nd">关闭会话<br>异步提取并写库</div>
+        </div>
+      </div>
+
+      <!-- 时间轴线 -->
+      <div style="margin-top: 28px; display: flex; align-items: center; padding: 0 20px;">
+        <span style="flex-shrink:0; font-size:11px; font-weight:700; color:rgba(255,255,255,0.4);">会话开始</span>
+        <div style="flex:1; height:2px; margin:0 12px; background:linear-gradient(to right, #A8C97F, #8FBCBB, #C4956A);"></div>
+        <span style="flex-shrink:0; font-size:11px; font-weight:700; color:rgba(255,255,255,0.4);">会话结束</span>
+      </div>
+
+      <!-- 双向说明 -->
+      <div style="margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div style="padding: 16px 18px; border-radius: 10px; background: rgba(168,201,127,0.08); border-left: 3px solid #A8C97F;">
+          <div style="font-size: 11px; font-weight: 800; color: #BAD68F; letter-spacing: 1px; margin-bottom: 6px;">读 · READ</div>
+          <div class="step-text">回答之前从 <code>mem0</code> 召回相关项目的历史决策、踩坑与未完成事项</div>
+        </div>
+        <div style="padding: 16px 18px; border-radius: 10px; background: rgba(196,149,106,0.10); border-left: 3px solid #C4956A;">
+          <div style="font-size: 11px; font-weight: 800; color: #D9B084; letter-spacing: 1px; margin-bottom: 6px;">写 · WRITE</div>
+          <div class="step-text">会话之后由 detached 子进程读取 transcript，提取关键信息后写入 <code>Pinecone</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 2：SessionStart 流程 ========== -->
+<div class="slide-label">配图 2 · 放在「会话开始时，按当前项目召回」之后</div>
+<div class="slide light" style="min-height:480px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num">2/8</div>
+  <div class="content">
+    <div class="section-tag">SESSION START</div>
+    <div class="h-title">入口召回：cwd → slug → Claude 自动搜索</div>
+    <div class="h-sub">hook 只写一张"隐形便签"，真正调用工具的是 Claude 自己</div>
+
+    <div style="margin-top: 16px;">
+      <div class="flow-row" style="flex-wrap: wrap; gap: 6px;">
+        <div class="node mono"><div class="nt">basename $CWD</div><div class="nd">取当前目录名</div></div>
+        <div class="arrow">→</div>
+        <div class="decision">是否匹配<br>已知项目 slug?</div>
+        <div class="arrow">→</div>
+        <div class="node success mono"><div class="nt">$SLUG</div><div class="nd">命中项目</div></div>
+      </div>
+
+      <div style="margin-top: 18px; display: flex; align-items: center; gap: 10px; padding-left: 12px;">
+        <span style="color:rgba(28,28,30,0.4); font-size:14px;">└─ 未命中</span>
+        <div class="arrow">→</div>
+        <div class="node muted mono" style="min-width:160px;"><div class="nt">兜底</div><div class="nd">用文件夹名当关键词</div></div>
+      </div>
+
+      <!-- 注入指令 -->
+      <div style="margin-top: 26px;">
+        <div class="stage-title" style="text-align: left;">▼ 注入到 additionalContext 的便签</div>
+        <div style="padding: 14px 18px; border-radius: 8px; background: #1C1C1E; color: #F2EDE3; font-family: 'SF Mono', Menlo, monospace; font-size: 12px; line-height: 1.7;">
+          <span style="color: #C4956A;">[session-context]</span> cwd is project <span style="color: #A8C97F;">'$SLUG'</span>.<br>
+          Before answering the first prompt, call <span style="color: #8FBCBB;">mem0_search</span>(query=<span style="color: #A8C97F;">"$SLUG"</span>).
+        </div>
+      </div>
+
+      <!-- 后续 Claude 调用 -->
+      <div style="margin-top: 20px;" class="flow-row">
+        <div class="node"><div class="nt">JSON 返回</div><div class="nd">便签进入上下文</div></div>
+        <div class="arrow">→</div>
+        <div class="node read"><div class="nt">Claude 自动<br>调用 mem0_search</div><div class="nd">后台默默执行</div></div>
+        <div class="arrow">→</div>
+        <div class="node success"><div class="nt">回答时已有<br>历史上下文</div><div class="nd">✓ 用户无感</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 3：UserPromptSubmit 流程 ========== -->
+<div class="slide-label">配图 3 · 放在「对话中，按用户提到的项目补召回」之后</div>
+<div class="slide dark" style="min-height:480px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num">3/8</div>
+  <div class="content">
+    <div class="section-tag">USER PROMPT SUBMIT</div>
+    <div class="h-title">跨项目提问的智能识别</div>
+    <div class="h-sub">每条用户消息都会被扫描，但只有真正提到项目名才会"打扰"模型</div>
+
+    <div style="margin-top: 18px;">
+      <!-- 用户输入示例 -->
+      <div style="padding: 12px 16px; border-radius: 8px; background: rgba(143,188,187,0.10); border: 1px solid rgba(143,188,187,0.3); font-size: 12px; font-style: italic; color: #F2EDE3;">
+        用户："等等，我之前在 <span style="color:#8FBCBB; font-weight:700;">subhook</span> 里是怎么处理 inbound email 的？"
+      </div>
+
+      <!-- 处理管线 -->
+      <div style="margin-top: 22px;" class="flow-row">
+        <div class="node mono"><div class="nt">读取 prompt</div><div class="nd">原始文本</div></div>
+        <div class="arrow">→</div>
+        <div class="node mono"><div class="nt">tolower</div><div class="nd">转小写</div></div>
+        <div class="arrow">→</div>
+        <div class="node mono"><div class="nt">grep -qE</div><div class="nd">正则扫描<br>带词边界</div></div>
+      </div>
+
+      <!-- 关键正则展示 -->
+      <div style="margin-top: 16px; padding: 12px 16px; border-radius: 6px; background: rgba(255,255,255,0.04); border-left: 3px solid #C4956A;">
+        <div style="font-family: 'SF Mono', Menlo, monospace; font-size: 12px; color: #F2EDE3;">
+          (^|[^a-z0-9])<span style="color:#C4956A;">$slug</span>([^a-z0-9]|$)
+        </div>
+        <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px;">↑ 完整词边界，避免 `sub` 误命中 `subscription`</div>
+      </div>
+
+      <!-- 决策分支 -->
+      <div style="margin-top: 22px;" class="flow-row">
+        <div class="decision" style="background: rgba(196,149,106,0.22);">命中已知 slug?</div>
+      </div>
+
+      <div style="margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="padding: 14px; border-radius: 10px; background: rgba(168,201,127,0.10); border: 1px solid rgba(168,201,127,0.32);">
+          <div style="font-size: 10px; font-weight: 800; color: #BAD68F; letter-spacing: 1px; margin-bottom: 6px;">✓ 命中</div>
+          <div class="step-text">注入"回答前先拉取该项目上下文"的指令</div>
+        </div>
+        <div style="padding: 14px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);">
+          <div style="font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.5); letter-spacing: 1px; margin-bottom: 6px;">○ 未命中</div>
+          <div class="step-text">静默退出，什么都不加（大多数提示词走这条）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 4：SessionEnd 异步管线 ========== -->
+<div class="slide-label">配图 4 · 放在「离开时，异步提取本次会话的新记忆」之后</div>
+<div class="slide light" style="min-height:480px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num">4/8</div>
+  <div class="content">
+    <div class="section-tag">ASYNC EXIT</div>
+    <div class="h-title">关闭瞬间立刻返回，沉重工作交给后台</div>
+    <div class="h-sub">通过 <code style="font-family:'SF Mono',monospace; font-size:13px; background:#F5EFE4; padding:1px 6px; border-radius:3px;">disown</code> 解耦"关闭会话"与"整理记忆"</div>
+
+    <!-- 上下两条时间线 -->
+    <div style="margin-top: 18px;">
+      <!-- 主线程 -->
+      <div class="boundary" style="margin-bottom: 18px;">
+        <div class="boundary-label">主线程（终端用户视角）</div>
+        <div class="flow-row" style="margin-top: 6px;">
+          <div class="node read"><div class="nt">关闭会话</div><div class="nd">Ctrl+D</div></div>
+          <div class="arrow">→</div>
+          <div class="node mono"><div class="nt">SessionEnd<br>触发</div><div class="nd">几乎不工作</div></div>
+          <div class="arrow">→</div>
+          <div class="node mono"><div class="nt">启动子进程<br>+ disown</div><div class="nd">脱离父进程</div></div>
+          <div class="arrow">→</div>
+          <div class="node success"><div class="nt">⚡ 立刻返回</div><div class="nd">用户秒退</div></div>
+        </div>
+      </div>
+
+      <!-- 后台线程 -->
+      <div class="boundary" style="background: #F5EFE4;">
+        <div class="boundary-label" style="background: #F5EFE4;">后台 detached Python 进程</div>
+        <div class="flow-row" style="margin-top: 6px; flex-wrap: nowrap; gap: 4px;">
+          <div class="node write" style="min-width: 90px; padding: 10px 8px;"><div class="nt">读 transcript</div><div class="nd">完整会话</div></div>
+          <div class="arrow">→</div>
+          <div class="node write" style="min-width: 90px; padding: 10px 8px;"><div class="nt">LLM 提取</div><div class="nd">关键信息</div></div>
+          <div class="arrow">→</div>
+          <div class="node write" style="min-width: 90px; padding: 10px 8px;"><div class="nt">向量库去重</div><div class="nd">查相似度</div></div>
+          <div class="arrow">→</div>
+          <div class="node write" style="min-width: 90px; padding: 10px 8px;"><div class="nt">写 Pinecone</div><div class="nd">持久化</div></div>
+        </div>
+        <div style="margin-top: 14px; text-align: center; font-size: 11px; color: rgba(28,28,30,0.55); font-style: italic;">耗时数秒～十几秒，全程用户无感</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 5：mkdir 全局锁 ========== -->
+<div class="slide-label">配图 5 · 放在「并发踩踏死锁」之后</div>
+<div class="slide dark" style="min-height:500px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num">5/8</div>
+  <div class="content">
+    <div class="section-tag">CONCURRENCY GUARD</div>
+    <div class="h-title">用 mkdir 抢锁：让操作系统当并发裁判</div>
+    <div class="h-sub">同名目录创建是原子操作，天生不可能两个进程同时成功</div>
+
+    <div style="margin-top: 16px;">
+      <!-- 三个并发进程冲向同一资源 -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+        <div class="node" style="background: rgba(196,149,106,0.15);"><div class="nt">进程 A</div><div class="nd">SessionEnd 1</div></div>
+        <div class="node" style="background: rgba(196,149,106,0.15);"><div class="nt">进程 B</div><div class="nd">SessionEnd 2</div></div>
+        <div class="node" style="background: rgba(196,149,106,0.15);"><div class="nt">进程 C</div><div class="nd">SessionEnd 3</div></div>
+      </div>
+
+      <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; place-items: center;">
+        <div class="arrow" style="font-size: 22px;">↓</div>
+        <div class="arrow" style="font-size: 22px;">↓</div>
+        <div class="arrow" style="font-size: 22px;">↓</div>
+      </div>
+
+      <!-- 关键操作 -->
+      <div style="margin-top: 4px; padding: 16px 20px; border-radius: 10px; background: rgba(196,149,106,0.10); border: 2px dashed #C4956A;">
+        <div style="text-align: center;">
+          <div style="font-family: 'SF Mono', Menlo, monospace; font-size: 14px; color: #C4956A; font-weight: 800;">mkdir /tmp/mem0-lock</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px;">⚙ 操作系统级原子操作 · 只有一个能成功</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; place-items: center;">
+        <div class="arrow" style="font-size: 22px;">↓</div>
+        <div class="arrow" style="font-size: 22px;">↓</div>
+        <div class="arrow" style="font-size: 22px;">↓</div>
+      </div>
+
+      <!-- 结果分流 -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+        <div class="node success"><div class="nt">✓ 成功</div><div class="nd">写入向量库</div></div>
+        <div class="node danger"><div class="nt">✗ 失败</div><div class="nd">"别人在干活"<br>直接退出</div></div>
+        <div class="node danger"><div class="nt">✗ 失败</div><div class="nd">"别人在干活"<br>直接退出</div></div>
+      </div>
+
+      <div style="margin-top: 22px; text-align: center; padding: 10px 14px; border-radius: 6px; background: rgba(168,201,127,0.08); font-size: 12px; color: #BAD68F;">
+        🛡️ 第二层：每个会话再加 120s 冷却，防止信号重发导致同会话被重复提取
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 6：环境变量继承陷阱 ========== -->
+<div class="slide-label">配图 6 · 放在「环境变量继承」之后</div>
+<div class="slide light" style="min-height:480px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num">6/8</div>
+  <div class="content">
+    <div class="section-tag">ENV INHERITANCE</div>
+    <div class="h-title">子进程环境污染：挂掉外部 API 调用的真凶</div>
+    <div class="h-sub">Claude Code 的环境变量会"过继"给提取器，让它误以为还在 Claude 内部</div>
+
+    <div class="two-col" style="margin-top: 18px;">
+      <!-- 错误流程 -->
+      <div class="col-panel bad">
+        <div class="col-label">✗ 错误：直接继承</div>
+        <div style="margin-top: 10px;">
+          <div class="flow-col">
+            <div class="node" style="background: rgba(255,95,87,0.10); border-color: rgba(255,95,87,0.32); width: 100%;">
+              <div class="nt" style="color: #1C1C1E;">父进程 · Claude Code</div>
+              <div class="nd" style="color:rgba(28,28,30,0.6);">ANTHROPIC_BASE_URL<br>OAuth token · CLAUDE_CODE_*</div>
+            </div>
+            <div class="arrow" style="color:#FF8478;">↓ fork</div>
+            <div class="node" style="background: rgba(255,95,87,0.10); border-color: rgba(255,95,87,0.32); width: 100%;">
+              <div class="nt" style="color: #1C1C1E;">子进程 · Python 提取器</div>
+              <div class="nd" style="color:rgba(28,28,30,0.6);">继承一整套环境变量</div>
+            </div>
+            <div class="arrow" style="color:#FF8478;">↓</div>
+            <div style="text-align: center; padding: 10px; background: rgba(255,95,87,0.15); border-radius: 6px; font-size: 11px; color: #C73E32; font-weight: 700; width: 100%;">
+              💥 调用外部 LLM 失败<br>请求被重定向 / 鉴权错乱
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 正确流程 -->
+      <div class="col-panel good">
+        <div class="col-label">✓ 修复：先 unset 再启动</div>
+        <div style="margin-top: 10px;">
+          <div class="flow-col">
+            <div class="node" style="background: rgba(168,201,127,0.10); border-color: rgba(168,201,127,0.35); width: 100%;">
+              <div class="nt" style="color: #1C1C1E;">父进程 · Claude Code</div>
+              <div class="nd" style="color:rgba(28,28,30,0.6);">同样的污染环境</div>
+            </div>
+            <div class="arrow" style="color:#BAD68F;">↓</div>
+            <div style="text-align: center; padding: 10px; background: #1C1C1E; color: #BAD68F; border-radius: 6px; font-family: 'SF Mono', Menlo, monospace; font-size: 11px; width: 100%;">
+              unset ANTHROPIC_* CLAUDE_CODE_*
+            </div>
+            <div class="arrow" style="color:#BAD68F;">↓ 干净启动</div>
+            <div class="node" style="background: rgba(168,201,127,0.10); border-color: rgba(168,201,127,0.35); width: 100%;">
+              <div class="nt" style="color: #1C1C1E;">Python 提取器</div>
+              <div class="nd" style="color:rgba(28,28,30,0.6);">独立空气，正常对外调用</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 7：记忆提取与去重管线 ========== -->
+<div class="slide-label">配图 7 · 放在「提取器克制」之后</div>
+<div class="slide dark" style="min-height:520px;">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num">7/8</div>
+  <div class="content">
+    <div class="section-tag">EXTRACTION PIPELINE</div>
+    <div class="h-title">从聊天记录到向量库的五道关</div>
+    <div class="h-sub">克制提取 + 去重拦截，避免记忆被流水账塞满</div>
+
+    <!-- 五步流水线 -->
+    <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 14px;">
+
+      <!-- step 1 -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span class="num-dot">1</span>
+        <div style="flex: 1; padding: 12px 16px; border-radius: 8px; background: rgba(143,188,187,0.10); border-left: 3px solid #8FBCBB;">
+          <div style="font-size: 13px; font-weight: 700; color: #F2EDE3;">读取完整 transcript</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px;">本次会话的完整对话日志（用户消息 + Claude 回答 + 工具调用）</div>
+        </div>
+      </div>
+
+      <!-- step 2 -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span class="num-dot">2</span>
+        <div style="flex: 1; padding: 12px 16px; border-radius: 8px; background: rgba(196,149,106,0.12); border-left: 3px solid #C4956A;">
+          <div style="font-size: 13px; font-weight: 700; color: #F2EDE3;">Gemini 2.5 Flash Lite 浓缩 · 备用：OpenAI 轻量模型</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px;">克制 Prompt：只留架构决策 / 偏好 / Bug 根因 / 项目事实；丢弃临时状态与流水账</div>
+        </div>
+      </div>
+
+      <!-- step 3 -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span class="num-dot">3</span>
+        <div style="flex: 1; padding: 12px 16px; border-radius: 8px; background: rgba(180,142,173,0.10); border-left: 3px solid #B48EAD;">
+          <div style="font-size: 13px; font-weight: 700; color: #F2EDE3;">结构化 JSON</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px;">{ 事实, 项目作用域, 分类（<span style="color:#C4956A;">decision</span> / <span style="color:#C4956A;">learning</span>） }</div>
+        </div>
+      </div>
+
+      <!-- step 4 - 决策 -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span class="num-dot">4</span>
+        <div style="flex: 1; padding: 12px 16px; border-radius: 8px; background: rgba(255,189,46,0.10); border-left: 3px solid #FFBD2E;">
+          <div style="font-size: 13px; font-weight: 700; color: #F2EDE3;">向量库相似度预搜索</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px;">已有记忆 cosine similarity &gt; <span style="color:#FFBD2E; font-weight:800;">0.88</span> → 跳过；否则放行</div>
+        </div>
+      </div>
+
+      <!-- step 5 -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span class="num-dot">5</span>
+        <div style="flex: 1; padding: 12px 16px; border-radius: 8px; background: rgba(168,201,127,0.12); border-left: 3px solid #A8C97F;">
+          <div style="font-size: 13px; font-weight: 700; color: #F2EDE3;">写入 Pinecone · infer=False</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px;">按 LLM 原文存储，不让向量库二次改写已经提炼好的事实</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========== 配图 8：核心心法对比 ========== -->
+<div class="slide-label">配图 8 · 放在「总结」之后</div>
+<div class="slide light" style="min-height:460px;">
+  <div class="bg-light"></div>
+  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num">8/8</div>
+  <div class="content">
+    <div class="section-tag">TAKEAWAY</div>
+    <div class="h-title">最值得复制的不是工具，而是 Hook 的定位</div>
+    <div class="h-sub">把 shell-command hook 当成"写提示词的地方"，而不是"运行脚本的地方"</div>
+
+    <div class="two-col" style="margin-top: 22px;">
+      <!-- 左：旧认知 -->
+      <div class="col-panel" style="background: rgba(28,28,30,0.04); border: 1px solid rgba(28,28,30,0.10);">
+        <div class="col-label" style="color: rgba(28,28,30,0.5);">○ 旧认知</div>
+        <div style="font-size: 16px; font-weight: 800; color: #1C1C1E; margin: 8px 0 12px;">Hook = 命令执行器</div>
+        <div class="step-text">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+            <span style="color:rgba(28,28,30,0.4);">▸</span>
+            <span><code>git status</code> → 输出结果</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+            <span style="color:rgba(28,28,30,0.4);">▸</span>
+            <span>把"事实"塞给 Claude</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="color:rgba(28,28,30,0.4);">▸</span>
+            <span>静态、无判断、无后续</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右：新认知 -->
+      <div class="col-panel good" style="background: rgba(196,149,106,0.10); border-color: rgba(196,149,106,0.35);">
+        <div class="col-label" style="color: #C4956A;">✓ 新认知</div>
+        <div style="font-size: 16px; font-weight: 800; color: #1C1C1E; margin: 8px 0 12px;">Hook = 提示词作者</div>
+        <div class="step-text">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+            <span style="color:#C4956A;">▸</span>
+            <span>注入"回答前先做 X" 的指令</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+            <span style="color:#C4956A;">▸</span>
+            <span>把"任务"交给 Claude</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="color:#C4956A;">▸</span>
+            <span>动态、有判断、有工具调用</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 一句话总结 -->
+    <div style="margin-top: 22px; padding: 16px 20px; border-radius: 10px; background: #1C1C1E; text-align: center;">
+      <div style="font-size: 15px; color: #F2EDE3; line-height: 1.6;">
+        进入时<span style="color:#A8C97F; font-weight:800;">召回</span>，离开时<span style="color:#C4956A; font-weight:800;">捕获</span> ——
+        <span style="color:rgba(255,255,255,0.6); font-style:italic;">记忆变成会话的自然形状</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await renderSlide(slides[i]);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`配图-${String(i+1).padStart(2,'0')}.png`, blob);
+  }
+  const content = await zip.generateAsync({type: 'blob'});
+  saveAs(content, 'claude-code-memory-配图.zip');
+}
+
+async function downloadCurrent() {
+  const slides = document.querySelectorAll('.slide');
+  const idx = Math.round(window.scrollY / 540);
+  const target = slides[Math.min(idx, slides.length - 1)];
+  const canvas = await renderSlide(target);
+  canvas.toBlob(blob => saveAs(blob, `配图-${idx+1}.png`), 'image/png');
+}
+</script>
+</body>
+</html>

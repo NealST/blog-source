@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { 
+    background: #111; 
+    display: flex; flex-direction: column; align-items: center; 
+    padding: 40px 20px 80px; 
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+  .toolbar {
+    margin-bottom: 24px;
+    display: flex; gap: 12px;
+  }
+  button {
+    padding: 8px 16px; background: #C4956A; border: none; border-radius: 4px;
+    color: #1C1C1E; font-weight: bold; cursor: pointer;
+  }
+  button:hover { background: #d4a76a; }
+
+  .slide-container { margin-bottom: 40px; }
+  .slide-label { color: #888; font-size: 14px; margin-bottom: 8px; text-align: center; }
+  
+  .slide { 
+    width: 800px; position: relative; overflow: hidden; 
+    min-height: 480px; border-radius: 8px;
+  }
+  .slide.dark { background: #1C1C1E; }
+  .slide.light { background: #FFFFFF; }
+  
+  .brand {
+    position: absolute; top: 32px; left: 32px; z-index: 3;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .brand svg { width: 18px; height: 18px; }
+  .brand.light .brand-text { color: rgba(255,255,255,0.5); }
+  .brand.dark .brand-text { color: rgba(28,28,30,0.4); }
+  .brand-text { font-size: 10px; font-weight: 700; letter-spacing: 2px; }
+
+  .page-num {
+    position: absolute; bottom: 32px; right: 32px; z-index: 3;
+    font-size: 12px; font-weight: 700; font-family: monospace;
+  }
+  .page-num.light { color: rgba(255,255,255,0.2); }
+  .page-num.dark { color: rgba(28,28,30,0.2); }
+
+  .content { position: relative; padding: 80px 60px 48px; z-index: 2; }
+  
+  .section-tag {
+    display: inline-block; font-size: 11px; font-weight: 700; 
+    letter-spacing: 2px; padding: 4px 12px; border-radius: 4px;
+    margin-bottom: 24px;
+  }
+  .section-tag.on-dark { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+  .section-tag.on-light { background: rgba(28,28,30,0.06); color: rgba(28,28,30,0.6); }
+  
+  .title-dark { font-size: 32px; font-weight: 800; color: #F2EDE3; letter-spacing: 1px; }
+  .title-light { font-size: 32px; font-weight: 800; color: #1C1C1E; letter-spacing: 1px; }
+
+  /* Common elements */
+  .gold { color: #C4956A; }
+  
+  /* Slide 1 specifics */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+  .stat-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 24px;
+  }
+  .stat-num { font-size: 48px; font-weight: 900; color: #C4956A; margin-bottom: 8px; }
+  .stat-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.6; }
+  
+  /* Slide 2 specifics */
+  .flow-row { display: flex; align-items: center; justify-content: space-between; margin-top: 40px; }
+  .level-card {
+    width: 120px; height: 160px; border-radius: 8px;
+    background: #FAFAFA; border: 1px solid #EAEAEA;
+    display: flex; flex-direction: column; align-items: center; padding: 20px 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  }
+  .level-card.active { border-color: rgba(196,149,106,0.3); background: rgba(196,149,106,0.05); }
+  .level-title { font-size: 16px; font-weight: 800; color: #1C1C1E; margin-bottom: 12px; }
+  .level-desc { font-size: 12px; color: rgba(28,28,30,0.5); text-align: center; }
+  .level-mult { margin-top: auto; font-size: 16px; font-weight: 700; color: #C4956A; }
+  
+  /* Slide 3 specifics */
+  .two-col { display: flex; gap: 40px; margin-top: 40px; }
+  .col-panel { flex: 1; border-radius: 12px; padding: 40px 32px; position: relative; overflow: hidden; }
+  .col-panel.bad { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+  .col-panel.good { background: rgba(196,149,106,0.1); border: 1px solid rgba(196,149,106,0.3); }
+  .col-label { font-size: 18px; font-weight: 800; margin-bottom: 24px; }
+  .bad .col-label { color: rgba(255,255,255,0.5); }
+  .good .col-label { color: #C4956A; }
+  .col-val { font-size: 40px; font-weight: 900; color: #F2EDE3; margin-bottom: 12px; }
+  .col-sub { font-size: 14px; color: rgba(255,255,255,0.5); }
+
+  /* Slide 4 specifics */
+  .node {
+    padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-align: center; border: 1px solid;
+  }
+  .node.mono { font-family: monospace; }
+  .node.write { background: rgba(196,149,106,0.1); border-color: rgba(196,149,106,0.5); color: #C4956A; }
+  .node.action { background: rgba(28,28,30,0.04); border-color: rgba(28,28,30,0.1); color: #1C1C1E; }
+  .boundary {
+    border: 1px dashed rgba(28,28,30,0.2); border-radius: 12px; padding: 32px;
+    position: relative; margin-top: 40px;
+  }
+  .boundary-label {
+    position: absolute; top: -10px; left: 24px; background: #FFF; 
+    padding: 0 8px; font-size: 12px; font-weight: 700; color: rgba(28,28,30,0.5);
+  }
+  .arrow { color: rgba(28,28,30,0.2); font-size: 20px; line-height: 1; }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+  function flattenAlpha(canvas, bgColor) {
+    const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+    const flat = document.createElement('canvas');
+    flat.width = canvas.width; flat.height = canvas.height;
+    const ctx = flat.getContext('2d');
+    ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+    ctx.fillRect(0, 0, flat.width, flat.height);
+    ctx.drawImage(canvas, 0, 0);
+    return flat;
+  }
+
+  async function renderSlide(el) {
+    const origRadius = el.style.borderRadius;
+    el.style.borderRadius = '0';
+    const bg = getComputedStyle(el).backgroundColor;
+    const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+    el.style.borderRadius = origRadius;
+    return flattenAlpha(raw, bg);
+  }
+
+  async function downloadAll() {
+    const zip = new JSZip();
+    const slides = document.querySelectorAll('.slide');
+    for (let i = 0; i < slides.length; i++) {
+      const flat = await renderSlide(slides[i]);
+      const blob = await new Promise(r => flat.toBlob(r, 'image/png'));
+      zip.file(`配图-${i+1}.png`, blob);
+    }
+    const content = await zip.generateAsync({type: "blob"});
+    saveAs(content, "illustrations.zip");
+  }
+
+  async function downloadOne() {
+    const current = document.querySelector('.slide');
+    if (current) {
+      const flat = await renderSlide(current);
+      flat.toBlob(b => saveAs(b, "配图-1.png"));
+    }
+  }
+</script>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="downloadAll()">全部下载 (ZIP)</button>
+    <button onclick="downloadOne()">测试单张下载</button>
+  </div>
+
+  <!-- Slide 1 -->
+  <div class="slide-container">
+    <div class="slide-label">配图 1 · 放在「跑分情况」之后</div>
+    <div class="slide dark">
+      <div class="brand light">
+        <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/></svg>
+        <div class="brand-text">墨筝</div>
+      </div>
+      <div class="page-num light">1/4</div>
+      <div class="content">
+        <div class="section-tag on-dark">BENCHMARK</div>
+        <div class="title-dark">超越自我的 <span class="gold">88.6%</span></div>
+        <div class="grid-2">
+          <div class="stat-card">
+            <div class="stat-num">69.2<span style="font-size: 24px;">%</span></div>
+            <div class="stat-desc">SWE-bench Pro 得分<br/>领先 GPT-5.5 超 10 个百分点</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">83.4<span style="font-size: 24px;">%</span></div>
+            <div class="stat-desc">OSWorld-Verified (计算机使用)<br/>真实界面任务操作能力</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2 -->
+  <div class="slide-container">
+    <div class="slide-label">配图 2 · 放在「特性一：省钱利器之算力控制」之后</div>
+    <div class="slide light">
+      <div class="brand dark">
+        <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.5)" stroke-width="2.2"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.3)" stroke-width="1.2"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.5)" stroke-width="2"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.5)" stroke-width="2"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.5)" stroke-width="1.5"/></svg>
+        <div class="brand-text">墨筝</div>
+      </div>
+      <div class="page-num dark">2/4</div>
+      <div class="content">
+        <div class="section-tag on-light">EFFORT CONTROL</div>
+        <div class="title-light">丰俭由人的<span class="gold">五档算力</span></div>
+        <div class="flow-row">
+          <div class="level-card">
+            <div class="level-title">Low</div><div class="level-desc">极简思考<br/>简单问答/格式化</div><div class="level-mult">~ 0.1x 开销</div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="level-card">
+            <div class="level-title">Medium</div><div class="level-desc">适中思考<br/>常规草案编写</div><div class="level-mult">~ 0.4x 开销</div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="level-card active">
+            <div class="level-title">High</div><div class="level-desc">扎实推理<br/>日常编码 (默认)</div><div class="level-mult">1x 基准位</div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="level-card">
+            <div class="level-title" style="color: #C4956A;">Max</div><div class="level-desc">极限深思<br/>最棘手疑难杂症</div><div class="level-mult">~ 4-8x 开销</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3 -->
+  <div class="slide-container">
+    <div class="slide-label">配图 3 · 放在「特性二：心流专属之极速模式」之后</div>
+    <div class="slide dark">
+      <div class="brand light">
+        <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/></svg>
+        <div class="brand-text">墨筝</div>
+      </div>
+      <div class="page-num light">3/4</div>
+      <div class="content">
+        <div class="section-tag on-dark">FAST MODE</div>
+        <div class="title-dark">要思考，也要<span class="gold">速度</span></div>
+        <div class="two-col">
+          <div class="col-panel bad">
+            <div class="col-label">标准模式</div>
+            <div class="col-val">1x</div>
+            <div class="col-sub">速度基准</div>
+            <div style="margin-top: 40px; font-size: 20px; color: rgba(255,255,255,0.6);">
+              价格：$5 / $25
+            </div>
+          </div>
+          <div class="col-panel good">
+            <div class="col-label">极速模式 Fast Mode</div>
+            <div class="col-val">2.5x</div>
+            <div class="col-sub">极低延迟，保持心流</div>
+            <div style="margin-top: 40px; font-size: 20px; color: #F2EDE3;">
+              价格：$10 / $50
+              <br/><span style="font-size: 14px; color: rgba(255,255,255,0.5);">约旧版极速模式三分之一</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4 -->
+  <div class="slide-container">
+    <div class="slide-label">配图 4 · 放在「特性三：省心高效之动态工作流（the big thing）」之后</div>
+    <div class="slide light">
+      <div class="brand dark">
+        <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.5)" stroke-width="2.2"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.3)" stroke-width="1.2"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.5)" stroke-width="2"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.5)" stroke-width="2"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.5)" stroke-width="1.5"/></svg>
+        <div class="brand-text">墨筝</div>
+      </div>
+      <div class="page-num dark">4/4</div>
+      <div class="content">
+        <div class="section-tag on-light">DYNAMIC WORKFLOWS</div>
+        <div class="title-light">脱表运行，<span class="gold">多线并发</span></div>
+        <div class="boundary">
+          <div class="boundary-label">后台静默执行 (最大16子代理并发)</div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="node action mono">/effort ultracode</div>
+              <div class="node action" style="opacity: 0.5;">任务解析</div>
+            </div>
+            <div class="arrow">→</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div class="node write">SubAgent 1: 扫描目录A</div>
+              <div class="node write">SubAgent 2: 扫描目录B</div>
+              <div class="node action mono">... (并发处理)</div>
+            </div>
+            <div class="arrow">→</div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="node action" style="opacity: 0.5;">断点接续支持</div>
+              <div class="node write" style="background: rgba(168,201,127,0.1); border-color: #A8C97F; color: #5c7b39;">返回统筹结果</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

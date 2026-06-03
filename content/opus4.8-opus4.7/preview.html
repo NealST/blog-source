@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Opus 4.7 升级到 4.8 对用户来说带来了哪些改变?</title>
+
+</head>
+<body style="background:#F2EDE3; padding:0; margin:0">
+<section class="tip" style='background:#eee; padding:10px; text-align:center; font-size:13px; color:#999; margin-bottom:0; font-family:-apple-system, "PingFang SC", sans-serif' align="center">全选下方内容 → 复制 → 粘贴到公众号编辑器（此行不会被复制）</section>
+<section class="content" style='max-width:100%; margin:0 auto; padding:24px 16px 40px; background-color:#F2EDE3; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-size:16px; line-height:1.8; color:#333; letter-spacing:0.3px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale' bgcolor="#F2EDE3">
+<p style="margin:0 0 18px; text-align:left" align="left">Opus 4.8 相比 4.7 除了基础 benchmark 跑分的提升以外，还带来了对用户而言更有用的三大工程特性：<strong style="color:#C4956A; font-weight:600">算力控制（Effort control）</strong>、<strong style="color:#C4956A; font-weight:600">极速模式（Fast mode）</strong>以及<strong style="color:#C4956A; font-weight:600">动态工作流（Dynamic workflows）</strong>。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">用好这些功能不仅能获得更惊艳的代码生成，还能极大地节省开销。</p>
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>跑分情况</h2>
+<figure style="margin:12px 0; text-align:center" align="center"><img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBjKVqHjShtN6NeK5v71YJYyFnpDwLTAACcA1rG_fF8ESnmm2Zg6q9GQEAAwIAA3cAAzsE.jpeg" style="max-width:100%; height:auto; margin:0 auto" height="auto"></figure>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">代码能力<ul style="margin:4px 0 4px; padding-left:20px; list-style-type:circle">
+<li style="margin-bottom:6px">SWE-bench Verified：87.6% → 88.6%（已非常接近当前天花板）。</li>
+<li style="margin-bottom:6px">SWE-bench Pro（难度更高，数据污染更少）：从 64.3% 爆拉至 69.2%，领先 GPT-5.5 超 10 个百分点。</li>
+</ul>
+</li>
+<li style="margin-bottom:6px">命令行工具（Terminal）<ul style="margin:4px 0 4px; padding-left:20px; list-style-type:circle">
+<li style="margin-bottom:6px">Terminal-Bench 2.1：66.1% → 74.6%（提升 8.5）。但值得注意的是，GPT-5.5 依然以 78.2% 的成绩保持领先，这是 Opus 4.8 在核心测试中唯一落后的一项。</li>
+</ul>
+</li>
+<li style="margin-bottom:6px">知识型工作<ul style="margin:4px 0 4px; padding-left:20px; list-style-type:circle">
+<li style="margin-bottom:6px">GDPval-AA：Opus 4.8 为 1890 Elo，GPT-5.5 为 1769，是整张对比表里差距最大的一项。</li>
+</ul>
+</li>
+<li style="margin-bottom:6px">计算机使用（模型在真实界面里完成操作任务的能力，例如点按钮、填表单、切换页面并按步骤执行流程）<ul style="margin:4px 0 4px; padding-left:20px; list-style-type:circle">
+<li style="margin-bottom:6px">OSWorld-Verified：83.4%。其中一部分提升来自测试框架本身的更新，Anthropic 也在发布说明中明确标注了这一点。</li>
+</ul>
+</li>
+<li style="margin-bottom:6px">科学推理<ul style="margin:4px 0 4px; padding-left:20px; list-style-type:circle">
+<li style="margin-bottom:6px">GPQA Diamond：93.6%，与上一代基本持平。两代模型都稳定在 93% 以上，更接近指标饱和，而不是能力回退。</li>
+</ul>
+</li>
+</ul>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>三大特性</h2>
+<h3 style='font-size:17px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:24px 0 10px; line-height:1.3'>特性一：省钱利器之算力控制</h3>
+<p style="margin:0 0 18px; text-align:left" align="left">默认情况下，Opus 4.8 会停留在“High（高算力）”级别。但现在，你完全可以精准掌控在具体任务上要投入多少算力，做到极致 ROI。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">以 Claude Code 为例，可以用 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort</code> 命令调节，五档算力级别区分如下：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort low</code>：适合查快速问答、改改格式，Token 消耗极低。</li>
+<li style="margin-bottom:6px"><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort medium</code>：适合日常常规编辑和代码起草。</li>
+<li style="margin-bottom:6px"><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort high</code>：提供扎实稳定的推理结构。</li>
+<li style="margin-bottom:6px"><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort xhigh</code>：用于复杂代码的深入分析与多步代理操作。</li>
+<li style="margin-bottom:6px"><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort max</code>：算力全开，当前会话无 Token 上限。</li>
+<li style="margin-bottom:6px"><code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort auto</code>：让模型自适应思考。</li>
+</ul>
+<p style="margin:0 0 18px; text-align:left" align="left">所有算力级别的 token 基础单价并无二致（均为输入 $5 / 输出 $25 每百万 Tokens），核心差异在于模型实际“思考”的时间长短与 Token 生成数量。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">Max 级别之所以更贵，主要是因为它在深度思考时消耗了更多的 Token 总量。</p>
+<p style="margin:0 0 18px; text-align:left" align="left"><strong style="color:#C4956A; font-weight:600">费用消耗体感参考</strong>：</p>
+<table style="width:100%; margin:0 0 24px; font-size:14px; " width="100%">
+<thead>
+<tr>
+<th style="background:#1C1C1E; color:#F2EDE3; font-weight:600; padding:10px 12px; text-align:left; border:1px solid #d5d0c6" align="left">算力级别 (Level)</th>
+<th style="background:#1C1C1E; color:#F2EDE3; font-weight:600; padding:10px 12px; text-align:left; border:1px solid #d5d0c6" align="left">思考深度 (Depth)</th>
+<th style="background:#1C1C1E; color:#F2EDE3; font-weight:600; padding:10px 12px; text-align:left; border:1px solid #d5d0c6" align="left">Token 消耗倍率</th>
+<th style="background:#1C1C1E; color:#F2EDE3; font-weight:600; padding:10px 12px; text-align:left; border:1px solid #d5d0c6" align="left">推荐使用场景 (When to use)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">Low</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">极简 (minimal)</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">~0.1x</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">细枝末节、格式化梳理、简单提问</td>
+</tr>
+<tr>
+<td style="background:#f0ece4; padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">Medium</td>
+<td style="background:#f0ece4; padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">适中 (moderate)</td>
+<td style="background:#f0ece4; padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">~0.4x</td>
+<td style="background:#f0ece4; padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">常规代码修改、草案编写、核心摘要</td>
+</tr>
+<tr>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">High</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">扎实 (solid)</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">1x (基准)</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">日常编码主力、代码审查 (默认档)</td>
+</tr>
+<tr>
+<td style="background:#f0ece4; padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">Extra (xhigh)</td>
+<td style="background:#f0ece4; padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">深入 (deeper)</td>
+<td style="background:#f0ece4; padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">~2-3x</td>
+<td style="background:#f0ece4; padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">复杂逻辑代码、Agent 代理、长线任务</td>
+</tr>
+<tr>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">Max</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">极限 (maximum)</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">~4-8x</td>
+<td style="padding:10px 12px; border:1px solid #d5d0c6; vertical-align:top; text-align:left" valign="top" align="left">重型底层架构、攻坚最棘手的疑难杂症</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 18px; text-align:left" align="left">假设默认的 High 模式下一条回答花费约 $0.05。同样的问题切到 Low 模式只需约 $0.005，而开到 Max 模式则会轻易飙升至 $0.20 - $0.40。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">现实情况，大多数人都是直接挂默认的 High 模式，极少会主动去调节，但实际上不同类型的任务适合使用不同的算力水准，认真抠一抠还是能省不少钱。</p>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<h3 style='font-size:17px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:24px 0 10px; line-height:1.3'>特性二：心流专属之极速模式</h3>
+<p style="margin:0 0 18px; text-align:left" align="left">极速模式（Fast Mode）能让 4.8 在基本不降低输出质量的情况下以 <strong style="color:#C4956A; font-weight:600">2.5 倍</strong>的速度冲刺运行，并且同 fast 模式还降价到了以前的三分之一。</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">标准 Opus 4.8</strong>：$5 / $25 每百万 Tokens</li>
+<li style="margin-bottom:6px"><strong style="color:#C4956A; font-weight:600">极速 Opus 4.8</strong>：$10 / $50 每百万 Tokens（速度 2.5x）</li>
+<li style="margin-bottom:6px"><em style="font-style:italic">(老版本极速模式高达 $30 / $150)</em></li>
+</ul>
+<p style="margin:0 0 18px; text-align:left" align="left">在 Claude Code 中通过输入 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/fast</code> 即可开启。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">极速模式比较适合执行速度比深度思考更重要，想要保持心流状态的场景，比如：根据纯需求文档直接生成大量代码、补充技术文档或基础单元测试。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">对于思考深度有高度诉求的场景则需慎用，比如：复杂问题的 Debug、底层架构决策、安全漏洞审查。极速模式为了保证低延迟，通常不太支持这种耗时较长的深度逻辑推演以及不断的自我证伪和模拟试错。</p>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<h3 style='font-size:17px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:24px 0 10px; line-height:1.3'>特性三：省心高效之动态工作流（the big thing）</h3>
+<p style="margin:0 0 18px; text-align:left" align="left">对于大型任务，Claude Code 现在会自动编写一段 JavaScript 编排脚本，并在后台静默执行。终端不会被长期 block，随时能响应前台任务；整个执行计划被抽离成了本地代码以后，也不用再担心冗长的过程会撑爆模型上下文，只需要感知其执行结果即可。</p>
+<figure style="margin:12px 0; text-align:center" align="center"><img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBjKlqHjgVCKnsUnPy42pU2yRar6o2bQACdA1rG_fF8ESmVxYFgKkGkgEAAwIAA3cAAzsE.png" style="max-width:100%; height:auto; margin:0 auto" height="auto"></figure>
+<p style="margin:0 0 18px; text-align:left" align="left">关于其运作机制，可以参考如下：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">16 个子 agent 并发：最多能同时运行 16 个 Subagent，且单次运行会有 1000 个任务的上限，避免失控。</li>
+<li style="margin-bottom:6px">断点续执行：如果在运行中途电脑断电或者终端关闭，下次重连时，会自动接续上次挂起的断点运行，无需推倒重来。</li>
+<li style="margin-bottom:6px">严格遵循权限白名单：所有 Subagent 默认开启 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>acceptEdits</code> 模式，但严格遵循之前设定的权限。</li>
+<li style="margin-bottom:6px">门槛与开启方式：首先本地 Claude Code 需要升到 v2.1.154+。Max、Team 或 Enterprise 会员等级下会默认生效，只是普通的 Pro 档，则需手动切到 Opus 4.8 并在 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/config</code> 中自行勾选开启。</li>
+<li style="margin-bottom:6px">触发方式：功能开启后，先执行 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort ultracode</code>，再用一句自然语言直接下达任务。例如：<code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>/effort ultracode 审核 src/routes/ 目录下所有接口的鉴权逻辑，补上所有漏洞。</code></li>
+</ul>
+<p style="margin:0 0 18px; text-align:left" align="left">动态工作流比较适合高复杂度、覆盖面广的任务，比如跨 200+ 文件的迁移改造、全项目安全 review、以及大规模重构与补测。在这类场景中，多任务并行能显著提升工作效率。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">如果只是单文件的小修小改或常规问答，就别用了，多 Agent 协同不仅会显著增加 Token 消耗，也有点杀鸡用牛刀。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">官方给出的建议是先小范围试跑，再决定是否全量执行。具体做法是：先在一个子目录发起任务，观察实际触发的子代理规模与 Token 开销，最后再评估全仓运行的成本和收益。</p>
+<p style="margin:0 0 18px; text-align:left" align="left"><em style="font-style:italic">如需完全禁用动态工作流，可设置环境变量：<code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-all'>export CLAUDE_CODE_DISABLE_WORKFLOWS=1</code>。</em></p>
+<p style="margin:24px 0; text-align:center; color:#C4956A; font-size:18px; letter-spacing:18px; line-height:1; opacity:0.55" align="center">· · ·</p>
+<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:36px 0 12px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>写在最后</h2>
+<p style="margin:0 0 18px; text-align:left" align="left">从 Opus 4.7 到 4.8，除了模型本身的更新迭代，Claude 还做了一些工程能力上的升级。</p>
+<p style="margin:0 0 18px; text-align:left" align="left">对于用户来说，在模型代际并无突破式更新的情况下，工程能力的升级往往比模型本身更有实用价值。</p>
+<p style="margin:40px 0 0; text-align:center; color:#C4956A; font-size:13px; letter-spacing:3px; opacity:0.6" align="center">— END —</p>
+</section>
+</body>
+</html>

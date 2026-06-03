@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配图 — 生成式 AI 未来会变得更贵吗？</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0E0E10; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 80px 20px 60px; gap: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  }
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.92); padding: 14px 20px;
+    display: flex; gap: 12px; justify-content: center; z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .toolbar button {
+    background: #C4956A; color: #1C1C1E; border: none;
+    padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 700;
+    cursor: pointer;
+  }
+  .toolbar button:hover { background: #d4a57a; }
+
+  .slide-label {
+    color: rgba(255,255,255,0.45); font-size: 12px;
+    margin-top: 28px; margin-bottom: 6px; letter-spacing: 0.5px;
+  }
+  .slide {
+    width: 800px; position: relative; overflow: hidden; border-radius: 0;
+  }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  .bg-light { position: absolute; inset: 0; background: #FFFFFF; }
+  .content {
+    position: relative; z-index: 2; padding: 46px 56px;
+    display: flex; flex-direction: column;
+  }
+
+  .brand {
+    position: absolute; top: 18px; left: 22px;
+    display: flex; align-items: center; gap: 6px; z-index: 3;
+  }
+  .brand svg { width: 18px; height: 18px; }
+  .brand-text { font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+  .brand.on-dark .brand-text { color: rgba(255,255,255,0.32); }
+  .brand.on-light .brand-text { color: rgba(28,28,30,0.32); }
+
+  .page-num {
+    position: absolute; bottom: 16px; right: 22px;
+    font-size: 11px; z-index: 3;
+    font-family: "SF Mono", Menlo, monospace; letter-spacing: 1px;
+  }
+  .page-num.on-dark { color: rgba(255,255,255,0.22); }
+  .page-num.on-light { color: rgba(28,28,30,0.22); }
+
+  .kicker {
+    display: inline-block; align-self: flex-start;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    color: #C4956A; text-transform: uppercase;
+    padding-top: 11px; position: relative;
+    margin-bottom: 16px;
+  }
+  .kicker::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 28px; height: 1px; background: #C4956A;
+  }
+
+  .h-title {
+    font-size: 28px; font-weight: 800; letter-spacing: -0.018em;
+    line-height: 1.3; margin-bottom: 8px;
+  }
+  .slide.dark .h-title { color: #F2EDE3; }
+  .slide.light .h-title { color: #1C1C1E; }
+  .h-title .em { color: #C4956A; }
+
+  .lede {
+    font-size: 14px; font-weight: 400; font-style: italic;
+    line-height: 1.55; margin-bottom: 26px;
+    letter-spacing: 0.2px;
+  }
+  .slide.dark .lede { color: rgba(255,255,255,0.5); }
+  .slide.light .lede { color: #7A7876; }
+
+  /* ── 两栏对比 ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .col-card {
+    border-radius: 10px; padding: 22px 22px 24px; position: relative;
+  }
+  .slide.dark .col-card { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.02); }
+  .col-card.gold { border-color: #C4956A !important; background: rgba(196,149,106,0.06) !important; }
+  .col-tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .slide.dark .col-tag { color: rgba(255,255,255,0.5); }
+  .col-card.gold .col-tag { color: #C4956A; }
+  .col-name { font-size: 19px; font-weight: 800; margin-bottom: 4px; }
+  .slide.dark .col-name { color: #F2EDE3; }
+  .col-trend { font-size: 13px; font-weight: 700; margin-bottom: 14px; }
+  .col-trend.down { color: rgba(99,179,237,0.9); }
+  .col-trend.up { color: #C4956A; }
+  .col-list { display: flex; flex-direction: column; gap: 9px; }
+  .col-item {
+    font-size: 12.5px; line-height: 1.45; padding-left: 16px; position: relative;
+  }
+  .slide.dark .col-item { color: rgba(255,255,255,0.62); }
+  .col-item::before {
+    content: ''; position: absolute; left: 0; top: 7px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+  }
+  .col-card.gold .col-item::before { background: #C4956A; }
+
+  /* ── 三卡 ── */
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .vendor-card {
+    border: 1px solid rgba(28,28,30,0.12); border-radius: 10px;
+    padding: 18px 16px 20px; background: #FBF8F1;
+  }
+  .vendor-name { font-size: 16px; font-weight: 800; color: #1C1C1E; margin-bottom: 10px; }
+  .vendor-name .dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: #C4956A; margin-right: 7px; vertical-align: 1px;
+  }
+  .vendor-row {
+    font-size: 12px; line-height: 1.5; color: #5A5856; padding: 5px 0;
+    border-top: 1px dashed rgba(28,28,30,0.1);
+  }
+  .vendor-row:first-of-type { border-top: none; }
+  .vendor-row b { color: #1C1C1E; font-weight: 700; }
+  .vendor-strat {
+    margin-top: 12px; font-size: 11.5px; font-style: italic;
+    color: #C4956A; line-height: 1.5;
+  }
+
+  /* ── 编号原因列表 ── */
+  .reason-list { display: flex; flex-direction: column; gap: 14px; }
+  .reason {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 14px 18px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02);
+  }
+  .reason-num {
+    flex: 0 0 auto; font-size: 22px; font-weight: 900;
+    color: #C4956A; line-height: 1; width: 26px;
+  }
+  .reason-body { flex: 1; }
+  .reason-h { font-size: 14.5px; font-weight: 800; color: #F2EDE3; margin-bottom: 3px; }
+  .reason-t { font-size: 12.5px; line-height: 1.5; color: rgba(255,255,255,0.55); }
+
+  /* ── pull quote ── */
+  .pull-quote {
+    margin-top: 28px; padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .slide.light .pull-quote { border-top-color: rgba(28,28,30,0.12); }
+  .pq-line1 { font-size: 17px; font-weight: 800; line-height: 1.5; }
+  .slide.dark .pq-line1 { color: #F2EDE3; }
+  .slide.light .pq-line1 { color: #1C1C1E; }
+  .pq-line1 .em { color: #C4956A; }
+  .pq-line2 { font-size: 13px; font-style: italic; margin-top: 6px; }
+  .slide.dark .pq-line2 { color: rgba(255,255,255,0.45); }
+  .slide.light .pq-line2 { color: #7A7876; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="downloadAll()">全部下载 (ZIP)</button>
+</div>
+
+<!-- ───────── 配图 1 ───────── -->
+<div class="slide-label">配图 1 · 放在「这是一个两级市场」之后</div>
+<div class="slide dark" id="slide-1">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="content">
+    <div class="kicker">两级市场</div>
+    <h1 class="h-title">同一个 AI，<span class="em">两套定价逻辑</span></h1>
+    <p class="lede">底层在血拼降价，高端在加固溢价——理解这条分界线，就理解了未来的账单。</p>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-tag">Commodity Inference</div>
+        <div class="col-name">商品化推理</div>
+        <div class="col-trend down">单价持续下探 ↓</div>
+        <div class="col-list">
+          <div class="col-item">批量摘要、分类、代码补全、初稿生成</div>
+          <div class="col-item">小模型与开源快速逼近，质量差距缩小</div>
+          <div class="col-item">廉价 = 做大盘子 + 把开发者拉进生态</div>
+        </div>
+      </div>
+      <div class="col-card gold">
+        <div class="col-tag">Premium Cognition</div>
+        <div class="col-name">高级认知</div>
+        <div class="col-trend up">溢价持续走高 ↑</div>
+        <div class="col-list">
+          <div class="col-item">长视角推理、工具调用、编程智能体</div>
+          <div class="col-item">买家更在乎「有没有把活干完」而非单价</div>
+          <div class="col-item">算力 + 编排 + 产品外壳，才是利润所在</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num on-dark">01</div>
+</div>
+
+<!-- ───────── 配图 2 ───────── -->
+<div class="slide-label">配图 2 · 放在「历史定价说明了什么」之后</div>
+<div class="slide light" id="slide-2">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="content">
+    <div class="kicker">三巨头策略</div>
+    <h1 class="h-title">API 一路降价，<span class="em">价值悄悄上移</span></h1>
+    <p class="lede">三家走法不同，落点却一致：把 Token 打到地板，再用套餐和生态回拢价值。</p>
+    <div class="three-col">
+      <div class="vendor-card">
+        <div class="vendor-name"><span class="dot"></span>OpenAI</div>
+        <div class="vendor-row">GPT-4 输入 <b>$30</b> → GPT-4.1 <b>$2</b></div>
+        <div class="vendor-row">Plus 守住 $20，Pro 分化出 $100 / $200</div>
+        <div class="vendor-strat">压低主流 API，向重度用户精准细分</div>
+      </div>
+      <div class="vendor-card">
+        <div class="vendor-name"><span class="dot"></span>Anthropic</div>
+        <div class="vendor-row">Sonnet 企稳 <b>$3 / $15</b></div>
+        <div class="vendor-row">新 Opus 4.7 反而比初代 Opus 更便宜</div>
+        <div class="vendor-strat">先抢采用率，再扩 Claude Code 工作流</div>
+      </div>
+      <div class="vendor-card">
+        <div class="vendor-name"><span class="dot"></span>Google</div>
+        <div class="vendor-row">Flash 一刀砍掉 <b>~78%</b></div>
+        <div class="vendor-row">AI Ultra 套餐打包应用、云盘、开发工具</div>
+        <div class="vendor-strat">底层疯狂削价，生态航母回拢价值</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num on-light">02</div>
+</div>
+
+<!-- ───────── 配图 3 ───────── -->
+<div class="slide-label">配图 3 · 放在「为什么换了便宜的模型，账单反倒越涨越快？」之后</div>
+<div class="slide dark" id="slide-3">
+  <div class="bg-dark"></div>
+  <div class="brand on-dark">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="content">
+    <div class="kicker">账单悖论</div>
+    <h1 class="h-title">模型更便宜，<span class="em">总账单反而更贵</span></h1>
+    <p class="lede">单价下跌不等于总开销下跌，四股力量正把账单往上推。</p>
+    <div class="reason-list">
+      <div class="reason">
+        <div class="reason-num">1</div>
+        <div class="reason-body">
+          <div class="reason-h">降价刺激了新增需求</div>
+          <div class="reason-t">成本一低就不再精打细算，连后台定时脚本都开始大规模调用大模型。</div>
+        </div>
+      </div>
+      <div class="reason">
+        <div class="reason-num">2</div>
+        <div class="reason-body">
+          <div class="reason-h">工作流变得更深</div>
+          <div class="reason-t">检索、精排、工具调用、执行、重试、校验、后处理——单次请求变成烧钱闭环。</div>
+        </div>
+      </div>
+      <div class="reason">
+        <div class="reason-num">3</div>
+        <div class="reason-body">
+          <div class="reason-h">买家被迫走向高端</div>
+          <div class="reason-t">撞到智力天花板就转包给更强模型，「每次有效输出」的均值成本一路走高。</div>
+        </div>
+      </div>
+      <div class="reason">
+        <div class="reason-num">4</div>
+        <div class="reason-body">
+          <div class="reason-h">厂商把价值塞进捆绑套餐</div>
+          <div class="reason-t">Token 这项变少了，但花在整个平台上的总开销却在上升。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num on-dark">03</div>
+</div>
+
+<!-- ───────── 配图 4 ───────── -->
+<div class="slide-label">配图 4 · 放在「作为开发者，该如何用 AI」之后</div>
+<div class="slide light" id="slide-4">
+  <div class="bg-light"></div>
+  <div class="brand on-light">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+  <div class="content">
+    <div class="kicker">使用姿势</div>
+    <h1 class="h-title">同样用 AI，<span class="em">差距藏在姿势里</span></h1>
+    <p class="lede">把判断权握在自己手里的是杠杆，把判断权交出去的是负债。</p>
+    <div class="two-col">
+      <div class="col-card gold">
+        <div class="col-tag">良性的姿势</div>
+        <div class="col-name">AI 是杠杆</div>
+        <div class="col-list">
+          <div class="col-item">极大缩短遇到盲区时的检索耗时</div>
+          <div class="col-item">高速起草、对比方案、汇总、试错</div>
+          <div class="col-item">始终把握底层机制与系统架构</div>
+          <div class="col-item">撤掉助手，工程判断力丝毫不动摇</div>
+        </div>
+      </div>
+      <div class="col-card" style="border:1px solid rgba(28,28,30,0.14); background:#FBF8F1;">
+        <div class="col-tag" style="color:#9A5A4A;">危险的姿势</div>
+        <div class="col-name" style="color:#1C1C1E;">AI 是负债</div>
+        <div class="col-list">
+          <div class="col-item" style="color:#5A5856;">不再习惯在脑中推演系统架构与数据链路</div>
+          <div class="col-item" style="color:#5A5856;">代码评审越来越敷衍</div>
+          <div class="col-item" style="color:#5A5856;">进度被某家套餐与额度死死卡住</div>
+          <div class="col-item" style="color:#5A5856;">离了 AI，没人记得如何自己啃难题</div>
+        </div>
+      </div>
+    </div>
+    <div class="pull-quote">
+      <div class="pq-line1">最不可替代的，是<span class="em">既榨干 AI 生产力</span>、又把最终裁决权握在手里的人</div>
+      <div class="pq-line2">而不是高喊「抵制 AI」的保守派</div>
+    </div>
+  </div>
+  <div class="page-num on-light">04</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadAll() {
+  const slides = document.querySelectorAll('.slide');
+  const labels = ['两级市场', '三巨头策略', '账单悖论', '使用姿势'];
+  const zip = new JSZip();
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await renderSlide(slides[i]);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`配图-${i+1}-${labels[i]}.png`, blob);
+  }
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, 'ai-cost-配图.zip');
+}
+</script>
+</body>
+</html>

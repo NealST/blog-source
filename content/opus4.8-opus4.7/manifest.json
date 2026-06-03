@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "title": "Claude Opus 4.7 升级到 4.8 对用户来说带来了哪些改变?",
+  "outputs": {
+    "wechat": { 
+      "html": "content/opus4.8-opus4.7/preview.html", 
+      "cover_image": "content/_shared/avatar.jpg",
+      "title": "Claude Opus 4.7 升级到 4.8 对用户来说带来了哪些改变?", 
+      "author": "墨筝", 
+      "digest": "深入解析：算力控制 / 极速模式 / 动态工作流，三大工程能力如何提升其实用价值。"
+    },
+    "xiaohongshu": {
+      "html": "content/opus4.8-opus4.7/opus4.8-opus4.7-小红书版.html",
+      "copy": {
+        "title": "Claude 4.8 升级到底变了啥？不仅是跑分！",
+        "body": "大家都在刷 Claude Opus 4.8 的霸榜跑分，但体验下来发现，这次真正让开发者爽到的其实是底层的三大**工程能力升级**！直接给大家画个重点：\n\n1️⃣ **算力控制 (Effort control)**\n以前只能无脑跑，现在有了五档调节！简单改改格式切 Low 档，攻坚底层 Bug 挂 Max 档。丰俭由人，控制得好能省下一大笔 Token 开销！\n\n2️⃣ **极速模式 (Fast mode)**\n质量不掉，速度飙升 2.5倍！最关键的是还降价到了以前的三分之一（$10/$50）。需要爆兵写基础业务代码写单测的时候，心流快得飞起！\n\n3️⃣ **动态工作流 (Dynamic workflows)**\n真正的 The Big Thing！终端不会再被 Block 死，后台默认拉起最多 16 个 Subagent 并行去搞。断电断网都不怕，上线自动接续断点。用来干 200+ 文件的重构可太香了。\n\n当大模型本身的代际没有突破式迭代时，能在这上面把**工程能力**玩明白的，才是真王道。\n\n如果你觉得更新有用，记得去试试 `/effort` 指令和 `/fast` 指令！\n（完整的实测对比我们放在老地方啦👇墨筝）",
+        "tags": ["Claude", "人工智能", "大模型", "程序员日常", "独立开发", "AI工具", "效率神器", "ChatGPT", "Opus", "前端开发"]
+      }
+    }
+  }
+}
