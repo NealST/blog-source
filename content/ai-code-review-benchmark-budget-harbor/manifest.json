@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "created": "2026-06-05T20:00:00+08:00",
+  "source": "source/_posts/ai-code-review-benchmark-budget-harbor.md",
+  "title": "Opus/GPT/Grok/Gemini/Sonnet CR实测：有4个Bug全军覆没",
+  "outputs": {
+    "wechat": {
+      "html": "content/ai-code-review-benchmark-budget-harbor/preview.html",
+      "cover_image": "content/ai-code-review-benchmark-budget-harbor/cover-main.png",
+      "title": "Opus/GPT/Grok/Gemini/Sonnet CR实测：有4个Bug全军覆没",
+      "author": "墨筝",
+      "digest": "故意埋了15个Bug，让5个AI模型盲审。Opus覆盖最广，Grok只花8分钱检出率并列第二，有4个Bug全军覆没。"
+    },
+    "xiaohongshu": {
+      "html": "content/ai-code-review-benchmark-budget-harbor/ai-cr-benchmark-小红书版.html",
+      "copy": {
+        "title": "Opus/GPT/Grok/Gemini/Sonnet CR实测：有4个Bug全军覆没",
+        "body": "给代码故意埋了 15 个 Bug，让 5 个 AI 模型盲审\n\n不提示方向，不透露数量，只给一个 diff：\"Review the uncommitted changes.\"\n\n结果很有意思：\n1️⃣ Opus 4.8 覆盖最广（10/15），唯一会自己打开测试文件验算数字的\n2️⃣ Grok Build 0.1 只花 $0.08，检出率 60%，性价比碾压\n3️⃣ Sonnet 和 Grok 路径完全互补，一起跑能覆盖 11/15\n4️⃣ Gemini 3.1 Pro 只找到 2 个，连其他四个模型都能抓的储蓄目标反转 Bug 都漏了\n\n最反直觉的发现：有 4 个 Bug 五个模型全军覆没。\n\n这些 Bug 的共同特征——代码逻辑本身没问题，只有理解业务意图才能发现计算是错的。\n\n对业务领域的理解，目前为止还是人类的地盘。\n\n.\n#AICodeReview #AI编程 #CodeReview #Claude #GPT #Grok #Gemini #代码审查 #AI工具测评 #开发者工具 #程序员日常",
+        "tags": ["AICodeReview", "AI编程", "CodeReview", "Claude", "GPT", "Grok", "Gemini", "代码审查", "AI工具测评", "开发者工具", "程序员日常"]
+      }
+    }
+  }
+}

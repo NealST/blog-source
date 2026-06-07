@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "created": "2026-06-05T16:00:00+08:00",
+  "source": "source/_posts/ai-code-review-benchmark-budget-harbor.md",
+  "title": "五个 AI 模型审查同一份代码，谁能找到最多 Bug？",
+  "outputs": {
+    "video": {
+      "path": "video/",
+      "duration": 90,
+      "format": "1920x1080",
+      "description": "文章视频讲解 — 模型对比、成本分析、检出率热力图"
+    }
+  }
+}

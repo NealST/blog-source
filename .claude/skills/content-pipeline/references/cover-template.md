@@ -38,6 +38,26 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 - **底部标签**：右下角，小字标签（工具名、特性），`rgba(255,255,255,0.35)`
 - **装饰元素**：左右两侧可放低透明度（0.12）的主题相关 SVG 图标
 
+### AI 纯直发头图 Prompt 指南（开箱即用版）
+
+当用户需要直接发给 DALL-E/Midjourney，出图后不叠文字直接作为公众号头图时，请严格采用以下规范以保持「墨筝」品牌的高级感（苹果发布会级暗调实体、重点金光点缀、极简留白）：
+
+**核心视觉参数（组装到每个 Prompt 的后半段）**:
+> A highly minimalist and elegant 16:9 aspect ratio cover image for a premium tech blog. The background is a clean, matte ink-dark surface (almost black #1C1C1E). Extensive negative space, deep shadows, cinematic soft lighting, no clutter, conveying a sense of premium engineering and extreme simplicity.
+
+**三款标准结构示例：**
+
+1. **极致掌控 / 抽象概念型（最推荐）**
+   > A highly minimalist 16:9 aspect ratio cover image. In the exact center, the bold and sleek 3D text "[短促的英文/大写关键词]" in warm off-white. Below or intersecting the text, a [抽象的核心实体，如 minimalist glowing gold control dial] emitting a very subtle warm gold (#C4956A) light. The background is a clean, matte ink-dark solid void. Extensive negative space, cinematic soft lighting, highly legible typography, premium Apple-style presentation, absolutely no clutter.
+
+2. **速度 / 断层升级型**
+   > A minimalist 16:9 aspect ratio tech blog cover. An empty, ink-black matte void background. A single, clean, dynamic streak of warm golden light curves abstractly across the space. The elegant 3D text "[短促的英文/大写关键词]" sits perfectly integrated with the light streak. Premium aesthetic, purely abstract, maximum structural negative space, no messy background details.
+
+3. **架构网络 / 多线并发型**
+   > A highly minimalist 16:9 cover image. The sleek 3D text "[短促的英文/大写关键词]" in the center. Connected to it are precise, fine glowing golden geometric lines and elegant nodes forming a clean topological network. Clean dark charcoal black background. Elegant tech aesthetic, highly legible text, uncrowded layout, extremely high-end rendering.
+
+*(提示用户：DALL-E 3 生成带字海报时，尽量使用英文或数字，如遇拼错提示其重绘即可。长比例建议必须带上 `16:9 aspect ratio` 方便上下剪裁。)*
+
 ### 截图背景指引
 
 当文章涉及具体产品/游戏/工具时，**优先使用产品截图作为头图背景**，增加视觉吸引力：
@@ -134,6 +154,27 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 - ✅ 正确：`<div class="slide" style="min-height:420px;">` 且 `.slide` CSS 中已含 `padding: 48px 56px`
 - 导出 2x（`1600px` 宽）
 
+#### ⚠️ 高度被裁的常见坑：`.content` 绝对定位
+
+很多模板里会写 `.content { position: absolute; inset: 0; }` 来让背景层在底下、内容层在上面。这会让**内容脱离文档流**，`.slide` 的 `min-height` 不再被内容撑开，而 `.slide` 又有 `overflow: hidden`——结果：内容超过 `min-height` 时，下半截会被静默裁掉，且视觉上完全察觉不到（直到看 PNG 才发现）。
+
+**正确做法**：
+
+```css
+/* ❌ 错 */
+.slide { overflow: hidden; }
+.bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+.content { position: absolute; inset: 0; padding: 44px 52px; }
+
+/* ✅ 对：用 .slide 本身的 background，.content 走正常文档流 */
+.slide { overflow: hidden; }
+.slide.dark { background: #1C1C1E; }
+.slide.light { background: #FFFFFF; }
+.content { position: relative; padding: 60px 52px; }
+```
+
+`.page-num` / `.brand` 这类绝对定位的角标不受影响，因为它们尺寸固定、不参与撑高。
+
 ### 设计规范
 
 - **暗底页和浅底页交替出现**
@@ -152,6 +193,83 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 | 链路图 | 从输入到产出的完整路径 | 横向大卡片 + 箭头 |
 | 网格卡片 | 分类展示多个项目 | 3列 grid，墨色小卡片 on 浅底 |
 | 星级评分 | 适配度 / 推荐度 | 列表行，左侧星级右侧说明 |
+
+### 选型决策：文字总结型 vs 语义流程图
+
+> **核心原则**：配图必须比"文字 + 项目符号"提供更多信息。如果一张图只是把段落的句子换成卡片，那它在浪费版面。
+
+| 维度 | 文字总结型（卡片/网格/编号列表/金句） | 语义流程图（节点 + 箭头 + 决策 + 边界） |
+|------|--------------------------------------|----------------------------------------|
+| **文章性质** | 观点文、评测、清单文、随笔、心法、新闻速览 | 技术解析、原理拆解、架构文、踩坑复盘、Pipeline 类教程 |
+| **段落本质** | 段落是"并列要点"或"独立观察" | 段落是"按顺序发生的事"或"互相依赖的组件" |
+| **能否口述** | 听一遍就能复述（"作者有 3 个观点：…"） | 听一遍记不住（"先 A 触发 B，B 判断后分两路：命中走 C，未命中…"） |
+| **图的价值** | 排版美化、视觉提气、便于记忆要点 | **替代文字本身**——读者只看图就能 grok 技术机制 |
+| **失败信号** | — | 把"A 触发 B 判断后分两路"写成三个并列卡片：丢失了**顺序、因果、分支** |
+
+**判断流程（每张配图都跑一遍）：**
+
+1. 这一节文字描述的是**"是什么"还是"怎么发生的"**？
+   - 是什么 → 文字总结型够用
+   - 怎么发生的 → 必须语义流程图
+2. 段落里出现这些词时**强烈建议**用流程图：
+   - 触发词：`先…再…`、`如果…否则…`、`命中/未命中`、`并发`、`异步`、`fork`、`继承`、`回调`、`hook`、`触发`、`拦截`、`重试`、`阈值`、`兜底`
+   - 实体词：`进程`、`线程`、`请求`、`队列`、`数据流`、`管线`、`pipeline`、`生命周期`、`状态机`
+3. 如果一张图**没有任何箭头、决策菱形、分支、边界框**，就要回头问：这真的不是流程吗？
+
+**反面案例**（来自第一版 illustrations 的失败）：
+- ❌ "三个 Hook" 画成三个并列卡片 → 看完不知道它们什么时候触发、谁先谁后
+- ❌ "mkdir 抢锁" 写成三行文字："1. mkdir；2. 成功的执行；3. 失败的退出" → 读者 grok 不到"为什么 mkdir 能当锁"
+- ❌ "环境变量继承" 列两条 bullet：`不要继承`、`要 unset` → 没有展示出污染**怎么发生**
+
+**正面对照**（同一段内容的正确做法）：
+- ✅ 三个 Hook → **横向时间轴**（会话开始 → 结束），每个 Hook 卡片下方标注"读 / 写"方向
+- ✅ mkdir 抢锁 → **三进程并发箭头** → **单点原子操作框**（虚线+大字） → **1 成功 + 2 红色失败** 的分流
+- ✅ 环境变量 → **左右双栏对比流**：左侧画继承链（红箭头 → 💥 失败结果），右侧画 unset 后的干净启动链
+
+### 流程图 CSS 原语速查
+
+> 复制以下 CSS 类即可拼出 90% 的技术流程图。完整范例见 `content/claude-code-memory/illustrations.html`。
+
+```html
+<!-- 节点（默认/读/写/危险/成功/弱化/等宽字体） -->
+<div class="node read"><div class="nt">SessionStart</div><div class="nd">打开会话</div></div>
+<div class="node write">...</div>      <!-- 金色：写入动作 -->
+<div class="node success">...</div>    <!-- 绿色：成功结果 -->
+<div class="node danger">...</div>     <!-- 红色：失败/错误 -->
+<div class="node muted">...</div>      <!-- 半透：未选中分支 -->
+<div class="node mono">...</div>       <!-- 等宽字：命令/变量 -->
+
+<!-- 流向 -->
+<div class="flow-row">  节点 + 箭头横排  </div>
+<div class="flow-col">  节点 + 箭头竖排  </div>
+<div class="arrow">→</div>             <!-- 或 ↓ -->
+
+<!-- 决策菱形（不真转 45°，用色块代替更紧凑） -->
+<div class="decision">是否匹配<br>已知 slug?</div>
+
+<!-- 进程/边界容器：表示 "这是一个独立的执行环境" -->
+<div class="boundary">
+  <div class="boundary-label">主线程</div>
+  ...内部流程...
+</div>
+
+<!-- 双栏对比：错 vs 对、旧 vs 新 -->
+<div class="two-col">
+  <div class="col-panel bad">  <div class="col-label">✗ 错误</div> ... </div>
+  <div class="col-panel good"> <div class="col-label">✓ 修复</div> ... </div>
+</div>
+
+<!-- 编号步骤：1-5 步管线 -->
+<span class="num-dot">1</span>
+<div class="step-text">读取 transcript，<code>cosine &gt; 0.88</code> 时去重</div>
+```
+
+**状态色映射规则**（保持全篇一致）：
+- 绿（`#A8C97F`）= 读 / 成功 / 命中
+- 金（`#C4956A`）= 写 / 强调 / 关键阈值
+- 红（`#FF8478`）= 失败 / 错误 / 反例
+- 青（`#8FBCBB`）= 中间状态 / 异步
+- 紫（`#B48EAD`）= 结构化数据 / JSON
 
 ### HTML 结构
 

@@ -3,7 +3,7 @@
  * distribute.ts — Main orchestrator for multi-platform content distribution.
  *
  * Usage:
- *   npx -y bun distribute.ts --manifest /path/to/manifest.json [--platforms xhs,jike] [--preview]
+ *   npx -y bun distribute.ts --manifest /path/to/manifest.json [--platforms wechat,xhs] [--preview]
  */
 
 import { parseArgs } from 'node:util';
@@ -11,10 +11,6 @@ import { execSync } from 'node:child_process';
 import { loadManifest, sleep, type PlatformId, type PublishResult } from './cdp-utils.ts';
 import { publishToWechat } from './platforms/wechat.ts';
 import { publishToXiaohongshu } from './platforms/xiaohongshu.ts';
-import { publishToJike } from './platforms/jike.ts';
-import { publishToXiaoyuzhou } from './platforms/xiaoyuzhou.ts';
-import { publishToDouyin } from './platforms/douyin.ts';
-import { publishToShipinhao } from './platforms/shipinhao.ts';
 
 // ─── Parse Args ───
 
@@ -28,30 +24,22 @@ const { values } = parseArgs({
 });
 
 if (!values.manifest) {
-  console.error('Usage: distribute.ts --manifest <path> [--platforms xhs,jike] [--preview]');
+  console.error('Usage: distribute.ts --manifest <path> [--platforms wechat,xhs] [--preview]');
   process.exit(1);
 }
 
 // ─── Platform Registry ───
 
-const PLATFORM_ORDER: PlatformId[] = ['wechat', 'xhs', 'jike', 'xiaoyuzhou', 'douyin', 'shipinhao'];
+const PLATFORM_ORDER: PlatformId[] = ['wechat', 'xhs'];
 
 const PLATFORM_NAMES: Record<PlatformId, string> = {
   wechat: '公众号',
   xhs: '小红书',
-  jike: '即刻',
-  xiaoyuzhou: '小宇宙',
-  douyin: '抖音',
-  shipinhao: '视频号',
 };
 
 const PLATFORM_HANDLERS: Record<PlatformId, (manifest: ReturnType<typeof loadManifest>, preview: boolean) => Promise<PublishResult>> = {
   wechat: publishToWechat,
   xhs: publishToXiaohongshu,
-  jike: publishToJike,
-  xiaoyuzhou: publishToXiaoyuzhou,
-  douyin: publishToDouyin,
-  shipinhao: publishToShipinhao,
 };
 
 // ─── Main ───
@@ -77,10 +65,6 @@ async function main() {
       switch (p) {
         case 'wechat': return !!manifest.outputs.wechat;
         case 'xhs': return !!manifest.outputs.xiaohongshu;
-        case 'jike': return !!manifest.outputs.jike;
-        case 'xiaoyuzhou': return !!manifest.outputs.xiaoyuzhou;
-        case 'douyin': return !!manifest.outputs.douyin;
-        case 'shipinhao': return false; // Not yet supported
         default: return false;
       }
     });

@@ -1,6 +1,10 @@
-# 小红书轮播图设计规范
+# 小红书轮播图设计规范（已废弃）
 
-> 来源：wechat-to-xiaohongshu skill 的 HTML 模板 + 视觉组件部分
+> ⚠️ **本文件仅作为历史存档保留**。小红书现在唯一使用的风格是 **文字卡片**，请读：
+>
+> [xiaohongshu-text-card.md](./xiaohongshu-text-card.md)
+>
+> 本文中的多卡片信息图模板不再是推荐出口。如果需要反查旧模板里的某个 SVG 信息组件（如品牌角标、渐变背景、下载脚本的 `renderSlide` / `flattenAlpha` 助手），可以继续从下面内容中保留取用。
 
 ---
 

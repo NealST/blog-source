@@ -10,10 +10,6 @@
 |------|------|------|
 | `wechat` | 公众号 | 可用 |
 | `xhs` | 小红书 | 可用 |
-| `jike` | 即刻 | 可用 |
-| `xiaoyuzhou` | 小宇宙 | 可用 |
-| `douyin` | 抖音 | 实验性 |
-| `shipinhao` | 视频号 | 待开发（无 web 后台） |
 
 ---
 
@@ -37,21 +33,6 @@
         "tags": ["#AI工具", "#ClaudeCode"]
       }
     },
-    "jike": {
-      "copy": {
-        "body": "即刻正文...",
-        "circles": ["#Claude Code", "#AI工具"]
-      }
-    },
-    "xiaoyuzhou": {
-      "audio": "/path/to/podcast.mp3",
-      "script": "/path/to/podcast-script.txt",
-      "copy": {
-        "title": "播客标题",
-        "description": "简介...",
-        "show_notes": "完整 show notes..."
-      }
-    },
     "wechat": {
       "markdown": "/path/to/article.md",
       "html": "/path/to/article_preview.html",
@@ -60,19 +41,6 @@
       "author": "墨筝",
       "digest": "文章摘要（120字内）",
       "images": ["/path/to/illustration1.png"]
-    },
-    "video": {
-      "intro": "/path/to/intro.mp4",
-      "outro": "/path/to/outro.mp4",
-      "prompts": "/path/to/video-prompts.md"
-    },
-    "douyin": {
-      "video": "/path/to/video.mp4",
-      "copy": {
-        "title": "标题",
-        "description": "描述",
-        "tags": ["#标签"]
-      }
     }
   }
 }
@@ -94,12 +62,8 @@
 
 **执行顺序（避免 Chrome 端口冲突）：**
 
-1. **公众号**（wechat）→ 调用 baoyu-post-to-wechat
+1. **公众号**（wechat）→ API 直推草稿箱
 2. **小红书**（xhs）→ Chrome CDP 自动发布
-3. **即刻**（jike）→ Chrome CDP 自动发布
-4. **小宇宙**（xiaoyuzhou）→ Chrome CDP 自动发布
-5. **抖音**（douyin）→ Chrome CDP 自动发布
-6. **视频号**（shipinhao）→ Chrome CDP 自动发布
 
 每个平台完成后关闭 Chrome，再启动下一个。
 
@@ -138,10 +102,6 @@
 |------|-------------|
 | 公众号 | `~/.local/share/wechat-browser-profile` |
 | 小红书 | `~/.local/share/xiaohongshu-browser-profile` |
-| 即刻 | `~/.local/share/jike-browser-profile` |
-| 小宇宙 | `~/.local/share/xiaoyuzhou-browser-profile` |
-| 抖音 | `~/.local/share/douyin-browser-profile` |
-| 视频号 | `~/.local/share/shipinhao-browser-profile` |
 
 首次使用每个平台需手动登录一次，后续复用 session。
 

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #0B1222;
+      font-family: "Montserrat", sans-serif;
+      color: #F0EBE3;
+    }
+    .scene {
+      position: absolute;
+      top: 0; left: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+    }
+    .scene-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: 330px 64px 80px;
+      gap: 24px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Scene z-stacking */
+    #scene1 { z-index: 1; background: #0B1222; }
+    #scene2 { z-index: 2; background: #0B1222; opacity: 0; }
+    #scene3 { z-index: 3; background: #0B1222; opacity: 0; }
+    #scene4 { z-index: 4; background: #0B1222; opacity: 0; }
+    #scene5 { z-index: 5; background: #0B1222; opacity: 0; }
+    #scene6 { z-index: 6; background: #0B1222; opacity: 0; }
+    #scene7 { z-index: 7; background: #0B1222; opacity: 0; }
+    #scene8 { z-index: 8; background: #0B1222; opacity: 0; }
+
+    /* Decoratives */
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.12;
+      pointer-events: none;
+    }
+    .corner-mark {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 16px;
+      font-weight: 500;
+      color: #5B9CF6;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .section-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 36px;
+      font-weight: 700;
+      color: #E0A458;
+      letter-spacing: 2px;
+    }
+    .divider {
+      width: 80px;
+      height: 3px;
+      background: #E0A458;
+      border-radius: 2px;
+    }
+
+    /* Tip cards */
+    .tip-card {
+      background: #162033;
+      border: 1px solid #2A3A52;
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .tip-num {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      font-weight: 700;
+      color: #E0A458;
+    }
+    .tip-title {
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #F0EBE3;
+    }
+    .tip-desc {
+      font-size: 28px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: rgba(240,235,227,0.75);
+    }
+    .tip-cmd {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 500;
+      color: #5B9CF6;
+      background: rgba(91,156,246,0.08);
+      padding: 8px 16px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    /* Watermark */
+    .watermark {
+      position: absolute;
+      top: 218px;
+      left: 60px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 28px;
+      font-weight: 500;
+      color: #F0EBE3;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .watermark-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: #E0A458;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: #0B1222;
+    }
+
+    /* Scene 1 — Title */
+    .s1-badge {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      color: #5B9CF6;
+      border: 1px solid #5B9CF6;
+      padding: 8px 16px;
+      border-radius: 20px;
+      display: inline-block;
+      align-self: flex-start;
+    }
+    .s1-title {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1.15;
+      max-width: 900px;
+    }
+    .s1-title em {
+      font-style: normal;
+      color: #E0A458;
+    }
+    .s1-subtitle {
+      font-size: 30px;
+      font-weight: 400;
+      color: rgba(240,235,227,0.7);
+      line-height: 1.5;
+      max-width: 800px;
+    }
+    .s1-count {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 180px;
+      font-weight: 800;
+      color: rgba(224,164,88,0.06);
+      position: absolute;
+      right: 40px;
+      bottom: 200px;
+      pointer-events: none;
+    }
+
+    /* Scene 7 — Takeaway */
+    .s7-quote {
+      font-size: 36px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: #F0EBE3;
+      border-left: 4px solid #E0A458;
+      padding-left: 28px;
+      max-width: 860px;
+    }
+    .s7-quote em {
+      font-style: normal;
+      color: #E0A458;
+      font-weight: 700;
+    }
+
+    /* Scene 8 — CTA */
+    .s8-cta {
+      font-size: 42px;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .s8-cta em {
+      font-style: normal;
+      color: #E0A458;
+    }
+    .s8-sub {
+      font-size: 28px;
+      font-weight: 400;
+      color: rgba(240,235,227,0.7);
+      text-align: center;
+    }
+    .s8-qr-box {
+      width: 200px;
+      height: 200px;
+      border-radius: 16px;
+      border: 2px solid #2A3A52;
+      background: #162033;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      color: rgba(240,235,227,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="main" data-width="1080" data-height="1920" data-start="0" data-duration="90">
+
+    <!-- BGM -->
+    <audio id="bgm" data-start="0" data-duration="90" data-track-index="10" src="bgm.mp3" data-volume="0.3"></audio>
+
+    <!-- Persistent watermark -->
+    <div class="watermark" id="watermark">
+      <div class="watermark-icon">M</div>
+      <div class="watermark-text">公众号：墨筝</div>
+    </div>
+
+    <!-- ===== SCENE 1: Title (0-8s) ===== -->
+    <div id="scene1" class="scene">
+      <div class="glow" style="width:600px;height:600px;background:#E0A458;top:-150px;right:-100px;"></div>
+      <div class="glow" style="width:500px;height:500px;background:#5B9CF6;bottom:200px;left:-150px;"></div>
+      <div class="s1-count" id="s1-count">48</div>
+      <div class="scene-content" style="justify-content:center;">
+        <div class="s1-badge" id="s1-badge">CLAUDE CODE</div>
+        <div class="s1-title" id="s1-title">用了半年总结的<em>48 条</em>实用技巧</div>
+        <div class="divider" id="s1-divider"></div>
+        <div class="s1-subtitle" id="s1-subtitle">官方文档 + 核心开发者分享 + 日常踩坑教训</div>
+      </div>
+      <div class="corner-mark" style="top:220px;right:60px;">01 / 08</div>
+    </div>
+
+    <!-- ===== SCENE 2: 基础操作 (8-20s) ===== -->
+    <div id="scene2" class="scene">
+      <div class="glow" style="width:500px;height:500px;background:#5B9CF6;top:100px;left:-100px;"></div>
+      <div class="glow" style="width:400px;height:400px;background:#E0A458;bottom:-50px;right:100px;"></div>
+      <div class="scene-content">
+        <div class="section-label" id="s2-label">基础操作</div>
+        <div class="tip-card" id="s2-tip1">
+          <div class="tip-num">#01</div>
+          <div class="tip-title">设一个 cc 别名</div>
+          <div class="tip-cmd">alias cc='claude'</div>
+          <div class="tip-desc">少打 5 个字母，一天省出一杯咖啡的时间</div>
+        </div>
+        <div class="tip-card" id="s2-tip2">
+          <div class="tip-num">#03</div>
+          <div class="tip-title">Esc 停止，Esc×2 回滚</div>
+          <div class="tip-desc">做砸了直接回滚到任意检查点，放手探索无心理负担</div>
+        </div>
+        <div class="tip-card" id="s2-tip3">
+          <div class="tip-num">#04</div>
+          <div class="tip-title">给 Claude 一个反馈闭环</div>
+          <div class="tip-desc">提示词里包含测试命令，Claude 自己跑、自己修，质量提升 2-3 倍</div>
+        </div>
+        <div class="tip-card" id="s2-tip4">
+          <div class="tip-num">#02</div>
+          <div class="tip-title">! 前缀直接跑 bash</div>
+          <div class="tip-cmd">!git status</div>
+          <div class="tip-desc">命令立即执行，省掉一轮意图识别的 Token</div>
+        </div>
+      </div>
+      <div class="corner-mark" style="top:220px;right:60px;">02 / 08</div>
+    </div>
+
+    <!-- ===== SCENE 3: 工作流 (20-32s) ===== -->
+    <div id="scene3" class="scene">
+      <div class="glow" style="width:550px;height:550px;background:#E0A458;top:-80px;right:-80px;"></div>
+      <div class="glow" style="width:450px;height:450px;background:#5B9CF6;bottom:100px;left:-120px;"></div>
+      <div class="scene-content">
+        <div class="section-label" id="s3-label">工作流优化</div>
+        <div class="tip-card" id="s3-tip1">
+          <div class="tip-num">#15</div>
+          <div class="tip-title">--worktree 隔离并行开发</div>
+          <div class="tip-desc">同时开 3-5 个独立会话，各有自己的分支和文件系统</div>
+          <div class="tip-cmd">claude --worktree feature-auth</div>
+        </div>
+        <div class="tip-card" id="s3-tip2">
+          <div class="tip-num">#11</div>
+          <div class="tip-title">拿不准时先进 Plan 模式</div>
+          <div class="tip-desc">多花几分钟规划，阻止 Claude 认真解决一个完全错误的问题</div>
+        </div>
+        <div class="tip-card" id="s3-tip3">
+          <div class="tip-num">#12</div>
+          <div class="tip-title">切换任务前 /clear</div>
+          <div class="tip-desc">干净会话+精准提示词 > 累积三小时的混乱上下文</div>
+        </div>
+        <div class="tip-card" id="s3-tip4">
+          <div class="tip-num">#19</div>
+          <div class="tip-title">子 agent 保持主上下文清爽</div>
+          <div class="tip-desc">开销大的搜索和调研隔离到子 agent，主会话专注编码</div>
+        </div>
+      </div>
+      <div class="corner-mark" style="top:220px;right:60px;">03 / 08</div>
+    </div>
+
+    <!-- ===== SCENE 4: 上下文管理 (32-44s) ===== -->
+    <div id="scene4" class="scene">
+      <div class="glow" style="width:500px;height:500px;background:#5B9CF6;top:200px;right:-100px;"></div>
+      <div class="glow" style="width:400px;height:400px;background:#E0A458;top:-100px;left:100px;"></div>
+      <div class="scene-content">
+        <div class="section-label" id="s4-label">上下文与提示词</div>
+        <div class="tip-card" id="s4-tip1">
+          <div class="tip-num">#25</div>
+          <div class="tip-title">@ 精确指向文件</div>
+          <div class="tip-cmd">@src/auth/middleware.ts</div>
+          <div class="tip-desc">跳过搜索过程，直接定位目标，省 Token 省时间</div>
+        </div>
+        <div class="tip-card" id="s4-tip2">
+          <div class="tip-num">#07</div>
+          <div class="tip-title">用 "ultrathink" 触发深度推理</div>
+          <div class="tip-desc">架构决策、疑难调试、多步推理——先想清楚再动手</div>
+        </div>
+        <div class="tip-card" id="s4-tip3">
+          <div class="tip-num">#08</div>
+          <div class="tip-title">Skills 按需加载知识</div>
+          <div class="tip-desc">跟 CLAUDE.md 的区别：只在相关时才加载，上下文保持精简</div>
+        </div>
+        <div class="tip-card" id="s4-tip4">
+          <div class="tip-num">#28</div>
+          <div class="tip-title">/init 生成 CLAUDE.md</div>
+          <div class="tip-desc">自动提取构建命令和目录布局，然后按需精简每一行</div>
+        </div>
+      </div>
+      <div class="corner-mark" style="top:220px;right:60px;">04 / 08</div>
+    </div>
+
+    <!-- ===== SCENE 5: 权限安全 (44-56s) ===== -->
+    <div id="scene5" class="scene">
+      <div class="glow" style="width:500px;height:500px;background:#E0A458;bottom:200px;left:-80px;"></div>
+      <div class="glow" style="width:450px;height:450px;background:#5B9CF6;top:-80px;right:50px;"></div>
+      <div class="scene-content">
+        <div class="section-label" id="s5-label">权限与安全</div>
+        <div class="tip-card" id="s5-tip1">
+          <div class="tip-num">#33</div>
+          <div class="tip-title">/sandbox 放手干活不怕出事</div>
+          <div class="tip-desc">操作系统层面画地为牢，文件只能写项目内，网络只访问白名单</div>
+        </div>
+        <div class="tip-card" id="s5-tip2">
+          <div class="tip-num">#37</div>
+          <div class="tip-title">PostToolUse Hook 自动格式化</div>
+          <div class="tip-cmd">npx prettier --write "$CLAUDE_FILE_PATH"</div>
+          <div class="tip-desc">每次编辑后自动跑 Prettier，无需手动干预</div>
+        </div>
+        <div class="tip-card" id="s5-tip3">
+          <div class="tip-num">#38</div>
+          <div class="tip-title">PreToolUse Hook 拦截危险命令</div>
+          <div class="tip-desc">rm -rf、drop table 在执行前直接拦截，安全网兜底</div>
+        </div>
+        <div class="tip-card" id="s5-tip4">
+          <div class="tip-num">#40</div>
+          <div class="tip-title">认证/支付逻辑必须手动审查</div>
+          <div class="tip-desc">无论代码看起来多好，这几类决策必须人把关</div>
+        </div>
+      </div>
+      <div class="corner-mark" style="top:220px;right:60px;">05 / 08</div>
+    </div>
+
+    <!-- ===== SCENE 6: 高阶技巧 (56-68s) ===== -->
+    <div id="scene6" class="scene">
+      <div class="glow" style="width:550px;height:550px;background:#5B9CF6;top:50px;left:-100px;"></div>
+      <div class="glow" style="width:400px;height:400px;background:#E0A458;bottom:-50px;right:-50px;"></div>
+      <div class="scene-content">
+        <div class="section-label" id="s6-label">高阶技巧</div>
+        <div class="tip-card" id="s6-tip1">
+          <div class="tip-num">#42</div>
+          <div class="tip-title">让 Claude 采访你来完善规格</div>
+          <div class="tip-desc">你说大方向，Claude 主导提问，输出完整规格文档</div>
+        </div>
+        <div class="tip-card" id="s6-tip2">
+          <div class="tip-num">#47</div>
+          <div class="tip-title">claude -p 批量操作</div>
+          <div class="tip-cmd">for file in ...; claude -p "迁移 $file" &</div>
+          <div class="tip-desc">20 个文件做同样重构，并行跑完一次搞定</div>
+        </div>
+        <div class="tip-card" id="s6-tip3">
+          <div class="tip-num">#41</div>
+          <div class="tip-title">/branch 无损尝试新思路</div>
+          <div class="tip-desc">复制对话，高风险重构成功就留，失败了原对话不受影响</div>
+        </div>
+        <div class="tip-card" id="s6-tip4">
+          <div class="tip-num">#43</div>
+          <div class="tip-title">一个写代码，另一个做 Review</div>
+          <div class="tip-desc">审查者对实现妥协一无所知，会对每一处提出质疑</div>
+        </div>
+      </div>
+      <div class="corner-mark" style="top:220px;right:60px;">06 / 08</div>
+    </div>
+
+    <!-- ===== SCENE 7: Takeaway (68-82s) ===== -->
+    <div id="scene7" class="scene">
+      <div class="glow" style="width:600px;height:600px;background:#E0A458;top:300px;left:200px;opacity:0.08;"></div>
+      <div class="scene-content" style="justify-content:center;gap:48px;">
+        <div class="section-label" id="s7-label">核心心得</div>
+        <div class="s7-quote" id="s7-q1">花在<em>提示词和上下文管理</em>上的时间，回报率远高于花在具体编码上的时间。</div>
+        <div class="s7-quote" id="s7-q2">拆成明确的小步骤，每步给清晰的验收标准，比扔一个模糊的大需求然后<em>祈祷</em>它能搞定靠谱得多。</div>
+      </div>
+      <div class="corner-mark" style="top:220px;right:60px;">07 / 08</div>
+    </div>
+
+    <!-- ===== SCENE 8: CTA (82-90s) ===== -->
+    <div id="scene8" class="scene">
+      <div class="glow" style="width:500px;height:500px;background:#E0A458;top:400px;left:200px;"></div>
+      <div class="glow" style="width:400px;height:400px;background:#5B9CF6;top:600px;right:100px;"></div>
+      <div class="scene-content" style="justify-content:center;align-items:center;gap:40px;">
+        <div class="s8-cta" id="s8-cta">完整 <em>48 条</em>技巧<br>请关注公众号「<em>墨筝</em>」</div>
+        <div class="s8-sub" id="s8-sub">官方文档 · 核心开发者分享 · 半年踩坑经验</div>
+        <div class="s8-qr-box" id="s8-qr">墨筝</div>
+      </div>
+      <div class="corner-mark" style="top:220px;right:60px;">08 / 08</div>
+    </div>
+
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    var tl = gsap.timeline({ paused: true });
+
+    // Watermark fade in
+    tl.from("#watermark", { opacity: 0, duration: 1.0, ease: "power1.out" }, 1.5);
+
+    // ===== SCENE 1: Title (0-8s) =====
+    tl.from("#s1-badge", { y: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 0.2);
+    tl.from("#s1-title", { y: 50, opacity: 0, duration: 0.7, ease: "expo.out" }, 0.5);
+    tl.from("#s1-divider", { scaleX: 0, transformOrigin: "left", duration: 0.4, ease: "power2.out" }, 1.0);
+    tl.from("#s1-subtitle", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" }, 1.2);
+    tl.from("#s1-count", { scale: 0.8, opacity: 0, duration: 1.2, ease: "power1.out" }, 0.3);
+    // Ambient
+    tl.fromTo("#scene1 .glow:nth-child(1)", { scale: 0.9 }, { scale: 1.15, duration: 7.5, ease: "sine.inOut" }, 0);
+    tl.fromTo("#scene1 .glow:nth-child(2)", { x: -20 }, { x: 30, duration: 7, ease: "sine.inOut" }, 0);
+
+    // ===== TRANSITION 1→2 (blur crossfade at 7.5s) =====
+    var T1 = 7.5;
+    tl.to("#scene1", { filter: "blur(12px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, T1);
+    tl.fromTo("#scene2",
+      { filter: "blur(12px)", scale: 0.97, opacity: 0 },
+      { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, T1 + 0.1);
+
+    // ===== SCENE 2: 基础操作 (8-20s) =====
+    tl.from("#s2-label", { x: -40, opacity: 0, duration: 0.4, ease: "power3.out" }, 8.2);
+    tl.from("#s2-tip1", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.2)" }, 8.6);
+    tl.from("#s2-tip2", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.2)" }, 9.2);
+    tl.from("#s2-tip3", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.2)" }, 9.8);
+    tl.from("#s2-tip4", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.2)" }, 10.4);
+    tl.fromTo("#scene2 .glow:nth-child(1)", { scale: 0.9 }, { scale: 1.1, duration: 11, ease: "sine.inOut" }, 8);
+    tl.fromTo("#scene2 .glow:nth-child(2)", { y: 20 }, { y: -20, duration: 10, ease: "sine.inOut" }, 8);
+
+    // ===== TRANSITION 2→3 (blur crossfade at 19.5s) =====
+    var T2 = 19.5;
+    tl.to("#scene2", { filter: "blur(12px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, T2);
+    tl.fromTo("#scene3",
+      { filter: "blur(12px)", scale: 0.97, opacity: 0 },
+      { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, T2 + 0.1);
+
+    // ===== SCENE 3: 工作流 (20-32s) =====
+    tl.from("#s3-label", { x: -40, opacity: 0, duration: 0.4, ease: "power3.out" }, 20.2);
+    tl.from("#s3-tip1", { y: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 20.6);
+    tl.from("#s3-tip2", { y: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 21.3);
+    tl.from("#s3-tip3", { y: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 22.0);
+    tl.from("#s3-tip4", { y: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 22.7);
+    tl.fromTo("#scene3 .glow:nth-child(1)", { scale: 1.1 }, { scale: 0.9, duration: 11, ease: "sine.inOut" }, 20);
+    tl.fromTo("#scene3 .glow:nth-child(2)", { x: -30 }, { x: 30, duration: 10, ease: "sine.inOut" }, 20);
+
+    // ===== TRANSITION 3→4 (blur crossfade at 31.5s) =====
+    var T3 = 31.5;
+    tl.to("#scene3", { filter: "blur(12px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, T3);
+    tl.fromTo("#scene4",
+      { filter: "blur(12px)", scale: 0.97, opacity: 0 },
+      { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, T3 + 0.1);
+
+    // ===== SCENE 4: 上下文管理 (32-44s) =====
+    tl.from("#s4-label", { x: -40, opacity: 0, duration: 0.4, ease: "power3.out" }, 32.2);
+    tl.from("#s4-tip1", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.3)" }, 32.7);
+    tl.from("#s4-tip2", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.3)" }, 33.4);
+    tl.from("#s4-tip3", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.3)" }, 34.1);
+    tl.from("#s4-tip4", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.3)" }, 34.8);
+    tl.fromTo("#scene4 .glow:nth-child(1)", { y: -20 }, { y: 30, duration: 11, ease: "sine.inOut" }, 32);
+    tl.fromTo("#scene4 .glow:nth-child(2)", { scale: 0.9 }, { scale: 1.15, duration: 10, ease: "sine.inOut" }, 32);
+
+    // ===== TRANSITION 4→5 (blur crossfade at 43.5s) =====
+    var T4 = 43.5;
+    tl.to("#scene4", { filter: "blur(12px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, T4);
+    tl.fromTo("#scene5",
+      { filter: "blur(12px)", scale: 0.97, opacity: 0 },
+      { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, T4 + 0.1);
+
+    // ===== SCENE 5: 权限安全 (44-56s) =====
+    tl.from("#s5-label", { x: -40, opacity: 0, duration: 0.4, ease: "power3.out" }, 44.2);
+    tl.from("#s5-tip1", { y: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 44.7);
+    tl.from("#s5-tip2", { y: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 45.4);
+    tl.from("#s5-tip3", { y: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 46.1);
+    tl.from("#s5-tip4", { y: 50, opacity: 0, duration: 0.5, ease: "expo.out" }, 46.8);
+    tl.fromTo("#scene5 .glow:nth-child(1)", { x: 20 }, { x: -30, duration: 11, ease: "sine.inOut" }, 44);
+    tl.fromTo("#scene5 .glow:nth-child(2)", { scale: 1.1 }, { scale: 0.9, duration: 10, ease: "sine.inOut" }, 44);
+
+    // ===== TRANSITION 5→6 (blur crossfade at 55.5s) =====
+    var T5 = 55.5;
+    tl.to("#scene5", { filter: "blur(12px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, T5);
+    tl.fromTo("#scene6",
+      { filter: "blur(12px)", scale: 0.97, opacity: 0 },
+      { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, T5 + 0.1);
+
+    // ===== SCENE 6: 高阶技巧 (56-68s) =====
+    tl.from("#s6-label", { x: -40, opacity: 0, duration: 0.4, ease: "power3.out" }, 56.2);
+    tl.from("#s6-tip1", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 56.7);
+    tl.from("#s6-tip2", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 57.4);
+    tl.from("#s6-tip3", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 58.1);
+    tl.from("#s6-tip4", { y: 50, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 58.8);
+    tl.fromTo("#scene6 .glow:nth-child(1)", { y: 20 }, { y: -25, duration: 11, ease: "sine.inOut" }, 56);
+    tl.fromTo("#scene6 .glow:nth-child(2)", { scale: 0.85 }, { scale: 1.1, duration: 10, ease: "sine.inOut" }, 56);
+
+    // ===== TRANSITION 6→7 (blur crossfade at 67.5s) =====
+    var T6 = 67.5;
+    tl.to("#scene6", { filter: "blur(12px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, T6);
+    tl.fromTo("#scene7",
+      { filter: "blur(12px)", scale: 0.97, opacity: 0 },
+      { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, T6 + 0.1);
+
+    // ===== SCENE 7: Takeaway (68-82s) =====
+    tl.from("#s7-label", { x: -40, opacity: 0, duration: 0.4, ease: "power3.out" }, 68.2);
+    tl.from("#s7-q1", { x: -60, opacity: 0, duration: 0.7, ease: "power3.out" }, 68.8);
+    tl.from("#s7-q2", { x: -60, opacity: 0, duration: 0.7, ease: "power3.out" }, 71.0);
+    tl.fromTo("#scene7 .glow", { scale: 0.9, opacity: 0.05 }, { scale: 1.1, opacity: 0.1, duration: 13, ease: "sine.inOut" }, 68);
+
+    // ===== TRANSITION 7→8 (blur crossfade at 81.5s) =====
+    var T7 = 81.5;
+    tl.to("#scene7", { filter: "blur(12px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, T7);
+    tl.fromTo("#scene8",
+      { filter: "blur(12px)", scale: 0.97, opacity: 0 },
+      { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, T7 + 0.1);
+
+    // ===== SCENE 8: CTA (82-90s) =====
+    tl.from("#s8-cta", { y: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, 82.3);
+    tl.from("#s8-sub", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" }, 82.9);
+    tl.from("#s8-qr", { scale: 0.8, opacity: 0, duration: 0.5, ease: "back.out(1.5)" }, 83.4);
+    tl.fromTo("#scene8 .glow:nth-child(1)", { scale: 0.9 }, { scale: 1.1, duration: 7, ease: "sine.inOut" }, 82);
+    tl.fromTo("#scene8 .glow:nth-child(2)", { x: -20 }, { x: 20, duration: 6, ease: "sine.inOut" }, 82);
+
+    // Final scene exit (only scene allowed)
+    tl.to("#s8-cta", { opacity: 0, y: -20, duration: 0.8, ease: "power2.in" }, 88.5);
+    tl.to("#s8-sub", { opacity: 0, duration: 0.6, ease: "power2.in" }, 88.8);
+    tl.to("#s8-qr", { opacity: 0, scale: 0.9, duration: 0.6, ease: "power2.in" }, 89.0);
+
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

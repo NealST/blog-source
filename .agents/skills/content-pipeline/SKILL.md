@@ -1,6 +1,6 @@
 ---
 name: content-pipeline
-description: 内容生产和分发统一管线。素材收集→出稿→排版→封面→朋友圈文案→多平台转换→一键分发。涵盖公众号写作、小红书轮播图、即刻文案、播客音频、品牌视频、Chrome CDP 自动发布。
+description: 内容生产和分发管线。素材收集→出稿→排版→封面→多平台转换→一键分发。涵盖公众号写作排版、小红书轮播图、Chrome CDP 自动发布。
 ---
 
 # 内容管线 Content Pipeline
@@ -24,9 +24,7 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 ├── post.md                         # 短资讯源文件（仅短资讯有，长文的 .md 在 source/_posts/）
 ├── preview.html                    # 公众号排版预览
 ├── cover.html                      # 公众号头图
-├── cover_medium.html               # Medium 风格头图（可选）
 ├── illustrations.html              # 文章配图
-├── illustrations_medium.html       # Medium 风格配图（可选）
 ├── manifest.json                   # 分发清单
 ├── [主题]-小红书版.html            # 小红书轮播图
 └── drafts/
@@ -52,24 +50,17 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 | 头图 | `cover.html` | `content/kimi-vs-opus/cover.html` |
 | 配图 | `illustrations.html` | `content/kimi-vs-opus/illustrations.html` |
 | 分发清单 | `manifest.json` | `content/kimi-vs-opus/manifest.json` |
-| Medium 变体 | 后缀 `_medium` | `cover_medium.html` |
 | 小红书轮播 | `{主题}-小红书版.html` | `kimi-vs-opus-小红书版.html` |
 
 ---
 
 ## 触发词
 
-### 素材收集（Path A）
+### 素材收集 & 出稿（Path A）
 
 | 触发词 | 说明 |
 |-------|------|
-| `/story` | 查看当前素材状态 |
-| "看看素材" | 查看已记录的素材 |
-| "出稿" | 生成文章 + 排版 + 封面图 |
-| "清空素材" | 清空当前素材 |
-| "记一笔：xxx" | 手动添加素材 |
-| "素材+1：xxx" | 手动添加素材 |
-| "写个朋友圈" | 根据素材/文章生成朋友圈文案 |
+| "出稿" | 写文章 + 排版 + 封面图 |
 
 ### 内容生成（Path B）
 
@@ -78,19 +69,6 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 | `/xiaohongshu` + 微信链接 | 微信文章转小红书轮播图 |
 | "转小红书" + 微信链接 | 同上 |
 | "做成小红书" + 微信链接 | 同上 |
-| "转即刻" + 微信链接 | 生成即刻文案 |
-| "转播客" + 微信链接 | 生成播客脚本 + AI 语音 |
-| `/podcast` + 链接/文章/书名 | 小宇宙播客全流程（15分钟百家讲坛风格） |
-| "做播客" + 链接/文章/书名 | 同上 |
-| "录播客" + 链接/文章/书名 | 同上 |
-| "讲书播客" + 书名/链接 | 百家讲坛风格讲书播客 |
-| `/shiji` + 文章/素材 | 史记罗生门栏目播客（AI侦探×史源追踪） |
-| "史记罗生门" + 文章/素材 | 同上 |
-| "做史记播客" + 文章/素材 | 同上 |
-| "做视频" + 微信链接 | 触发品牌视频管线 |
-| "做视频画布" + 网址列表 | 生成录屏画布（全屏网页演示 + 露脸 + 提词器） |
-| "录屏画布" + 网址列表 | 同上 |
-| "录屏" + 网址列表 | 同上 |
 | "多平台分发" + 微信链接 | 一次生成所有平台内容 |
 | "转小红书并发布" + 微信链接 | 生成 + 自动触发分发 |
 
@@ -121,159 +99,44 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 | "一键发布" | 全平台发布 |
 | "全平台发布" | 同上 |
 | "发布到小红书" | 单平台发布 |
-| "发布到即刻" | 单平台发布 |
-
----
-
-## 核心原则：全然诚实
-
-**AI 生成的内容必须诚实标注，不装人类，展现真实的创作过程。**
-
-### 诚实标注规范
-
-当 AI 参与内容创作时，必须在文章中明确标注：
-
-```markdown
-**调研 & 撰写**：AI（Claude）
-**主导 & 审校**：[用户名]
-**创作时间**：[实际用时]（调研 X 分钟 + 写作 Y 分钟）
-```
-
-### 禁止的虚假表述
-
-❌ **不要写：**
-- "我们花了两周时间调研"（实际几分钟）
-- "经过深入访谈"（没有访谈）
-- "团队经过讨论"（没有团队）
-- "作者：XXX / 编辑：AI 助手"（AI 写了全文）
-
-✅ **应该写：**
-- "本文基于 N 篇公开信息源，由 AI 调研分析并撰写"
-- "素材收集用时 X 分钟，写作用时 Y 分钟"
-- "人类主导 + AI 协作"
-
-### 为什么要诚实
-
-1. **建立信任**：读者值得知道内容如何生成
-2. **展现价值**：AI 快速高质量创作本身就是价值，不需要掩饰
-3. **符合伦理**：AI 生成内容应该透明化
-4. **长期主义**：诚实是长期个人品牌的基石
+| "发布到公众号" | 单平台发布 |
 
 ---
 
 ## 两条输入路径
 
-### Path A：日常素材收集 → 出稿
+### Path A：出稿
 
 ```
-边干活边记录 → 说"出稿" → 写文章 → 排版 → 封面图 → 朋友圈文案 → manifest
+写文章 → 排版 → 封面图 → manifest
 ```
 
-适用场景：日常和 cc 协作时，自动积累素材，攒够了一键出稿。
+适用场景：写完 Markdown 后继续排版/封面/分发流程。写作时参考写作 skill（`../writing/SKILL.md`）的方法论和 AI 模式检测。
 
-### Path B：微信链接 → 多平台内容
+### Path B：微信链接 → 小红书内容
 
 ```
-微信链接 → 抓取文章 → 分析结构 → 生成小红书/即刻/播客/视频 → manifest → 分发
+微信链接 → 抓取文章 → 分析结构 → 生成小红书轮播图 → manifest → 分发
 ```
 
-适用场景：已有公众号文章，一键转为多平台内容并发布。
+适用场景：已有公众号文章，一键转为小红书内容并发布。
 
 ---
 
-## Path A 流程：素材收集 → 出稿
+## Path A 流程：出稿
 
-### 自动记录（默认开启）
+### 写文章
 
-cc 在对话中**主动识别有料瞬间**并自动记录，无需手动触发。
+写 Markdown 文章。写作时参考写作 skill（`../writing/SKILL.md`）的 5 步方法论和 30 类 AI 模式检测。
 
-**识别信号：**
+### 出稿后续步骤
 
-| 类型 | 识别信号 | 示例 |
-|-----|---------|------|
-| 踩坑翻车 | 预期≠结果、报错、折腾半天 | "试了三种方案都不行" |
-| 意外发现 | "没想到"、"原来可以"、意外有效 | "居然这样就解决了" |
-| 迭代打磨 | 改了多版、从复杂到简洁 | "200行改成20行还能跑" |
-| 搞笑时刻 | 对话金句、AI抽风、神奇bug | "它认真地给我写了一堆错的" |
-| 突破时刻 | 卡了很久终于通 | "困扰一周的bug终于找到了" |
-| 方法沉淀 | 可复用的技巧、心得 | "以后遇到这种情况就这么办" |
-
-**自动记录时**：不打断对话，段落结尾标记 `（✓ 素材+1）`
-
-### 手动记录
-
-用户说"记一笔：xxx"或"素材+1：xxx"时记录。
-
-### current.json 格式
-
-```json
-{
-  "topic": "主题（可选，出稿时自动提取）",
-  "materials": [
-    {
-      "time": "2026-01-30 14:30",
-      "content": "素材内容",
-      "type": "搞笑时刻",
-      "context": "可选的上下文备注",
-      "auto": true
-    }
-  ],
-  "created": "2026-01-30"
-}
-```
-
-### 出稿步骤
-
-1. **读取素材** — 读取 `drafts/current.json`
-2. **分析提炼** — 提炼主题和故事线
-3. **判断内容类型 → 选择写作框架**：
-
-| 内容类型 | 判断信号 | 使用框架 | 参考文件 |
-|---------|---------|---------|---------|
-| **说明书类** | 开源项目介绍、工具/产品说明、知识库/数据集发布、平台使用指南、"介绍一下 xxx" | 六段式说明书框架 | `references/manual-framework.md` |
-| **教程类** | 教人安装/使用/配置工具、Skill 介绍、技术实战、"怎么做 xxx" | 六段式教程框架 | `references/tutorial-framework.md` |
-| **深度长文** | 行业分析、人物故事、趋势判断、观点输出、"为什么 xxx" | 四幕式深度框架 | `references/writing-style.md` |
-
-**说明书类文章框架（3000-6000 字）：**
-```
-项目定义+核心数据（标题即摘要，开头即高潮）
-→ 一、核心成果（数据总览表）
-→ 二、功能特性（逐一展开，每个一小节+配图）
-→ 三、怎么用（按用户分层：零门槛→进阶→开发者→创作者）
-→ 四、价值/洞见（超出工具本身的意义）
-→ 五、扩展路线（可选）
-→ 写在最后（核心价值+愿景+链接）
-```
-
-**教程类文章框架（2000-4000 字）：**
-```
-先看结果（截图+成品+链接）
-→ 一、核心概念是什么（表格+一句话定义）
-→ 二、怎么安装/使用（分步骤+代码块+配图标记）
-→ 三、实战演示（分阶段+表格展示+人机协作）
-→ 四、拿走即用（快速安装命令+使用方式表格）
-→ 写在最后（升华+CTA）
-```
-
-**深度长文框架（8000-12000 字）：**
-```
-序言（故事先行，700 字不出论点）
-→ 01 铺设背景
-→ 02 核心论述
-→ 03 转折/案例
-→ 04 升华/收束
-```
-
-4. **读风格指南** — 写文章前**必须先读** `references/writing-style.md`。这是从鱼头头 9 篇已发布文章中逆向工程出的真实写作模式，不是理论指南。核心要点：极短段落（1-3句）、单句成段做"钉子"、口语化动词、"不是A是B"金句句式、数字制造反差、表格优先于段落。
-5. **写文章** — 按对应框架 + 风格指南写文章。写完后用风格指南末尾的"按类型写作清单"自检一遍。
-6. **保存** — 保存 Markdown 文件
 7. **排版** — 调用排版工具生成 HTML 预览（墨筝主题）
 8. **头图 + 配图** — 生成可下载的 HTML 文件（→ 读 `references/cover-template.md`）
    - **竖版封面（可选）**：用户说"做竖版封面"时，从已生成的公众号头图 HTML 转换 → 读 `references/cover-vertical-spec.md`
    - **配图与排版 HTML 的关联**：生成配图后，用 Playwright 截图为 PNG，然后运行 `python3 ${SKILL_DIR}/scripts/insert_image_placeholders.py <preview.html> <illustrations.html>` 自动在排版 HTML 的对应章节位置插入 `<!-- IMAGE:配图-N.png -->` 占位符。分发脚本会自动将配图上传到微信 CDN 并替换占位符为 `<img>` 标签。
    - **图片必须不透明（RGB，无 alpha）**：所有 html2canvas 导出的 PNG 必须在导出前调用 `flattenAlpha(canvas, bgColor)` 消除透明通道。详见 `references/cover-template.md` 中的 helper 函数。原因：微信等平台在白底上渲染透明 PNG，暗底封面会变白。
-9. **朋友圈文案** — 生成朋友圈推广文案（→ 读 `references/platform-copy.md`）
-10. **manifest** — 生成 manifest.json，供 `/distribute` 使用。
+9. **manifest** — 生成 manifest.json，供 `/distribute` 使用。
 
    **WeChat 发布流程（全自动）**：
    1. 写文章（Markdown）
@@ -291,11 +154,11 @@ cc 在对话中**主动识别有料瞬间**并自动记录，无需手动触发�
    - `wechat.digest`：文章摘要（120 字内）
    - `wechat.images`：配图 PNG 路径列表（按文章中出现的顺序排列，分发脚本会上传并插入到对应占位符位置）
    - `wechat.markdown`（可选）：文章 Markdown 路径（仅作记录，不再用于转换）
-11. **询问** — 是否清空当前素材
+10. **询问** — 是否清空当前素材
 
 ### 排版命令（**仅公众号 preview.html**）
 
-> **⚠️ Scope 警告**：本节规则只针对公众号产物 `preview.html`，由 `md2wechat_formatter.py` 渲染，使用 `<section>` 标签 + 内联 CSS 适配微信 API。
+> **Scope 警告**：本节规则只针对公众号产物 `preview.html`，由 `md2wechat_formatter.py` 渲染，使用 `<section>` 标签 + 内联 CSS 适配微信 API。
 >
 > 公众号默认正文字号 `large = 16px` / `medium = 15px`，与小红书的 18-19px 完全不同。**不要把 Path B 第 3-4 步里小红书的 `.slide` 卡片结构、27/22/19px 标题层级、html2canvas 下载工具栏混入公众号 preview.html**。
 
@@ -331,7 +194,7 @@ H2 标题使用 `border-left:4px solid #C4956A` 时，正文中的引用块（bl
 
 ---
 
-## Path B 流程：微信链接 → 多平台内容
+## Path B 流程：微信链接 → 小红书内容
 
 ### 第 1 步：抓取文章
 
@@ -361,21 +224,23 @@ python3 "${SKILL_DIR}/scripts/fetch_wechat_article.py" "<URL>" --json
 
 ### 第 3 步：拆分为卡片（**仅小红书**）
 
-> **⚠️ Scope 警告**：本步骤及第 4 步内的全部排版规则（卡片尺寸 540×720、字号 18-27px、h1/h2/h3 层级、稀疏页清单、下载工具栏、CORS 修复、avatar base64 内嵌等）**只适用于小红书轮播图**。
+> **Scope 警告**：本步骤及第 4 步内的全部排版规则（卡片尺寸 540×720、字号 18-27px、h1/h2/h3 层级、稀疏页清单、下载工具栏、CORS 修复、avatar base64 内嵌等）**只适用于小红书轮播图**。
 >
 > **公众号** 的排版完全独立，走 Path A 的 `md2wechat_formatter.py`（正文 16px `large` / 15px `medium`），见 "### 排版命令" 一节。**不要把小红书的字号、`.slide` 结构、`html2canvas` 下载工具栏混入公众号 preview.html**。
->
-> **即刻 / 播客 / 视频** 的产物同样不受本节约束。
 
-**小红书图文转换核心原则：保留原文，不压缩、不杜撰**
-小红书帖子单篇最多支持 18 张图片。请充分利用这 18 张图的额度来展示原文内容。如果原文极长，18 张图排满后仍有剩余，则在第 18 张图及正文末尾提示：「由于篇幅限制，完整内容请移步微信公众号『墨筝』阅读」。
+**小红书图文转换核心原则：严格 1:1 保留原文，绝不压缩**
+小红书帖子单篇最多支持 18 张图片（第 1 张为头图，第 18 张为封底，实际内容卡片最多 16 张）。**每一段、每一条列表项、每一个代码块都必须逐字保留原文，禁止概括、缩写、合并语义、省略细节。** 如果原文内容超出 16 张内容卡片的容量，则：
+- 按原文顺序 1:1 排版，排到第 17 张自然截止
+- 第 17 张底部注明"完整内容请移步微信公众号『墨筝』阅读原文"
+- 第 18 张封底放金句总结 + 公众号引导
+- **绝不通过压缩、概括、省略段落来把更多内容塞进有限的卡片**
 
 **Markdown 格式转换规则：**
 - **文章主标题（h1）**：原文 `title` 字段。使用最显眼的字号 + 衬线字体 + 上下细线点缀，全片仅在第 1 张卡片出现一次。
 - **章节标题（h2 `##`）**：金色左竖线 + 较大无衬线字体。
-- **子章节标题（h3 `###`）**：金色文字 + 较小字号，仅作小段引导，绝不能与 h1/h2 撞样式。
-- **列表项**：将 `-` 或 `*` 替换为有视觉区分度的极简形符号（如 • 或方形），杜绝使用 Emoji。嵌套列表用 `-` 显示且左缩进。
-- **重点文字（加粗）**：使用主题色（如 #C4956A）显示，或在两侧加特殊符号（如【】），不可使用 Emoji。
+- **子章节标题（h3 `###`）**：深色文字（`#2C2A28`）+ 较小字号，仅作小段引导，绝不能与 h1/h2 撞样式。**不用金色**，避免与 h2 左竖线和正文混在一起造成视觉密度过高。
+- **列表项**：将 `-` 或 `*` 替换为有视觉区分度的极简形符号（如 • 或方形），圆点用中性灰（`#999`），杜绝使用 Emoji。嵌套列表用 `-` 显示且左缩进。
+- **重点文字（加粗）**：使用黑色加粗（`#1C1C1E` + `font-weight:700`），不可使用 Emoji。**不用金色**——加粗本身已足够强调，金色会与 h2 左竖线视觉冲突。
 - **表格**：小红书不能直接展示表格，需转化为卡片内的结构化键值对（Key-Value）排版。
 - **图片**：原文 `![]()` 的图片**必须**独占一整张卡片，完全无 Header/Footer/页码，整张卡片就是一张干净的图，便于读者放大查看。
 - **Emoji**：严格禁止在生成的纯文本或代码层中自行添加 Emoji 符号。
@@ -426,18 +291,19 @@ footer 每张都带 `[图标] 微信搜索公众号「墨筝」查看更多精�
 
 头像路径：生成在 `content/[slug]/` 下的 HTML 中，头像引用用 `../_shared/avatar.jpg`（回退 1 级到 `content/_shared/avatar.jpg`）。`<img>` 配 `onerror` 回退为「墨」字头像，确保加载失败时仍有视觉占位。
 
-**📚 重要：生成前必读范例**
+**重要：生成前必读范例**
 
 **首选范例**：`references/xiaohongshu-examples/markdown-faithful-范例.html`（Markdown 1:1 还原版式，含 h1/h2/h3 区分 + 图片独占卡片 + 下载工具栏）。
 **旧版范例**：`references/xiaohongshu-examples/文字卡片-范例.html`（仅作回顾，新出稿一律用 v2）。
 
-✅ **卡片设计要求**
+**卡片设计要求**
 - 卡片尺寸固定 `540 × 720`（导出 SCALE=2 即 1080×1440，比例 3:4）。
 - 同源配色：宣纸底 `#F2EDE3` + 筝弦金 `#C4956A` + PingFang SC 无衬线，公众号同款。
+- **筝弦金克制使用**：金色仅用于 h2 左竖线（章节分隔的唯一视觉锚点）。h3 标题、加粗文字、列表圆点均不用金色，防止页面金色密度过高、喧宾夺主。
 - **标题三级层次必须视觉可区分**，且**严格大于正文字号**：
   - `h1`（文章主标题）：**27px** 黑色衬线字体 + 上下黑色细线，全文仅第 1 张出现一次。
   - `h2`（章节）：**22px** 黑色无衬线 + 4px 金色左竖线。
-  - `h3`（子节）：**19px** 金色无衬线，与 h2 颜色形态完全错开。
+  - `h3`（子节）：**19px** 深色（`#2C2A28`）无衬线，与 h2 通过字号和形态区分，**不用金色**。
 - **正文字号下限（手机实测过的）**：DOM 是 540×720，但在小红书 App 里图片宽度约等于手机屏宽 360-400px，所以字号要按"实际显示 ~70%"反推。**经多轮 iPhone 实测，最终基线如下（兼顾可读性与单页容量）**：
   - 正文段落 `p` / 一级 `list-item`：**18px**，`line-height: 1.6`（保持舒适，不再继续收紧），`margin-bottom: 7-8px`。
   - 嵌套子项 `list-item.sub`：**16px**。
@@ -449,12 +315,12 @@ footer 每张都带 `[图标] 微信搜索公众号「墨筝」查看更多精�
   - **层级关系硬规则**：h1 > h2 > h3 > 正文 > 子项 > 表格 > footer，相邻层级至少差 1-2px。h3 必须严格大于正文（≥1px），否则标题失去引导作用。
 - **间距收紧规则（字号大了就要收 margin）**：字号上调以后，标题 margin-bottom 控制在 10-16px、正文/list-item margin-bottom 控制在 7-8px、`post-header margin-bottom: 14px`、表格 padding 收到 10px 14px，行高保持 ≥ 1.55 不要为了塞内容继续压缩。
 - **内联 `<code>` 不可拆**：CSS 必须给 `code { white-space: nowrap; }`，否则带 ASCII 空格的命令（如 `/effort ultracode`、`git commit -m`、`docker run -it`）会在空格处换行，把 `/effort` 留上一行、`ultracode` 挤下一行，中间撑出巨大空白。中文之间夹的 inline `<code>` 也建议在命令内部用 `&nbsp;` 拼接，双保险。
-- **长命令独立成块**：超过半行的命令／代码片段，单独用 `<code class="cmd-block">`，CSS 配 `display:block; white-space:pre-wrap; word-break:break-word; padding:8px 12px;`，让它正常换行展示，而不是塞回行内 `<code>` 撑爆布局。
+- **长命令独立成块**：超过半行的命令/代码片段，单独用 `<code class="cmd-block">`，CSS 配 `display:block; white-space:pre-wrap; word-break:break-word; padding:8px 12px;`，让它正常换行展示，而不是塞回行内 `<code>` 撑爆布局。
 - **图片独占卡片**：原文 `![]()` 必须独占一整张 `.slide.img-only`，黑底 + `object-fit:contain` 全图展示，**无 Header / Footer / 页码 / 金色光晕**。
-- **每张卡片 Header**：头像 + 「墨筝」+ MM/DD 自动写入（脚本兜底）。
+- **每张卡片 Header**：头像 + 「墨筝」+ MM/DD 自动写入（脚本兜底）。日期统一使用**生成当天的日期**，不使用原文 frontmatter 中的发布日期。
 - **每张卡片 Footer**：左 `微信搜索公众号「墨筝」查看更多内容`，右 `当前页 / 总页数`。
 
-✅ **下载工具栏（必带）**：
+**下载工具栏（必带）**：
 - 顶部 fixed 工具栏含两个按钮：`全部下载 (ZIP)` + `下载当前`，外加一个 `#progress` 进度文本。
 - 引入 `html2canvas@1.4.1` + `jszip@3.10.1` + `file-saver@2.0.5`（jsDelivr CDN）。
 - `flattenAlpha()` 把透明通道展平为底色，避免微信白底渲染时暗底变白。
@@ -467,9 +333,10 @@ footer 每张都带 `[图标] 微信搜索公众号「墨筝」查看更多精�
 - **错误必须暴露**：`downloadAll/downloadOne` 必须用 `try/catch` 包裹，失败时把错误写到 `#progress` 并 `alert()`，否则用户只会看到"点了没反应"。
 - 检查 `toBlob` 返回值非空：返回 null 即说明仍被污染，应抛错而不是塞 null 进 zip。
 
-✅ **文案质量要求（硬规则）**：
-- **严禁压缩、总结、改写、杜撰**：原文所有段落、列表项（含嵌套子项）、表格行、加粗、斜体注释（如禁用环境变量）必须 1:1 保留。
+**文案质量要求（硬规则）**：
+- **严禁压缩、总结、改写、杜撰**：原文所有段落、列表项（含嵌套子项）、表格行、加粗、斜体注释（如禁用环境变量）必须 1:1 逐字保留。
 - 一页装不下就跨多页继续展示，宁可多张卡片也不可裁剪文字。
+- **容量溢出时截止而非压缩**：内容超出 18 张卡片时，按原文顺序排到放不下为止，末尾提示跳转公众号。绝不通过概括、省略段落、合并语义来强行塞入更多内容。
 - 卡片外的小红书正文描述可适度口语化，但卡片内严格忠于原文。
 
 生成的内容应达到 v2 范例的专业水准。
@@ -489,38 +356,7 @@ footer 每张都带 `[图标] 微信搜索公众号「墨筝」查看更多精�
   - 结构化拆解 + 干货密度高
   - 适合转载公众号文章
 
-### 第 6 步：生成即刻发布文案
-
-→ 读 `references/platform-copy.md` 的即刻部分。
-
-### 第 7 步：生成播客脚本
-
-**根据触发词选择播客模式：**
-
-| 触发词 | 模式 | 时长 | 风格 |
-|--------|------|------|------|
-| "转播客" | 标准模式 | 5-8 分钟 | AI搭档聊天风 → 读 `references/platform-copy.md` 播客部分 |
-| `/podcast` / "做播客" / "录播客" / "讲书播客" | **百家讲坛模式** | **15 分钟** | **讲书人风格** → 读 `references/xiaoyuzhou-podcast.md` |
-
-**百家讲坛模式**是小宇宙播客的主力模式，适合把文章/书籍改编为有故事感、有节奏感的深度音频内容。
-
-### 第 8 步：AI 语音生成
-
-通过 SSH 连接 Ubuntu 机器，使用 IndexTTS2 本地生成（零样本声音克隆）（→ 读 `references/tts-config.md`）。
-
-**百家讲坛模式的 TTS 调整**：15 分钟脚本约 4000 字，分段大小 600 字（更短分段带来更好的语音节奏），预计 6-7 段。
-
-文件命名：`[播客标题].mp3` + `[播客标题]-播客脚本.md`
-
-### 第 8.2 步：生成播客封面（百家讲坛模式）
-
-→ 读 `references/podcast-cover-template.md`
-
-生成 3000×3000 正方形封面 HTML，墨筝体系，浏览器下载 PNG 后上传小宇宙。
-
-文件命名：`[播客标题]-播客封面.html`
-
-### 第 8.5 步：输出 manifest.json
+### 第 6 步：输出 manifest.json
 
 所有内容生成完毕后，自动输出 manifest.json 到输出目录。格式：
 
@@ -532,75 +368,36 @@ footer 每张都带 `[图标] 微信搜索公众号「墨筝」查看更多精�
   "title": "<文章标题>",
   "outputs": {
     "xiaohongshu": { "html": "...", "copy": { "title": "...", "body": "...", "tags": [...] } },
-    "jike": { "copy": { "body": "...", "circles": [...] } },
-    "xiaoyuzhou": { "audio": "...", "script": "...", "cover": "...", "copy": { "title": "EP01丨...", "description": "...", "show_notes": "..." } },
-    "video_canvas": { "html": "...", "teleprompter_md": "...", "cover_html": "..." }
+    "wechat": {
+      "html": "...",
+      "cover_image": "...",
+      "title": "...",
+      "author": "墨筝",
+      "digest": "...",
+      "images": [...]
+    }
   }
 }
 ```
 
 如果用户说"转小红书并发布"，生成 manifest 后自动执行 `/distribute`。
 
-### 第 9 步：品牌视频生成（可选）
-
-仅当用户提到"视频"、"抖音"、"视频号"或"品牌视频"时执行：
-
-**A. Remotion 品牌片头片尾**
-
-```bash
-cd "$REMOTION_DIR"
-npx remotion render src/index.ts Intro --output /tmp/brand-intro.mp4
-npx remotion render src/index.ts Outro --output /tmp/brand-outro.mp4
-```
-
-> `$REMOTION_DIR` 需在 `local/.env` 或环境变量中配置。
-
-**B. AI 视频 Prompt** — 为 Seedance 2.0 或 Google Veo 生成 4 段视频 prompt
-
-**C. ffmpeg 拼接指令** — 生成拼接命令供用户手动执行
-
-### 第 9B 步：录屏画布生成（可选）
-
-仅当用户说"做视频画布"、"录屏画布"、"录屏"时执行。用户提供**要演示的网址列表 + 简短主题**。
-
-1. **获取输入** — 用户提供：要演示的网址列表 + 简短主题
-2. **生成提词器脚本** — 每个网址对应一段口播（80-150 字），含 `[提示]` cue 标记
-3. **输出提词器脚本 md** — `[主题]-提词器脚本.md`，用户可直接编辑
-4. **组装 HTML** — 读取 `references/video-canvas-template.md` 获取完整 CSS+JS 模板，网址预填 `WEB_URLS` + 提词器脚本填入 `SCRIPTS`
-5. **输出文件** — `[主题]-视频画布.html`，保存到用户指定目录或 `/tmp/`
-6. **生成封面图** — `[主题]-封面.html`，暗底 + 人像圆框，浏览器下载 PNG
-7. **提示用户** — 先检查提词器脚本 md，再在浏览器中打开 HTML 录制。16:9 固定比例，各平台直接上传
-
-### 第 10 步：用户微调
+### 第 7 步：用户微调
 
 告知用户所有产出物路径，提示可调整，输入 `/distribute` 可一键发布。
 
 **公众号同步提示**：封面 PNG 从浏览器下载后，直接 `/distribute --platforms wechat` 即可同步到草稿箱（API 模式，无需打开 Chrome）。
 
-**一次性产出五样东西，不需要额外要求：**
+**一次性产出：**
 1. 小红书图片 HTML（含一键下载工具栏）
 2. 小红书发布文案（标题 + 正文 + 标签）
-3. 即刻发布文案（正文 + 圈子标签）
-4. 小宇宙播客（录制脚本 + AI 语音 MP3 + 节目封面）
-5. manifest.json（供 `/distribute` 一键发布）
-
-**单独触发 `/podcast` 时，产出三样：**
-1. 播客脚本 md（15 分钟百家讲坛风格，3800-4200 字）
-2. AI 语音 MP3（IndexTTS2 本地生成）
-3. 节目封面 HTML（3000×3000，浏览器下载 PNG）
-4. 小宇宙发布文案（标题 + 简介 + 完整文稿）
-5. manifest.json
-
-**第 9B 步可选追加（说"视频画布"/"录屏"时）：**
-6. 录屏画布 HTML（全屏网页演示 + 摄像头露脸 + 录制 + 提词器 + 美颜，16:9 固定）
-7. 提词器脚本 md（按网站分段，可编辑，修改后说"更新提词器"同步到 HTML）
-8. 封面图 HTML（暗底 + 人像圆框，浏览器下载 PNG）
+3. manifest.json（供 `/distribute` 一键发布）
 
 ---
 
 ## 分发流程（/distribute）
 
-读取 manifest.json，通过 Chrome CDP 自动化发布到各平台（→ 读 `references/distribute-platforms.md`）。
+读取 manifest.json，通过 API 或 Chrome CDP 自动化发布到各平台（→ 读 `references/distribute-platforms.md`）。
 
 ### 用法
 
@@ -609,7 +406,7 @@ npx remotion render src/index.ts Outro --output /tmp/brand-outro.mp4
 npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/manifest.json
 
 # 选择平台
-npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/manifest.json --platforms xhs,jike
+npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/manifest.json --platforms wechat,xhs
 
 # 预览模式（不提交，只预填内容）
 npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/manifest.json --platforms xhs --preview
@@ -621,14 +418,10 @@ npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/m
 |------|------|------|
 | `wechat` | 公众号 | 可用 |
 | `xhs` | 小红书 | 可用 |
-| `jike` | 即刻 | 可用 |
-| `xiaoyuzhou` | 小宇宙 | 可用 |
-| `douyin` | 抖音 | 实验性 |
-| `shipinhao` | 视频号 | 待开发 |
 
 ### 执行顺序
 
-公众号 → 小红书 → 即刻 → 小宇宙 → 抖音 → 视频号（顺序执行，避免 Chrome 端口冲突）
+公众号 → 小红书（顺序执行，避免 Chrome 端口冲突）
 
 ### 四级降级
 
@@ -666,7 +459,7 @@ npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/m
 ## 品牌设计规范
 
 **统一品牌色体系：**
-- **墨筝（mozheng）**：所有平台统一使用——墨色+筝弦金体系（公众号、小红书、即刻等）
+- **墨筝（mozheng）**：所有平台统一使用——墨色+筝弦金体系（公众号、小红书等）
 
 > **单一真相源**：在 `local/SKILL.local.md` 中指定你的品牌色文档路径。
 > 如果色值冲突，以品牌文档为准。以下色板作为默认示例。
@@ -675,7 +468,12 @@ npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/m
 
 > 公众号「墨筝」专属配色。取意：墨——墨汁近黑微暖；筝——古筝丝弦哑光金。
 
-**比例法则**：墨色 80% : 筝弦金 8% : 宣纸 10% : 其余 2%
+**比例法则**（按场景区分）：
+
+| 场景 | 比例 | 说明 |
+|------|------|------|
+| 暗底（头图、配图、封面） | 墨色 80% : 筝弦金 8% : 宣纸 10% : 其余 2% | 公众号头图、文章配图等暗底产物 |
+| 浅底（小红书文字卡片） | 宣纸 75% : 灰文字 18% : 筝弦金 5% : 墨色 2% | 小红书轮播图，与公众号正文同源配色，禁用朱红等其它强调色 |
 
 | 名称 | 色值 | 用途 |
 |------|------|------|
@@ -724,18 +522,19 @@ font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
 ---
 
-## 内容改写原则
+## 内容适配原则
 
-微信 → 小红书不是照搬，需适配：
+微信 → 小红书需要**排版适配**，但**内容必须 1:1 保留**：
 
-| 维度 | 微信 | 小红书 |
+| 维度 | 微信（线性长文） | 小红书（卡片轮播） |
 |------|------|--------|
-| 篇幅 | 2000-3000 字 | 每页 50-80 字 |
-| 结构 | 线性阅读 | 卡片式跳读 |
-| 语气 | 技术向、深度 | 简洁、直观、有冲击力 |
-| 视觉 | 文字为主 | 视觉为主、文字点缀 |
+| 载体 | 单篇连续阅读 | 540×720 卡片，最多 18 张 |
+| 排版 | `md2wechat_formatter.py` 内联 CSS | 文字卡片 HTML + html2canvas 导出 |
+| 标题层级 | Markdown h1/h2/h3 | h1 27px / h2 22px / h3 19px 视觉区分 |
+| 表格 | 原生 HTML table | 结构化键值对排版（小红书不支持表格） |
+| 图片 | 文内嵌图 | 独占整张卡片，黑底全图展示 |
 
-改写要点：标题要炸、数字要大、一页一个点、视觉替代文字、保留核心链接。
+**核心原则**：卡片内严格忠于原文——所有段落、列表项、表格行、加粗、斜体注释必须 1:1 逐字保留，禁止压缩、概括、杜撰。一页放不下就跨多页，宁可多张卡片也不可裁剪文字。内容超出 18 张时按顺序排到放不下为止，末尾提示跳转公众号，绝不压缩来塞入更多内容。卡片外的小红书正文描述可适度口语化。
 
 ---
 
@@ -761,6 +560,7 @@ font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 | `scripts/distribute/cdp-utils.ts` | 共享 CDP 工具 + Manifest 类型定义 |
 | `scripts/distribute/wechat-api.ts` | 公众号 API 客户端（token 管理、图片上传、草稿创建） |
 | `scripts/distribute/platforms/*.ts` | 各平台发布模块 |
+| `scripts/render_pngs.py` | Playwright 渲染 cover.html / illustrations.html 为 PNG（含 bottom-bleed 裁剪） |
 
 ---
 
@@ -770,19 +570,12 @@ cc 按需读取，不要一次性加载所有 reference。
 
 | 场景 | 读取文件 |
 |------|---------|
-| 出稿写说明书文章 | `references/manual-framework.md` — 六段式说明书框架（定义+成果→特性→用法→价值→路线→收束，3000-6000 字） |
-| 出稿写深度长文 | `references/writing-style.md` — 人设 + 写作规范 + 格式（四幕式，8000-12000 字） |
-| 出稿写教程文章 | `references/tutorial-framework.md` — 六段式教程框架（先看结果→概念→操作→实战→拿走即用，2000-4000 字） |
+| 出稿写文章 | → 写作 skill（`../writing/SKILL.md`），含 5 步写作方法论 + 30 类 AI 模式检测 |
 | 生成头图/配图 | `references/cover-template.md` — 墨筝风格排版规范（头图 + 配图 + 视觉组件） |
 | 横版→竖版封面 | `references/cover-vertical-spec.md` — 公众号封面转竖版的 CSS 转换规范 |
-| 生成小红书轮播图 | `references/xiaohongshu-text-card.md` — **唯一风格**：公众号同源配色的文字卡片。范例：`references/xiaohongshu-examples/文字卡片-范例.html`。旧多卡片信息图模板 `xiaohongshu-format.md` 已废弃，只作 SVG / 下载脚本存档 |
-| 生成各平台文案 | `references/platform-copy.md` — 小红书/即刻/播客/朋友圈文案规范 |
-| 生成播客音频 | `references/tts-config.md` — IndexTTS2 本地 TTS 配置 + 生成脚本 |
-| 小宇宙播客（百家讲坛） | `references/xiaoyuzhou-podcast.md` — 15分钟讲书人风格脚本规范 + 改编流程 + 发布配置 |
-| 播客节目封面 | `references/podcast-cover-template.md` — 3000×3000 正方形封面 HTML 模板 |
-| 史记罗生门栏目 | `references/shiji-luoshengmen.md` — 栏目品牌设定 + AI侦探风格 + 脚本结构 |
+| 生成小红书轮播图 | `references/xiaohongshu-text-card.md` — **唯一风格**：公众号同源配色的文字卡片。首选范例：`references/xiaohongshu-examples/markdown-faithful-范例.html`（v2 Markdown 1:1 还原版式）。旧版范例 `文字卡片-范例.html` 仅作回顾。旧多卡片信息图模板 `xiaohongshu-format.md` 已废弃，只作 SVG / 下载脚本存档 |
+| 生成小红书文案 | `references/platform-copy.md` — 小红书文案规范 |
 | 分发到各平台 | `references/distribute-platforms.md` — 平台配置 + manifest 格式 + 降级策略 |
-| 生成录屏画布 | `references/video-canvas-template.md` — 录屏画布模板（全屏网页演示+露脸+提词器+录制） |
 
 ---
 
@@ -791,10 +584,8 @@ cc 按需读取，不要一次性加载所有 reference。
 | 问题 | 处理 |
 |------|------|
 | 微信抓取失败 | 提示用户手动复制文章正文 |
-| 文章太短（<500字） | 压缩为 5-6 张卡片 |
-| 文章太长（>5000字） | 精选核心，控制 10 张以内 |
+| 文章太短（<500字） | 按内容自然分页，可能只需 3-5 张卡片 |
+| 文章太长（>5000字） | 充分利用 18 张额度 1:1 排版，第 18 张仍放不下则提示跳转公众号 |
 | 导出图片模糊 | 检查 SCALE=2，浏览器缩放 100% |
 | manifest 不存在 | 提示先运行内容生成 |
 | Chrome 启动失败 | 降级 L3（手动模式） |
-| IndexTTS2 模型加载失败 | 检查 checkpoints 目录和 infer_v2 导入 |
-| TTS 生成失败 | 只输出脚本文本，提示手动录制 |

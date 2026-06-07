@@ -21,6 +21,14 @@
         "content/claude-code-tips-best-practices/配图-9.png",
         "content/claude-code-tips-best-practices/配图-10.png"
       ]
+    },
+    "xiaohongshu": {
+      "html": "content/claude-code-tips-best-practices/claude-code-tips-小红书版.html",
+      "copy": {
+        "title": "用了半年Claude Code，踩完坑整理了48条实用技巧",
+        "body": "从 Anthropic 官方文档、Claude Code 核心开发者 Boris Cherny 的分享、加上自己半年多每天用它干活的教训，整理了 48 条按场景分组的实用技巧。\n\n图片里展示了前 26 条（基础操作 + 工作流优化 + 上下文管理），每条都是完整原文，没有压缩。\n\n基础操作：设 cc 别名秒启动、用 ! 前缀直接跑 bash 命令省一轮意图识别的 Token、Esc 停止 + 双击 Esc 回滚到检查点、给 Claude 一个测试闭环让它自己跑测试自己修 Bug（Boris 说这一点就能带来 2-3 倍质量提升）、用 Skills 按需加载知识、用手机远程操控、把上下文扩到 100 万 Token。\n\n工作流优化：拿不准时先进 Plan 模式防止认认真真解决完全错误的问题、切换任务前 /clear 保持干净上下文、用 --worktree 隔离并行开发同时开 3-5 个会话、Agent Teams 多会话协同、/compact 附带指令引导压缩不丢关键信息、用语音输入丰富提示词。\n\n上下文与提示词：用 @ 前缀精准引用文件跳过检索、探索陌生代码时用开放式提问。\n\n剩下的 22 条（权限安全 + 高阶技巧）因篇幅放不下，完整 48 条含代码示例请移步公众号「墨筝」阅读原文。",
+        "tags": ["ClaudeCode", "AI编程", "编程效率", "开发者工具", "AI工具", "命令行工具", "程序员必备", "效率提升", "Claude", "Anthropic"]
+      }
     }
   }
 }

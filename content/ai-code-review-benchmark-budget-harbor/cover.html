@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Cover — AI CR Benchmark</title>
+<style>
+  body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', sans-serif; }
+  .toolbar { position: fixed; top: 0; left: 0; right: 0; background: #222; padding: 12px 24px; display: flex; gap: 12px; z-index: 100; }
+  .toolbar button { background: #C4956A; color: #fff; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .toolbar button:hover { background: #b3845c; }
+  .cover { width: 900px; height: 383px; position: relative; overflow: hidden; border-radius: 8px; margin-top: 20px; }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  .bg-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 50%, rgba(196,149,106,0.06) 0%, transparent 60%); }
+  .brand { position: absolute; top: 20px; left: 24px; display: flex; align-items: center; gap: 8px; z-index: 3; }
+  .brand svg { width: 22px; height: 22px; }
+  .brand-text { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; }
+  .hero-art { position: absolute; right: 48px; top: 50%; transform: translateY(-50%); z-index: 1; opacity: 0.75; }
+  .content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 340px 0 70px; z-index: 2; }
+  .kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative; }
+  .kicker::before { content: ''; position: absolute; top: 0; left: 0; width: 32px; height: 1px; background: #C4956A; }
+  .title { font-size: 56px; font-weight: 800; letter-spacing: -0.022em; line-height: 1.18; color: #F2EDE3; margin-top: 18px; }
+  .title .hook { color: #C4956A; font-size: 72px; font-weight: 900; letter-spacing: -0.03em; }
+  .lede { font-size: 17px; font-weight: 400; font-style: italic; color: rgba(255,255,255,0.55); margin-top: 18px; max-width: 480px; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="downloadCover('main')">下载头图 (900×383)</button>
+    <button onclick="downloadCover('secondary')">下载次图 (200×200)</button>
+  </div>
+
+  <div class="cover" id="cover-main">
+    <div class="bg-dark"></div>
+    <div class="bg-glow"></div>
+
+    <!-- 品牌角标 -->
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none">
+        <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+        <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+        <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+        <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+        <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+        <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+
+    <!-- 焦点视觉：右侧抽象 Bug/Code 图形 -->
+    <div class="hero-art">
+      <svg width="280" height="260" viewBox="0 0 280 260" fill="none">
+        <!-- 五个模型节点 -->
+        <circle cx="140" cy="60" r="22" stroke="#C4956A" stroke-width="1.5" fill="rgba(196,149,106,0.08)"/>
+        <text x="140" y="64" text-anchor="middle" font-size="9" fill="#C4956A" font-weight="700">OPUS</text>
+
+        <circle cx="60" cy="120" r="18" stroke="rgba(255,255,255,0.25)" stroke-width="1" fill="rgba(255,255,255,0.03)"/>
+        <text x="60" y="124" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)" font-weight="600">GPT</text>
+
+        <circle cx="220" cy="120" r="18" stroke="rgba(255,255,255,0.25)" stroke-width="1" fill="rgba(255,255,255,0.03)"/>
+        <text x="220" y="124" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)" font-weight="600">GROK</text>
+
+        <circle cx="80" cy="200" r="18" stroke="rgba(255,255,255,0.25)" stroke-width="1" fill="rgba(255,255,255,0.03)"/>
+        <text x="80" y="204" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,0.5)" font-weight="600">SONNET</text>
+
+        <circle cx="200" cy="200" r="18" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="rgba(255,255,255,0.02)"/>
+        <text x="200" y="204" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,0.35)" font-weight="600">GEMINI</text>
+
+        <!-- 连接线 -->
+        <line x1="140" y1="82" x2="80" y2="105" stroke="rgba(196,149,106,0.2)" stroke-width="0.8"/>
+        <line x1="140" y1="82" x2="200" y2="105" stroke="rgba(196,149,106,0.2)" stroke-width="0.8"/>
+        <line x1="70" y1="136" x2="80" y2="182" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/>
+        <line x1="210" y1="136" x2="200" y2="182" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/>
+
+        <!-- 中心 Bug 标记 -->
+        <circle cx="140" cy="150" r="28" stroke="rgba(255,120,100,0.3)" stroke-width="1.2" stroke-dasharray="4 3" fill="none"/>
+        <text x="140" y="146" text-anchor="middle" font-size="10" fill="rgba(255,120,100,0.6)" font-weight="700">15</text>
+        <text x="140" y="160" text-anchor="middle" font-size="7" fill="rgba(255,120,100,0.4)">BUGS</text>
+      </svg>
+    </div>
+
+    <!-- 内容 -->
+    <div class="content">
+      <div class="kicker">AI Code Review · Benchmark</div>
+      <h1 class="title"><span class="hook">5</span> 模型盲审<br/><span class="hook">15</span> 个 Bug</h1>
+      <p class="lede">有 4 个 Bug 全军覆没——它们都需要理解业务意图</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script>
+    function flattenAlpha(canvas, bgColor) {
+      const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+      const flat = document.createElement('canvas');
+      flat.width = canvas.width; flat.height = canvas.height;
+      const ctx = flat.getContext('2d');
+      ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+      ctx.fillRect(0, 0, flat.width, flat.height);
+      ctx.drawImage(canvas, 0, 0);
+      return flat;
+    }
+
+    async function downloadCover(type) {
+      const el = document.getElementById('cover-main');
+      const origRadius = el.style.borderRadius;
+      el.style.borderRadius = '0';
+
+      const bgEl = el.querySelector('.bg-dark');
+      const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : '#1C1C1E';
+
+      const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+      el.style.borderRadius = origRadius;
+      const flat = flattenAlpha(raw, bg);
+
+      if (type === 'main') {
+        flat.toBlob(blob => saveAs(blob, 'cover-main-900x383.png'), 'image/png');
+      } else {
+        // 次图：从中心裁 200x200（在 2x canvas 上是 400x400）
+        const sec = document.createElement('canvas');
+        sec.width = 400; sec.height = 400;
+        const ctx = sec.getContext('2d');
+        const sx = (flat.width - 400) / 2;
+        const sy = (flat.height - 400) / 2;
+        ctx.drawImage(flat, sx, sy, 400, 400, 0, 0, 400, 400);
+        sec.toBlob(blob => saveAs(blob, 'cover-secondary-200x200.png'), 'image/png');
+      }
+    }
+  </script>
+</body>
+</html>

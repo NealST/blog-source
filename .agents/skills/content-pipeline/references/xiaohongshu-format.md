@@ -4,7 +4,7 @@
 >
 > [xiaohongshu-text-card.md](./xiaohongshu-text-card.md)
 >
-> 本文中的多卡片信息图模板、`观鸟图鉴-范例.html` 等不再是推荐出口。如果需要反查旧模板里的某个 SVG 信息组件（如品牌角标、渐变背景、下载脚本的 `renderSlide` / `flattenAlpha` 助手），可以继续从下面内容中保留取用。
+> 本文中的多卡片信息图模板不再是推荐出口。如果需要反查旧模板里的某个 SVG 信息组件（如品牌角标、渐变背景、下载脚本的 `renderSlide` / `flattenAlpha` 助手），可以继续从下面内容中保留取用。
 
 ---
 

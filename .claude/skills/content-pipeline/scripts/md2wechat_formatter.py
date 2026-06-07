@@ -348,13 +348,8 @@ body {{
 .content img {{
   max-width: 100%;
   height: auto;
-<<<<<<< HEAD:.github/skills/content-pipeline/scripts/md2wechat_formatter.py
-  border-radius: 4px;
-  margin: 4px 0;
-=======
   border-radius: 8px;
   margin: 8px 0;
->>>>>>> be1f5dd518d4803700fbb6df366a0fd70964e867:.agents/skills/content-pipeline/scripts/md2wechat_formatter.py
 }}
 """
     return css
@@ -929,6 +924,7 @@ def sanitize_for_wechat(html_str, theme=None):
     WeChat editor quirks:
     - Strips <style> blocks entirely
     - Strips styles on <div> (must use <section>)
+    - Strips styles on <blockquote> (must use <section>)
     - Removes overflow-x, -webkit-*, word-wrap, overflow-wrap
     - Doesn't understand rgba() — convert to hex
     - :nth-child cannot be inlined — apply stripe bg directly to even <tr> rows
@@ -942,6 +938,10 @@ def sanitize_for_wechat(html_str, theme=None):
     result = result.replace('<div ', '<section ')
     result = result.replace('<div>', '<section>')
     result = result.replace('</div>', '</section>')
+
+    # 2.5. Replace <blockquote> with <section> (WeChat strips styles on blockquote)
+    result = re.sub(r'<blockquote([^>]*)>', r'<section\1>', result)
+    result = result.replace('</blockquote>', '</section>')
 
     # 3. Strip CSS properties WeChat editor doesn't support
     unsupported_props = [

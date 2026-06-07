@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Opus/GPT/Grok/Gemini/Sonnet CR实测 - 小红书轮播图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #2c2825;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 90px 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  }
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(28,28,30,0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px; display: flex; align-items: center;
+    justify-content: center; gap: 12px;
+  }
+  .toolbar .btn {
+    background: #1C1C1E; color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15);
+    padding: 9px 22px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer;
+  }
+  .toolbar .btn.accent { background: #C4956A; border-color: #C4956A; }
+  .toolbar .progress { color: rgba(255,255,255,0.7); font-size: 12px; margin-left: 8px; }
+
+  .slide {
+    width: 540px; height: 720px; margin-bottom: 40px;
+    position: relative; overflow: hidden; border-radius: 8px;
+    box-shadow: 0 6px 28px rgba(28,28,30,0.35); background: #fff;
+  }
+  .bg-paper {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #F6F1E7 0%, #F2EDE3 55%, #ECE4D2 100%);
+  }
+  .bg-paper::after {
+    content: ''; position: absolute; inset: 0; opacity: 0.04;
+    background-image: linear-gradient(rgba(28,28,30,0.6) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(28,28,30,0.6) 1px, transparent 1px);
+    background-size: 28px 28px; pointer-events: none;
+  }
+  .bg-paper::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 240px; height: 240px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,149,106,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .content {
+    position: relative; z-index: 2; height: 100%;
+    padding: 32px 40px 24px; display: flex; flex-direction: column;
+    color: #333; letter-spacing: 0.3px;
+  }
+
+  .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
+  .avatar-wrap { position: relative; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #C4956A; overflow: hidden; background: linear-gradient(135deg, #C4956A, #8a6240); flex-shrink: 0; box-shadow: 0 2px 10px rgba(28,28,30,0.18); }
+  .avatar-wrap .avatar { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1; }
+  .avatar-wrap .avatar-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #F2EDE3; font-size: 22px; font-weight: 700; font-family: "Songti SC", serif; z-index: 0; }
+  .meta .name { font-size: 15px; font-weight: 700; color: #1C1C1E; }
+  .meta .date { font-size: 13px; color: #888; margin-top: 2px; }
+
+  .post-body { flex: 1; overflow: hidden; }
+
+  .post-body .h1 {
+    font-size: 27px; font-weight: 800; color: #1C1C1E;
+    margin-bottom: 16px; line-height: 1.35;
+    text-align: center; padding: 12px 0;
+    border-top: 2px solid #1C1C1E; border-bottom: 2px solid #1C1C1E;
+    font-family: "Songti SC", "Source Han Serif SC", serif;
+    letter-spacing: 1px;
+  }
+  .post-body .h2 {
+    font-size: 22px; font-weight: 700; color: #1C1C1E;
+    margin-bottom: 12px; border-left: 4px solid #C4956A; padding-left: 12px;
+  }
+  .post-body .h3 {
+    font-size: 19px; font-weight: 700; color: #2C2A28;
+    margin-bottom: 10px; margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .post-body p { font-size: 18px; line-height: 1.6; margin-bottom: 8px; }
+  .post-body em { font-style: italic; color: #555; }
+  .post-body strong { color: #1C1C1E; font-weight: 700; }
+
+  .list-item { display: flex; gap: 8px; margin-bottom: 7px; font-size: 18px; line-height: 1.6; }
+  .list-item .bullet { color: #999; font-weight: bold; flex-shrink: 0; }
+  .list-item.sub { margin-left: 18px; font-size: 16px; }
+
+  .table-block { background: #f5efe4; border: 1px solid #e8dfd0; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; }
+  .table-row { border-bottom: 1px dashed rgba(196,149,106,0.4); padding: 6px 0; font-size: 15.5px; }
+  .table-row:first-child { padding-top: 0; }
+  .table-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .table-row .key { font-weight: 700; color: #1C1C1E; margin-bottom: 2px; font-size: 16px; }
+  .table-row .val { color: #555; line-height: 1.5; }
+
+  code { background: #E8E0D1; color: #b8621b; padding: 1px 5px; border-radius: 4px; font-family: "SF Mono", Menlo, monospace; font-size: 0.92em; white-space: nowrap; }
+
+  .post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(28,28,30,0.08); flex-shrink: 0; }
+  .post-footer .brand { font-size: 12px; color: #888; }
+  .post-footer .brand .gz { color: #C4956A; font-weight: 700; }
+  .post-footer .page { font-size: 12px; color: #888; }
+
+  .quote-card { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
+  .quote-card .q { font-size: 18px; font-weight: 400; color: #2C2A28; line-height: 1.7; margin-bottom: 16px; }
+  .quote-card .q .punch { font-size: 20px; font-weight: 600; color: #1C1C1E; }
+  .quote-card .q .hl { color: #C4956A; }
+  .quote-card .dash { width: 40px; height: 2px; background: #C4956A; margin-bottom: 12px; opacity: 0.6; }
+  .quote-card .sub { font-size: 14px; color: #888; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button class="btn" onclick="downloadOne()">下载当前</button>
+  <span class="progress" id="progress"></span>
+</div>
+
+<!-- Slide 1: 头图/开场 -->
+<div class="slide" id="slide-1">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h1">Opus/GPT/Grok/Gemini/Sonnet Code Review 效果评测</div>
+      <p>我们从零写了一个完整的 React 应用，故意埋了 <strong>15 个 Bug</strong>，然后交给五个主流 AI 模型做 CR。不提示方向，不透露数量，不引导关注安全或正确性，只给了一个 diff 和一句指令："Review the uncommitted changes."</p>
+      <p>结果：<strong>Opus 4.8</strong> 找到最多（10/15），但真正出人意料的是第二名 <strong>Grok Build 0.1</strong>，它和 Sonnet 4.6 并列 9/15，而 Grok 只花了 $0.08（对比 Opus 的 $0.75 几乎可以忽略）。更意外的是，这次测试中最难的 Bug，Grok 给出了最完整的诊断。</p>
+      <p>Gemini 3.1 Pro 最让人失望，其他四个模型都抓到的 Bug，它完全没有发现。另有四个 Bug，五个模型无一检出。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">1 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: 为什么选预算应用 + Bug分类前3 -->
+<div class="slide" id="slide-2">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">为什么选预算应用</div>
+      <p>这个应用叫 Budget Harbor，一个基于 React + TypeScript + Vite 开发的家庭预算管理工具。功能包括追踪账户余额、分类预算、周期性交易、储蓄目标，支持 CSV 导入导出和月末预测。</p>
+      <p>选它的原因很简单：钱的计算对于准确性要求极高，对就是对，错就是错，没有任何可转圜的余地。</p>
+      <div class="h2" style="margin-top:16px;">15 个植入 Bug 的分类</div>
+      <p>植入 Bug 分为六类：</p>
+      <div class="list-item"><span class="bullet">•</span><span><strong>React 状态与 Hooks</strong>（2）：useEffect 缺依赖数组、useMemo 依赖数组漏了搜索词</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>日期与时间</strong>（3）：子字符串月份匹配、monthKey 时区漂移、周期性调度差一</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>余额完整性</strong>（3）：投影余额重新叠加所有交易、新增被重复计算、删除不回退</span></div>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">2 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Bug分类后3 + 说明 -->
+<div class="slide" id="slide-3">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="list-item"><span class="bullet">•</span><span><strong>预测逻辑</strong>（2）：周期性交易被数两次、信用卡负债被当可用现金</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>数据健壮性</strong>（3）：window.localStorage 在 SSR/测试环境崩溃、JSON 损坏时启动崩溃、CSV split 不处理引号内逗号</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>财务计算</strong>（2）：储蓄目标贡献方向反了（加变减）、函数按小数读取 APR 但 UI 传入的是百分比</span></div>
+      <p style="margin-top:12px;">这些 Bug 不会让代码报错，测试也照样能过。关键是你得懂一个预算应用该怎么算钱，才看得出它是否算错。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">3 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: 总览结果 -->
+<div class="slide" id="slide-4">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">总览结果</div>
+      <div class="table-block">
+        <div class="table-row"><div class="key">Claude Opus 4.8</div><div class="val">~16 个问题 · 命中 10/15 · 检出率 67% · $0.75</div></div>
+        <div class="table-row"><div class="key">Grok Build 0.1</div><div class="val">~16 个问题 · 命中 9/15 · 检出率 60% · $0.08</div></div>
+        <div class="table-row"><div class="key">Claude Sonnet 4.6</div><div class="val">~13 个问题 · 命中 9/15 · 检出率 60% · $0.23</div></div>
+        <div class="table-row"><div class="key">GPT-5.5</div><div class="val">~9 个问题 · 命中 8/15 · 检出率 53% · $0.26</div></div>
+        <div class="table-row"><div class="key">Gemini 3.1 Pro</div><div class="val">~5 个问题 · 命中 2/15 · 检出率 13% · $0.11</div></div>
+      </div>
+      <p>五个模型没有一个产生误报，标记出来的问题全部属实。差距在于每个模型挖多深，以及它对哪类 Bug 更敏感。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">4 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: 各类别检出情况 -->
+<div class="slide" id="slide-5">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">各类别检出情况</div>
+      <div class="table-block">
+        <div class="table-row"><div class="key">React Hooks (2)</div><div class="val">Opus 2/2 · Grok 2/2 · Sonnet 2/2 · GPT 1/2 · Gemini 1/2</div></div>
+        <div class="table-row"><div class="key">日期时间 (3)</div><div class="val">Opus 3/3 · Grok 1/3 · Sonnet 3/3 · GPT 1/3 · Gemini 0/3</div></div>
+        <div class="table-row"><div class="key">余额完整性 (3)</div><div class="val">Opus 2/3 · Grok 3/3 · Sonnet 1/3 · GPT 3/3 · Gemini 0/3</div></div>
+        <div class="table-row"><div class="key">预测逻辑 (2)</div><div class="val">全部 0/2 — 五个模型均未检出</div></div>
+        <div class="table-row"><div class="key">数据健壮性 (3)</div><div class="val">Opus 2/3 · Grok 2/3 · Sonnet 2/3 · GPT 2/3 · Gemini 1/3</div></div>
+        <div class="table-row"><div class="key">财务计算 (2)</div><div class="val">Opus 1/2 · Grok 1/2 · Sonnet 1/2 · GPT 1/2 · Gemini 0/2</div></div>
+      </div>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">5 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: 检出情况解读 -->
+<div class="slide" id="slide-6">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <p>各模型的强项和盲区在这张表里一目了然。Opus 和 Sonnet 包揽了全部日期 Bug，其他模型在这一类别上几乎没有命中。只有 Grok 和 GPT-5.5 完整拆解了余额矛盾，而 Grok 做到这件事只花了八分钱。预测类 Bug 五个模型均未检出。数字背后，每个模型的推理路径和失误原因差异更大。</p>
+      <div class="h2" style="margin-top:16px;">各模型表现分析</div>
+      <div class="h3">Claude Opus 4.8：覆盖最广，推理最细</div>
+      <p>Opus 命中了两个 React Bug、全部三个日期 Bug、以及三个余额 Bug 中的两个。</p>
+      <p>它还做了一件其他模型没有做的事：打开测试文件，手动把样本交易算了一遍，然后报告说提交的期望值差了整整 200，所以 <code>npm&nbsp;run&nbsp;test</code> 会失败。这不是我们植入的 Bug，具体数字是否准确尚未核实，但这种主动验算的本能，通常只有亲自 review 的人类才有。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">6 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Opus part 2 -->
+<div class="slide" id="slide-7">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <p>它在日期问题上的判断也很精准。<code>getUpcomingRecurring</code> 用 <code>new&nbsp;Date(year,&nbsp;month,&nbsp;day)</code> 构造日期，但 JavaScript 的月份参数从 0 开始计数，应用传入的却是从 1 开始的值。Opus 识别出了这个差一问题，指出用户选五月实际会被排到六月。</p>
+      <p>Opus 在余额类中漏了一个：<code>deleteTransaction</code> 在删除交易时，不会将已计入 base balance 的金额回退。它分析了新增和导入的逻辑，唯独没有覆盖删除，离完整诊断只差一步。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">7 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Grok part 1 -->
+<div class="slide" id="slide-8">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h3">Grok Build 0.1：最大惊喜</div>
+      <p>Grok 和 Sonnet 并列 9/15，但花费是五个模型中最低的。而且在余额计算这个所有 Bug 中最难的问题上，它给出了最完整的诊断。</p>
+      <p>这个 Bug 难在它分布于三个文件中，只有多处同时修改状态才会暴露。Grok 在一次分析中做了完整拆解：</p>
+      <div class="list-item"><span class="bullet">•</span><span><code>addTransaction</code> 每次新增交易都会直接修改 base balance</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><code>deleteTransaction</code> 删除交易时却不会把这笔改动撤销</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><code>getAccountBalances</code> 在计算投影余额时，用的是 <code>balance&nbsp;+&nbsp;sum(transactions)</code>，相当于在已经改过的数字上又加了一遍</span></div>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">8 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: Grok part 2 -->
+<div class="slide" id="slide-9">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <p>Grok 把这三个错误追溯到同一个根因，指出了重复计算和数值偏移的问题，并给出了修复思路：用不可变账本推导余额，或采用事件溯源确保 base balance 不被直接修改。</p>
+      <p>余额之外，Grok 对 React Hooks、数据健壮性、财务计算三个类别也都有覆盖，总计另外命中了六个 Bug。其中 CSV 那条值得单独说：它不只是指出 <code>split(',')</code> 有问题，还给出了正确的修复方案。</p>
+      <p>Grok 的短板集中在日期计算。它看到了 <code>getUpcomingRecurring</code> 有问题，但关注点落在了伪造的 <code>-next</code> ID 会泄漏到下游，真正的零索引月份偏移反而没有认出来。<code>monthKey</code> 的时区漂移则完全没有注意到。不过丢分也就限于日期这一个类别，其余检出全部准确。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">9 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: Sonnet part 1 -->
+<div class="slide" id="slide-10">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h3">Claude Sonnet 4.6：和 Grok 互补的另一半</div>
+      <p>Sonnet 也拿到 9/15，但路径和 Grok 完全相反。它命中了全部三个日期 Bug（包括 Grok 漏掉的两个），覆盖了两个 React Bug，另外在数据健壮性、财务计算、余额完整性三个类别上也各有命中。</p>
+      <p>它离 APR Bug 最近。Sonnet 发现 <code>estimateDebtPayoffMonths</code> 有一条兜底逻辑：当月还款额不够覆盖利息时，函数直接返回 600 个月（即上限值），不做任何提示。Sonnet 认为这是个问题并标记了出来。</p>
+      <p>但它只看到了表象。真正的根因是 UI 把 APR 以百分比形式（19.99）传入，而函数期望的是小数（0.1999），导致月利息被放大了一百倍，几乎任何还款额都会触发这条兜底。Sonnet 没有追到这一层，不过已经比其他四个模型都近了一步。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">10 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: Sonnet part 2 + GPT -->
+<div class="slide" id="slide-11">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <p>余额完整性方面，它只覆盖了一半。它抓到了删除不回退的 Bug，但没有发现投影层在已经改过的 balance 上重新叠加所有交易的问题。而这正是 Grok 和 GPT-5.5 检出的部分。</p>
+      <div class="h3" style="margin-top:14px;">GPT-5.5：数据流推理强，但漏了基础题</div>
+      <p>GPT-5.5 也完整解出了余额矛盾，拆解思路和 Grok 一致：新交易被投影算两次，删除永远不回退。余额之外，它对数据健壮性和财务计算类也有广泛覆盖，整体命中 8 个。</p>
+      <p>但 useEffect 缺依赖数组这个 Grok 和 Gemini 一下子就抓到的基础问题它却漏掉了。三个文件的状态联动能追得清清楚楚，这道最基础的 bug 反而没注意到。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">11 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: Gemini -->
+<div class="slide" id="slide-12">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h3">Gemini 3.1 Pro：表现配不上价格</div>
+      <p>Gemini 的结果令人费解，费用和 Grok 差不多，检出率却不到它的四分之一。只抓到两个植入 Bug：useEffect 依赖数组和 CSV 转义。输出也是五个模型里最短的，而且有限的篇幅里还分了一部分给非植入问题（表单默认日期的时区、依赖版本全写 <code>latest</code> 没有锁定），真正该深挖的植入 Bug 反而只触及了表层。</p>
+      <p>最不该漏的是储蓄目标那个 Bug。逻辑很简单：handler 名字叫"Add contribution"，里面却在做减法，用户每存一笔钱进度反而倒退。这个 Bug 其他四个模型全部抓到了，唯独 Gemini 没有反应。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">12 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: 五个模型都漏掉的 -->
+<div class="slide" id="slide-13">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">五个模型都漏掉的四个 Bug</div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>预测重复计算周期性交易</strong>：<code>forecastEndOfMonthBalance</code> 把本月已记录的周期性账单加了一遍，又把生成的周期性账单加了一遍，房租被数了两次</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>预测把信用卡负债当可用现金</strong>：同一个函数把信用卡的负余额加进总额，好像一张刷爆的卡是你能花的钱</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>localStorage 裸访问 window</strong>：<code>loadBudgetState</code> 直接用 <code>window.localStorage</code>，在任何 SSR 或测试环境都会抛错。三个模型抓到了相关的 JSON 崩溃问题，但没有一个抓到裸 window 访问</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>APR 单位错误</strong>：<code>estimateDebtPayoffMonths</code> 的利息计算假设 APR 以 0.1999 传入，但 UI 传的是 19.99，算出来的还款期完全失真</span></div>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">13 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 14: 漏网特征 + 性价比 -->
+<div class="slide" id="slide-14">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <p>漏网的 Bug 有一个共同特征：单独看代码逻辑没有问题，只有理解这些数字的业务逻辑，才能发现计算是错的。数两次房租是合法的加法运算。把负债加进余额看起来也是正常的求和。但如果结合预算应用的业务意图，就能发现这些计算其实是不符合逻辑的。<strong>而对业务意图的理解，恰恰是当前模型的短板。</strong></p>
+      <div class="h2" style="margin-top:14px;">性价比</div>
+      <div class="table-block">
+        <div class="table-row"><div class="key">Grok Build 0.1</div><div class="val">60% 检出 · $0.08 · 每个 Bug $0.009</div></div>
+        <div class="table-row"><div class="key">Claude Sonnet 4.6</div><div class="val">60% 检出 · $0.23 · 每个 Bug $0.026</div></div>
+        <div class="table-row"><div class="key">GPT-5.5</div><div class="val">53% 检出 · $0.26 · 每个 Bug $0.033</div></div>
+        <div class="table-row"><div class="key">Gemini 3.1 Pro</div><div class="val">13% 检出 · $0.11 · 每个 Bug $0.055</div></div>
+        <div class="table-row"><div class="key">Claude Opus 4.8</div><div class="val">67% 检出 · $0.75 · 每个 Bug $0.075</div></div>
+      </div>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">14 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 15: 性价比点评 + 结论前半 -->
+<div class="slide" id="slide-15">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <p>通常的预期是"便宜换来低检出"，但实际结果令人意外：Grok 每个 Bug 的成本不到一分钱，而检出率和 Sonnet 并列。Opus 的覆盖面仍然最广，这里只能说一句"贵有贵的道理"。但有效审查的最低门槛，比预想的低得多。</p>
+      <div class="h2" style="margin-top:14px;">结论</div>
+      <p>如果你的变更对正确性要求高、上线前需要一道最严格的审查，<strong>Opus 4.8</strong> 是当前最稳的选择。覆盖面最广，能跨文件追踪状态联动，而且是五个模型里唯一会自己打开测试文件验算数字的。</p>
+      <p>如果看性价比，<strong>Grok Build 0.1</strong> 很实在。$0.08 跑完一次完整审查，检出率并列第二，而且在余额模型这个最难的 Bug 上给出了五个模型里最完整的诊断。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">15 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 16: 结论后半 -->
+<div class="slide" id="slide-16">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="post-body">
+      <p>它的盲区是日期计算，如果你的代码依赖时区和周期性调度，配上 <strong>Sonnet 4.6</strong> 正好互补。两者检出率相同但路径完全相反，而且 Sonnet 离 APR Bug 最近。Grok 加 Sonnet 一起跑会覆盖 11/15，超过任何单个模型。</p>
+      <p>GPT-5.5 在数据流推理上很不错，它拆余额矛盾的方式和 Grok 一样干净。但不要单独用它，因为它跳过了更便宜的模型都能抓到的基础 React 错误。</p>
+      <p>Gemini 3.1 Pro 能不能用，得先在自己的代码上试一轮。更便宜的模型都能抓到的功能反转 Bug 它直接略过，单模型审查的靠谱程度，到这里得打个问号。</p>
+      <p>单个模型是筛子不是判决书，两个互补模型或前沿模型加人工过审，仍然是最稳的策略。但"前沿"和"在最难的 Bug 上最强"不是一回事。要真正理解业务领域的 Bug，目前为止还是得靠人。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">16 / 17</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 17: 封底 -->
+<div class="slide" id="slide-17">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/05</div></div>
+    </div>
+    <div class="quote-card">
+      <div class="q">单个模型是筛子不是判决书，两个互补模型或前沿模型加人工过审，仍然是最稳的策略。<br><br>但"前沿"和"在最难的 Bug 上最强"不是一回事。<br><br><span class="punch">要真正理解<span class="hl">业务领域的 Bug</span>，目前为止还是得靠人。</span></div>
+      <div class="dash"></div>
+      <div class="sub">— AI Code Review Benchmark 2026 —</div>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <span class="page">17 / 17</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE = 2;
+
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#F2EDE3' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function fetchAsDataURL(url) {
+  const r = await fetch(url, { mode: 'cors', cache: 'force-cache' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const blob = await r.blob();
+  return await new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result);
+    fr.onerror = rej;
+    fr.readAsDataURL(blob);
+  });
+}
+
+async function inlineRemoteImages() {
+  const imgs = Array.from(document.querySelectorAll('img'));
+  await Promise.all(imgs.map(async (img) => {
+    const src = img.getAttribute('src') || '';
+    if (!src || src.startsWith('data:') || src.startsWith('blob:')) return;
+    try {
+      const u = new URL(src, location.href);
+      if (u.origin === location.origin) return;
+    } catch (_) { return; }
+
+    const stripped = src.replace(/^https?:\/\//, '');
+    const candidates = [
+      src,
+      'https://wsrv.nl/?url=' + encodeURIComponent(stripped),
+      'https://images.weserv.nl/?url=' + encodeURIComponent(stripped),
+      'https://corsproxy.io/?' + encodeURIComponent(src),
+    ];
+
+    let dataUrl = null, lastErr = null;
+    for (const u of candidates) {
+      try { dataUrl = await fetchAsDataURL(u); break; }
+      catch (e) { lastErr = e; }
+    }
+
+    if (dataUrl) {
+      img.src = dataUrl;
+      if (img.decode) { try { await img.decode(); } catch (_) {} }
+    } else {
+      console.warn('图片所有下载源都失败：', src, lastErr);
+      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      img.style.background = '#ddd';
+      img.dataset.failed = '1';
+    }
+  }));
+}
+
+async function renderSlide(s) {
+  const origRadius = s.style.borderRadius;
+  s.style.borderRadius = '0';
+  const bg = '#F2EDE3';
+  const raw = await html2canvas(s, { scale: SCALE, useCORS: true, allowTaint: false, backgroundColor: null, width: 540, height: 720, logging: false });
+  s.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+function canvasToBlob(c) { return new Promise(r => c.toBlob(r, 'image/png')); }
+
+async function downloadAll() {
+  const progress = document.getElementById('progress');
+  try {
+    progress.textContent = '预加载图片...';
+    await inlineRemoteImages();
+    const slides = document.querySelectorAll('.slide');
+    const zip = new JSZip();
+    for (let i = 0; i < slides.length; i++) {
+      progress.textContent = `渲染第 ${i+1}/${slides.length} 张...`;
+      const canvas = await renderSlide(slides[i]);
+      const blob = await canvasToBlob(canvas);
+      if (!blob) throw new Error(`第 ${i+1} 张 toBlob 失败（canvas 可能被跨域污染）`);
+      zip.file(`小红书-${String(i+1).padStart(2,'0')}.png`, blob);
+    }
+    progress.textContent = '打包中...';
+    saveAs(await zip.generateAsync({type:'blob'}), '小红书轮播图.zip');
+    progress.textContent = `${slides.length} 张已打包下载`;
+  } catch (e) {
+    console.error(e);
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e) + '\n请打开浏览器控制台查看详情。');
+  }
+}
+
+async function downloadOne() {
+  const progress = document.getElementById('progress');
+  try {
+    await inlineRemoteImages();
+    const slides = document.querySelectorAll('.slide');
+    const vc = window.innerHeight / 2;
+    let idx = 0, min = Infinity;
+    slides.forEach((s,i) => {
+      const d = Math.abs(s.getBoundingClientRect().top + 360 - vc);
+      if (d < min) { min = d; idx = i; }
+    });
+    const canvas = await renderSlide(slides[idx]);
+    const blob = await canvasToBlob(canvas);
+    if (!blob) throw new Error('toBlob 失败（canvas 可能被跨域污染）');
+    saveAs(blob, `小红书-${String(idx+1).padStart(2,'0')}.png`);
+  } catch (e) {
+    console.error(e);
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e));
+  }
+}
+</script>
+</body>
+</html>

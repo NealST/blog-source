@@ -393,7 +393,7 @@ export interface Manifest {
   };
 }
 
-export type PlatformId = 'wechat' | 'xhs' | 'jike' | 'xiaoyuzhou' | 'douyin' | 'shipinhao';
+export type PlatformId = 'wechat' | 'xhs';
 
 export interface PublishResult {
   platform: PlatformId;
