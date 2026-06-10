@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "created": "2026-06-10T12:00:00+08:00",
+  "title": "解读 Loop Engineering",
+  "slug": "loop-engineering",
+  "cover": {
+    "style": "medium",
+    "html": "cover.html"
+  },
+  "illustrations": {
+    "style": "medium",
+    "html": "illustrations.html",
+    "count": 4
+  },
+  "outputs": {
+    "xiaohongshu": {
+      "html": "loop-engineering-小红书版.html",
+      "slides": 11,
+      "copy": {
+        "title": "不再写提示词，而是设计Loop｜Agent自动化的核心思路",
+        "body": "Claude Code核心开发者已经不再手动提示AI了，而是编写\"循环\"来替他工作。\n\nLoop Engineering的核心思路：把\"告诉Agent干啥\"和\"检查结果好不好\"这两件事，从人身上移走，交给Agent自己完成。\n\n一个Loop由六部分组成：\n1️⃣ 自动化调度：按计划自动触发\n2️⃣ 工作树：每个Agent在自己的目录副本里跑\n3️⃣ 技能：存放代码规范、Review标准等项目知识\n4️⃣ 连接器：通过MCP接入外部工具\n5️⃣ 子Agent：一个执行变更，一个审查变更\n6️⃣ 记忆：跨会话保留已完成和待处理清单\n\n最核心的设计是Maker-Checker分离：执行和评估必须是两个独立Agent，最好用不同模型，Checker依赖测试、Lint等客观信号打分，而不是Maker的自述。\n\n关键：退出条件在Loop运行之前确定，而非运行中临时追加。\n\n角色变了，但责任不会消失。设计Loop的人必须持续理解产出质量，否则自动化会变成批量输出平庸结果的黑盒。\n\n完整解读在评论区链接\n\n.\n#LoopEngineering #ClaudeCode #AI编程 #Agent #AI工具 #提示词工程 #AI自动化 #Maker #开发者工具 #编程效率",
+        "tags": ["LoopEngineering", "ClaudeCode", "AI编程", "Agent", "AI工具", "提示词工程", "AI自动化", "Maker", "开发者工具", "编程效率"]
+      }
+    }
+  }
+}

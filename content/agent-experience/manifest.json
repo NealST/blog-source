@@ -6,7 +6,7 @@
   "outputs": {
     "wechat": {
       "html": "content/agent-experience/preview.html",
-      "cover_image": "content/agent-experience/cover.html",
+      "cover_image": "content/agent-experience/cover.png",
       "title": "从开发者体验（DX）到 Agent 体验（AX）",
       "author": "墨筝",
       "digest": "Agent 只是一个完全无状态的工具。要让它在真实代码库中完成有意义的工作，真正需要优化的是它的工作环境。七条核心原则，构建快速、安全、确定性的反馈循环。",

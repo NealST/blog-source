@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>小红书 · 解读 Loop Engineering</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #2c2825;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 90px 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  }
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(28,28,30,0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px; display: flex; align-items: center;
+    justify-content: center; gap: 12px;
+  }
+  .toolbar .btn {
+    background: #1C1C1E; color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15);
+    padding: 9px 22px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer;
+  }
+  .toolbar .btn.accent { background: #C4956A; border-color: #C4956A; }
+  .toolbar .progress { color: rgba(255,255,255,0.7); font-size: 12px; margin-left: 8px; }
+
+  .slide {
+    width: 540px; height: 720px; margin-bottom: 40px;
+    position: relative; overflow: hidden; border-radius: 8px;
+    box-shadow: 0 6px 28px rgba(28,28,30,0.35); background: #fff;
+  }
+  .bg-paper {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #F6F1E7 0%, #F2EDE3 55%, #ECE4D2 100%);
+  }
+  .bg-paper::after {
+    content: ''; position: absolute; inset: 0; opacity: 0.04;
+    background-image: linear-gradient(rgba(28,28,30,0.6) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(28,28,30,0.6) 1px, transparent 1px);
+    background-size: 28px 28px; pointer-events: none;
+  }
+  .bg-paper::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 240px; height: 240px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,149,106,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .bg-dark-cover {
+    position: absolute; inset: 0;
+    background: #1C1C1E;
+  }
+  .content {
+    position: relative; z-index: 2; height: 100%;
+    padding: 32px 40px 24px; display: flex; flex-direction: column;
+    color: #333; letter-spacing: 0.3px;
+  }
+
+  .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
+  .avatar-wrap {
+    width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #C4956A;
+    overflow: hidden; background: linear-gradient(135deg, #C4956A, #8a6240);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    color: #F2EDE3; font-weight: 700; font-family: "Songti SC", serif; font-size: 18px;
+  }
+  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .meta .name { font-size: 15px; font-weight: 700; color: #1C1C1E; }
+  .meta .date { font-size: 13px; color: #888; margin-top: 2px; }
+
+  .post-body { flex: 1; overflow: hidden; }
+
+  .post-body .h1 {
+    font-size: 27px; font-weight: 800; color: #1C1C1E;
+    margin-bottom: 16px; line-height: 1.35;
+    text-align: center; padding: 12px 0;
+    border-top: 2px solid #1C1C1E; border-bottom: 2px solid #1C1C1E;
+    font-family: "Songti SC", "Source Han Serif SC", serif;
+    letter-spacing: 1px;
+  }
+  .post-body .h2 {
+    font-size: 22px; font-weight: 700; color: #1C1C1E;
+    margin-bottom: 12px; border-left: 4px solid #C4956A; padding-left: 12px;
+  }
+  .post-body .h3 {
+    font-size: 19px; font-weight: 700; color: #2C2A28;
+    margin-bottom: 10px; margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .post-body p { font-size: 18px; line-height: 1.6; margin-bottom: 8px; }
+  .post-body em { font-style: italic; color: #555; }
+  .post-body strong { color: #1C1C1E; font-weight: 700; }
+
+  .list-item { display: flex; gap: 8px; margin-bottom: 7px; font-size: 18px; line-height: 1.6; }
+  .list-item .bullet { color: #999; font-weight: bold; flex-shrink: 0; }
+  .list-item.sub { margin-left: 18px; font-size: 16px; }
+
+  code { background: #E8E0D1; color: #1C1C1E; padding: 1px 5px; border-radius: 4px; font-family: "SF Mono", Menlo, monospace; font-size: 0.92em; white-space: nowrap; }
+
+  .post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(28,28,30,0.08); flex-shrink: 0; }
+  .post-footer .brand { font-size: 12px; color: #888; }
+  .post-footer .brand .gz { color: #C4956A; font-weight: 700; }
+  .post-footer .page { font-size: 12px; color: #888; }
+
+  .quote-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .q { font-size: 18px; line-height: 1.7; color: #2C2A28; font-weight: 400; }
+  .punch { font-size: 20px; font-weight: 600; color: #1C1C1E; margin-top: 12px; }
+
+  /* 封面深色文字 */
+  .cover-content {
+    position: relative; z-index: 2; height: 100%;
+    padding: 40px 44px 28px; display: flex; flex-direction: column;
+    justify-content: center;
+  }
+  .cover-kicker {
+    font-size: 12px; font-weight: 700; letter-spacing: 3px; color: #C4956A;
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .cover-title {
+    font-size: 34px; font-weight: 800; color: #F2EDE3; line-height: 1.3;
+    letter-spacing: -0.01em; margin-bottom: 16px;
+  }
+  .cover-lede {
+    font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.6;
+    font-style: italic; max-width: 400px;
+  }
+  .cover-brand {
+    position: absolute; bottom: 28px; left: 44px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cover-brand svg { width: 22px; height: 22px; }
+  .cover-brand-text { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+
+  .swipe-hint {
+    text-align: center; font-size: 12px; letter-spacing: 1px;
+    margin-top: auto; padding-bottom: 8px; color: rgba(242,237,227,0.5);
+  }
+  .swipe-arrow {
+    display: inline-block;
+    animation: sway 1.5s ease-in-out infinite;
+  }
+  @keyframes sway {
+    0%, 100% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button class="btn" onclick="downloadOne()">下载当前</button>
+  <span class="progress" id="progress"></span>
+</div>
+
+<!-- ===== 第 1 张：封面 ===== -->
+<div class="slide" id="slide-1">
+  <div class="bg-dark-cover"></div>
+  <div class="cover-content">
+    <div class="cover-kicker">AI · CLAUDE CODE · AGENT</div>
+    <div class="cover-title">解读<br>Loop Engineering</div>
+    <div class="cover-lede">不再编写提示词，而是设计由谁提示、如何验证、何时停止</div>
+    <div class="cover-brand">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg>
+      <span class="cover-brand-text">墨筝</span>
+    </div>
+    <div class="swipe-hint"><span class="swipe-arrow">←</span> 左滑查看更多</div>
+  </div>
+</div>
+
+<!-- ===== 第 2 张：开篇 + 核心思想 ===== -->
+<div class="slide" id="slide-2">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h1">解读 Loop Engineering</div>
+      <p>人类在使用 Agent 时，主要在做两件事：告诉它要干啥，以及在它给出结果后判断结果是否符合预期。</p>
+      <p>Loop Engineering 的思路是把这两件事从人身上移走，交给 Agent 自己来完成。一个 Maker Agent 决定干什么，一个 Check Agent 评估产出质量，二者通过磁盘上的状态文件来做串联。</p>
+      <p>这个概念来源于 Claude Code 核心开发者 Boris Cherny，据传他已经不再手动提示 Claude，而是编写"循环"来替他完成提示工作。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">2 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 3 张：六个组成部分（上） ===== -->
+<div class="slide" id="slide-3">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">一个 Loop 由六个部分组成</div>
+      <p>整体包括五个组件加一层记忆，Claude Code 和 Codex 目前均已内置。</p>
+      <p><strong>自动化调度（Automations）</strong>：按计划触发，自主完成发现和分类工作。</p>
+      <p><strong>工作树（Worktrees）</strong>：每个 Agent 在自己的目录副本里工作，并行运行时不会相互覆盖。常见的坑是 Agent 跑完后没有删除工作树，日积月累磁盘上会留下一堆"死文件"。</p>
+      <p><strong>技能（Skills）</strong>：存放项目知识，包括代码规范、构建命令、Review 标准等。Agent 按名称调用技能即可，省去每次从零推导或搬运大段指令的开销。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">3 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 4 张：六个组成部分（下） ===== -->
+<div class="slide" id="slide-4">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <p><strong>连接器（Connectors）</strong>：通过 MCP 协议将 Agent 接入外部工具，如 Issue 跟踪系统、数据库、Slack。</p>
+      <p><strong>子 Agent（Sub-agents）</strong>：拆分职责，一个 Agent 负责执行变更，另一个负责审查变更。</p>
+      <p><strong>记忆（Memory）</strong>：一个独立于对话之外的知识图谱（比如 supermemory 之类），记录已完成和 todo 事项。</p>
+      <p>这六个部分是搭建 Loop 的基座，但核心的设计还是 Maker 与 Checker 分离。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">4 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 5 张：单次迭代内部怎么跑 ===== -->
+<div class="slide" id="slide-5">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">单次迭代内部怎么跑</div>
+      <p>六个部分描述的是 Loop 的外部骨架，而每一轮迭代内部也有自己的运转逻辑。</p>
+      <p>每轮迭代由一个触发信号启动，可以是定时任务、外部事件、API 调用或人工消息。进入执行后，Agent 内部仍然是 Think → Act → Observe 三步循环：先推理和规划，再选择工具并发起调用，最后解析执行结果并更新状态。如果任务未完成且预算没有耗尽，就回到 Think 继续下一轮。</p>
+      <p>每个动作在执行前都会经过一层安全验证：先校验调用意图是否合法，是否有相应权限，再判断成本是否超出限额，全部通过才可执行。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">5 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 6 张：Memory + Maker-Checker 分离 ===== -->
+<div class="slide" id="slide-6">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <p>memory 分两层运作：工作记忆是当前轮次的上下文窗口，用完即丢；长期记忆是外挂的向量存储或知识库，通过语义检索召回历史决策和经验，让 Agent 不必每次都从零开始推理。</p>
+      <div class="h2">核心设计：Maker 与 Checker 分离</div>
+      <p>让同一个模型给自己打分，结果会偏宽松，它倾向于放过自己的 Bug。</p>
+      <p>Maker-Checker 分离的做法是：执行变更的 Agent（Maker）和评估变更的 Agent（Checker）必须是两个独立的实例，最好使用不同的模型，且 Checker 的评判依据应该是独立信号（测试结果、Lint 输出、类型检查），而非 Maker 的自述。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">6 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 7 张：Checker 回传 + 退出条件 ===== -->
+<div class="slide" id="slide-7">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <p>Checker 的评估结论会作为下一轮指令回传给 Maker，循环往复，直到评估结果全部通过。</p>
+      <div class="h2">在启动之前定义退出条件</div>
+      <p>Loop 没有终止条件时会无限循环、持续消耗 Token。运行时间越长、调用的子 Agent 越多，成本攀升越快。</p>
+      <p>实操中可以这样定义退出条件：只修复严重问题，最终执行一轮验证 pass，两轮循环后强制停止，以"全部测试通过且 Lint 干净"作为明确的退出标志。</p>
+      <p>关键原则：<strong>退出条件在 Loop 运行之前确定，而非运行过程中临时追加。</strong></p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">7 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 8 张：状态放在磁盘里 ===== -->
+<div class="slide" id="slide-8">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">状态放在磁盘里</div>
+      <p>模型在两次运行之间会遗忘所有信息，所以状态必须持久化到 session 之外。</p>
+      <p>如果想要简单一点，一份 Markdown 文件或知识图谱就足以承载"已完成"和"待处理"的清单。每次运行开始时先读取这份状态，结束时再写回更新。</p>
+      <p>Agent 会遗忘，但这份文件不会。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">8 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 9 张：Loop 适合干啥 ===== -->
+<div class="slide" id="slide-9">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">Loop 适合干啥</div>
+      <p>Loop 天然适合那些"答案明确、验证成本低"的工作。比如检查版本号是否过期、新代码有没有配套测试、依赖有没有已知漏洞。这类任务的共同特征是 Checker 能拿到一个二元信号（通过/不通过），不需要理解上下文就能判定结果。</p>
+      <p>反过来，如果工作质量标准模糊、需要结合业务背景才能判断好坏，Loop 就容易出问题。因为 Checker 没有可靠的评判锚点，要么误判通过，要么反复打回陷入死循环。</p>
+      <p>在 Loop 工作过程中要确保 Checker 是独立实例且依赖客观信号（测试、Lint），而非 Maker 的自述，以及每轮产出都有人来质检，不是只看 CI 状态，否则几轮下来代码就失控了。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">9 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 10 张：写在最后 ===== -->
+<div class="slide" id="slide-10">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="post-body">
+      <div class="h2">写在最后</div>
+      <p>Loop Engineering 并不是什么很复杂的工程概念，核心思想其实也没有脱离思考、行动、反馈的 Agent Loop 范畴。变化在于人的角色，你不再编写提示词，而是设计三件事：由谁来提示，用什么信号验证，在什么条件下停止。</p>
+      <p>角色变了，但责任不会消失。</p>
+      <p>设计 Loop 的人必须持续理解 Loop 的产出并有衡量产出质量的能力，否则这套自动化流程最终会变成一个黑盒，批量输出越来越平庸的结果。</p>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">10 / 11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 第 11 张：封底 ===== -->
+<div class="slide" id="slide-11">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">墨<img src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">06/10</div></div>
+    </div>
+    <div class="quote-card">
+      <div class="q">
+        你不再编写提示词，而是设计三件事：由谁来提示，用什么信号验证，在什么条件下停止。
+      </div>
+      <div class="punch">角色变了，但责任不会消失。</div>
+    </div>
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号「<span class="gz">墨筝</span>」查看更多内容</div>
+      <div class="page">11 / 11</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE = 2;
+
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#F2EDE3' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(s) {
+  const origRadius = s.style.borderRadius;
+  s.style.borderRadius = '0';
+  const hasDarkCover = s.querySelector('.bg-dark-cover');
+  const bg = hasDarkCover ? '#1C1C1E' : '#F2EDE3';
+  const raw = await html2canvas(s, { scale: SCALE, useCORS: true, allowTaint: false, backgroundColor: null, width: 540, height: 720, logging: false });
+  s.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+function canvasToBlob(c) { return new Promise(r => c.toBlob(r, 'image/png')); }
+
+async function downloadAll() {
+  const progress = document.getElementById('progress');
+  try {
+    const slides = document.querySelectorAll('.slide');
+    const zip = new JSZip();
+    for (let i = 0; i < slides.length; i++) {
+      progress.textContent = `渲染第 ${i+1}/${slides.length} 张...`;
+      const canvas = await renderSlide(slides[i]);
+      const blob = await canvasToBlob(canvas);
+      if (!blob) throw new Error(`第 ${i+1} 张 toBlob 失败`);
+      zip.file(`小红书-${String(i+1).padStart(2,'0')}.png`, blob);
+    }
+    progress.textContent = '打包中...';
+    saveAs(await zip.generateAsync({type:'blob'}), 'loop-engineering-小红书轮播图.zip');
+    progress.textContent = `${slides.length} 张已打包下载`;
+  } catch (e) {
+    console.error(e);
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e));
+  }
+}
+
+let currentSlideIdx = 0;
+const observer = new IntersectionObserver((entries) => {
+  let best = null;
+  entries.forEach(e => {
+    if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e;
+  });
+  if (best) {
+    const slides = document.querySelectorAll('.slide');
+    currentSlideIdx = Array.from(slides).indexOf(best.target);
+  }
+}, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+document.querySelectorAll('.slide').forEach(s => observer.observe(s));
+
+async function downloadOne() {
+  const progress = document.getElementById('progress');
+  try {
+    const slides = document.querySelectorAll('.slide');
+    const idx = Math.max(0, Math.min(currentSlideIdx, slides.length - 1));
+    progress.textContent = `渲染第 ${idx+1} 张...`;
+    const canvas = await renderSlide(slides[idx]);
+    const blob = await canvasToBlob(canvas);
+    if (!blob) throw new Error('toBlob 失败');
+    saveAs(blob, `小红书-${String(idx+1).padStart(2,'0')}.png`);
+    progress.textContent = `已下载第 ${idx+1} 张`;
+  } catch (e) {
+    console.error(e);
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e));
+  }
+}
+
+// 自动注入日期
+const d = new Date();
+const mm = String(d.getMonth()+1).padStart(2,'0');
+const dd = String(d.getDate()).padStart(2,'0');
+document.querySelectorAll('.date').forEach(el => el.textContent = `${mm}/${dd}`);
+</script>
+</body>
+</html>

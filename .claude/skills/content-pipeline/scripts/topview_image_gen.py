@@ -16,6 +16,7 @@ Environment variables:
 import argparse
 import json
 import os
+import ssl
 import sys
 import time
 import urllib.error
@@ -28,6 +29,17 @@ ASPECT_RATIO = "16:9"
 RESOLUTION = "2K"
 POLL_INTERVAL = 3
 POLL_TIMEOUT = 300
+
+def _ssl_ctx():
+    ctx = ssl.create_default_context()
+    try:
+        ctx.load_default_certs()
+    except Exception:
+        pass
+    if os.environ.get("TOPVIEW_NO_VERIFY_SSL"):
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    return ctx
 
 
 def _check_credentials():
@@ -51,7 +63,7 @@ def _headers():
 def _post(path: str, body: dict) -> dict:
     data = json.dumps(body).encode()
     req = urllib.request.Request(f"{BASE_URL}{path}", data=data, headers=_headers(), method="POST")
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    with urllib.request.urlopen(req, timeout=30, context=_ssl_ctx()) as resp:
         return json.loads(resp.read())
 
 
@@ -59,7 +71,7 @@ def _get(path: str, params: dict) -> dict:
     qs = "&".join(f"{k}={v}" for k, v in params.items())
     url = f"{BASE_URL}{path}?{qs}"
     req = urllib.request.Request(url, headers=_headers(), method="GET")
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    with urllib.request.urlopen(req, timeout=30, context=_ssl_ctx()) as resp:
         return json.loads(resp.read())
 
 
@@ -95,7 +107,7 @@ def poll_result(task_id: str) -> dict:
 def download_image(url: str, output: Path):
     output.parent.mkdir(parents=True, exist_ok=True)
     req = urllib.request.Request(url)
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=60, context=_ssl_ctx()) as resp:
         output.write_bytes(resp.read())
 
 
