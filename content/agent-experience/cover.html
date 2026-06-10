@@ -2,33 +2,65 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>头图 · 从 DX 到 AX</title>
+<title>头图 · Agent 体验</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#111; display:flex; flex-direction:column; align-items:center; padding:70px 20px 80px; font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif; }
-  .toolbar { position:fixed; top:0; left:0; right:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); display:flex; gap:12px; padding:14px 24px; z-index:100; }
-  .toolbar button { background:#C4956A; color:#fff; border:none; padding:8px 18px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; }
-  .toolbar button:hover { background:#b3845c; }
-  .cover { width:900px; height:383px; position:relative; overflow:hidden; border-radius:8px; background:#1C1C1E; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#111;display:flex;flex-direction:column;align-items:center;padding:70px 20px 80px;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;}
+  .toolbar{position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;gap:12px;padding:14px 24px;z-index:100;}
+  .toolbar button{background:#C4956A;color:#fff;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;}
+  .toolbar button:hover{background:#b3845c;}
 
-  /* 背景 */
-  .bg-dark { position:absolute; inset:0; background:radial-gradient(ellipse at 30% 50%, #2C2A28 0%, #1C1C1E 70%); }
-
-  /* 右侧焦点视觉 */
-  .hero-art { position:absolute; right:48px; top:50%; transform:translateY(-50%); z-index:1; opacity:0.75; }
+  /* 头图 900×383，左右布局 */
+  .cover{width:900px;height:383px;position:relative;overflow:hidden;border-radius:8px;background:#1C1C1E;display:flex;}
+  .bg-dark{position:absolute;inset:0;background:radial-gradient(ellipse at 78% 50%, rgba(196,149,106,0.08) 0%, #1C1C1E 60%), #1C1C1E;z-index:0;}
+  .grid-bg{position:absolute;inset:0;opacity:0.035;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px);background-size:48px 48px;z-index:0;}
 
   /* 品牌角标 */
-  .brand { position:absolute; top:20px; left:24px; z-index:5; display:flex; align-items:center; gap:6px; }
-  .brand svg { width:22px; height:22px; }
-  .brand-text { font-size:11px; font-weight:600; color:rgba(255,255,255,0.5); letter-spacing:1px; }
+  .brand{position:absolute;top:22px;left:32px;z-index:5;display:flex;align-items:center;gap:6px;}
+  .brand svg{width:22px;height:22px;}
+  .brand-text{font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:1px;}
 
-  /* 内容：左对齐 */
-  .content { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:0 340px 0 70px; z-index:2; }
-  .kicker { font-size:11px; font-weight:700; letter-spacing:0.18em; color:#C4956A; text-transform:uppercase; padding-top:10px; position:relative; }
-  .kicker::before { content:''; position:absolute; top:0; left:0; width:32px; height:1px; background:#C4956A; }
-  .title { font-size:56px; font-weight:800; letter-spacing:-0.022em; line-height:1.18; color:#F2EDE3; margin-top:18px; }
-  .title .hook { color:#C4956A; }
-  .lede { font-size:17px; font-weight:400; font-style:italic; color:rgba(255,255,255,0.50); margin-top:16px; max-width:480px; line-height:1.55; }
+  /* 右上 meta tag */
+  .meta-tag{position:absolute;top:26px;right:32px;z-index:5;font-size:10px;font-weight:700;letter-spacing:0.22em;color:rgba(255,255,255,0.35);}
+  .meta-tag .dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:#C4956A;vertical-align:middle;margin:0 8px;transform:translateY(-1px);}
+
+  /* 左右两栏 */
+  .left{position:relative;z-index:2;width:50%;padding:78px 0 40px 48px;display:flex;flex-direction:column;justify-content:center;}
+  .right{position:relative;z-index:2;width:50%;padding:78px 48px 40px 12px;display:flex;align-items:center;justify-content:center;}
+
+  /* 左侧文字 */
+  .kicker{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:0.22em;color:#C4956A;text-transform:uppercase;margin-bottom:18px;}
+  .kicker::before{content:'';width:24px;height:1px;background:#C4956A;}
+  .title{font-size:42px;font-weight:900;letter-spacing:-0.02em;line-height:1.18;color:#F2EDE3;}
+  .title .hook{color:#C4956A;}
+  .lede{margin-top:18px;font-size:14px;font-weight:400;color:rgba(255,255,255,0.55);line-height:1.55;letter-spacing:0.2px;}
+  .tags{margin-top:22px;display:flex;align-items:center;gap:10px;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.05em;}
+  .tags .sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.25);}
+
+  /* 右侧：DX → AX 转译图 */
+  .diagram{position:relative;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;}
+  .node{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;}
+  .node-circle{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border:1.4px solid rgba(255,255,255,0.18);}
+  .node-circle.gold{background:rgba(196,149,106,0.10);border:1.4px solid rgba(196,149,106,0.55);box-shadow:0 0 16px rgba(196,149,106,0.18);}
+  .node-label{font-size:10.5px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:0.05em;text-align:center;line-height:1.3;}
+  .node-sub{font-size:9px;color:rgba(255,255,255,0.35);text-align:center;letter-spacing:0.05em;}
+  .node.gold .node-label{color:#C4956A;}
+
+  /* 中间层卡片堆 */
+  .middle{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
+  .middle-stack{display:flex;flex-direction:column;gap:4px;align-items:stretch;width:96px;}
+  .layer{font-size:9px;font-weight:700;letter-spacing:0.06em;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:5px;padding:4.5px 8px;text-align:center;}
+  .layer.gold{background:rgba(196,149,106,0.12);border-color:rgba(196,149,106,0.45);color:#C4956A;}
+  .middle-cap{font-size:9.5px;font-weight:700;letter-spacing:0.14em;color:#C4956A;text-transform:uppercase;margin-bottom:2px;}
+  .middle-sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.04em;margin-top:2px;}
+
+  /* 箭头 */
+  .arrow-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;}
+  .arrow-line{width:18px;height:1.4px;background:linear-gradient(90deg, rgba(196,149,106,0.7), rgba(196,149,106,0.2));position:relative;}
+  .arrow-line::after{content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);border-left:6px solid rgba(196,149,106,0.7);border-top:4px solid transparent;border-bottom:4px solid transparent;}
+
+  /* 右下脚注 */
+  .footer-note{position:absolute;bottom:18px;right:32px;font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:0.08em;z-index:3;}
 </style>
 </head>
 <body>
@@ -39,29 +71,7 @@
 
   <div class="cover" id="cover-main">
     <div class="bg-dark"></div>
-
-    <!-- 右侧焦点视觉：DX→AX 转变的抽象箭头 -->
-    <div class="hero-art">
-      <svg width="300" height="260" viewBox="0 0 300 260" fill="none">
-        <!-- DX 圆 - 渐隐 -->
-        <circle cx="80" cy="130" r="60" stroke="rgba(255,255,255,0.12)" stroke-width="2" fill="none" stroke-dasharray="6 4"/>
-        <text x="80" y="136" text-anchor="middle" font-size="22" font-weight="800" fill="rgba(255,255,255,0.18)" font-family="-apple-system,sans-serif">DX</text>
-        <!-- 过渡箭头 -->
-        <line x1="148" y1="130" x2="188" y2="130" stroke="#C4956A" stroke-width="2" stroke-linecap="round"/>
-        <polygon points="192,130 184,124 184,136" fill="#C4956A"/>
-        <!-- AX 圆 - 实体 -->
-        <circle cx="230" cy="130" r="60" stroke="#C4956A" stroke-width="2.5" fill="rgba(196,149,106,0.08)"/>
-        <text x="230" y="136" text-anchor="middle" font-size="24" font-weight="900" fill="#F2EDE3" font-family="-apple-system,sans-serif">AX</text>
-        <!-- 反馈循环弧线 -->
-        <path d="M270 90 Q300 50 270 30" stroke="rgba(196,149,106,0.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <path d="M190 170 Q160 210 190 230" stroke="rgba(196,149,106,0.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <!-- 散点装饰 -->
-        <circle cx="30" cy="40" r="2" fill="rgba(255,255,255,0.06)"/>
-        <circle cx="260" cy="30" r="1.5" fill="rgba(196,149,106,0.15)"/>
-        <circle cx="280" cy="220" r="2" fill="rgba(255,255,255,0.05)"/>
-        <circle cx="50" cy="220" r="1.5" fill="rgba(255,255,255,0.06)"/>
-      </svg>
-    </div>
+    <div class="grid-bg"></div>
 
     <!-- 品牌角标 -->
     <div class="brand">
@@ -78,12 +88,72 @@
       <span class="brand-text">墨筝</span>
     </div>
 
-    <!-- 内容 -->
-    <div class="content">
-      <div class="kicker">Agent Experience</div>
-      <h1 class="title">从 <span class="hook">DX</span> 到 <span class="hook">AX</span></h1>
-      <p class="lede">给 Agent 构建快速、安全、确定性的反馈循环</p>
+    <!-- 右上 meta -->
+    <div class="meta-tag">DX<span class="dot"></span>AX</div>
+
+    <!-- 左侧：文字主体 -->
+    <div class="left">
+      <div class="kicker">Agent Experience · 7 原则</div>
+      <h1 class="title">从 DX 到 <span class="hook">AX</span><br/>给 agent 一个能干活的工作环境</h1>
+      <p class="lede">不是优化提示词，<br/>而是给它构建快速、安全、确定性的反馈循环</p>
+      <div class="tags">
+        <span>Coding Agent</span>
+        <span class="sep"></span>
+        <span>Sandbox</span>
+        <span class="sep"></span>
+        <span>Validation</span>
+      </div>
     </div>
+
+    <!-- 右侧：DX → AX 转译图（开发者 → 中间层 → 可信代码） -->
+    <div class="right">
+      <div class="diagram">
+        <!-- 左：人类开发者 -->
+        <div class="node">
+          <div class="node-circle">
+            <!-- developer icon -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="9" r="4.2" stroke="rgba(255,255,255,0.75)" stroke-width="1.5" fill="none"/>
+              <path d="M5 23 Q5 16 14 16 Q23 16 23 23" stroke="rgba(255,255,255,0.75)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="node-label">开发者<br/>+ Agent</div>
+          <div class="node-sub">意图</div>
+        </div>
+
+        <!-- 箭头 1 -->
+        <div class="arrow-wrap"><div class="arrow-line"></div></div>
+
+        <!-- 中：中间层 -->
+        <div class="middle">
+          <div class="middle-cap">AX 中间层</div>
+          <div class="middle-stack">
+            <div class="layer gold">上下文</div>
+            <div class="layer">工具</div>
+            <div class="layer">沙箱</div>
+            <div class="layer gold">验证</div>
+          </div>
+          <div class="middle-sub">反馈循环</div>
+        </div>
+
+        <!-- 箭头 2 -->
+        <div class="arrow-wrap"><div class="arrow-line"></div></div>
+
+        <!-- 右：可信代码 -->
+        <div class="node gold">
+          <div class="node-circle gold">
+            <!-- shipped/verified icon -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M5 14 L12 21 L23 9" stroke="#C4956A" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="node-label">可信<br/>软件</div>
+          <div class="node-sub">附证据</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">7 PRINCIPLES · DX → AX</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -115,7 +185,7 @@
       const canvas = await renderSlide(el);
 
       if (type === 'main') {
-        canvas.toBlob(blob => saveAs(blob, '头图-从DX到AX-900x383.png'), 'image/png');
+        canvas.toBlob(blob => saveAs(blob, '头图-Agent体验-900x383.png'), 'image/png');
       } else {
         const size = 400;
         const crop = document.createElement('canvas');
@@ -123,8 +193,8 @@
         const ctx = crop.getContext('2d');
         const sx = (canvas.width - size) / 2;
         const sy = (canvas.height - size) / 2;
-        ctx.drawImage(canvas, 0, 0, size, size, 0, 0, size, size);
-        crop.toBlob(blob => saveAs(blob, '次图-从DX到AX-200x200.png'), 'image/png');
+        ctx.drawImage(canvas, sx, sy, size, size, 0, 0, size, size);
+        crop.toBlob(blob => saveAs(blob, '次图-Agent体验-200x200.png'), 'image/png');
       }
     }
   </script>

@@ -50,11 +50,15 @@ def render(slug_dir: Path):
             page = context.new_page()
             page.goto(illu_html.resolve().as_uri())
             page.wait_for_load_state("networkidle")
-            slides = page.locator(".slide")
+            # Only render brand slides — xiaohei rows are inline previews of
+            # PNGs that already exist on disk under xiaohei-illustrations/.
+            slides = page.locator(".slide:not(.xiaohei-row)")
             count = slides.count()
             for i in range(count):
-                out = slug_dir / f"配图-{i + 1}.png"
-                slides.nth(i).screenshot(path=str(out), omit_background=False)
+                slide = slides.nth(i)
+                num = slide.get_attribute("data-num") or str(i + 1)
+                out = slug_dir / f"配图-{num}.png"
+                slide.screenshot(path=str(out), omit_background=False)
                 _trim_bottom(out)
                 print(f"  ✓ {out}")
             page.close()

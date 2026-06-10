@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>配图 · 从 DX 到 AX</title>
+<title>配图 · Agent 体验</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#111;display:flex;flex-direction:column;align-items:center;padding:70px 20px 80px;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;}
@@ -18,7 +18,7 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
 .slide.dark{background:#1C1C1E;}
 .slide.light{background:#FFFFFF;}
 
-.content{position:relative;padding:52px 56px 56px;}
+.content{position:relative;padding:52px 56px 60px;}
 
 /* 品牌角标 */
 .brand{position:absolute;top:18px;left:22px;z-index:5;display:flex;align-items:center;gap:5px;}
@@ -29,22 +29,22 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
 
 /* 页码 */
 .page-num{position:absolute;bottom:16px;right:22px;font-size:11px;font-weight:600;letter-spacing:1px;}
-.page-num.on-dark{color:rgba(255,255,255,0.2);}
-.page-num.on-light{color:rgba(28,28,30,0.2);}
+.page-num.on-dark{color:rgba(255,255,255,0.25);}
+.page-num.on-light{color:rgba(28,28,30,0.25);}
 
-/* Medium section tag */
-.section-tag-medium{display:inline-block;font-size:11px;font-weight:700;letter-spacing:0.18em;color:#C4956A;text-transform:uppercase;padding-top:10px;position:relative;margin-bottom:16px;}
+/* Section tag */
+.section-tag-medium{display:inline-block;font-size:11px;font-weight:700;letter-spacing:0.18em;color:#C4956A;text-transform:uppercase;padding-top:10px;position:relative;margin-bottom:14px;}
 .section-tag-medium .kicker-line{position:absolute;top:0;left:0;width:28px;height:1px;background:#C4956A;}
 
 /* 标题 */
 .slide.dark .h-title{color:#F2EDE3;}
 .slide.light .h-title{color:#1C1C1E;}
-.h-title{font-size:28px;font-weight:800;letter-spacing:-0.018em;line-height:1.3;margin-bottom:24px;}
+.h-title{font-size:28px;font-weight:800;letter-spacing:-0.018em;line-height:1.3;margin-bottom:10px;}
 
 /* 副标题 */
 .slide.dark .h-sub{color:rgba(255,255,255,0.55);}
 .slide.light .h-sub{color:#7A7876;}
-.h-sub{font-size:14px;font-weight:400;font-style:italic;margin-bottom:20px;line-height:1.5;}
+.h-sub{font-size:14px;font-weight:400;font-style:italic;margin-bottom:24px;line-height:1.5;}
 
 /* 卡片 */
 .slide.dark .g-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);}
@@ -53,35 +53,44 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
 
 /* 文字颜色 */
 .slide.dark .t-primary{color:#F2EDE3;}
-.slide.dark .t-secondary{color:rgba(255,255,255,0.55);}
-.slide.dark .t-muted{color:rgba(255,255,255,0.35);}
+.slide.dark .t-secondary{color:rgba(255,255,255,0.65);}
+.slide.dark .t-muted{color:rgba(255,255,255,0.4);}
 .slide.light .t-primary{color:#1C1C1E;}
-.slide.light .t-secondary{color:#7A7876;}
-.slide.light .t-muted{color:rgba(28,28,30,0.3);}
-
+.slide.light .t-secondary{color:#5A5856;}
+.slide.light .t-muted{color:rgba(28,28,30,0.4);}
 .t-gold{color:#C4956A;}
+.t-green{color:#7FA46F;}
+.t-red{color:#C97A6F;}
 
-/* 流程箭头 */
-.flow-row{display:flex;align-items:center;gap:4px;flex-wrap:nowrap;}
-.flow-card{flex-shrink:0;}
-.arrow{flex-shrink:0;padding:0 6px;font-size:18px;}
-.slide.dark .arrow{color:rgba(255,255,255,0.25);}
-.slide.light .arrow{color:rgba(28,28,30,0.2);}
+/* 装饰大字 */
+.ghost-num{position:absolute;bottom:18px;right:36px;font-size:120px;font-weight:900;opacity:0.04;pointer-events:none;line-height:1;letter-spacing:-0.05em;}
+.slide.dark .ghost-num{color:#F2EDE3;}
+.slide.light .ghost-num{color:#1C1C1E;}
 
 /* 双栏 */
-.two-col{display:flex;gap:20px;}
-.col-panel{flex:1;border-radius:10px;padding:20px;}
+.two-col{display:flex;gap:18px;}
+.col-panel{flex:1;border-radius:10px;padding:20px 22px;}
+.col-label{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;}
+.slide.dark .col-bad{background:rgba(201,122,111,0.10);border:1px solid rgba(201,122,111,0.25);}
+.slide.dark .col-good{background:rgba(127,164,111,0.10);border:1px solid rgba(127,164,111,0.28);}
+.slide.light .col-bad{background:#FBF3F0;border:1px solid #E8C9C2;}
+.slide.light .col-good{background:#F1F6ED;border:1px solid #C8DCB8;}
 
 /* 编号点 */
-.num-dot{display:inline-flex;width:26px;height:26px;border-radius:50%;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
-.num-dot.gold{background:rgba(196,149,106,0.15);color:#C4956A;}
+.num-dot{display:inline-flex;width:28px;height:28px;border-radius:50%;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
+.num-dot.gold{background:rgba(196,149,106,0.18);color:#C4956A;border:1px solid rgba(196,149,106,0.35);}
 .slide.dark .num-dot.plain{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);}
 .slide.light .num-dot.plain{background:rgba(28,28,30,0.06);color:#7A7876;}
 
-/* 装饰大字 */
-.ghost-num{position:absolute;bottom:20px;right:36px;font-size:140px;font-weight:900;opacity:0.04;pointer-events:none;line-height:1;}
-.slide.dark .ghost-num{color:#F2EDE3;}
-.slide.light .ghost-num{color:#1C1C1E;}
+/* 流程行 */
+.flow-row{display:flex;align-items:center;flex-wrap:nowrap;}
+.arrow{flex-shrink:0;padding:0 6px;font-size:18px;}
+.slide.dark .arrow{color:rgba(255,255,255,0.3);}
+.slide.light .arrow{color:rgba(28,28,30,0.25);}
+
+/* 行项 */
+.list-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.list-row:last-child{margin-bottom:0;}
 </style>
 </head>
 <body>
@@ -90,289 +99,281 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
   <button onclick="downloadOne(0)">下载当前</button>
 </div>
 
-<!-- ===== 配图 1 · AX 反馈循环 ===== -->
+
+<!-- ===== 配图 1 · 七原则全景 ===== -->
 <div class="slide-label">配图 1 · 放在「什么是 Agent 体验」之后</div>
-<div class="slide dark" style="min-height:420px;">
+<div class="slide dark" style="min-height:560px;" data-num="1">
   <div class="brand on-dark"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
-  <div class="page-num on-dark">1/8</div>
+  <div class="page-num on-dark">1 / 8</div>
   <div class="ghost-num">AX</div>
   <div class="content">
-    <div class="section-tag-medium"><div class="kicker-line"></div>FEEDBACK LOOP</div>
-    <div class="h-title">Agent 体验的核心：反馈循环</div>
-    <div class="h-sub">在模型和真实代码库之间搭建中间层</div>
-    <div class="flow-row" style="justify-content:center;flex-wrap:wrap;gap:12px;margin-top:12px;">
-      <div class="flow-card g-card" style="width:120px;text-align:center;padding:16px 12px;">
-        <div style="font-size:13px;font-weight:800;" class="t-primary">上下文</div>
-        <div style="font-size:11px;margin-top:6px;" class="t-secondary">什么重要</div>
-      </div>
-      <div class="arrow">→</div>
-      <div class="flow-card g-card" style="width:120px;text-align:center;padding:16px 12px;">
-        <div style="font-size:13px;font-weight:800;" class="t-primary">工具 + 权限</div>
-        <div style="font-size:11px;margin-top:6px;" class="t-secondary">能碰什么</div>
-      </div>
-      <div class="arrow">→</div>
-      <div class="flow-card g-card" style="width:120px;text-align:center;padding:16px 12px;">
-        <div style="font-size:13px;font-weight:800;" class="t-primary">执行</div>
-        <div style="font-size:11px;margin-top:6px;" class="t-secondary">生成代码</div>
-      </div>
-      <div class="arrow">→</div>
-      <div class="flow-card g-card" style="width:120px;text-align:center;padding:16px 12px;">
-        <div style="font-size:13px;font-weight:800;" class="t-primary">验证</div>
-        <div style="font-size:11px;margin-top:6px;" class="t-secondary">做对没有</div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:16px;">
-      <svg width="500" height="32" viewBox="0 0 500 32">
-        <path d="M440 8 Q480 16 440 24" stroke="rgba(196,149,106,0.35)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <path d="M440 24 L60 24 Q20 16 60 8 L440 8" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
-        <text x="250" y="20" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.3)" font-family="-apple-system,sans-serif">Review 闭环</text>
+    <div class="section-tag-medium"><div class="kicker-line"></div>OVERVIEW</div>
+    <div class="h-title">Agent 体验的七条原则</div>
+    <div class="h-sub">围绕一个核心问题：给 agent 构建快速、安全、确定性的反馈循环</div>
+
+    <!-- 中心圆 + 7 节点 -->
+    <div style="position:relative;height:380px;margin-top:8px;">
+      <svg width="100%" height="380" viewBox="0 0 700 380" preserveAspectRatio="xMidYMid meet">
+        <!-- 反馈圈 -->
+        <ellipse cx="350" cy="190" rx="160" ry="135" stroke="rgba(196,149,106,0.20)" stroke-width="1" fill="none" stroke-dasharray="3 6"/>
+        <!-- 中心圈 -->
+        <circle cx="350" cy="190" r="62" fill="rgba(196,149,106,0.10)" stroke="#C4956A" stroke-width="1.5"/>
+        <text x="350" y="183" text-anchor="middle" font-family="-apple-system,'PingFang SC',sans-serif" font-size="13" font-weight="700" fill="#C4956A" letter-spacing="2">FEEDBACK</text>
+        <text x="350" y="203" text-anchor="middle" font-family="-apple-system,'PingFang SC',sans-serif" font-size="13" font-weight="700" fill="#C4956A" letter-spacing="2">LOOP</text>
       </svg>
-    </div>
-  </div>
-</div>
 
-<!-- ===== 配图 2 · 七条原则总览 ===== -->
-<div class="slide-label">配图 2 · 放在「围绕这个问题，有七条核心原则」之后</div>
-<div class="slide light" style="min-height:520px;">
-  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
-  <div class="page-num on-light">2/8</div>
-  <div class="content">
-    <div class="section-tag-medium"><div class="kicker-line"></div>SEVEN PRINCIPLES</div>
-    <div class="h-title">AX 七条核心原则</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-      <div class="g-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <div class="num-dot gold">1</div>
-        <div><div style="font-size:14px;font-weight:700;" class="t-primary">上下文即 onboarding</div><div style="font-size:12px;margin-top:4px;" class="t-secondary">精简、透明、可验证</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <div class="num-dot plain">2</div>
-        <div><div style="font-size:14px;font-weight:700;" class="t-primary">环境是 prompt 的一部分</div><div style="font-size:12px;margin-top:4px;" class="t-secondary">确定性的执行环境</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <div class="num-dot plain">3</div>
-        <div><div style="font-size:14px;font-weight:700;" class="t-primary">交付前必须验证</div><div style="font-size:12px;margin-top:4px;" class="t-secondary">附带证据，不消耗人</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <div class="num-dot plain">4</div>
-        <div><div style="font-size:14px;font-weight:700;" class="t-primary">安全必须是系统性的</div><div style="font-size:12px;margin-top:4px;" class="t-secondary">结构化，而非 prompt</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <div class="num-dot plain">5</div>
-        <div><div style="font-size:14px;font-weight:700;" class="t-primary">模型路由是基础设施</div><div style="font-size:12px;margin-top:4px;" class="t-secondary">像水电一样稳定运行</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:flex-start;gap:14px;">
-        <div class="num-dot plain">6</div>
-        <div><div style="font-size:14px;font-weight:700;" class="t-primary">代码架构是最佳信息源</div><div style="font-size:12px;margin-top:4px;" class="t-secondary">深模块 + 薄接口</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:flex-start;gap:14px;grid-column:span 2;max-width:calc(50% - 7px);">
-        <div class="num-dot plain">7</div>
-        <div><div style="font-size:14px;font-weight:700;" class="t-primary">跨职能协作的粘合剂</div><div style="font-size:12px;margin-top:4px;" class="t-secondary">协作搬到产品界面上</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== 配图 3 · 上下文管理对比 ===== -->
-<div class="slide-label">配图 3 · 放在「原则一：上下文即 onboarding」之后</div>
-<div class="slide dark" style="min-height:420px;">
-  <div class="brand on-dark"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
-  <div class="page-num on-dark">3/8</div>
-  <div class="content">
-    <div class="section-tag-medium"><div class="kicker-line"></div>CONTEXT MANAGEMENT</div>
-    <div class="h-title">上下文：过度堆砌 vs 精简可验证</div>
-    <div class="two-col" style="margin-top:8px;">
-      <div class="col-panel" style="background:rgba(255,100,100,0.06);border:1px solid rgba(255,100,100,0.12);">
-        <div style="font-size:13px;font-weight:700;color:#FF8478;margin-bottom:14px;">✗ 过度文档化</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(255,132,120,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">冗长的 skill 文件堆积</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(255,132,120,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">过时的 AGENTS.md 规则</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(255,132,120,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">冲突的 prompt 片段</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(255,132,120,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">出错后排查成本极高</div></div>
+      <!-- 7 节点用 HTML 绝对定位 -->
+      <div style="position:absolute;left:50%;top:20px;transform:translateX(-50%);text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:20px;">
+          <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">1</span>
+          <span class="t-primary" style="font-size:13px;font-weight:700;">上下文即 onboarding</span>
         </div>
       </div>
-      <div class="col-panel" style="background:rgba(168,201,127,0.06);border:1px solid rgba(168,201,127,0.12);">
-        <div style="font-size:13px;font-weight:700;color:#A8C97F;margin-bottom:14px;">✓ 精简可验证</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(168,201,127,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">全局上下文尽量薄</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(168,201,127,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">代码能说清就不写文档</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(168,201,127,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">审查者可追溯每条规则</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(168,201,127,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">作为团队纪律管理</div></div>
+      <div style="position:absolute;right:30px;top:90px;text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:20px;">
+          <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">2</span>
+          <span class="t-primary" style="font-size:13px;font-weight:700;">环境 = prompt</span>
+        </div>
+      </div>
+      <div style="position:absolute;right:0px;bottom:90px;text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:20px;">
+          <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">3</span>
+          <span class="t-primary" style="font-size:13px;font-weight:700;">交付前必须验证</span>
+        </div>
+      </div>
+      <div style="position:absolute;left:50%;bottom:10px;transform:translateX(-50%);text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:20px;">
+          <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">4</span>
+          <span class="t-primary" style="font-size:13px;font-weight:700;">安全系统化</span>
+        </div>
+      </div>
+      <div style="position:absolute;left:0px;bottom:90px;text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:20px;">
+          <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">5</span>
+          <span class="t-primary" style="font-size:13px;font-weight:700;">模型路由是基础设施</span>
+        </div>
+      </div>
+      <div style="position:absolute;left:30px;top:90px;text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:20px;">
+          <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">6</span>
+          <span class="t-primary" style="font-size:13px;font-weight:700;">架构是信息源</span>
+        </div>
+      </div>
+      <div style="position:absolute;left:50%;top:170px;transform:translate(-50%, 130px);text-align:center;display:none;"></div>
+      <div style="position:absolute;left:50%;top:340px;transform:translateX(-50%);text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(196,149,106,0.10);border:1px solid rgba(196,149,106,0.30);padding:8px 14px;border-radius:20px;">
+          <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">7</span>
+          <span class="t-primary" style="font-size:13px;font-weight:700;">跨职能协作的粘合剂</span>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===== 配图 4 · 人 vs Agent 遇到环境故障 ===== -->
+
+<!-- ===== 配图 2 · 小黑 · 02-feedback-loop-machine.png ===== -->
+<div class="slide-label">小黑 02 · 放在「什么是 Agent 体验」之后 · 文件:02-feedback-loop-machine.png</div>
+<div class="slide xiaohei-row" data-xiaohei="02-feedback-loop-machine.png" style="background:#FFFFFF;padding:0;border:1px solid rgba(28,28,30,0.08);border-radius:8px;overflow:hidden;">
+  <div style="padding:14px 22px 6px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.18em;color:#C4956A;text-transform:uppercase;">CORE LOOP</div>
+      <div style="font-size:18px;font-weight:800;color:#1C1C1E;margin-top:4px;letter-spacing:-0.01em;">核心问题：构建反馈循环</div>
+      <div style="font-size:12px;color:#7A7876;margin-top:3px;font-style:italic;">重点不是更聪明的提示词，而是闭合的‘跑—验—跑’回路</div>
+    </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;color:rgba(28,28,30,0.35);">小黑手绘 · AI 直出</div>
+  </div>
+  <img src="xiaohei-illustrations/02-feedback-loop-machine.png" alt="核心问题：构建反馈循环" style="display:block;width:100%;height:auto;" />
+</div>
+
+
+
+<!-- ===== 配图 3 · 小黑 · 01-eternal-day-one.png ===== -->
+<div class="slide-label">小黑 03 · 放在「原则一：上下文即 onboarding」之后 · 文件:01-eternal-day-one.png</div>
+<div class="slide xiaohei-row" data-xiaohei="01-eternal-day-one.png" style="background:#FFFFFF;padding:0;border:1px solid rgba(28,28,30,0.08);border-radius:8px;overflow:hidden;">
+  <div style="padding:14px 22px 6px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.18em;color:#C4956A;text-transform:uppercase;">PRINCIPLE 01 · ETERNAL DAY 1</div>
+      <div style="font-size:18px;font-weight:800;color:#1C1C1E;margin-top:4px;letter-spacing:-0.01em;">对 agent 来说，每次任务都是 Day 1</div>
+      <div style="font-size:12px;color:#7A7876;margin-top:3px;font-style:italic;">没有累积、没有记忆，onboarding 在每次任务开头重做一遍</div>
+    </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;color:rgba(28,28,30,0.35);">小黑手绘 · AI 直出</div>
+  </div>
+  <img src="xiaohei-illustrations/01-eternal-day-one.png" alt="对 agent 来说，每次任务都是 Day 1" style="display:block;width:100%;height:auto;" />
+</div>
+
+
+
+<!-- ===== 配图 4 · 原则二：环境 = prompt ===== -->
 <div class="slide-label">配图 4 · 放在「原则二：环境是 prompt 的一部分」之后</div>
-<div class="slide light" style="min-height:420px;">
-  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
-  <div class="page-num on-light">4/8</div>
+<div class="slide light" style="min-height:480px;" data-num="4">
+  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
+  <div class="page-num on-light">4 / 8</div>
+  <div class="ghost-num">02</div>
   <div class="content">
-    <div class="section-tag-medium"><div class="kicker-line"></div>ENVIRONMENT</div>
-    <div class="h-title">遇到环境故障时</div>
-    <div class="two-col" style="margin-top:8px;">
-      <div class="col-panel g-card" style="text-align:center;">
-        <div style="font-size:28px;margin-bottom:12px;">🧑‍💻</div>
-        <div style="font-size:15px;font-weight:700;margin-bottom:12px;" class="t-primary">人类开发者</div>
-        <div style="display:flex;flex-direction:column;gap:8px;text-align:left;">
-          <div class="flow-row" style="gap:8px;flex-wrap:wrap;justify-content:center;">
-            <div style="padding:6px 12px;border-radius:6px;background:rgba(168,201,127,0.12);font-size:11px;font-weight:600;color:#A8C97F;">发现报错</div>
-            <div class="arrow" style="font-size:14px;">→</div>
-            <div style="padding:6px 12px;border-radius:6px;background:rgba(168,201,127,0.12);font-size:11px;font-weight:600;color:#A8C97F;">停下排查</div>
-            <div class="arrow" style="font-size:14px;">→</div>
-            <div style="padding:6px 12px;border-radius:6px;background:rgba(168,201,127,0.12);font-size:11px;font-weight:600;color:#A8C97F;">修复后继续</div>
-          </div>
-        </div>
+    <div class="section-tag-medium"><div class="kicker-line"></div>PRINCIPLE 02 · ENVIRONMENT</div>
+    <div class="h-title">环境就是 prompt 的一部分</div>
+    <div class="h-sub">模型是概率性的，所以执行环境必须尽可能确定</div>
+
+    <!-- 中心：Prompt + 环绕组件 -->
+    <div style="position:relative;height:340px;margin-top:8px;">
+      <!-- 中心 Prompt 圆 -->
+      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:130px;height:130px;border-radius:50%;background:#1C1C1E;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 6px rgba(196,149,106,0.10), 0 0 0 1px rgba(196,149,106,0.4);z-index:3;">
+        <div style="font-size:11px;font-weight:700;color:#C4956A;letter-spacing:2px;">PROMPT</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:6px;text-align:center;line-height:1.4;">+ 整个<br/>运行环境</div>
       </div>
-      <div class="col-panel g-card" style="text-align:center;">
-        <div style="font-size:28px;margin-bottom:12px;">🤖</div>
-        <div style="font-size:15px;font-weight:700;margin-bottom:12px;" class="t-primary">AI Agent</div>
-        <div style="display:flex;flex-direction:column;gap:8px;text-align:left;">
-          <div class="flow-row" style="gap:8px;flex-wrap:wrap;justify-content:center;">
-            <div style="padding:6px 12px;border-radius:6px;background:rgba(255,132,120,0.1);font-size:11px;font-weight:600;color:#FF8478;">遇到报错</div>
-            <div class="arrow" style="font-size:14px;">→</div>
-            <div style="padding:6px 12px;border-radius:6px;background:rgba(255,132,120,0.1);font-size:11px;font-weight:600;color:#FF8478;">绕过故障</div>
-            <div class="arrow" style="font-size:14px;">→</div>
-            <div style="padding:6px 12px;border-radius:6px;background:rgba(255,132,120,0.1);font-size:11px;font-weight:600;color:#FF8478;">提交猜测</div>
-          </div>
-        </div>
+
+      <!-- 虚线环 -->
+      <svg style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;" viewBox="0 0 700 340" preserveAspectRatio="none">
+        <ellipse cx="350" cy="170" rx="280" ry="135" stroke="rgba(28,28,30,0.12)" stroke-width="1" fill="none" stroke-dasharray="4 6"/>
+      </svg>
+
+      <!-- 6 个环境组件 -->
+      <div style="position:absolute;left:8px;top:8px;background:#F2EDE3;border:1px solid rgba(28,28,30,0.10);padding:10px 14px;border-radius:8px;z-index:2;">
+        <div style="font-size:9px;font-weight:700;color:#C4956A;letter-spacing:1px;margin-bottom:2px;">DEPS</div>
+        <div style="font-size:12px;font-weight:700;color:#1C1C1E;">依赖包版本</div>
       </div>
+      <div style="position:absolute;left:50%;top:0;transform:translateX(-50%);background:#F2EDE3;border:1px solid rgba(28,28,30,0.10);padding:10px 14px;border-radius:8px;z-index:2;">
+        <div style="font-size:9px;font-weight:700;color:#C4956A;letter-spacing:1px;margin-bottom:2px;">SCRIPTS</div>
+        <div style="font-size:12px;font-weight:700;color:#1C1C1E;">工程脚本</div>
+      </div>
+      <div style="position:absolute;right:8px;top:8px;background:#F2EDE3;border:1px solid rgba(28,28,30,0.10);padding:10px 14px;border-radius:8px;z-index:2;">
+        <div style="font-size:9px;font-weight:700;color:#C4956A;letter-spacing:1px;margin-bottom:2px;">ENV</div>
+        <div style="font-size:12px;font-weight:700;color:#1C1C1E;">环境变量</div>
+      </div>
+      <div style="position:absolute;left:8px;bottom:8px;background:#F2EDE3;border:1px solid rgba(28,28,30,0.10);padding:10px 14px;border-radius:8px;z-index:2;">
+        <div style="font-size:9px;font-weight:700;color:#C4956A;letter-spacing:1px;margin-bottom:2px;">AUTH</div>
+        <div style="font-size:12px;font-weight:700;color:#1C1C1E;">认证 / 凭证</div>
+      </div>
+      <div style="position:absolute;left:50%;bottom:0;transform:translateX(-50%);background:#F2EDE3;border:1px solid rgba(28,28,30,0.10);padding:10px 14px;border-radius:8px;z-index:2;">
+        <div style="font-size:9px;font-weight:700;color:#C4956A;letter-spacing:1px;margin-bottom:2px;">BROWSER</div>
+        <div style="font-size:12px;font-weight:700;color:#1C1C1E;">浏览器 / 本地服务</div>
+      </div>
+      <div style="position:absolute;right:8px;bottom:8px;background:#F2EDE3;border:1px solid rgba(28,28,30,0.10);padding:10px 14px;border-radius:8px;z-index:2;">
+        <div style="font-size:9px;font-weight:700;color:#C4956A;letter-spacing:1px;margin-bottom:2px;">API</div>
+        <div style="font-size:12px;font-weight:700;color:#1C1C1E;">本地 API</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;padding:12px 16px;background:rgba(201,122,111,0.08);border-left:3px solid #C97A6F;border-radius:0 6px 6px 0;font-size:12px;color:#1C1C1E;line-height:1.6;">
+      <span style="font-weight:700;">人类的反应</span>："本地跑不了测试，但感觉应该没问题" → 立刻警觉<br/>
+      <span style="font-weight:700;">Agent 的反应</span>：绕过故障 → 改错文件 → 提交 commit
     </div>
   </div>
 </div>
 
-<!-- ===== 配图 5 · 审查负荷转移 ===== -->
-<div class="slide-label">配图 5 · 放在「原则三：交付前必须验证」中，「审查负担过重」之后</div>
-<div class="slide dark" style="min-height:380px;">
-  <div class="brand on-dark"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
-  <div class="page-num on-dark">5/8</div>
-  <div class="content">
-    <div class="section-tag-medium"><div class="kicker-line"></div>VERIFICATION</div>
-    <div class="h-title">编写成本降了，审查负荷升了</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:48px;margin-top:20px;">
-      <div style="text-align:center;">
-        <div style="font-size:56px;font-weight:900;color:#A8C97F;line-height:1;">↓</div>
-        <div style="font-size:14px;font-weight:700;margin-top:8px;" class="t-primary">编写成本</div>
-        <div style="font-size:11px;margin-top:4px;" class="t-secondary">Agent 生成代码<br>几乎零成本</div>
-      </div>
-      <div style="width:1px;height:100px;background:rgba(255,255,255,0.1);"></div>
-      <div style="text-align:center;">
-        <div style="font-size:56px;font-weight:900;color:#FF8478;line-height:1;">↑</div>
-        <div style="font-size:14px;font-weight:700;margin-top:8px;" class="t-primary">审查负荷</div>
-        <div style="font-size:11px;margin-top:4px;" class="t-secondary">手动 QA、边界检查<br>清理通用样式</div>
-      </div>
-      <div style="width:1px;height:100px;background:rgba(255,255,255,0.1);"></div>
-      <div style="text-align:center;">
-        <div style="font-size:56px;font-weight:900;color:#C4956A;line-height:1;">⟳</div>
-        <div style="font-size:14px;font-weight:700;margin-top:8px;" class="t-primary">好的 AX</div>
-        <div style="font-size:11px;margin-top:4px;" class="t-secondary">Agent 自行验证<br>附带实证交付</div>
-      </div>
+
+<!-- ===== 配图 5 · 小黑 · 04-review-scale.png ===== -->
+<div class="slide-label">小黑 05 · 放在「原则三：交付前必须验证」之后 · 文件:04-review-scale.png</div>
+<div class="slide xiaohei-row" data-xiaohei="04-review-scale.png" style="background:#FFFFFF;padding:0;border:1px solid rgba(28,28,30,0.08);border-radius:8px;overflow:hidden;">
+  <div style="padding:14px 22px 6px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.18em;color:#C4956A;text-transform:uppercase;">PRINCIPLE 03 · EVIDENCE</div>
+      <div style="font-size:18px;font-weight:800;color:#1C1C1E;margin-top:4px;letter-spacing:-0.01em;">交付时附证据，不甩锅给审查者</div>
+      <div style="font-size:12px;color:#7A7876;margin-top:3px;font-style:italic;">测试日志、截图、录屏一起递上柜台，再盖一个 PASS</div>
     </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;color:rgba(28,28,30,0.35);">小黑手绘 · AI 直出</div>
   </div>
+  <img src="xiaohei-illustrations/04-review-scale.png" alt="交付时附证据，不甩锅给审查者" style="display:block;width:100%;height:auto;" />
 </div>
 
-<!-- ===== 配图 6 · 安全四层结构 ===== -->
-<div class="slide-label">配图 6 · 放在「原则四：安全必须是系统性的」之后</div>
-<div class="slide light" style="min-height:420px;">
-  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
-  <div class="page-num on-light">6/8</div>
-  <div class="content">
-    <div class="section-tag-medium"><div class="kicker-line"></div>SECURITY</div>
-    <div class="h-title">安全的四个结构层</div>
-    <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;">
-      <div class="g-card" style="display:flex;align-items:center;gap:16px;">
-        <div class="num-dot gold">1</div>
-        <div style="flex:1;"><div style="font-size:14px;font-weight:700;" class="t-primary">沙箱隔离</div><div style="font-size:12px;margin-top:3px;" class="t-secondary">限制执行环境，Agent 只能在受控空间内操作</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:center;gap:16px;">
-        <div class="num-dot plain">2</div>
-        <div style="flex:1;"><div style="font-size:14px;font-weight:700;" class="t-primary">最小权限</div><div style="font-size:12px;margin-top:3px;" class="t-secondary">凭证和网络权限最小化，只给必要的访问</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:center;gap:16px;">
-        <div class="num-dot plain">3</div>
-        <div style="flex:1;"><div style="font-size:14px;font-weight:700;" class="t-primary">环境隔离</div><div style="font-size:12px;margin-top:3px;" class="t-secondary">开发与生产数据严格分离，不可交叉访问</div></div>
-      </div>
-      <div class="g-card" style="display:flex;align-items:center;gap:16px;">
-        <div class="num-dot plain">4</div>
-        <div style="flex:1;"><div style="font-size:14px;font-weight:700;" class="t-primary">人工审批</div><div style="font-size:12px;margin-top:3px;" class="t-secondary">高风险操作必须经过人工确认后才能执行</div></div>
-      </div>
+
+
+<!-- ===== 配图 6 · 小黑 · 03-crack-in-the-road.png ===== -->
+<div class="slide-label">小黑 06 · 放在「原则四：安全必须是系统性的」之后 · 文件:03-crack-in-the-road.png</div>
+<div class="slide xiaohei-row" data-xiaohei="03-crack-in-the-road.png" style="background:#FFFFFF;padding:0;border:1px solid rgba(28,28,30,0.08);border-radius:8px;overflow:hidden;">
+  <div style="padding:14px 22px 6px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.18em;color:#C4956A;text-transform:uppercase;">PRINCIPLE 04 · SYSTEMIC SAFETY</div>
+      <div style="font-size:18px;font-weight:800;color:#1C1C1E;margin-top:4px;letter-spacing:-0.01em;">DX 让危险困难；AX 让危险不可能</div>
+      <div style="font-size:12px;color:#7A7876;margin-top:3px;font-style:italic;">护栏要罩在系统层，不能靠每个人都看得见‘rm -rf’</div>
     </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;color:rgba(28,28,30,0.35);">小黑手绘 · AI 直出</div>
   </div>
+  <img src="xiaohei-illustrations/03-crack-in-the-road.png" alt="DX 让危险困难；AX 让危险不可能" style="display:block;width:100%;height:auto;" />
 </div>
 
-<!-- ===== 配图 7 · 模型路由分层 ===== -->
+
+
+<!-- ===== 配图 7 · 原则五：模型路由分层 ===== -->
 <div class="slide-label">配图 7 · 放在「原则五：模型路由应当是基础设施」之后</div>
-<div class="slide dark" style="min-height:420px;">
+<div class="slide dark" style="min-height:480px;" data-num="7">
   <div class="brand on-dark"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
-  <div class="page-num on-dark">7/8</div>
+  <div class="page-num on-dark">7 / 8</div>
+  <div class="ghost-num">05</div>
   <div class="content">
-    <div class="section-tag-medium"><div class="kicker-line"></div>MODEL ROUTING</div>
-    <div class="h-title">按任务风险分层路由模型</div>
-    <div style="display:flex;gap:16px;margin-top:12px;">
-      <div class="g-card" style="flex:1;text-align:center;padding:20px 16px;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px;" class="t-muted">LOW RISK</div>
-        <div style="font-size:15px;font-weight:700;margin-bottom:10px;" class="t-primary">快速模型</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(255,255,255,0.04);" class="t-secondary">摘要生成</div>
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(255,255,255,0.04);" class="t-secondary">代码分类</div>
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(255,255,255,0.04);" class="t-secondary">脚手架代码</div>
+    <div class="section-tag-medium"><div class="kicker-line"></div>PRINCIPLE 05 · ROUTING</div>
+    <div class="h-title">模型路由要像水电一样，稳定运行</div>
+    <div class="h-sub">按任务选模型，不要让每个开发者都成为模型选型专家</div>
+
+    <!-- 三层阶梯 -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+
+      <!-- 底层：便宜模型 -->
+      <div style="display:flex;align-items:stretch;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;">
+        <div style="width:140px;background:rgba(127,164,111,0.12);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;border-right:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:10px;letter-spacing:0.15em;color:#7FA46F;font-weight:700;">TIER 1</div>
+          <div style="font-size:14px;font-weight:800;color:#F2EDE3;margin-top:4px;">便宜快速</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">$ · 毫秒级</div>
+        </div>
+        <div style="flex:1;padding:14px 18px;">
+          <div style="font-size:13px;font-weight:700;color:#F2EDE3;margin-bottom:4px;">低风险任务</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.55;">摘要、分类、脚手架代码、常规审查、commit message</div>
         </div>
       </div>
-      <div class="g-card" style="flex:1;text-align:center;padding:20px 16px;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px;" class="t-muted">DETERMINISTIC</div>
-        <div style="font-size:15px;font-weight:700;margin-bottom:10px;" class="t-primary">工具链</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(255,255,255,0.04);" class="t-secondary">Linter</div>
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(255,255,255,0.04);" class="t-secondary">类型检查</div>
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(255,255,255,0.04);" class="t-secondary">语法校验</div>
+
+      <!-- 中层：标准 -->
+      <div style="display:flex;align-items:stretch;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;margin-left:24px;">
+        <div style="width:140px;background:rgba(143,188,187,0.12);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;border-right:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:10px;letter-spacing:0.15em;color:#8FBCBB;font-weight:700;">TIER 2</div>
+          <div style="font-size:14px;font-weight:800;color:#F2EDE3;margin-top:4px;">标准模型</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">$$ · 秒级</div>
+        </div>
+        <div style="flex:1;padding:14px 18px;">
+          <div style="font-size:13px;font-weight:700;color:#F2EDE3;margin-bottom:4px;">日常开发任务</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.55;">单文件改动、bug 修复、单元测试生成</div>
         </div>
       </div>
-      <div class="g-card" style="flex:1;text-align:center;padding:20px 16px;border:1px solid rgba(196,149,106,0.2);">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px;color:#C4956A;">HIGH RISK</div>
-        <div style="font-size:15px;font-weight:700;margin-bottom:10px;" class="t-primary">推理模型</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(196,149,106,0.08);" class="t-secondary">多文件重构</div>
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(196,149,106,0.08);" class="t-secondary">架构决策</div>
-          <div style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(196,149,106,0.08);" class="t-secondary">复杂判断</div>
+
+      <!-- 顶层：推理模型 -->
+      <div style="display:flex;align-items:stretch;background:rgba(196,149,106,0.10);border:1px solid rgba(196,149,106,0.35);border-radius:10px;overflow:hidden;margin-left:48px;">
+        <div style="width:140px;background:rgba(196,149,106,0.18);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;border-right:1px solid rgba(196,149,106,0.20);">
+          <div style="font-size:10px;letter-spacing:0.15em;color:#C4956A;font-weight:700;">TIER 3</div>
+          <div style="font-size:14px;font-weight:800;color:#F2EDE3;margin-top:4px;">推理模型</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">$$$ · 分钟级</div>
+        </div>
+        <div style="flex:1;padding:14px 18px;">
+          <div style="font-size:13px;font-weight:700;color:#F2EDE3;margin-bottom:4px;">多文件复杂判断</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.55;">架构重构、跨服务调试、需要深度推理的方案设计</div>
         </div>
       </div>
+    </div>
+
+    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+      <span style="font-size:11px;padding:5px 10px;background:rgba(255,255,255,0.06);border-radius:4px;color:rgba(255,255,255,0.65);">谁能用</span>
+      <span style="font-size:11px;padding:5px 10px;background:rgba(255,255,255,0.06);border-radius:4px;color:rgba(255,255,255,0.65);">针对哪些系统</span>
+      <span style="font-size:11px;padding:5px 10px;background:rgba(255,255,255,0.06);border-radius:4px;color:rgba(255,255,255,0.65);">什么上下文</span>
+      <span style="font-size:11px;padding:5px 10px;background:rgba(255,255,255,0.06);border-radius:4px;color:rgba(255,255,255,0.65);">什么审查流程</span>
+      <span style="font-size:11px;padding:5px 10px;background:rgba(196,149,106,0.18);color:#C4956A;border-radius:4px;font-weight:700;">+ 审计痕迹</span>
     </div>
   </div>
 </div>
 
-<!-- ===== 配图 8 · 协作场所转变 ===== -->
-<div class="slide-label">配图 8 · 放在「原则七：agent 是跨职能协作的粘合剂」之后</div>
-<div class="slide light" style="min-height:400px;">
-  <div class="brand on-light"><svg viewBox="0 0 32 32" fill="none"><circle cx="13" cy="16" r="10" stroke="rgba(28,28,30,0.4)" stroke-width="2.2" fill="none"/><ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(28,28,30,0.25)" stroke-width="1.2" fill="none"/><ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/><polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/><circle cx="16" cy="16.3" r="0.7" fill="#1C1C1E"/><line x1="26" y1="4" x2="26" y2="16" stroke="rgba(28,28,30,0.4)" stroke-width="2" stroke-linecap="round"/><path d="M26 16 Q26 22 22 22" stroke="rgba(28,28,30,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="26" cy="4" r="2" stroke="rgba(28,28,30,0.4)" stroke-width="1.5" fill="none"/></svg><span class="brand-text">墨筝</span></div>
-  <div class="page-num on-light">8/8</div>
-  <div class="content">
-    <div class="section-tag-medium"><div class="kicker-line"></div>COLLABORATION</div>
-    <div class="h-title">协作场所的转变</div>
-    <div class="two-col" style="margin-top:8px;">
-      <div class="col-panel" style="background:rgba(28,28,30,0.03);border:1px solid rgba(28,28,30,0.08);border-radius:10px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:14px;" class="t-muted">BEFORE</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(28,28,30,0.15);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">设计师在 Slack 发反馈截图</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(28,28,30,0.15);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">开发者翻译成 prompt</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(28,28,30,0.15);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">本地跑工作空间</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(28,28,30,0.15);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">手动管理分支</div></div>
-        </div>
-        <div style="font-size:11px;margin-top:14px;padding:8px 12px;border-radius:6px;background:rgba(255,132,120,0.06);color:#FF8478;text-align:center;">开发者 = 信息中转站</div>
-      </div>
-      <div class="col-panel" style="background:rgba(168,201,127,0.04);border:1px solid rgba(168,201,127,0.12);border-radius:10px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:14px;color:#C4956A;">AFTER</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(168,201,127,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">设计师在预览环境直接操作</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(168,201,127,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">PM 直接和 Agent 对话迭代</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(168,201,127,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">反馈自动回到执行循环</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><div style="width:5px;height:5px;border-radius:50%;background:rgba(168,201,127,0.4);flex-shrink:0;"></div><div style="font-size:12px;" class="t-secondary">分角色权限控制</div></div>
-        </div>
-        <div style="font-size:11px;margin-top:14px;padding:8px 12px;border-radius:6px;background:rgba(168,201,127,0.08);color:#A8C97F;text-align:center;">开发者 = 平台工程师</div>
-      </div>
+
+<!-- ===== 配图 8 · 小黑 · 05-stitch-and-create.png ===== -->
+<div class="slide-label">小黑 08 · 放在「原则七：agent 是跨职能协作的粘合剂」之后 · 文件:05-stitch-and-create.png</div>
+<div class="slide xiaohei-row" data-xiaohei="05-stitch-and-create.png" style="background:#FFFFFF;padding:0;border:1px solid rgba(28,28,30,0.08);border-radius:8px;overflow:hidden;">
+  <div style="padding:14px 22px 6px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.18em;color:#C4956A;text-transform:uppercase;">FINAL · GLUE VS CREATE</div>
+      <div style="font-size:18px;font-weight:800;color:#1C1C1E;margin-top:4px;letter-spacing:-0.01em;">Agent 做胶水，人做创造</div>
+      <div style="font-size:12px;color:#7A7876;margin-top:3px;font-style:italic;">agent 缝合模块、清理输出；人留出空间做判断、品味、架构、策略</div>
     </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;color:rgba(28,28,30,0.35);">小黑手绘 · AI 直出</div>
   </div>
+  <img src="xiaohei-illustrations/05-stitch-and-create.png" alt="Agent 做胶水，人做创造" style="display:block;width:100%;height:auto;" />
 </div>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -392,27 +393,36 @@ async function renderSlide(el) {
   const origRadius = el.style.borderRadius;
   el.style.borderRadius = '0';
   const bgEl = el.querySelector('.bg-dark, .bg-light');
-  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  let bg = el.classList.contains('dark') ? '#1C1C1E' : '#FFFFFF';
+  if (bgEl) bg = getComputedStyle(bgEl).backgroundColor;
   const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
   el.style.borderRadius = origRadius;
   return flattenAlpha(raw, bg);
 }
-async function downloadOne(idx) {
-  const slides = document.querySelectorAll('.slide');
-  const el = slides[idx || 0];
-  const canvas = await renderSlide(el);
-  canvas.toBlob(blob => saveAs(blob, `配图-${idx+1}.png`), 'image/png');
+function brandSlideNum(slide, idx) {
+  const n = slide.getAttribute('data-num');
+  return n || String(idx + 1).padStart(2, '0');
 }
 async function downloadAll() {
-  const slides = document.querySelectorAll('.slide');
   const zip = new JSZip();
+  // Only render brand slides; xiaohei slides are already PNGs on disk.
+  const slides = document.querySelectorAll('.slide:not(.xiaohei-row)');
   for (let i = 0; i < slides.length; i++) {
     const canvas = await renderSlide(slides[i]);
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    zip.file(`配图-${i+1}.png`, blob);
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    const name = brandSlideNum(slides[i], i);
+    zip.file(`配图-${name}.png`, blob);
   }
-  const content = await zip.generateAsync({type:'blob'});
-  saveAs(content, '从DX到AX-配图.zip');
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, '配图-品牌-Agent体验.zip');
+}
+async function downloadOne(idx) {
+  const slides = document.querySelectorAll('.slide:not(.xiaohei-row)');
+  const i = idx ?? 0;
+  if (!slides[i]) return;
+  const canvas = await renderSlide(slides[i]);
+  const name = brandSlideNum(slides[i], i);
+  canvas.toBlob(blob => saveAs(blob, `配图-${name}.png`), 'image/png');
 }
 </script>
 </body>

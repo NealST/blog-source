@@ -64,6 +64,8 @@ body:not(.copy-mode) .copy-view { display: none; }
 <p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">Agent 体验关注的是如何在模型和真实代码库之间搭建好中间层。这个中间层包括上下文、工具、权限、测试和 Review 的闭环，告诉 agent 什么重要、它能碰什么、以及如何确认自己做对了。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">核心问题只有一个：<strong style="color:#1C1C1E; font-weight:700">给 agent 构建一个快速、安全、确定性的反馈循环</strong></p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">围绕这个问题，有七条核心原则。</p>
+<!-- IMAGE:配图-1.png -->
+<!-- IMAGE:02-feedback-loop-machine.png -->
 <h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则一：上下文即 onboarding</h2>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">开发者 onboarding 以前只在新人入职时才需要考虑：一个新人要多久才能熟悉仓库并有效提交第一个贡献？</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">对 agent 来说，onboarding 发生在每一次任务的开头。仓库说明、构建命令、组件 API、schema、已知的故障模式决定了 agent 的感知，推理，行动和反馈。</p>
@@ -76,6 +78,7 @@ body:not(.copy-mode) .copy-view { display: none; }
 <li style="margin-bottom:6px">可验证：团队的 skill 足够自解释，agent 能在正确时机调用，我们能理解为什么调用。</li>
 </ul>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">agent 的规则、skill 和上下文必须作为团队纪律来管理，而不是随意堆砌。</p>
+<!-- IMAGE:01-eternal-day-one.png -->
 <h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则二：环境是 prompt 的一部分</h2>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">大模型本质上是非确定性的。正因为模型的推理过程是概率性的，其余的执行环境就必须尽可能做到确定。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">依赖包的版本、工程脚本、环境变量等构建配置，以及认证、浏览器、本地服务等运行时依赖，这些直接决定 agent 的感知和执行。环境本身就是 prompt 的一部分。</p>
@@ -83,6 +86,7 @@ body:not(.copy-mode) .copy-view { display: none; }
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">人类开发者遇到缺失的环境变量或报错的 Docker 命令会停下来排查。但 Agent 不会，它会绕过故障、改错文件，然后提交一个 commit。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">如果 agent 无法编译代码、启动开发服务器、填充数据库或调用本地 API 来验证输出，它产出的就不是可信的软件。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Agent 必须有一个可靠、一致、可观测的工作空间。</p>
+<!-- IMAGE:配图-4.png -->
 <h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则三：交付前必须验证</h2>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">agent 不能只生成代码，还得证明产出是对的。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">目前的状况是，写代码的成本确实降低了，但审查代码的认知负荷反而上升了。如果要花三十分钟手动审查一个 agent 生成的 PR、逐一检查边界情况、清理通用的布局样式，那 agent 并不会节省时间，它只是把劳动从编写侧转移到了审查侧。审查负担过重的话，软件质量就会急剧下滑。</p>
@@ -90,17 +94,20 @@ body:not(.copy-mode) .copy-view { display: none; }
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">类型检查、单元测试和 lint 仍然重要。但产品层面的问题往往出在编译器看不到的地方，比如响应式布局在某些分辨率下崩溃、loading 状态一直不消失、某个业务流程代码能编译通过但功能上完全不通。除了基本的静态代码检测，e2e 测试也很重要。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Agent 可以全天候运转，但开发者的专注力很有限。凡是 agent 能在闭环里自行验证的环节，就不应该消耗人的注意力。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当 agent 呈现工作成果时，交付过程应该尽可能易于操作。审查者能在预览分支上直接标注反馈，这些反馈可以直接送回 agent 的执行循环让它自行修正，开发者不应该在工具之间反复复制粘贴。</p>
+<!-- IMAGE:04-review-scale.png -->
 <h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则四：安全必须是系统性的</h2>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">好的 DX 让危险操作变得困难，好的 AX 需要让危险操作变得不可能。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">agent 的改动很快且批量执行，prompt 很容易被绕过。安全必须做的足够立体：沙箱限制执行环境，最小化凭证和网络权限，隔离开发与生产数据，高风险操作交由人工确认。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">每次看到有人在社交媒体上说 xx agent 删了数据库，第一个念头都是：为什么系统会允许这种事发生？为什么 agent 有这个权限？</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当 agent 的用户不再只是开发者时，沙箱原则同样适用。如果 PM、设计师或运营人员使用 agent 来迭代产品界面，他们也不应该有本地机器的 root 权限或生产环境的凭证。安全不能指望非技术人员能理解 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-word'>rm -rf</code>、OAuth scope 或生产环境变量的危害。</p>
+<!-- IMAGE:03-crack-in-the-road.png -->
 <h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则五：模型路由应当是基础设施</h2>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">我们在前沿模型的排名和评分上投入了很多注意力。但对团队来说，真正重要的问题是：</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">谁能使用 agent？针对哪些系统？带有什么上下文？遵循什么审查流程？走哪条模型路由？以及留下什么审计痕迹？</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">模型路由应该像水电一样，稳定运行、不需要操心。团队需要能灵活切换供应商、按任务选择合适的模型，但不应该让每个开发者都成为模型选型专家。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">低风险的摘要、分类、脚手架代码或常规审查用便宜快速的模型就够了，确定性的语法校验本来就该由 linter 和类型检查处理，昂贵的推理模型只在多文件的复杂判断上才有必要。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">治理也要内置到 agent 的工作流中。管理员要能看得到用量和成本，审查者看得到执行依据，模型 provider 可以丝滑切换。</p>
+<!-- IMAGE:配图-7.png -->
 <h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则六：设计系统和代码架构是 agent 的最佳信息源</h2>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">代码库不再只是给人看的，要让 agent 可靠干活，代码库必须最准确地反映产品的实际运作方式。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">如果代码库混乱，文档与实际代码不符、Storybook 版本落后，agent 会把这些内容整合成为一份外强中干的垃圾产出。</p>
@@ -113,6 +120,7 @@ body:not(.copy-mode) .copy-view { display: none; }
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">好的 AX 应当是把协作的场所从聊天窗口和需求文档搬到可交互的产品界面上。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">通过交互式预览部署和分角色的权限控制，设计师、运营或 PM 可以在一个安全、受限的预览环境中直接和 agent 对话。他们可以测试响应式状态、迭代文案、调整布局，开发者继续把关架构、安全和系统集成。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">开发者不应该是复制粘贴和翻译 prompt 的工具人，而是拥有系统设计能力的平台工程师。</p>
+<!-- IMAGE:05-stitch-and-create.png -->
 <h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>AX 需要一个平台来承载</h2>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">上述这些能力当然可以拼凑起来：coding agent、沙箱、规则文件、测试工具、手动审查流程各来一套。但这样做，拼接本身就变成了主要工作。大概率你会发现花在内部 agent 基础设施维护上的时间比发布功能还多。</p>
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">真正的价值在于把代码库、执行环境和团队视为一个统一的协作工作空间，让 agent 能自动运行测试、编译代码、生成可视化的分支预览。这样 agent 就不再是一个脱节的代码生成工具，而是真正融入团队的协作者。</p>
@@ -123,77 +131,5 @@ body:not(.copy-mode) .copy-view { display: none; }
 <p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">DX 成为一门学科，是因为我们意识到软件质量取决于我们构建的系统，AX 也将同样如此。</p>
 <section style="margin:36px auto 0;max-width:320px;padding:16px 24px;text-align:center;border:1px solid #e8dfd0;border-radius:8px;background:#f5efe4;"><p style="margin:0 0 4px; text-align:center; word-break:break-word; font-size:14px; color:#1C1C1E; font-weight:600; letter-spacing:1px" align="center">关注公众号「<span style="color:#C4956A;">墨筝</span>」</p><p style="margin:0; text-align:center; word-break:break-word; font-size:12px; color:#999; letter-spacing:0.5px" align="center">第一时间获取深度科技内容</p></section>
 <p style="margin:40px 0 0; text-align:center; word-break:break-word; color:#C4956A; font-size:13px; letter-spacing:3px; opacity:0.6" align="center">— END —</p>
-</section></div></div><div class="copy-view"><section class="content" style='max-width:680px; margin:0 auto; padding:24px 16px 40px; background-color:#F2EDE3; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-size:16px; line-height:1.8; color:#333; letter-spacing:0.3px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale' bgcolor="#F2EDE3">
-<p style="margin:4px 0 28px; text-align:left; word-break:break-word; font-size:13px; color:#999; letter-spacing:1px; line-height:1" align="left">⏱ 预计阅读 7 分钟</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">过去十多年，整个行业都在围绕开发者反馈循环做优化，像编译器、linter、热更新、分支预览等诸多工具都是为了提升反馈的质量和效率，让正确做法成为阻力最小的选择。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">好的开发者体验（DX）假定人会疲劳、会跳过最佳实践、会在生产环境上犯错，所以用快速、确定性的保护机制来做 check。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">现在，代码仓库里多了一类新的贡献者：AI agent。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">问题在于，我们以为它什么都懂，却忽略了其本质：Agent 只是一个完全无状态的工具。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">它没有业务理解，也缺少团队踩坑经历和代码库认知。要让它在真实代码库中完成有实际意义的工作，光优化提示词远远不够，真正需要优化的是它的工作环境。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">我们的视角得从开发者体验（DX）转变到 Agent 体验（AX）。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>什么是 Agent 体验</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">Agent 体验关注的是如何在模型和真实代码库之间搭建好中间层。这个中间层包括上下文、工具、权限、测试和 Review 的闭环，告诉 agent 什么重要、它能碰什么、以及如何确认自己做对了。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">核心问题只有一个：<strong style="color:#1C1C1E; font-weight:700">给 agent 构建一个快速、安全、确定性的反馈循环</strong></p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">围绕这个问题，有七条核心原则。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则一：上下文即 onboarding</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">开发者 onboarding 以前只在新人入职时才需要考虑：一个新人要多久才能熟悉仓库并有效提交第一个贡献？</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">对 agent 来说，onboarding 发生在每一次任务的开头。仓库说明、构建命令、组件 API、schema、已知的故障模式决定了 agent 的感知，推理，行动和反馈。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">我们有一个常见误区是过度地文档化。团队会逐渐累积一堆 skill 、AGENTS.md 规则、过时的定义、prompt 片段和隐藏的工具指令。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当上下文过多时，如果 agent 做了一个错误决策，我们得在一堆杂乱的输入历史中排查到底是哪条过时指令或冲突规则误导了模型。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left"><strong style="color:#1C1C1E; font-weight:700">好的 agent 上下文应该像好的代码一样：精简、透明、可验证。</strong></p>
-<ul style="margin:0 0 16px; padding-left:24px">
-<li style="margin-bottom:6px">精简：全局上下文尽量薄，代码本身能说清楚的就不另写文档。</li>
-<li style="margin-bottom:6px">透明：审查者能轻松追溯是哪条规则或 skill 影响了这次输出。</li>
-<li style="margin-bottom:6px">可验证：团队的 skill 足够自解释，agent 能在正确时机调用，我们能理解为什么调用。</li>
-</ul>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">agent 的规则、skill 和上下文必须作为团队纪律来管理，而不是随意堆砌。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则二：环境是 prompt 的一部分</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">大模型本质上是非确定性的。正因为模型的推理过程是概率性的，其余的执行环境就必须尽可能做到确定。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">依赖包的版本、工程脚本、环境变量等构建配置，以及认证、浏览器、本地服务等运行时依赖，这些直接决定 agent 的感知和执行。环境本身就是 prompt 的一部分。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">“我在本地跑不了测试，但感觉应该没问题”，这话人说出来，我们会立刻警觉；但如果是 agent，我们反而睁一只眼闭一只眼。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">人类开发者遇到缺失的环境变量或报错的 Docker 命令会停下来排查。但 Agent 不会，它会绕过故障、改错文件，然后提交一个 commit。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">如果 agent 无法编译代码、启动开发服务器、填充数据库或调用本地 API 来验证输出，它产出的就不是可信的软件。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Agent 必须有一个可靠、一致、可观测的工作空间。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则三：交付前必须验证</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">agent 不能只生成代码，还得证明产出是对的。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">目前的状况是，写代码的成本确实降低了，但审查代码的认知负荷反而上升了。如果要花三十分钟手动审查一个 agent 生成的 PR、逐一检查边界情况、清理通用的布局样式，那 agent 并不会节省时间，它只是把劳动从编写侧转移到了审查侧。审查负担过重的话，软件质量就会急剧下滑。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">好的 AX 意味着 agent 在交付前完成充分的验证工作，且验证应该附带证据证明，包括：测试结果和日志、截图和浏览器流程录制、无障碍检查和边界情况探索等。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">类型检查、单元测试和 lint 仍然重要。但产品层面的问题往往出在编译器看不到的地方，比如响应式布局在某些分辨率下崩溃、loading 状态一直不消失、某个业务流程代码能编译通过但功能上完全不通。除了基本的静态代码检测，e2e 测试也很重要。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Agent 可以全天候运转，但开发者的专注力很有限。凡是 agent 能在闭环里自行验证的环节，就不应该消耗人的注意力。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当 agent 呈现工作成果时，交付过程应该尽可能易于操作。审查者能在预览分支上直接标注反馈，这些反馈可以直接送回 agent 的执行循环让它自行修正，开发者不应该在工具之间反复复制粘贴。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则四：安全必须是系统性的</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">好的 DX 让危险操作变得困难，好的 AX 需要让危险操作变得不可能。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">agent 的改动很快且批量执行，prompt 很容易被绕过。安全必须做的足够立体：沙箱限制执行环境，最小化凭证和网络权限，隔离开发与生产数据，高风险操作交由人工确认。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">每次看到有人在社交媒体上说 xx agent 删了数据库，第一个念头都是：为什么系统会允许这种事发生？为什么 agent 有这个权限？</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当 agent 的用户不再只是开发者时，沙箱原则同样适用。如果 PM、设计师或运营人员使用 agent 来迭代产品界面，他们也不应该有本地机器的 root 权限或生产环境的凭证。安全不能指望非技术人员能理解 <code style='font-family:"SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size:0.88em; background:#f0ece4; border:1px solid #ddd8ce; border-radius:3px; padding:2px 5px; color:#1C1C1E; word-break:break-word'>rm -rf</code>、OAuth scope 或生产环境变量的危害。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则五：模型路由应当是基础设施</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">我们在前沿模型的排名和评分上投入了很多注意力。但对团队来说，真正重要的问题是：</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">谁能使用 agent？针对哪些系统？带有什么上下文？遵循什么审查流程？走哪条模型路由？以及留下什么审计痕迹？</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">模型路由应该像水电一样，稳定运行、不需要操心。团队需要能灵活切换供应商、按任务选择合适的模型，但不应该让每个开发者都成为模型选型专家。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">低风险的摘要、分类、脚手架代码或常规审查用便宜快速的模型就够了，确定性的语法校验本来就该由 linter 和类型检查处理，昂贵的推理模型只在多文件的复杂判断上才有必要。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">治理也要内置到 agent 的工作流中。管理员要能看得到用量和成本，审查者看得到执行依据，模型 provider 可以丝滑切换。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则六：设计系统和代码架构是 agent 的最佳信息源</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">代码库不再只是给人看的，要让 agent 可靠干活，代码库必须最准确地反映产品的实际运作方式。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">如果代码库混乱，文档与实际代码不符、Storybook 版本落后，agent 会把这些内容整合成为一份外强中干的垃圾产出。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">让代码库为 AI 做好准备，靠的是经典的软件工程原则：高度的封装搭配简洁的接口、类型化 API、可预测的路由、干净的目录结构。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">道理和 UI 设计中的渐进式披露一样：把实现细节藏在干净的接口背后，agent 需要处理的信息量会更少，这就意味着更低的 token 消耗和更少的逻辑错误。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">设计系统同理。代码库越是强制 agent 复用已有的组件、token 和无障碍模式，输出就越不可能退化为通用的垃圾代码。团队已经有现成的 Button 组件，agent 就不应该自己再造一个。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>原则七：agent 是跨职能协作的粘合剂</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">Agent 体验从开发者开始，但它实质上解决的是整个组织的协调问题。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">agent 可以让功能的 V1 变得很廉价，但 V2、V3、V4 的迭代问题它解决不了。没有共享工作空间，开发者就变成了一个高薪的信息中转站：从设计师那里复制视觉反馈，再翻译成 agent 能理解的 prompt，然后本地跑工作空间，手动管理分支。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">好的 AX 应当是把协作的场所从聊天窗口和需求文档搬到可交互的产品界面上。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">通过交互式预览部署和分角色的权限控制，设计师、运营或 PM 可以在一个安全、受限的预览环境中直接和 agent 对话。他们可以测试响应式状态、迭代文案、调整布局，开发者继续把关架构、安全和系统集成。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">开发者不应该是复制粘贴和翻译 prompt 的工具人，而是拥有系统设计能力的平台工程师。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>AX 需要一个平台来承载</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">上述这些能力当然可以拼凑起来：coding agent、沙箱、规则文件、测试工具、手动审查流程各来一套。但这样做，拼接本身就变成了主要工作。大概率你会发现花在内部 agent 基础设施维护上的时间比发布功能还多。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">真正的价值在于把代码库、执行环境和团队视为一个统一的协作工作空间，让 agent 能自动运行测试、编译代码、生成可视化的分支预览。这样 agent 就不再是一个脱节的代码生成工具，而是真正融入团队的协作者。</p>
-<h2 style='font-size:20px; font-weight:700; color:#1C1C1E; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; margin:38px 0 14px; padding-bottom:0; border-bottom:none; border-left:4px solid #C4956A; padding-left:12px; letter-spacing:0.3px; line-height:1.35'>写在最后</h2>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word; margin-top:4px" align="left">Agent 应该做胶水层的缝合工作，人类应该做更有意思的创造性工作。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">如果人类在工具之间复制反馈、反复解释仓库上下文、手动检查 agent 是否破坏了已有功能、维护过时的文档、清理通用输出，而模型在做创意决策，那就本末倒置了，但现实好像还真就变成了这样。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">好的 agent 体验应当是给有创造力的人腾出空间，让他们把精力放在判断、品味、架构和策略这些真正需要人的地方。</p>
-<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">DX 成为一门学科，是因为我们意识到软件质量取决于我们构建的系统，AX 也将同样如此。</p>
-<section style="margin:36px auto 0;max-width:320px;padding:16px 24px;text-align:center;border:1px solid #e8dfd0;border-radius:8px;background:#f5efe4;"><p style="margin:0 0 4px; text-align:center; word-break:break-word; font-size:14px; color:#1C1C1E; font-weight:600; letter-spacing:1px" align="center">关注公众号「<span style="color:#C4956A;">墨筝</span>」</p><p style="margin:0; text-align:center; word-break:break-word; font-size:12px; color:#999; letter-spacing:0.5px" align="center">第一时间获取深度科技内容</p></section>
-<p style="margin:40px 0 0; text-align:center; word-break:break-word; color:#C4956A; font-size:13px; letter-spacing:3px; opacity:0.6" align="center">— END —</p>
-</section></div><button class="mode-toggle" onclick="document.body.classList.toggle(&#x27;copy-mode&#x27;);this.textContent=document.body.classList.contains(&#x27;copy-mode&#x27;)?&#x27;📱 手机预览&#x27;:&#x27;📋 复制模式&#x27;">📋 复制模式</button>
-</body>
+</section></div></div></body>
 </html>
