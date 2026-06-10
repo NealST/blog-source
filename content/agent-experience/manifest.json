@@ -12,7 +12,14 @@
       "digest": "Agent 只是一个完全无状态的工具。要让它在真实代码库中完成有意义的工作，真正需要优化的是它的工作环境。七条核心原则，构建快速、安全、确定性的反馈循环。",
       "markdown": "source/_posts/agent-experience.md",
       "images": [
-        "content/agent-experience/illustrations.html"
+        "content/agent-experience/配图-1.png",
+        "content/agent-experience/xiaohei-illustrations/02-feedback-loop-machine.png",
+        "content/agent-experience/xiaohei-illustrations/01-eternal-day-one.png",
+        "content/agent-experience/配图-4.png",
+        "content/agent-experience/xiaohei-illustrations/04-review-scale.png",
+        "content/agent-experience/xiaohei-illustrations/03-crack-in-the-road.png",
+        "content/agent-experience/配图-7.png",
+        "content/agent-experience/xiaohei-illustrations/05-stitch-and-create.png"
       ]
     },
     "xiaohongshu": {

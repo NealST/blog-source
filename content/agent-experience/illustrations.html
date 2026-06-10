@@ -111,7 +111,7 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
     <div class="h-title">Agent 体验的七条原则</div>
     <div class="h-sub">围绕一个核心问题：给 agent 构建快速、安全、确定性的反馈循环</div>
 
-    <!-- 中心圆 + 7 节点 -->
+    <!-- 中心圆 + 6 节点环绕 -->
     <div style="position:relative;height:380px;margin-top:8px;">
       <svg width="100%" height="380" viewBox="0 0 700 380" preserveAspectRatio="xMidYMid meet">
         <!-- 反馈圈 -->
@@ -122,7 +122,7 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
         <text x="350" y="203" text-anchor="middle" font-family="-apple-system,'PingFang SC',sans-serif" font-size="13" font-weight="700" fill="#C4956A" letter-spacing="2">LOOP</text>
       </svg>
 
-      <!-- 7 节点用 HTML 绝对定位 -->
+      <!-- 6 节点环绕中心圈 -->
       <div style="position:absolute;left:50%;top:20px;transform:translateX(-50%);text-align:center;">
         <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:20px;">
           <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">1</span>
@@ -159,13 +159,13 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
           <span class="t-primary" style="font-size:13px;font-weight:700;">架构是信息源</span>
         </div>
       </div>
-      <div style="position:absolute;left:50%;top:170px;transform:translate(-50%, 130px);text-align:center;display:none;"></div>
-      <div style="position:absolute;left:50%;top:340px;transform:translateX(-50%);text-align:center;">
-        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(196,149,106,0.10);border:1px solid rgba(196,149,106,0.30);padding:8px 14px;border-radius:20px;">
-          <span class="num-dot gold" style="width:22px;height:22px;font-size:11px;">7</span>
-          <span class="t-primary" style="font-size:13px;font-weight:700;">跨职能协作的粘合剂</span>
-        </div>
-      </div>
+    </div>
+
+    <!-- 原则 7 单独作为基础底座（强调跨职能粘合剂的统领位） -->
+    <div style="margin-top:14px;padding:12px 18px;background:rgba(196,149,106,0.10);border:1px solid rgba(196,149,106,0.32);border-radius:10px;display:flex;align-items:center;gap:12px;justify-content:center;">
+      <span class="num-dot gold" style="width:26px;height:26px;font-size:12px;">7</span>
+      <span class="t-primary" style="font-size:14px;font-weight:800;">跨职能协作的粘合剂</span>
+      <span style="font-size:11px;color:rgba(242,237,227,0.55);font-weight:600;letter-spacing:0.1em;">— 把前 6 条粘合成团队的工作方式</span>
     </div>
   </div>
 </div>
