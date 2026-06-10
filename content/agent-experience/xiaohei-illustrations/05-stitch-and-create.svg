@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <rect width="1600" height="900" fill="#ffffff"/>
+
+  <!-- === 下半部分：小黑缝合碎片 === -->
+
+  <!-- 散落碎片 -->
+  <rect x="450" y="580" width="80" height="55" rx="4" fill="none" stroke="#1a1a1a" stroke-width="2" transform="rotate(-3 490 607)"/>
+  <text x="475" y="612" font-family="Courier, monospace" font-size="10" fill="#1a1a1a" opacity="0.5">API</text>
+
+  <rect x="620" y="590" width="70" height="50" rx="4" fill="none" stroke="#1a1a1a" stroke-width="2" transform="rotate(5 655 615)"/>
+  <text x="640" y="620" font-family="Courier, monospace" font-size="10" fill="#1a1a1a" opacity="0.5">Design</text>
+
+  <rect x="780" y="575" width="75" height="55" rx="4" fill="none" stroke="#1a1a1a" stroke-width="2" transform="rotate(-2 817 602)"/>
+  <text x="798" y="608" font-family="Courier, monospace" font-size="10" fill="#1a1a1a" opacity="0.5">Ops</text>
+
+  <rect x="950" y="585" width="80" height="50" rx="4" fill="none" stroke="#1a1a1a" stroke-width="2" transform="rotate(4 990 610)"/>
+  <text x="972" y="615" font-family="Courier, monospace" font-size="10" fill="#1a1a1a" opacity="0.5">DevOps</text>
+
+  <!-- 筝弦金缝合线连接碎片 -->
+  <path d="M 530 607 Q 560 595 620 610 Q 680 625 690 615 Q 700 605 780 600 Q 840 595 855 602 Q 870 610 950 608"
+        stroke="#A07848" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="6 3"/>
+
+  <!-- 缝合针脚（交叉线） -->
+  <path d="M 575 598 L 580 618" stroke="#A07848" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 580 598 L 575 618" stroke="#A07848" stroke-width="1.5" stroke-linecap="round"/>
+
+  <path d="M 730 600 L 735 620" stroke="#A07848" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 735 600 L 730 620" stroke="#A07848" stroke-width="1.5" stroke-linecap="round"/>
+
+  <path d="M 900 595 L 905 615" stroke="#A07848" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 905 595 L 900 615" stroke="#A07848" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- 小黑趴着缝合 -->
+  <ellipse cx="700" cy="660" rx="28" ry="16" fill="#1a1a1a"/>
+  <circle cx="720" cy="648" r="14" fill="#1a1a1a"/>
+  <polygon points="712,637 714,626 720,638" fill="#1a1a1a"/>
+  <polygon points="730,637 728,626 722,638" fill="#1a1a1a"/>
+  <circle cx="717" cy="647" r="2" fill="#ffffff"/>
+  <circle cx="725" cy="647" r="2" fill="#ffffff"/>
+  <!-- 手持针 -->
+  <path d="M 735 655 L 755 640 L 760 638" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- 针 -->
+  <line x1="760" y1="638" x2="775" y2="625" stroke="#A07848" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 细小的尾巴 -->
+  <path d="M 672 660 Q 660 655 655 645" stroke="#1a1a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  <!-- === 上半部分：人手画蓝图 === -->
+
+  <!-- 人手和前臂 -->
+  <path d="M 650 200 Q 700 210 720 230 Q 735 245 730 260 Q 725 270 715 265 Q 710 260 712 250"
+        stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- 手指握笔 -->
+  <path d="M 712 250 L 720 270 Q 725 280 730 290" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- 笔 -->
+  <line x1="730" y1="290" x2="760" y2="340" stroke="#4a7ab5" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 蓝图草图（自由潇洒的线条） -->
+  <path d="M 780 240 Q 850 220 920 250 Q 980 275 1020 240 Q 1060 210 1100 250"
+        stroke="#4a7ab5" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 820 280 L 900 280 L 900 330 L 820 330 Z"
+        stroke="#4a7ab5" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M 940 290 Q 970 270 1000 300 Q 1030 320 1060 290"
+        stroke="#4a7ab5" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <circle cx="1100" cy="300" r="20" fill="none" stroke="#4a7ab5" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- 分隔区域（虚线） -->
+  <line x1="350" y1="470" x2="1250" y2="470" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 6" opacity="0.2"/>
+
+  <!-- 手写标注 -->
+  <text x="500" y="260" font-family="PingFang SC, STKaiti, serif" font-size="20" fill="#4a7ab5">创造</text>
+  <text x="500" y="285" font-family="PingFang SC, STKaiti, serif" font-size="14" fill="#4a7ab5" opacity="0.7">判断 · 品味 · 架构</text>
+
+  <text x="450" y="660" font-family="PingFang SC, STKaiti, serif" font-size="20" fill="#A07848">缝合</text>
+  <path d="M 445 665 L 495 665" stroke="#A07848" stroke-width="0.8" fill="none"/>
+  <text x="450" y="685" font-family="PingFang SC, STKaiti, serif" font-size="14" fill="#1a1a1a" opacity="0.5">胶水层</text>
+
+  <!-- 右侧总结标注 -->
+  <text x="1200" y="470" font-family="PingFang SC, STKaiti, serif" font-size="15" fill="#1a1a1a" opacity="0.4">↑ 人</text>
+  <text x="1200" y="500" font-family="PingFang SC, STKaiti, serif" font-size="15" fill="#1a1a1a" opacity="0.4">↓ Agent</text>
+</svg>

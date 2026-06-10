@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <rect width="1600" height="900" fill="#ffffff"/>
+
+  <!-- 圆形怪机器主体 -->
+  <circle cx="800" cy="480" r="160" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-dasharray="none"/>
+  <circle cx="800" cy="480" r="140" fill="none" stroke="#1a1a1a" stroke-width="1.5" opacity="0.3"/>
+
+  <!-- 四个管道口 -->
+  <!-- 上：上下文 -->
+  <rect x="775" y="290" width="50" height="35" rx="4" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
+  <line x1="785" y1="295" x2="785" y2="320" stroke="#1a1a1a" stroke-width="1" opacity="0.4"/>
+  <line x1="800" y1="295" x2="800" y2="320" stroke="#1a1a1a" stroke-width="1" opacity="0.4"/>
+  <line x1="815" y1="295" x2="815" y2="320" stroke="#1a1a1a" stroke-width="1" opacity="0.4"/>
+
+  <!-- 右：工具 -->
+  <rect x="975" y="462" width="35" height="50" rx="4" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
+  <line x1="980" y1="472" x2="1005" y2="472" stroke="#1a1a1a" stroke-width="1" opacity="0.4"/>
+  <line x1="980" y1="487" x2="1005" y2="487" stroke="#1a1a1a" stroke-width="1" opacity="0.4"/>
+  <line x1="980" y1="502" x2="1005" y2="502" stroke="#1a1a1a" stroke-width="1" opacity="0.4"/>
+
+  <!-- 下：执行 -->
+  <rect x="775" y="655" width="50" height="35" rx="4" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
+  <path d="M 790 665 L 800 680 L 810 665" stroke="#1a1a1a" stroke-width="1.5" fill="none"/>
+
+  <!-- 左：验证 -->
+  <rect x="590" y="462" width="35" height="50" rx="4" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
+  <path d="M 600 480 L 608 492 L 618 475" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- 筝弦金箭头闭环 -->
+  <path d="M 825 325 Q 920 350 960 462" stroke="#A07848" stroke-width="2.5" fill="none" stroke-linecap="round" marker-end="url(#arrowGold)"/>
+  <path d="M 960 512 Q 920 610 825 655" stroke="#A07848" stroke-width="2.5" fill="none" stroke-linecap="round" marker-end="url(#arrowGold)"/>
+  <path d="M 775 655 Q 680 610 625 512" stroke="#A07848" stroke-width="2.5" fill="none" stroke-linecap="round" marker-end="url(#arrowGold)"/>
+  <path d="M 625 462 Q 680 355 775 325" stroke="#A07848" stroke-width="2.5" fill="none" stroke-linecap="round" marker-end="url(#arrowGold)"/>
+
+  <defs>
+    <marker id="arrowGold" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#A07848"/>
+    </marker>
+  </defs>
+
+  <!-- 中央旋钮 -->
+  <circle cx="800" cy="480" r="24" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
+  <circle cx="800" cy="480" r="6" fill="#1a1a1a"/>
+  <line x1="800" y1="480" x2="800" y2="460" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 小黑站在机器顶部拧旋钮 -->
+  <!-- 身体 -->
+  <ellipse cx="800" cy="410" rx="22" ry="18" fill="#1a1a1a"/>
+  <!-- 头 -->
+  <circle cx="800" cy="385" r="16" fill="#1a1a1a"/>
+  <!-- 耳朵 -->
+  <polygon points="789,374 792,362 797,374" fill="#1a1a1a"/>
+  <polygon points="811,374 808,362 803,374" fill="#1a1a1a"/>
+  <!-- 眼睛 -->
+  <circle cx="795" cy="384" r="2.5" fill="#ffffff"/>
+  <circle cx="805" cy="384" r="2.5" fill="#ffffff"/>
+  <!-- 手臂伸向旋钮 -->
+  <path d="M 785 418 Q 780 440 790 456" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 815 418 Q 820 440 810 456" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- 腿站在机器边缘 -->
+  <line x1="792" y1="426" x2="788" y2="440" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="808" y1="426" x2="812" y2="440" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 抖动线 -->
+  <path d="M 755 650 Q 760 644 765 650 Q 770 656 775 650" stroke="#1a1a1a" stroke-width="1.2" fill="none" opacity="0.4"/>
+  <path d="M 825 650 Q 830 644 835 650 Q 840 656 845 650" stroke="#1a1a1a" stroke-width="1.2" fill="none" opacity="0.4"/>
+
+  <!-- 手写标注 -->
+  <text x="800" y="265" text-anchor="middle" font-family="PingFang SC, STKaiti, serif" font-size="18" fill="#4a7ab5">上下文</text>
+  <text x="1060" y="492" font-family="PingFang SC, STKaiti, serif" font-size="18" fill="#4a7ab5">工具</text>
+  <text x="800" y="720" text-anchor="middle" font-family="PingFang SC, STKaiti, serif" font-size="18" fill="#4a7ab5">执行</text>
+  <text x="530" y="492" text-anchor="end" font-family="PingFang SC, STKaiti, serif" font-size="18" fill="#4a7ab5">验证</text>
+
+  <text x="1150" y="350" font-family="PingFang SC, STKaiti, serif" font-size="22" fill="#A07848" font-weight="600">闭环</text>
+  <path d="M 1145 355 L 1195 355" stroke="#A07848" stroke-width="1" fill="none"/>
+</svg>

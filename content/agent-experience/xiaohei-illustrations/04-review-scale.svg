@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <rect width="1600" height="900" fill="#ffffff"/>
+
+  <!-- 天平支架 -->
+  <line x1="800" y1="680" x2="800" y2="350" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+  <!-- 底座 -->
+  <path d="M 740 680 Q 800 690 860 680" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- 天平横杆（倾斜：左高右低） -->
+  <line x1="520" y1="390" x2="1080" y2="460" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- 支点三角 -->
+  <polygon points="790,345 810,345 800,330" fill="none" stroke="#A07848" stroke-width="2.5"/>
+
+  <!-- 左盘（高/轻） - 写代码 -->
+  <path d="M 460 395 Q 520 410 580 395" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+  <line x1="520" y1="390" x2="460" y2="395" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="520" y1="390" x2="580" y2="395" stroke="#1a1a1a" stroke-width="1.5"/>
+  <!-- 一小张代码纸飘在左盘 -->
+  <rect x="500" y="370" width="40" height="30" rx="2" fill="none" stroke="#4a7ab5" stroke-width="1.5" transform="rotate(-5 520 385)"/>
+  <text x="512" y="388" font-family="Courier, monospace" font-size="9" fill="#4a7ab5">{...}</text>
+  <!-- 轻飘飘的效果 -->
+  <path d="M 490 360 Q 495 355 500 358" stroke="#1a1a1a" stroke-width="0.8" fill="none" opacity="0.3"/>
+  <path d="M 540 355 Q 545 350 550 353" stroke="#1a1a1a" stroke-width="0.8" fill="none" opacity="0.3"/>
+
+  <!-- 右盘（低/重） - 审查 -->
+  <path d="M 1020 465 Q 1080 480 1140 465" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+  <line x1="1080" y1="460" x2="1020" y2="465" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="1080" y1="460" x2="1140" y2="465" stroke="#1a1a1a" stroke-width="1.5"/>
+  <!-- 重物堆叠：放大镜 -->
+  <circle cx="1055" cy="440" r="14" fill="none" stroke="#cc3333" stroke-width="2"/>
+  <line x1="1065" y1="450" x2="1075" y2="462" stroke="#cc3333" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 红笔 -->
+  <line x1="1085" y1="425" x2="1110" y2="455" stroke="#cc3333" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="1085" cy="425" r="3" fill="#cc3333"/>
+  <!-- 文件堆 -->
+  <rect x="1040" y="415" width="30" height="4" rx="1" fill="#1a1a1a" opacity="0.3"/>
+  <rect x="1038" y="410" width="30" height="4" rx="1" fill="#1a1a1a" opacity="0.4"/>
+  <rect x="1042" y="405" width="30" height="4" rx="1" fill="#1a1a1a" opacity="0.5"/>
+
+  <!-- 小黑站在支点处扶横杆 -->
+  <ellipse cx="800" cy="320" rx="22" ry="18" fill="#1a1a1a"/>
+  <circle cx="800" cy="296" r="15" fill="#1a1a1a"/>
+  <polygon points="789,285 791,273 797,285" fill="#1a1a1a"/>
+  <polygon points="811,285 809,273 803,285" fill="#1a1a1a"/>
+  <circle cx="795" cy="295" r="2.5" fill="#ffffff"/>
+  <circle cx="805" cy="295" r="2.5" fill="#ffffff"/>
+  <!-- 手臂扶横杆 -->
+  <path d="M 782 325 Q 760 345 740 370" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 818 325 Q 840 345 860 370" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="792" y1="336" x2="790" y2="348" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="808" y1="336" x2="810" y2="348" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 手写标注 -->
+  <text x="520" y="330" text-anchor="middle" font-family="PingFang SC, STKaiti, serif" font-size="18" fill="#4a7ab5">写 ≈ 0</text>
+  <path d="M 495 335 L 550 335" stroke="#4a7ab5" stroke-width="0.8" fill="none"/>
+
+  <text x="1080" y="375" text-anchor="middle" font-family="PingFang SC, STKaiti, serif" font-size="18" fill="#cc3333">审查 ↑↑↑</text>
+
+  <text x="800" y="770" text-anchor="middle" font-family="PingFang SC, STKaiti, serif" font-size="20" fill="#A07848">认知负荷</text>
+  <path d="M 760 775 L 845 775" stroke="#A07848" stroke-width="1" fill="none"/>
+
+  <text x="1200" y="520" font-family="PingFang SC, STKaiti, serif" font-size="16" fill="#cc3333">失衡</text>
+  <!-- 倾斜方向小箭头 -->
+  <path d="M 1190 525 L 1170 540" stroke="#cc3333" stroke-width="1.5" fill="none" stroke-linecap="round" marker-end="url(#arrowRed)"/>
+  <defs>
+    <marker id="arrowRed" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M 0 0 L 6 3 L 0 6 Z" fill="#cc3333"/>
+    </marker>
+  </defs>
+</svg>

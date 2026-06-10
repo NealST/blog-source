@@ -1,0 +1,10 @@
+{
+  "wechat": {
+    "html": "content/mem0-supermemomy/preview.html",
+    "cover_image": "content/mem0-supermemomy/cover.png",
+    "title": "Agent 记忆层方案选型：Mem0 vs SuperMemory",
+    "author": "墨筝",
+    "digest": "大模型不再是单纯的无状态对话，独立的记忆层（Memory Layer）已成为架构落地的刚需组件。",
+    "images": []
+  }
+}

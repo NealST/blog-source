@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>头图 · 从 DX 到 AX</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#111; display:flex; flex-direction:column; align-items:center; padding:70px 20px 80px; font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif; }
+  .toolbar { position:fixed; top:0; left:0; right:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); display:flex; gap:12px; padding:14px 24px; z-index:100; }
+  .toolbar button { background:#C4956A; color:#fff; border:none; padding:8px 18px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; }
+  .toolbar button:hover { background:#b3845c; }
+  .cover { width:900px; height:383px; position:relative; overflow:hidden; border-radius:8px; background:#1C1C1E; }
+
+  /* 背景 */
+  .bg-dark { position:absolute; inset:0; background:radial-gradient(ellipse at 30% 50%, #2C2A28 0%, #1C1C1E 70%); }
+
+  /* 右侧焦点视觉 */
+  .hero-art { position:absolute; right:48px; top:50%; transform:translateY(-50%); z-index:1; opacity:0.75; }
+
+  /* 品牌角标 */
+  .brand { position:absolute; top:20px; left:24px; z-index:5; display:flex; align-items:center; gap:6px; }
+  .brand svg { width:22px; height:22px; }
+  .brand-text { font-size:11px; font-weight:600; color:rgba(255,255,255,0.5); letter-spacing:1px; }
+
+  /* 内容：左对齐 */
+  .content { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:0 340px 0 70px; z-index:2; }
+  .kicker { font-size:11px; font-weight:700; letter-spacing:0.18em; color:#C4956A; text-transform:uppercase; padding-top:10px; position:relative; }
+  .kicker::before { content:''; position:absolute; top:0; left:0; width:32px; height:1px; background:#C4956A; }
+  .title { font-size:56px; font-weight:800; letter-spacing:-0.022em; line-height:1.18; color:#F2EDE3; margin-top:18px; }
+  .title .hook { color:#C4956A; }
+  .lede { font-size:17px; font-weight:400; font-style:italic; color:rgba(255,255,255,0.50); margin-top:16px; max-width:480px; line-height:1.55; }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="downloadCover('main')">下载头图 (900×383)</button>
+    <button onclick="downloadCover('secondary')">下载次图 (200×200)</button>
+  </div>
+
+  <div class="cover" id="cover-main">
+    <div class="bg-dark"></div>
+
+    <!-- 右侧焦点视觉：DX→AX 转变的抽象箭头 -->
+    <div class="hero-art">
+      <svg width="300" height="260" viewBox="0 0 300 260" fill="none">
+        <!-- DX 圆 - 渐隐 -->
+        <circle cx="80" cy="130" r="60" stroke="rgba(255,255,255,0.12)" stroke-width="2" fill="none" stroke-dasharray="6 4"/>
+        <text x="80" y="136" text-anchor="middle" font-size="22" font-weight="800" fill="rgba(255,255,255,0.18)" font-family="-apple-system,sans-serif">DX</text>
+        <!-- 过渡箭头 -->
+        <line x1="148" y1="130" x2="188" y2="130" stroke="#C4956A" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="192,130 184,124 184,136" fill="#C4956A"/>
+        <!-- AX 圆 - 实体 -->
+        <circle cx="230" cy="130" r="60" stroke="#C4956A" stroke-width="2.5" fill="rgba(196,149,106,0.08)"/>
+        <text x="230" y="136" text-anchor="middle" font-size="24" font-weight="900" fill="#F2EDE3" font-family="-apple-system,sans-serif">AX</text>
+        <!-- 反馈循环弧线 -->
+        <path d="M270 90 Q300 50 270 30" stroke="rgba(196,149,106,0.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M190 170 Q160 210 190 230" stroke="rgba(196,149,106,0.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <!-- 散点装饰 -->
+        <circle cx="30" cy="40" r="2" fill="rgba(255,255,255,0.06)"/>
+        <circle cx="260" cy="30" r="1.5" fill="rgba(196,149,106,0.15)"/>
+        <circle cx="280" cy="220" r="2" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="50" cy="220" r="1.5" fill="rgba(255,255,255,0.06)"/>
+      </svg>
+    </div>
+
+    <!-- 品牌角标 -->
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none">
+        <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+        <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+        <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+        <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+        <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+        <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+
+    <!-- 内容 -->
+    <div class="content">
+      <div class="kicker">Agent Experience</div>
+      <h1 class="title">从 <span class="hook">DX</span> 到 <span class="hook">AX</span></h1>
+      <p class="lede">给 Agent 构建快速、安全、确定性的反馈循环</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script>
+    function flattenAlpha(canvas, bgColor) {
+      const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+      const flat = document.createElement('canvas');
+      flat.width = canvas.width; flat.height = canvas.height;
+      const ctx = flat.getContext('2d');
+      ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+      ctx.fillRect(0, 0, flat.width, flat.height);
+      ctx.drawImage(canvas, 0, 0);
+      return flat;
+    }
+
+    async function renderSlide(el) {
+      const origRadius = el.style.borderRadius;
+      el.style.borderRadius = '0';
+      const bgEl = el.querySelector('.bg-dark');
+      const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : '#1C1C1E';
+      const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+      el.style.borderRadius = origRadius;
+      return flattenAlpha(raw, bg);
+    }
+
+    async function downloadCover(type) {
+      const el = document.getElementById('cover-main');
+      const canvas = await renderSlide(el);
+
+      if (type === 'main') {
+        canvas.toBlob(blob => saveAs(blob, '头图-从DX到AX-900x383.png'), 'image/png');
+      } else {
+        const size = 400;
+        const crop = document.createElement('canvas');
+        crop.width = size; crop.height = size;
+        const ctx = crop.getContext('2d');
+        const sx = (canvas.width - size) / 2;
+        const sy = (canvas.height - size) / 2;
+        ctx.drawImage(canvas, 0, 0, size, size, 0, 0, size, size);
+        crop.toBlob(blob => saveAs(blob, '次图-从DX到AX-200x200.png'), 'image/png');
+      }
+    }
+  </script>
+</body>
+</html>

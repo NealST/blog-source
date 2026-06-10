@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>小红书轮播 · 从 DX 到 AX</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #2c2825;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 90px 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  }
+  /* ===== 下载工具栏 ===== */
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(28,28,30,0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px; display: flex; align-items: center;
+    justify-content: center; gap: 12px;
+  }
+  .toolbar .btn {
+    background: #1C1C1E; color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15);
+    padding: 9px 22px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer;
+  }
+  .toolbar .btn.accent { background: #C4956A; border-color: #C4956A; }
+  .toolbar .progress { color: rgba(255,255,255,0.7); font-size: 12px; margin-left: 8px; }
+
+  .slide {
+    width: 540px; height: 720px; margin-bottom: 40px;
+    position: relative; overflow: hidden; border-radius: 8px;
+    box-shadow: 0 6px 28px rgba(28,28,30,0.35); background: #fff;
+  }
+  .bg-paper {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #F6F1E7 0%, #F2EDE3 55%, #ECE4D2 100%);
+  }
+  .bg-paper::after {
+    content: ''; position: absolute; inset: 0; opacity: 0.04;
+    background-image: linear-gradient(rgba(28,28,30,0.6) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(28,28,30,0.6) 1px, transparent 1px);
+    background-size: 28px 28px; pointer-events: none;
+  }
+  .bg-paper::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 240px; height: 240px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,149,106,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .bg-dark {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 40%, #2C2A28 0%, #1C1C1E 70%);
+  }
+  .content {
+    position: relative; z-index: 2; height: 100%;
+    padding: 32px 40px 24px; display: flex; flex-direction: column;
+    color: #333; letter-spacing: 0.3px;
+  }
+
+  .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
+  .avatar-wrap { position: relative; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #C4956A; overflow: hidden; background: linear-gradient(135deg, #C4956A, #8a6240); flex-shrink: 0; box-shadow: 0 2px 10px rgba(28,28,30,0.18); }
+  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1; }
+  .avatar-wrap .avatar-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #F2EDE3; font-size: 22px; font-weight: 700; font-family: "Songti SC", serif; z-index: 0; }
+  .meta .name { font-size: 15px; font-weight: 700; color: #1C1C1E; }
+  .meta .date { font-size: 13px; color: #888; margin-top: 2px; }
+
+  .post-body { flex: 1; overflow: hidden; }
+
+  .post-body .h1 {
+    font-size: 27px; font-weight: 800; color: #1C1C1E;
+    margin-bottom: 16px; line-height: 1.35;
+    text-align: center; padding: 12px 0;
+    border-top: 2px solid #1C1C1E; border-bottom: 2px solid #1C1C1E;
+    font-family: "Songti SC", "Source Han Serif SC", serif;
+    letter-spacing: 1px;
+  }
+  .post-body .h2 {
+    font-size: 22px; font-weight: 700; color: #1C1C1E;
+    margin-bottom: 12px; border-left: 4px solid #C4956A; padding-left: 12px;
+  }
+  .post-body .h3 {
+    font-size: 19px; font-weight: 700; color: #2C2A28;
+    margin-bottom: 10px; margin-top: 4px; letter-spacing: 0.5px;
+  }
+
+  .post-body p { font-size: 18px; line-height: 1.6; margin-bottom: 8px; }
+  .post-body em { font-style: italic; color: #555; }
+  .post-body strong { color: #1C1C1E; font-weight: 700; }
+
+  .list-item { display: flex; gap: 8px; margin-bottom: 7px; font-size: 18px; line-height: 1.6; }
+  .list-item .bullet { color: #999; font-weight: bold; flex-shrink: 0; }
+  .list-item.sub { margin-left: 18px; font-size: 16px; }
+
+  code { background: #E8E0D1; color: #1C1C1E; padding: 1px 5px; border-radius: 4px; font-family: "SF Mono", Menlo, monospace; font-size: 0.92em; white-space: nowrap; }
+
+  .post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(28,28,30,0.08); flex-shrink: 0; }
+  .post-footer .brand-wrap { display: flex; align-items: center; gap: 8px; }
+  .post-footer .brand { font-size: 11px; color: #888; letter-spacing: 1.5px; }
+  .post-footer .brand .gz { color: #C4956A; font-weight: 700; padding: 0 2px; }
+  .post-footer .page { font-size: 12px; color: #888; }
+
+  .quote-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .q { font-size: 18px; line-height: 1.7; color: #2C2A28; font-weight: 400; }
+  .punch { font-size: 20px; font-weight: 600; color: #1C1C1E; margin-top: 12px; line-height: 1.5; }
+  .hl { color: #C4956A; font-weight: 700; }
+  .dash { width: 32px; height: 2px; background: #C4956A; margin: 18px 0; opacity: 0.6; }
+  .sub-quote { font-size: 14px; color: #888; }
+  .end-mark { text-align: center; font-size: 13px; color: #C4956A; letter-spacing: 3px; opacity: 0.6; padding: 12px 0; }
+
+  .swipe-hint {
+    text-align: center; font-size: 12px; letter-spacing: 1px;
+    margin-top: auto; padding-bottom: 8px; color: rgba(242,237,227,0.5);
+  }
+  .swipe-arrows {
+    display: inline-block; letter-spacing: 3px; font-weight: 300; opacity: 0.7;
+    background: linear-gradient(90deg, currentColor 0%, transparent 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Cover-specific styles */
+  .cover-title {
+    font-size: 42px; font-weight: 800; color: #F2EDE3;
+    line-height: 1.2; margin-bottom: 16px; letter-spacing: -0.5px;
+  }
+  .cover-title .gold { color: #C4956A; }
+  .cover-kicker {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.18em;
+    color: #C4956A; text-transform: uppercase; margin-bottom: 16px;
+    position: relative; padding-top: 10px;
+  }
+  .cover-kicker::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 32px; height: 1px; background: #C4956A;
+  }
+  .cover-lede {
+    font-size: 16px; color: rgba(242,237,227,0.55);
+    font-style: italic; line-height: 1.55; max-width: 380px;
+  }
+  .cover-brand {
+    margin-top: auto; display: flex; align-items: center; gap: 8px;
+    padding-bottom: 4px;
+  }
+  .cover-brand-text { font-size: 12px; color: rgba(242,237,227,0.5); letter-spacing: 1px; }
+
+  /* Header light vs dark */
+  .header-dark .name { color: #F2EDE3 !important; }
+  .header-dark .date { color: rgba(242,237,227,0.5) !important; }
+  .footer-dark { border-top-color: rgba(242,237,227,0.1) !important; }
+  .footer-dark .brand { color: rgba(242,237,227,0.5) !important; }
+  .footer-dark .page { color: rgba(242,237,227,0.5) !important; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button class="btn" onclick="downloadOne()">下载当前</button>
+  <span class="progress" id="progress"></span>
+</div>
+
+<!-- ===== Slide 1: 封面 ===== -->
+<div class="slide" id="slide-1">
+  <div class="bg-dark"></div>
+  <div class="content">
+    <div class="post-header header-dark">
+      <div class="avatar-wrap">
+        <span class="avatar-fallback">墨</span>
+        <img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'">
+      </div>
+      <div class="meta">
+        <div class="name">墨筝</div>
+        <div class="date"></div>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+      <div class="cover-kicker">Agent Experience</div>
+      <div class="cover-title">从 <span class="gold">DX</span> 到 <span class="gold">AX</span></div>
+      <div class="cover-lede">给 Agent 构建快速、安全、确定性的反馈循环</div>
+    </div>
+    <div class="swipe-hint">
+      <span class="swipe-arrows">‹ ‹ ‹</span> 左滑查看更多
+    </div>
+    <footer class="post-footer footer-dark">
+      <div class="brand-wrap">
+        <span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span>
+      </div>
+      <span class="page">1 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 2: 引言 ===== -->
+<div class="slide" id="slide-2">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap">
+        <span class="avatar-fallback">墨</span>
+        <img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'">
+      </div>
+      <div class="meta">
+        <div class="name">墨筝</div>
+        <div class="date"></div>
+      </div>
+    </div>
+    <section class="post-body">
+      <div class="h1">从开发者体验（DX）到 Agent 体验（AX）</div>
+      <p>过去十多年，整个行业都在围绕开发者反馈循环做优化，像编译器、linter、热更新、分支预览等诸多工具都是为了提升反馈的质量和效率，让正确做法成为阻力最小的选择。</p>
+      <p>好的开发者体验（DX）假定人会疲劳、会跳过最佳实践、会在生产环境上犯错，所以用快速、确定性的保护机制来做 check。</p>
+      <p>现在，代码仓库里多了一类新的贡献者：<strong>AI agent</strong>。</p>
+      <p>问题在于，我们以为它什么都懂，却忽略了其本质：Agent 只是一个完全无状态的工具。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap">
+        <span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span>
+      </div>
+      <span class="page">2 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 3: 引言续 + 什么是 AX ===== -->
+<div class="slide" id="slide-3">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <p>它没有业务理解，也缺少团队踩坑经历和代码库认知。要让它在真实代码库中完成有实际意义的工作，光优化提示词远远不够，真正需要优化的是它的工作环境。</p>
+      <p>我们的视角得从开发者体验（DX）转变到 Agent 体验（AX）。</p>
+      <div class="h2">什么是 Agent 体验</div>
+      <p>Agent 体验关注的是如何在模型和真实代码库之间搭建好中间层。这个中间层包括上下文、工具、权限、测试和 Review 的闭环，告诉 agent 什么重要、它能碰什么、以及如何确认自己做对了。</p>
+      <p>核心问题只有一个：<strong>给 agent 构建一个快速、安全、确定性的反馈循环</strong></p>
+      <p>围绕这个问题，有七条核心原则。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">3 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 4: 原则一 ===== -->
+<div class="slide" id="slide-4">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <div class="h2">原则一：上下文即 onboarding</div>
+      <p>开发者 onboarding 以前只在新人入职时才需要考虑：一个新人要多久才能熟悉仓库并有效提交第一个贡献？</p>
+      <p>对 agent 来说，onboarding 发生在每一次任务的开头。仓库说明、构建命令、组件 API、schema、已知的故障模式决定了 agent 的感知，推理，行动和反馈。</p>
+      <p>我们有一个常见误区是过度地文档化。团队会逐渐累积一堆 skill 、AGENTS.md 规则、过时的定义、prompt 片段和隐藏的工具指令。</p>
+      <p>当上下文过多时，如果 agent 做了一个错误决策，我们得在一堆杂乱的输入历史中排查到底是哪条过时指令或冲突规则误导了模型。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">4 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 5: 原则一续 ===== -->
+<div class="slide" id="slide-5">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <p><strong>好的 agent 上下文应该像好的代码一样：精简、透明、可验证。</strong></p>
+      <div class="list-item"><span class="bullet">•</span><span><strong>精简</strong>：全局上下文尽量薄，代码本身能说清楚的就不另写文档。</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>透明</strong>：审查者能轻松追溯是哪条规则或 skill 影响了这次输出。</span></div>
+      <div class="list-item"><span class="bullet">•</span><span><strong>可验证</strong>：团队的 skill 足够自解释，agent 能在正确时机调用，我们能理解为什么调用。</span></div>
+      <p style="margin-top:8px">agent 的规则、skill 和上下文必须作为团队纪律来管理，而不是随意堆砌。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">5 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 6: 原则二 ===== -->
+<div class="slide" id="slide-6">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <div class="h2">原则二：环境是 prompt 的一部分</div>
+      <p>大模型本质上是非确定性的。正因为模型的推理过程是概率性的，其余的执行环境就必须尽可能做到确定。</p>
+      <p>依赖包的版本、工程脚本、环境变量等构建配置，以及认证、浏览器、本地服务等运行时依赖，这些直接决定 agent 的感知和执行。环境本身就是 prompt 的一部分。</p>
+      <p>"我在本地跑不了测试，但感觉应该没问题"，这话人说出来，我们会立刻警觉；但如果是 agent，我们反而睁一只眼闭一只眼。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">6 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 7: 原则二续 ===== -->
+<div class="slide" id="slide-7">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <p>人类开发者遇到缺失的环境变量或报错的 Docker 命令会停下来排查。但 Agent 不会，它会绕过故障、改错文件，然后提交一个 commit。</p>
+      <p>如果 agent 无法编译代码、启动开发服务器、填充数据库或调用本地 API 来验证输出，它产出的就不是可信的软件。</p>
+      <p><strong>Agent 必须有一个可靠、一致、可观测的工作空间。</strong></p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">7 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 8: 原则三 ===== -->
+<div class="slide" id="slide-8">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <div class="h2">原则三：交付前必须验证</div>
+      <p>agent 不能只生成代码，还得证明产出是对的。</p>
+      <p>目前的状况是，写代码的成本确实降低了，但审查代码的认知负荷反而上升了。如果要花三十分钟手动审查一个 agent 生成的 PR、逐一检查边界情况、清理通用的布局样式，那 agent 并不会节省时间，它只是把劳动从编写侧转移到了审查侧。审查负担过重的话，软件质量就会急剧下滑。</p>
+      <p>好的 AX 意味着 agent 在交付前完成充分的验证工作，且验证应该附带证据证明，包括：测试结果和日志、截图和浏览器流程录制、无障碍检查和边界情况探索等。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">8 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 9: 原则三续 ===== -->
+<div class="slide" id="slide-9">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <p>类型检查、单元测试和 lint 仍然重要。但产品层面的问题往往出在编译器看不到的地方，比如响应式布局在某些分辨率下崩溃、loading 状态一直不消失、某个业务流程代码能编译通过但功能上完全不通。除了基本的静态代码检测，e2e 测试也很重要。</p>
+      <p>Agent 可以全天候运转，但开发者的专注力很有限。凡是 agent 能在闭环里自行验证的环节，就不应该消耗人的注意力。</p>
+      <p>当 agent 呈现工作成果时，交付过程应该尽可能易于操作。审查者能在预览分支上直接标注反馈，这些反馈可以直接送回 agent 的执行循环让它自行修正，开发者不应该在工具之间反复复制粘贴。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">9 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 10: 原则四 ===== -->
+<div class="slide" id="slide-10">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <div class="h2">原则四：安全必须是系统性的</div>
+      <p>好的 DX 让危险操作变得困难，好的 AX 需要让危险操作变得不可能。</p>
+      <p>agent 的改动很快且批量执行，prompt 很容易被绕过。安全必须做的足够立体：沙箱限制执行环境，最小化凭证和网络权限，隔离开发与生产数据，高风险操作交由人工确认。</p>
+      <p>每次看到有人在社交媒体上说 xx agent 删了数据库，第一个念头都是：为什么系统会允许这种事发生？为什么 agent 有这个权限？</p>
+      <p>当 agent 的用户不再只是开发者时，沙箱原则同样适用。如果 PM、设计师或运营人员使用 agent 来迭代产品界面，他们也不应该有本地机器的 root 权限或生产环境的凭证。安全不能指望非技术人员能理解 <code>rm -rf</code>、OAuth scope 或生产环境变量的危害。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">10 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 11: 原则五 ===== -->
+<div class="slide" id="slide-11">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <div class="h2">原则五：模型路由应当是基础设施</div>
+      <p>我们在前沿模型的排名和评分上投入了很多注意力。但对团队来说，真正重要的问题是：</p>
+      <p>谁能使用 agent？针对哪些系统？带有什么上下文？遵循什么审查流程？走哪条模型路由？以及留下什么审计痕迹？</p>
+      <p>模型路由应该像水电一样，稳定运行、不需要操心。团队需要能灵活切换供应商、按任务选择合适的模型，但不应该让每个开发者都成为模型选型专家。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">11 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 12: 原则五续 + 原则六 ===== -->
+<div class="slide" id="slide-12">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <p>低风险的摘要、分类、脚手架代码或常规审查用便宜快速的模型就够了，确定性的语法校验本来就该由 linter 和类型检查处理，昂贵的推理模型只在多文件的复杂判断上才有必要。</p>
+      <p>治理也要内置到 agent 的工作流中。管理员要能看得到用量和成本，审查者看得到执行依据，模型 provider 可以丝滑切换。</p>
+      <div class="h2">原则六：设计系统和代码架构是 agent 的最佳信息源</div>
+      <p>代码库不再只是给人看的，要让 agent 可靠干活，代码库必须最准确地反映产品的实际运作方式。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">12 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 13: 原则六续 + 原则七 ===== -->
+<div class="slide" id="slide-13">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <p>如果代码库混乱，文档与实际代码不符、Storybook 版本落后，agent 会把这些内容整合成为一份外强中干的垃圾产出。</p>
+      <p>让代码库为 AI 做好准备，靠的是经典的软件工程原则：高度的封装搭配简洁的接口、类型化 API、可预测的路由、干净的目录结构。</p>
+      <p>道理和 UI 设计中的渐进式披露一样：把实现细节藏在干净的接口背后，agent 需要处理的信息量会更少，这就意味着更低的 token 消耗和更少的逻辑错误。</p>
+      <p>设计系统同理。代码库越是强制 agent 复用已有的组件、token 和无障碍模式，输出就越不可能退化为通用的垃圾代码。团队已经有现成的 Button 组件，agent 就不应该自己再造一个。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">13 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 14: 原则七 + AX 需要平台 ===== -->
+<div class="slide" id="slide-14">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <div class="h2">原则七：agent 是跨职能协作的粘合剂</div>
+      <p>Agent 体验从开发者开始，但它实质上解决的是整个组织的协调问题。</p>
+      <p>agent 可以让功能的 V1 变得很廉价，但 V2、V3、V4 的迭代问题它解决不了。没有共享工作空间，开发者就变成了一个高薪的信息中转站：从设计师那里复制视觉反馈，再翻译成 agent 能理解的 prompt，然后本地跑工作空间，手动管理分支。</p>
+      <p>好的 AX 应当是把协作的场所从聊天窗口和需求文档搬到可交互的产品界面上。</p>
+      <p>通过交互式预览部署和分角色的权限控制，设计师、运营或 PM 可以在一个安全、受限的预览环境中直接和 agent 对话。他们可以测试响应式状态、迭代文案、调整布局，开发者继续把关架构、安全和系统集成。</p>
+      <p>开发者不应该是复制粘贴和翻译 prompt 的工具人，而是拥有系统设计能力的平台工程师。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">14 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 15: AX 需要平台 ===== -->
+<div class="slide" id="slide-15">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <section class="post-body">
+      <div class="h2">AX 需要一个平台来承载</div>
+      <p>上述这些能力当然可以拼凑起来：coding agent、沙箱、规则文件、测试工具、手动审查流程各来一套。但这样做，拼接本身就变成了主要工作。大概率你会发现花在内部 agent 基础设施维护上的时间比发布功能还多。</p>
+      <p>真正的价值在于把代码库、执行环境和团队视为一个统一的协作工作空间，让 agent 能自动运行测试、编译代码、生成可视化的分支预览。这样 agent 就不再是一个脱节的代码生成工具，而是真正融入团队的协作者。</p>
+    </section>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">15 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Slide 16: 封底 ===== -->
+<div class="slide" id="slide-15">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    <div class="quote-card">
+      <div>
+        <div class="q">Agent 应该做胶水层的缝合工作，人类应该做更有意思的创造性工作。</div>
+        <div class="q" style="margin-top:12px">好的 agent 体验应当是给有创造力的人腾出空间，让他们把精力放在判断、品味、架构和策略这些真正需要人的地方。</div>
+        <div class="dash"></div>
+        <div class="punch">DX 成为一门学科，是因为我们意识到软件质量取决于我们构建的系统，<span class="hl">AX 也将同样如此</span>。</div>
+      </div>
+    </div>
+    <div class="end-mark" style="margin-top:auto;">— END —</div>
+    <footer class="post-footer">
+      <div class="brand-wrap"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span></div>
+      <span class="page">16 / 16</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== 下载脚本 ===== -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE = 2;
+
+// Date injection
+const d = new Date();
+const mm = String(d.getMonth()+1).padStart(2,'0');
+const dd = String(d.getDate()).padStart(2,'0');
+document.querySelectorAll('.date').forEach(el => el.textContent = mm + '/' + dd);
+
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#F2EDE3' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function fetchAsDataURL(url) {
+  const r = await fetch(url, { mode: 'cors', cache: 'force-cache' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const blob = await r.blob();
+  return await new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result);
+    fr.onerror = rej;
+    fr.readAsDataURL(blob);
+  });
+}
+
+async function inlineRemoteImages() {
+  const imgs = Array.from(document.querySelectorAll('img'));
+  await Promise.all(imgs.map(async (img) => {
+    const src = img.getAttribute('src') || '';
+    if (!src || src.startsWith('data:') || src.startsWith('blob:')) return;
+    try {
+      const u = new URL(src, location.href);
+      if (u.origin === location.origin) return;
+    } catch (_) { return; }
+    const stripped = src.replace(/^https?:\/\//, '');
+    const candidates = [
+      src,
+      'https://wsrv.nl/?url=' + encodeURIComponent(stripped),
+      'https://images.weserv.nl/?url=' + encodeURIComponent(stripped),
+      'https://corsproxy.io/?' + encodeURIComponent(src),
+    ];
+    let dataUrl = null, lastErr = null;
+    for (const u of candidates) {
+      try { dataUrl = await fetchAsDataURL(u); break; }
+      catch (e) { lastErr = e; }
+    }
+    if (dataUrl) {
+      img.src = dataUrl;
+      if (img.decode) { try { await img.decode(); } catch (_) {} }
+    } else {
+      console.warn('图片所有下载源都失败：', src, lastErr);
+      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      img.style.background = '#ddd';
+      img.dataset.failed = '1';
+    }
+  }));
+}
+
+async function renderSlide(s) {
+  const origRadius = s.style.borderRadius;
+  s.style.borderRadius = '0';
+  const hasDark = s.querySelector('.bg-dark');
+  const bg = hasDark ? '#1C1C1E' : '#F2EDE3';
+  const raw = await html2canvas(s, { scale: SCALE, useCORS: true, allowTaint: false, backgroundColor: null, width: 540, height: 720, logging: false });
+  s.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+function canvasToBlob(c) { return new Promise(r => c.toBlob(r, 'image/png')); }
+
+async function downloadAll() {
+  const progress = document.getElementById('progress');
+  try {
+    progress.textContent = '预加载图片...';
+    await inlineRemoteImages();
+    const slides = document.querySelectorAll('.slide');
+    const zip = new JSZip();
+    for (let i = 0; i < slides.length; i++) {
+      progress.textContent = '渲染第 ' + (i+1) + '/' + slides.length + ' 张...';
+      const canvas = await renderSlide(slides[i]);
+      const blob = await canvasToBlob(canvas);
+      if (!blob) throw new Error('第 ' + (i+1) + ' 张 toBlob 失败（canvas 可能被跨域污染）');
+      zip.file('小红书-' + String(i+1).padStart(2,'0') + '.png', blob);
+    }
+    progress.textContent = '打包中...';
+    saveAs(await zip.generateAsync({type:'blob'}), '小红书-从DX到AX.zip');
+    progress.textContent = slides.length + ' 张已打包下载';
+  } catch (e) {
+    console.error(e);
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e) + '\n请打开浏览器控制台查看详情。');
+  }
+}
+
+let currentSlideIdx = 0;
+const observer = new IntersectionObserver((entries) => {
+  let best = null;
+  entries.forEach(e => {
+    if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e;
+  });
+  if (best) {
+    const slides = document.querySelectorAll('.slide');
+    currentSlideIdx = Array.from(slides).indexOf(best.target);
+  }
+}, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+document.querySelectorAll('.slide').forEach(s => observer.observe(s));
+
+async function downloadOne() {
+  const progress = document.getElementById('progress');
+  try {
+    await inlineRemoteImages();
+    const slides = document.querySelectorAll('.slide');
+    const idx = Math.max(0, Math.min(currentSlideIdx, slides.length - 1));
+    const canvas = await renderSlide(slides[idx]);
+    const blob = await canvasToBlob(canvas);
+    if (!blob) throw new Error('toBlob 失败（canvas 可能被跨域污染）');
+    saveAs(blob, '小红书-' + String(idx+1).padStart(2,'0') + '.png');
+    progress.textContent = '已下载第 ' + (idx+1) + ' 张';
+  } catch (e) {
+    console.error(e);
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e));
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <rect width="1600" height="900" fill="#ffffff"/>
+
+  <!-- 工位桌 -->
+  <path d="M 520 580 L 520 520 Q 522 518 580 516 L 820 516 Q 878 518 880 520 L 880 580"
+        stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="520" y1="580" x2="520" y2="700" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="880" y1="580" x2="880" y2="700" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Day 1 纸牌 -->
+  <rect x="650" y="440" width="100" height="70" rx="4" fill="none" stroke="#A07848" stroke-width="2.5"/>
+  <text x="700" y="484" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="28" font-weight="700" fill="#A07848">Day 1</text>
+
+  <!-- 小黑坐在桌前 -->
+  <!-- 身体 -->
+  <ellipse cx="700" cy="480" rx="28" ry="24" fill="#1a1a1a"/>
+  <!-- 头 -->
+  <circle cx="700" cy="445" r="20" fill="#1a1a1a"/>
+  <!-- 耳朵 -->
+  <polygon points="686,430 690,415 696,430" fill="#1a1a1a"/>
+  <polygon points="714,430 710,415 704,430" fill="#1a1a1a"/>
+  <!-- 眼睛 -->
+  <circle cx="694" cy="444" r="3" fill="#ffffff"/>
+  <circle cx="706" cy="444" r="3" fill="#ffffff"/>
+  <!-- 尾巴 -->
+  <path d="M 728 478 Q 745 470 740 455" stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="686" y1="500" x2="686" y2="516" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+  <line x1="714" y1="500" x2="714" y2="516" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- 机械计数器 -->
+  <rect x="640" y="290" width="160" height="70" rx="6" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+  <line x1="680" y1="290" x2="680" y2="360" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="720" y1="290" x2="720" y2="360" stroke="#1a1a1a" stroke-width="1.5"/>
+  <line x1="760" y1="290" x2="760" y2="360" stroke="#1a1a1a" stroke-width="1.5"/>
+  <!-- 数字 -->
+  <text x="660" y="338" text-anchor="middle" font-family="Courier, monospace" font-size="32" font-weight="900" fill="#A07848">0</text>
+  <text x="700" y="338" text-anchor="middle" font-family="Courier, monospace" font-size="32" font-weight="900" fill="#A07848">8</text>
+  <text x="740" y="338" text-anchor="middle" font-family="Courier, monospace" font-size="32" font-weight="900" fill="#A07848">4</text>
+  <text x="780" y="338" text-anchor="middle" font-family="Courier, monospace" font-size="32" font-weight="900" fill="#A07848">7</text>
+
+  <!-- 散落的问号纸 -->
+  <rect x="540" y="490" width="35" height="28" rx="2" fill="none" stroke="#1a1a1a" stroke-width="1.5" transform="rotate(-8 557 504)"/>
+  <text x="557" y="510" text-anchor="middle" font-size="16" fill="#cc3333">?</text>
+
+  <rect x="830" y="485" width="35" height="28" rx="2" fill="none" stroke="#1a1a1a" stroke-width="1.5" transform="rotate(5 847 499)"/>
+  <text x="847" y="505" text-anchor="middle" font-size="16" fill="#cc3333">?</text>
+
+  <rect x="560" y="530" width="30" height="24" rx="2" fill="none" stroke="#1a1a1a" stroke-width="1.2" transform="rotate(12 575 542)"/>
+  <text x="575" y="547" text-anchor="middle" font-size="14" fill="#cc3333">?</text>
+
+  <!-- 手写标注 -->
+  <text x="720" y="265" text-anchor="middle" font-family="PingFang SC, STKaiti, serif" font-size="16" fill="#4a7ab5" font-style="italic">第 847 次</text>
+  <path d="M 690 270 Q 700 274 750 270" stroke="#4a7ab5" stroke-width="0.8" fill="none"/>
+
+  <text x="1050" y="460" font-family="PingFang SC, STKaiti, serif" font-size="20" fill="#4a7ab5">无状态</text>
+  <path d="M 1045 465 L 1110 465" stroke="#4a7ab5" stroke-width="0.8" fill="none"/>
+
+  <text x="1050" y="520" font-family="PingFang SC, STKaiti, serif" font-size="16" fill="#1a1a1a" opacity="0.5">每次任务 = 重新入职</text>
+
+  <text x="430" y="350" font-family="PingFang SC, STKaiti, serif" font-size="16" fill="#cc3333">没有记忆</text>
+  <path d="M 425 355 Q 450 360 490 355" stroke="#cc3333" stroke-width="0.8" fill="none"/>
+</svg>
