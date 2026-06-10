@@ -144,7 +144,23 @@ python3 md2wechat_formatter.py [文章路径] -o content/[slug]/preview.html
 3. 输出 shot list，标注每张图的风格、位置、主题
 4. 用户确认后分别调用对应流程生成
 
-**配图与排版 HTML 关联**：两种风格最终产出都是 PNG，统一通过 `<!-- IMAGE:文件名.png -->` 占位符插入 `preview.html`。品牌配图文件名格式为 `配图-N.png`，小黑配图为 `xiaohei-illustrations/01-topic.png`。分发脚本统一上传到微信 CDN。
+**关键规则**：**每个章节只配一张图**，不要给同一段落同时安排品牌图和小黑图。两种风格按段落分工，混合编排在同一篇文章里。
+
+**配图与排版 HTML 关联**：两种风格最终产出都是 PNG，统一通过 `<!-- IMAGE:文件名.png -->` 占位符插入 `preview.html`。`illustrations.html` 中的 `slide-label` 既是给人看的位置说明，也是 `scripts/insert_image_placeholders.py` 用来生成占位符的输入。两种标签格式（可在同一文件中混用）：
+
+```html
+<!-- 品牌信息图（slide 会用 html2canvas / Playwright 截屏渲染） -->
+<div class="slide-label">配图 N · 放在「锚点文字」之后</div>
+<div class="slide dark" data-num="N"> ... </div>
+
+<!-- 小黑手绘图（PNG 已经放在 xiaohei-illustrations/ 下） -->
+<div class="slide-label">小黑 NN · 放在「锚点文字」之后 · 文件:NN-topic.png</div>
+<div class="slide xiaohei-row" data-xiaohei="NN-topic.png">
+  <img src="xiaohei-illustrations/NN-topic.png" />
+</div>
+```
+
+`data-num` 给品牌 slide 一个稳定编号，对应输出文件 `配图-N.png`；`.xiaohei-row` 让 `render_pngs.py` 跳过这一行（PNG 已经在磁盘上）。`scripts/insert_image_placeholders.py` 会按 `slide-label` 的顺序，把对应文件名注入 `preview.html` 锚点章节末尾。
 
 ### 第 4 步：manifest + 收尾
 
