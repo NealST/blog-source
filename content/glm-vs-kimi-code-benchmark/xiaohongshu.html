@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>小红书 Markdown 还原范例 v2（h1/h2/h3 + 图片独占 + 下载工具栏）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #2c2825;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 90px 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  }
+  /* ===== 下载工具栏 ===== */
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(28,28,30,0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px; display: flex; align-items: center;
+    justify-content: center; gap: 12px;
+  }
+  .toolbar .btn {
+    background: #1C1C1E; color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15);
+    padding: 9px 22px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer;
+  }
+  .toolbar .btn.accent { background: #C4956A; border-color: #C4956A; }
+  .toolbar .progress { color: rgba(255,255,255,0.7); font-size: 12px; margin-left: 8px; }
+
+  .slide {
+    width: 540px; height: 720px; margin-bottom: 40px;
+    position: relative; overflow: hidden; border-radius: 8px;
+    box-shadow: 0 6px 28px rgba(28,28,30,0.35); background: #fff;
+  }
+  .bg-paper {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #F6F1E7 0%, #F2EDE3 55%, #ECE4D2 100%);
+  }
+  .bg-paper::after {
+    content: ''; position: absolute; inset: 0; opacity: 0.04;
+    background-image: linear-gradient(rgba(28,28,30,0.6) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(28,28,30,0.6) 1px, transparent 1px);
+    background-size: 28px 28px; pointer-events: none;
+  }
+  .bg-paper::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 240px; height: 240px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,149,106,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .content {
+    position: relative; z-index: 2; height: 100%;
+    padding: 32px 40px 24px; display: flex; flex-direction: column;
+    color: #333; letter-spacing: 0.3px;
+  }
+  
+  /* Pure-image slide: no chrome, just an image filling the card */
+  .slide.img-only { background: #1C1C1E; }
+  .slide.img-only .bg-paper { display: none; }
+  .slide.img-only .content { padding: 0; }
+  .slide.img-only img.main-img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+  }
+
+  .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
+  .avatar-wrap { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #C4956A; overflow: hidden; background: linear-gradient(135deg, #C4956A, #8a6240); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #F2EDE3; font-weight: 700; font-family: "Songti SC", serif; font-size: 18px; }
+  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .meta .name { font-size: 15px; font-weight: 700; color: #1C1C1E; }
+  .meta .date { font-size: 13px; color: #888; margin-top: 2px; }
+
+  .post-body { flex: 1; overflow: hidden; }
+  
+  .post-body .h1 {
+    font-size: 27px; font-weight: 800; color: #1C1C1E;
+    margin-bottom: 16px; line-height: 1.35;
+    text-align: center; padding: 12px 0;
+    border-top: 2px solid #1C1C1E; border-bottom: 2px solid #1C1C1E;
+    font-family: "Songti SC", "Source Han Serif SC", serif;
+    letter-spacing: 1px;
+  }
+  .post-body .h2 {
+    font-size: 22px; font-weight: 700; color: #1C1C1E;
+    margin-bottom: 12px; border-left: 4px solid #C4956A; padding-left: 12px;
+  }
+  .post-body .h3 {
+    font-size: 19px; font-weight: 700; color: #2C2A28;
+    margin-bottom: 10px; margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .post-body p { font-size: 18px; line-height: 1.6; margin-bottom: 8px; }
+  .post-body em { font-style: italic; color: #555; }
+  .post-body strong { color: #1C1C1E; font-weight: 700; }
+  
+  .list-item { display: flex; gap: 8px; margin-bottom: 7px; font-size: 18px; line-height: 1.6; }
+  .list-item .bullet { color: #999; font-weight: bold; flex-shrink: 0; }
+  .list-item.sub { margin-left: 18px; font-size: 16px; }
+  
+  .table-block { background: #f5efe4; border: 1px solid #e8dfd0; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; }
+  .table-row { border-bottom: 1px dashed rgba(196,149,106,0.4); padding: 6px 0; font-size: 15.5px; }
+  .table-row:first-child { padding-top: 0; }
+  .table-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .table-row .key { font-weight: 700; color: #1C1C1E; margin-bottom: 2px; font-size: 16px; }
+  .table-row .val { color: #555; line-height: 1.5; }
+  
+  code { background: #E8E0D1; color: #1C1C1E; padding: 1px 5px; border-radius: 4px; font-family: "SF Mono", Menlo, monospace; font-size: 0.92em; white-space: nowrap; }
+  code.cmd-block { display: block; white-space: pre-wrap; word-break: break-word; padding: 8px 12px; margin-top: 6px; line-height: 1.55; }
+
+  .post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(28,28,30,0.08); flex-shrink: 0; }
+  .post-footer .brand { font-size: 12px; color: #888; }
+  .post-footer .brand .gz { color: #C4956A; font-weight: 700; }
+  .post-footer .page { font-size: 12px; color: #888; }
+  
+  .quote-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+  .swipe-hint {
+    text-align: center; font-size: 12px; letter-spacing: 1px;
+    margin-top: auto; padding-bottom: 8px; color: rgba(28,28,30,0.3);
+  }
+  .swipe-arrows {
+    display: inline-block; letter-spacing: 3px; font-weight: 300; opacity: 0.7;
+    background: linear-gradient(90deg, currentColor 0%, transparent 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button class="btn" onclick="downloadOne()">下载当前</button>
+  <span class="progress" id="progress"></span>
+</div>
+<div class="slide" id="slide-1">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <div class="h1">从规划到编码：实测 GLM-5.2 与 Kimi K2.7 Code，谁更强？</div>
+        <p>6 月份，Kimi K2.7 Code（后简称 Kimi） 与 GLM 5.2 （后简称 GLM）相继发布。</p>
+        <p>作为价位接近的两个头部开源权重模型，我们在相同的 Agent 环境中，让他们执行同一个后端开发的任务，实测对比了双方的能力水平。</p>
+      </div>
+      <div class="swipe-hint"><span class="swipe-arrow">←</span> 左滑查看更多</div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">1 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <p>评测分为 planning 和 building 两个阶段。我们先让两个模型出具架构规划，给方案打分并选出胜者。然后清空环境，让两个模型执行胜出的规划，实现具体的服务。</p>
+        <p>结论是：<strong>GLM-5.2 和 Kimi K2.7 在编码执行上的表现在伯仲之间，但规划能力有所差距。GLM 的架构方案拿到了 9.0 分，Kimi 则为 8.1 分。</strong></p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">2 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <div class="h2">为什么规划能力是模型分水岭</div>
+        <p>当前的编码 Agent 在执行层面已经做得足够好。只要给到一份详细的方案文档，它们实现的效果大差不差，真正难的地方在于方案设计与规划。</p>
+        <p>核心在于如何从一份粗糙的需求和模糊的场景里梳理出系统全貌，预判各种隐藏问题，然后整理成一份清晰明确的落地指南。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">3 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <p>如同诸葛亮火烧博望坡一役，把谁在何时何地，看到什么信号作何反应安排得明明白白。这份顶层规划足够严谨周密，即使执行者并非关张赵，大概率也能让曹仁灰头土脸。</p>
+        <p>为了考验规划能力，我们特意设计了一道看似常规、实则埋雷的测试任务。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">4 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide img-only" id="slide-5">
+  <div class="content"><img src="xiaohei-illustrations/01-planning-vs-building.png" class="main-img"></div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <div class="h2">灰度发布的隐蔽陷阱</div>
+        <p>任务要求模型从零设计并实现一个特性开关服务，且必须具备灰度发布控制能力。比如一个商城要上线新的结账流，要求先推给 5% 的用户公测，随后能随时平滑扩量到 25%，直至最终全量。</p>
+        <p>这道题里有个坑点：灰度状态必须保持连贯。如果一个用户命中了首批 20% 的公测名单，当测试比例扩大到 40% 时，他必须依然留在名单里，功能不能得而复失。</p>
+        <p>同时，考题限制了暴力解法：系统不能为了记住这些用户，就把几百万人的分组结果全存进数据库里。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">6 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide img-only" id="slide-7">
+  <div class="content"><img src="xiaohei-illustrations/02-hash-bucket.png" class="main-img"></div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <div class="h2">Planning 阶段：GLM 判断更强</div>
+        <p>两个模型都避开了直接存数据库的笨办法，同时采用了哈希分桶算法（将 User ID 计算出一串固定数字的哈希值，然后按 100 取模映射到 0 到 100 的固定区间。这样系统只需判断该用户的哈希映射值是否小于当前的灰度百分比即可。）</p>
+        <p>为了评估除分桶算法之外的其余能力，我们用了一个加权评分表。评分维度在写提示词时就已按需求逐条固定，并在看到任何模型输出前锁定，避免“先看答案再改判分标准”的后验偏置。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">8 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <p>核心差距主要体现在边缘 case 的预判上。</p>
+        <p>一个典型 case 是在“查询不存在的开关”时，为了不让这些无效查询压垮数据库，GLM 在设计中加上了缓存空结果（负面缓存）的机制，但它也同时指出了缓存失效隐患：如果之后真正创建了这个空开关，那就得立刻清空之前的缓存。</p>
+        <p>Kimi 给出的方案则完全没有提及这个 case。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">9 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide img-only" id="slide-10">
+  <div class="content"><img src="xiaohei-illustrations/03-cache-miss.png" class="main-img"></div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <p>在灰度分桶算法上，GLM 考虑了一个关键场景：同一位用户在 Staging 和 Prod 两个环境里，都应该落在同一个灰度批次。因此，它在计算哈希值时剔除了环境因子。</p>
+        <p>而 Kimi 则没有做到这一点。</p>
+        <p>在存储 API Key 时，Kimi 直接选用了 bcrypt（业界存储用户密码的标准方案）。GLM 则选用了普通的 SHA-256，并详细解释了打破常规的原因。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">11 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <p>密码之所以需要慢哈希，是因为人类设置的密码太简单，容易被彩虹表猜中；但 API Key 是机器生成的随机长字符串，根本不存在被暴力枚举的风险。如果在这种高频鉴权请求上套用缓慢的 bcrypt，除了白白消耗服务器算力外，没有任何安全收益。</p>
+        <p>Kimi 给出的规划内容更长，甚至提前写好了一些伪代码片段，这当然也有一定价值。但方案规划的核心在于把系统里最棘手的问题提前识别出来并给出合理的解决方案。这一点 GLM 明显更胜一筹。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">12 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <div class="h2">Building 阶段：规划决定执行质量</div>
+        <p>进入编码阶段，我们在一个空目录里放入了 GLM 胜出的 <code>plan.md</code>，然后给每个模型都分配了全新、干净的终端会话。Kimi 也许要按照 GLM 给出的规划来执行。</p>
+        <p>随后我们用一套提前写好的打分脚本，对成品进行了 15 项黑盒测试。测试内容以业务排雷为主，包括：失效 Key 是否被正确拒绝？重启服务后状态会不会漂移？修改阈值后能不能绕开缓存立刻生效？落盘后的密钥文件是否保证不可读？</p>
+        <p>结果显示：<strong>GLM 通关了全部 15 项，Kimi 过了 14 项。</strong></p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">13 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <p>对于关键的灰度发版一致性问题，我们用同一批 200 个真实的 User ID 去请求这两个服务，并将灰度开启比例调到 35%。</p>
+        <p>结果是：两个模型实现的后端服务都算出了 77 名测试用户，这些用户不仅名额一致，并且具体到每个人的 ID 也都分毫不差。</p>
+        <p>即使是两个完全不同的开源模型，只要有了优质的方案规划，它们写出来的微服务底层行为依然是高度吻合的。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">14 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="post-body">
+        <p>在具体的实现层面，GLM 写了更多的代码，测试覆盖得也更全面，并且接住了 Kimi 未覆盖到的 case：在刚创建完开关的瞬间主动抹除之前的负面缓存。</p>
+        <p>可以说 GLM 不仅是个好建筑师，还是个心思缜密的泥瓦匠。</p>
+        <div class="h2">总结</div>
+        <p><strong>在架构规划上，GLM-5.2 是更强的模型。</strong> 它对于各种边缘 case 的考虑更为细致周密。</p>
+        <p><strong>在代码编写上，双方质量接近。</strong>两个模型在同一个技术方案下，给出的实现基本一致。</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">15 / 16</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="slide-16">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header">
+      <div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date"></div></div>
+    </div>
+    
+      <div class="quote-card">
+        <p class="q">当下这批开源权重模型已经完全有能力胜任真实业务的规划与代码落地。对于开发者而言，它们不仅是大幅降低了使用成本，而且做到了很高的可用性保障，不会出现闭源巨头们的 API 断供问题。</p>
+        <p class="punch">期待国产模型变得越来越好！</p>
+      </div>
+    
+    <div class="post-footer">
+      <div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div>
+      <div class="page">16 / 16</div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  (function(){
+    const d = new Date();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    document.querySelectorAll('.date').forEach(el => el.textContent = `${mm}/${dd}`);
+  })();
+</script>
+
+<!-- ===== 下载脚本 ===== -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE = 2;
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#F2EDE3' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+// 预把跨域图片转成 dataURL，避免 html2canvas 因为 CORS 把 canvas 标 tainted。
+async function fetchAsDataURL(url) {
+  const r = await fetch(url, { mode: 'cors', cache: 'force-cache' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const blob = await r.blob();
+  return await new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result);
+    fr.onerror = rej;
+    fr.readAsDataURL(blob);
+  });
+}
+
+async function inlineRemoteImages() {
+  const imgs = Array.from(document.querySelectorAll('img'));
+  await Promise.all(imgs.map(async (img) => {
+    const src = img.getAttribute('src') || '';
+    if (!src || src.startsWith('data:') || src.startsWith('blob:')) return;
+    try {
+      const u = new URL(src, location.href);
+      if (u.origin === location.origin) return;
+    } catch (_) { return; }
+
+    // 候选下载源：直连 → weserv 代理（自动加 CORS 头）→ corsproxy.io
+    const stripped = src.replace(/^https?:\/\//, '');
+    const candidates = [
+      src,
+      'https://wsrv.nl/?url=' + encodeURIComponent(stripped),
+      'https://images.weserv.nl/?url=' + encodeURIComponent(stripped),
+      'https://corsproxy.io/?' + encodeURIComponent(src),
+    ];
+
+    let dataUrl = null, lastErr = null;
+    for (const u of candidates) {
+      try { dataUrl = await fetchAsDataURL(u); break; }
+      catch (e) { lastErr = e; }
+    }
+
+    if (dataUrl) {
+      img.src = dataUrl;
+      if (img.decode) { try { await img.decode(); } catch (_) {} }
+    } else {
+      // 所有源都失败，把图片替换为 1x1 透明占位，避免污染 canvas
+      console.warn('图片所有下载源都失败，将替换为占位符：', src, lastErr);
+      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      img.style.background = '#ddd';
+      img.dataset.failed = '1';
+    }
+  }));
+}
+
+async function renderSlide(s) {
+  const origRadius = s.style.borderRadius;
+  s.style.borderRadius = '0';
+  const isImgOnly = s.classList.contains('img-only');
+  const bg = isImgOnly ? '#1C1C1E' : '#F2EDE3';
+  const raw = await html2canvas(s, { scale: SCALE, useCORS: true, allowTaint: false, backgroundColor: null, width: 540, height: 720, logging: false });
+  s.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+function canvasToBlob(c) { return new Promise(r => c.toBlob(r, 'image/png')); }
+
+async function downloadAll() {
+  const progress = document.getElementById('progress');
+  try {
+    progress.textContent = '预加载图片...';
+    await inlineRemoteImages();
+    const slides = document.querySelectorAll('.slide');
+    const zip = new JSZip();
+    for (let i = 0; i < slides.length; i++) {
+      progress.textContent = `渲染第 ${i+1}/${slides.length} 张...`;
+      const canvas = await renderSlide(slides[i]);
+      const blob = await canvasToBlob(canvas);
+      if (!blob) throw new Error(`第 ${i+1} 张 toBlob 失败（canvas 可能被跨域污染）`);
+      zip.file(`小红书-${String(i+1).padStart(2,'0')}.png`, blob);
+    }
+    progress.textContent = '打包中...';
+    saveAs(await zip.generateAsync({type:'blob'}), '小红书轮播图.zip');
+    progress.textContent = `${slides.length} 张已打包下载`;
+  } catch (e) {
+    console.error(e);
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e) + '\n请打开浏览器控制台查看详情。');
+  }
+}
+
+let currentSlideIdx = 0;
+const observer = new IntersectionObserver((entries) => {
+  let best = null;
+  entries.forEach(e => {
+    if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e;
+  });
+  if (best) {
+    const slides = document.querySelectorAll('.slide');
+    currentSlideIdx = Array.from(slides).indexOf(best.target);
+  }
+}, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+document.querySelectorAll('.slide').forEach(s => observer.observe(s));
+
+async function downloadOne() {
+  const progress = document.getElementById('progress');
+  try {
+    await inlineRemoteImages();
+    const slides = document.querySelectorAll('.slide');
+    const idx = Math.max(0, Math.min(currentSlideIdx, slides.length - 1));
+    const canvas = await renderSlide(slides[idx]);
+    const blob = await canvasToBlob(canvas);
+    if (!blob) throw new Error('toBlob 失败（canvas 可能被跨域污染）');
+    saveAs(blob, `小红书-${String(idx+1).padStart(2,'0')}.png`);
+    progress.textContent = `已下载第 ${idx+1} 张`;
+  } catch (e) {
+    console.error(e);
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e));
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  .cover { width: 900px; height: 383px; position: relative; overflow: hidden; border-radius: 8px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #F2EDE3; }
+  .bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+  
+  /* 左文右图结构 */
+  .layout { position: absolute; inset: 0; display: flex; z-index: 2; }
+  .layout-left { width: 55%; padding: 0 20px 0 48px; display: flex; flex-direction: column; justify-content: center; }
+  .layout-right { width: 45%; padding-right: 48px; position: relative; display: flex; justify-content: center; align-items: center; }
+
+  /* 顶部角标 */
+  .brand { position: absolute; top: 20px; left: 24px; display: flex; align-items: center; gap: 8px; z-index: 3; }
+  .brand svg { width: 22px; height: 22px; }
+  .brand-text { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); letter-spacing: 1px; }
+  
+  /* 文案样式 */
+  .kicker { display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #C4956A; margin-bottom: 24px; position: relative; padding-left: 20px; }
+  .kicker::before { content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 12px; height: 2px; background: #C4956A; }
+  .title { font-size: 40px; font-weight: 700; line-height: 1.25; margin: 0 0 16px 0; color: #F2EDE3; letter-spacing: 1px; }
+  .title span { color: #C4956A; }
+  .lede { font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.55); font-weight: 400; max-width: 90%; }
+  
+  /* 右侧配图（分层对比图） */
+  .layer-stack { display: flex; flex-direction: column; gap: 16px; width: 280px; position: relative; }
+  .layer { height: 72px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 24px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; letter-spacing: 1px; color: rgba(255,255,255,0.7); position: relative;}
+  .layer.highlight { 
+    background: rgba(196, 149, 106, 0.1); 
+    border-color: #C4956A; 
+    color: #C4956A;
+    box-shadow: 0 0 24px rgba(196, 149, 106, 0.2); 
+    transform: translateX(-16px);
+  }
+  .layer.highlight::after {
+    content: "PLANNING";
+    position: absolute;
+    right: 24px;
+    font-weight: 600;
+  }
+  .layer::after { content: "BUILDING"; position: absolute; right: 24px; opacity: 0.5; }
+  .layer:nth-child(1)::after { content: ""; } /* First element */
+
+  .connection-line {
+    position: absolute;
+    left: 40px;
+    top: 72px;
+    bottom: -16px;
+    width: 2px;
+    background: rgba(255,255,255,0.2);
+    z-index: -1;
+  }
+  .connection-line.gold {
+    background: #C4956A;
+  }
+
+  .toolbar { margin-bottom: 24px; display: flex; gap: 12px; }
+  button { background: #333; color: #fff; border: 1px solid #444; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+  button:hover { background: #444; }
+</style>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="downloadCover('main')">下载头图 (900x383)</button>
+    <button onclick="downloadCover('secondary')">下载次图 (200x200)</button>
+  </div>
+  
+  <div class="cover" id="cover-main">
+    <div class="bg-dark"></div>
+    
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none">
+        <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+        <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+        <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+        <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+        <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+        <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+      </svg>
+      <span class="brand-text">墨筝</span>
+    </div>
+
+    <div class="layout">
+      <div class="layout-left">
+        <div class="kicker">Model Benchmark</div>
+        <h1 class="title">GLM vs Kimi<br>谁才是合格的<span>架构师</span>？</h1>
+        <div class="lede">开源模型规划与编码能力对撞实测：从特性开关与哈希槽位解析真正的 Agent 心智。</div>
+      </div>
+      <div class="layout-right">
+        <div class="layer-stack">
+          <div class="layer highlight">
+            [SYS] ARCHITECTURE
+          </div>
+          <div class="layer">
+            APP LOGIC
+          </div>
+          <div class="layer" style="transform: translateX(8px);">
+            TEST & DEPLOY
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function flattenAlpha(canvas, bgColor) {
+      const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+      const flat = document.createElement('canvas');
+      flat.width = canvas.width; flat.height = canvas.height;
+      const ctx = flat.getContext('2d');
+      ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+      ctx.fillRect(0, 0, flat.width, flat.height);
+      ctx.drawImage(canvas, 0, 0);
+      return flat;
+    }
+
+    async function downloadCover(type) {
+      const el = document.getElementById('cover-main');
+      const origRadius = el.style.borderRadius;
+      el.style.borderRadius = '0';
+      const bgEl = el.querySelector('.bg-dark');
+      const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+      
+      const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+      el.style.borderRadius = origRadius;
+      const flat = flattenAlpha(raw, bg);
+      
+      let finalCanvas = flat;
+      if (type === 'secondary') {
+        const size = 400; // 200x200 at 2x scale
+        const crop = document.createElement('canvas');
+        crop.width = size; crop.height = size;
+        const ctx = crop.getContext('2d');
+        const startX = (flat.width - size) / 2;
+        const startY = (flat.height - size) / 2;
+        ctx.drawImage(flat, startX, startY, size, size, 0, 0, size, size);
+        finalCanvas = crop;
+      }
+
+      const link = document.createElement('a');
+      link.download = `cover-${type}.png`;
+      link.href = finalCanvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>

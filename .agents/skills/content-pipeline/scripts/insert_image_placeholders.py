@@ -82,44 +82,44 @@ def insert_placeholders(preview_path: str, items: list[tuple[str, str]]) -> int:
 
     for fname, anchor in items:
         anchor_norm = normalize_dashes(anchor)
-        heading_line = None
+        heading_lines = []
         for i, line in enumerate(lines):
             if ('<h2' in line or '<h3' in line) and anchor_norm in normalize_dashes(line):
-                heading_line = i
-                break
+                heading_lines.append(i)
 
-        if heading_line is None:
+        if not heading_lines:
             print(f"⚠ Could not find anchor for {fname}: {anchor}")
             continue
 
-        # Find end of section: next h2 or h3
-        section_end = None
-        for j in range(heading_line + 1, len(lines)):
-            if re.search(r'<h[23]\s', lines[j]):
-                section_end = j
-                break
-
-        if section_end is None:
-            for j in range(len(lines) - 1, heading_line, -1):
-                if '— END —' in lines[j] or '-- END --' in lines[j]:
+        for heading_line in heading_lines:
+            # Find end of section: next h2 or h3
+            section_end = None
+            for j in range(heading_line + 1, len(lines)):
+                if re.search(r'<h[23]\s', lines[j]):
                     section_end = j
                     break
+    
             if section_end is None:
                 for j in range(len(lines) - 1, heading_line, -1):
-                    if '</section>' in lines[j]:
+                    if '— END —' in lines[j] or '-- END --' in lines[j]:
                         section_end = j
                         break
-            if section_end is None:
-                for j in range(len(lines) - 1, heading_line, -1):
-                    if '</body>' in lines[j]:
-                        section_end = j
-                        break
-            if section_end is None:
-                section_end = len(lines) - 1
-
-        insertions.setdefault(section_end, [])
-        insertions[section_end].append(f'<!-- IMAGE:{fname} -->\n')
-        print(f"✓ {fname} → insert before line {section_end + 1} (anchor: {anchor})")
+                if section_end is None:
+                    for j in range(len(lines) - 1, heading_line, -1):
+                        if '</section>' in lines[j]:
+                            section_end = j
+                            break
+                if section_end is None:
+                    for j in range(len(lines) - 1, heading_line, -1):
+                        if '</body>' in lines[j]:
+                            section_end = j
+                            break
+                if section_end is None:
+                    section_end = len(lines) - 1
+    
+            insertions.setdefault(section_end, [])
+            insertions[section_end].append(f'<!-- IMAGE:{fname} -->\n')
+            print(f"✓ {fname} → insert before line {section_end + 1} (anchor: {anchor})")
 
     # Rebuild
     new_lines = []

@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "created": "2026-06-23T22:00:00+08:00",
+  "source": "source/_posts/agent-design-system.md",
+  "title": "规则文档管不住 Agent：如何用编译错误强制推行设计系统",
+  "slug": "agent-design-system",
+  "outputs": {
+    "wechat": {
+      "html": "content/agent-design-system/preview.html",
+      "cover_image": "content/agent-design-system/cover.png",
+      "title": "规则文档管不住 Agent：如何用编译错误强制推行设计系统",
+      "author": "墨筝",
+      "digest": "代码库才是 AI Agent 真正阅读的 Prompt。再长的 Rules 也会被它无视。用 ESLint、TypeScript、Stylelint、参考目录和验证循环，把规范从文档变成编译错误，Agent 才会自我修复。",
+      "markdown": "source/_posts/agent-design-system.md",
+      "images": [
+        "content/agent-design-system/xiaohei-illustrations/01-legacy-baggage.png",
+        "content/agent-design-system/xiaohei-illustrations/02-rules-vs-code.png",
+        "content/agent-design-system/xiaohei-illustrations/03-north-star.png",
+        "content/agent-design-system/xiaohei-illustrations/04-broken-window.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/agent-design-system/agent-design-system-小红书版.html",
+      "copy": {
+        "title": "Rules 管不住 Agent？试试靠编译错误强制纠偏",
+        "body": "前几天，我的 Agent 提交了一份看似无懈可击的 PR，但我拉下分支才发现它用了废弃的组件，且样式直接硬编码了色值。\n\n这完美印证了一个残酷的事实：项目里旧代码总是远超新代码。Agent 学到的全是“历史包袱”。\n\n因为在 AI 眼中，自然语言写成的 Rules 指令，永远打不过代码库里现成的实例。你如果要不停给它修改这些低级错误，半成品 PR 会把整个研发流水线彻底堵死。\n\n真正的解法是靠「编译错误」重塑上下文，在生成周期抛出异常，触发 Agent 自我修复：\n\n1️⃣ ESLint 强行阻断：不要苦口婆心劝它别用 Legacy 库，直接在 lint 里配成 error，把正确目录当 message 抛给它。\n2️⃣ 类型切断幻觉：不用简单的可选属性，用 Discriminated Unions 辨识联合类型，无效状态在编译态当场打回。\n3️⃣ 没收选色权：用 Stylelint 的 declaration-strict-value，迫使它只能用 `var()` 品牌色变量。\n4️⃣ 定海神针：维护一个只放最佳实践的 `examples/` 目录，供它第一步拉骨架参考。\n\nAgent 是一台没有历史记忆、高频制造机器破窗效应的产物。打造 AX（Agent Experience）的本质，就是把环境改造出强制纠偏能力，压低犯错成本，把真正的架构审查权交还给业务。\n\n.\n#AIAgent #AI编程 #前端开发 #ClaudeCode #Cursor #开发者体验 #研发效能 #技术架构 #软件工程 #程序员",
+        "tags": [
+          "AIAgent",
+          "AI编程",
+          "前端开发",
+          "ClaudeCode",
+          "Cursor",
+          "开发者体验",
+          "研发效能",
+          "技术架构",
+          "软件工程",
+          "程序员"
+        ]
+      }
+    }
+  }
+}

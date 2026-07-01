@@ -361,7 +361,22 @@ export function extractArticleContent(htmlPath: string): { content: string; styl
   }
 
   // 2. Extract .content container (md2wechat_formatter _preview.html)
-  // Matches both <div> and <section> — formatter now outputs <section> for WeChat compatibility
+  // Look for .copy-view first to avoid duplicating the .phone-frame content
+  const copyViewMatch = html.match(/<div[^>]*class=["'][^"']*\bcopy-view\b[^"']*["'][^>]*>([\s\S]*?)<\/div>\s*<button/i);
+  if (copyViewMatch) {
+    const outerEl = copyViewMatch[1];
+    const hasInlineStyle = /<(?:div|section)[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*style=["'][^"']+["']/i.test(outerEl);
+    if (hasInlineStyle) {
+      return { content: stripTipElements(outerEl), styles, hasOuterDiv: true };
+    }
+    const innerMatch = outerEl.match(/<(?:div|section)[^>]*>([\s\S]*)<\/(?:div|section)>$/i);
+    if (innerMatch) {
+      return { content: stripTipElements(innerMatch[1].trim()), styles, hasOuterDiv: false };
+    }
+    return { content: stripTipElements(outerEl), styles, hasOuterDiv: false };
+  }
+
+  // Fallback to the old logic if .copy-view is not found
   const contentOuterMatch = html.match(/(<(?:div|section)[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*>[\s\S]*?<\/(?:div|section)>)\s*(?:<\/body>|<script|$)/i);
   if (contentOuterMatch) {
     const outerEl = contentOuterMatch[1];

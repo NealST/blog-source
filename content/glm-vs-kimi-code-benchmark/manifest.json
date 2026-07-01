@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "created": "2026-06-28T10:00:00+08:00",
+  "source": "source/_posts/glm-vs-kimi-code-benchmark.md",
+  "title": "从规划到编码：实测 GLM-5.2 与 Kimi K2.7 Code，谁更强？",
+  "slug": "glm-vs-kimi-code-benchmark",
+  "outputs": {
+    "wechat": {
+      "html": "content/glm-vs-kimi-code-benchmark/preview.html",
+      "cover_image": "content/glm-vs-kimi-code-benchmark/cover-main.png",
+      "title": "从规划到编码：实测 GLM-5.2 与 Kimi K2.7 Code，谁更强？",
+      "author": "墨筝",
+      "digest": "目前的开源模型写起代码来都不错，相比之下如何做好前置的「架构规划」，反而成为了真正区分大模型实力的分水岭所在。我们针对特性服务场景做了深度评测分析。",
+      "markdown": "source/_posts/glm-vs-kimi-code-benchmark.md",
+      "images": [
+        "content/glm-vs-kimi-code-benchmark/xiaohei-illustrations/01-planning-vs-building.png",
+        "content/glm-vs-kimi-code-benchmark/xiaohei-illustrations/02-hash-bucket.png",
+        "content/glm-vs-kimi-code-benchmark/xiaohei-illustrations/03-cache-miss.png"
+      ]
+    }
+  }
+}
