@@ -116,13 +116,13 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h1">从开发者体验（DX）<br>到 Agent 体验（AX）</div>
-      <p>过去十多年，整个行业都在围绕开发者反馈循环做优化，像编译器、linter、热更新、分支预览等诸多工具都是为了提升反馈的质量和效率，让正确做法成为阻力最小的选择。</p>
-      <p>好的开发者体验（DX）假定人会疲劳、会跳过最佳实践、会在生产环境上犯错，所以用快速、确定性的保护机制来做 check。</p>
+      <div class="h1">如何优雅地给<br>Claude Code 外接长期记忆</div>
+      <p>最近给我的 Claude Code 接入了 <code>mem0_search</code> 这个工具，用来当作长期记忆层存储和读取项目的关键历史信息。</p>
+      <p>但实际用下来，发现这个工具没有很自然地融入工作流，每次我都得手动告知 Agent 帮我搜索一下 xx 项目的历史信息。</p>
     
     </div>
     <div class="swipe-hint"><span class="swipe-arrows">‹ ‹ ‹</span> 左滑查看更多</div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">1 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">1 / 17</div></div>
   </div>
 </div>
 
@@ -131,13 +131,13 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <p>现在，代码仓库里多了一类新的贡献者：AI agent。</p>
-      <p>问题在于，我们以为它什么都懂，却忽略了其本质：Agent 只是一个完全无状态的工具。</p>
-      <p>它没有业务理解，也缺少团队踩坑经历和代码库认知。要让它在真实代码库中完成有实际意义的工作，光优化提示词远远不够，真正需要优化的是它的工作环境。</p>
-      <p>我们的视角得从开发者体验（DX）转变到 Agent 体验（AX）。</p>
+      <p>这就容易导致两个问题：</p>
+      <p class="tight">第一，当前项目的上下文会丢。比如上周沉淀的一些问题解法，新开会话时仍然得从 0 开始，完全记不住。</p>
+      <p class="tight">第二，跨项目经验很难复用。比如我开发当前的活动页项目时，想问下 Agent 另一个类似活动页中是怎么实现某动画效果的。如果没有自动召回，Claude 就不知道这个问题应该关联另一个项目的历史上下文。</p>
+      <p class="tight">我希望达到的效果是：<strong>记忆能在合适的时机自动进入上下文</strong>，即 Claude 能自己判断是否需要召回、如何召回，以及召回后怎么使用结果。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">2 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">2 / 17</div></div>
   </div>
 </div>
 
@@ -146,13 +146,13 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h2">什么是 Agent 体验</div>
-      <p>Agent 体验关注的是如何在模型和真实代码库之间搭建好中间层。这个中间层包括上下文、工具、权限、测试和 Review 的闭环，告诉 agent 什么重要、它能碰什么、以及如何确认自己做对了。</p>
-      <p>核心问题只有一个：<strong>给 agent 构建一个快速、安全、确定性的反馈循环</strong></p>
-      <p>围绕这个问题，我整理了七条核心原则。</p>
+      <div class="h2">问题解法：入口召回，过程补召回，退出时捕获</div>
+      <p>这套方案把记忆分成两个方向：读和写，核心执行时机依赖于 Claude Code 的 Hook 机制。</p>
+      <p class="tight">读发生在回答之前。<code>SessionStart</code> 让 Claude 在会话开始时先召回当前项目上下文。<code>UserPromptSubmit</code> 让 Claude 在跨项目提问时补充召回。</p>
+      <p class="tight">写发生在会话之后。<code>SessionEnd</code> 不在终端里同步做耗时工作，而是启动一个 detached Python 进程，让它读取 transcript、提取重要信息、去重并写入 Pinecone。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">3 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">3 / 17</div></div>
   </div>
 </div>
 
@@ -161,13 +161,13 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h2">原则一：上下文即 onboarding</div>
-      <p>开发者 onboarding 以前只在新人入职时才需要考虑：一个新人要多久才能熟悉仓库并有效提交第一个贡献？</p>
-      <p>对 agent 来说，onboarding 发生在每一次任务的开头。仓库说明、构建命令、组件 API、schema、已知的故障模式决定了 agent 的感知，推理，行动和反馈。</p>
-      <p>我们有一个常见误区是过度地文档化。团队会逐渐累积一堆 skill 、AGENTS.md 规则、过时的定义、prompt 片段和隐藏的工具指令。</p>
+      <p>简化后可以这样理解：</p>
+      <div class="list-item"><span class="bullet">•</span><div>进来时，按当前项目召回。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div>对话中，按用户提到的项目补召回。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div>离开时，异步提取本次会话的新记忆。</div></div>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">4 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">4 / 17</div></div>
   </div>
 </div>
 
@@ -176,14 +176,17 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <p>当上下文过多时，如果 agent 做了一个错误决策，我们得在一堆杂乱的输入历史中排查到底是哪条过时指令或冲突规则误导了模型。</p>
-      <p><strong>好的 agent 上下文应该像好的代码一样：精简、透明、可验证。</strong></p>
-      <div class="list-item"><span class="bullet">•</span><div>精简：全局上下文尽量薄，代码本身能说清楚的就不另写文档。</div></div>
-      <div class="list-item"><span class="bullet">•</span><div>透明：审查者能轻松追溯是哪条规则或 skill 影响了这次输出。</div></div>
-      <div class="list-item"><span class="bullet">•</span><div>可验证：团队的 skill 足够自解释，agent 能在正确时机调用，我们能理解为什么调用。</div></div>
+      <div class="h3">会话开始时，按当前项目召回</div>
+      <p class="tight"><code>SessionStart</code> 会在打开 Claude Code 时触发。这里的 hook 是一个 Bash 脚本，只做一件很简单的事：查看当前目录并注入一条针对该项目的召回指令。</p>
+      <div class="code-block">BASENAME=$(basename "$CWD")
+# 把 BASENAME 和已知的项目 slug 做匹配，设置 $SLUG...
+
+MSG="[session-context] cwd is project '$SLUG'. Before answering the
+first prompt, call mem0_search with query=\"$SLUG\" for past
+decisions, preferences, and in-flight work."</div>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">5 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">5 / 17</div></div>
   </div>
 </div>
 
@@ -192,13 +195,12 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h2">原则二：环境是 prompt 的一部分</div>
-      <p>大模型本质上是非确定性的。正因为模型的推理过程是概率性的，其余的执行环境就必须尽可能做到确定。</p>
-      <p>依赖包的版本、工程脚本、环境变量等构建配置，以及认证、浏览器、本地服务等运行时依赖，这些直接决定 agent 的感知和执行。环境本身就是 prompt 的一部分。</p>
-      <p class="tight">"我在本地跑不了测试，但感觉应该没问题"，这话人说出来，我们会立刻警觉；但如果是 agent，我们反而睁一只眼闭一只眼。</p>
+      <p>通过 <code>additionalContext</code> 我声明了在回答第一个问题之前，先去搜索当前项目的记忆，这样当这串 JSON 返回给 Claude Code 后，Claude 会在后台默默调用搜索工具，拿到当前项目的历史上下文信息。</p>
+      <p>即使当前目录不在预设的项目列表里，也有个简单的兜底方案：直接拿文件夹的名字当关键词去搜，搜不到返回空数据也没啥关系。</p>
+      <p>另外，为了防止脚本意外卡死，我额外加了一道 5 秒的超时限制，实际场景下这种 case 其实蛮少发生。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">6 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">6 / 17</div></div>
   </div>
 </div>
 
@@ -207,12 +209,16 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <p>人类开发者遇到缺失的环境变量或报错的 Docker 命令会停下来排查。但 Agent 不会，它会绕过故障、改错文件，然后提交一个 commit。</p>
-      <p>如果 agent 无法编译代码、启动开发服务器、填充数据库或调用本地 API 来验证输出，它产出的就不是可信的软件。</p>
-      <p>Agent 必须有一个可靠、一致、可观测的工作空间。</p>
+      <div class="h3">对话中，按用户提到的项目补召回</div>
+      <p class="tight">使用 <code>UserPromptSubmit</code>，当用户发送消息给 Claude 之前。它会读取 prompt 文本，转成小写，然后扫描里面是否出现了任何已知项目 slug，而且必须是完整单词。</p>
+      <div class="code-block">for s in $HUB_SLUGS; do
+  if echo "$PROMPT_LC" | grep -qE "(^|[^a-z0-9])$s([^a-z0-9]|$)"; then
+    MATCHED="$MATCHED $s"
+  fi
+done</div>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">7 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">7 / 17</div></div>
   </div>
 </div>
 
@@ -221,12 +227,11 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h2">原则三：交付前必须验证</div>
-      <p>agent 不能只生成代码，还得证明产出是对的。</p>
-      <p>目前的状况是，写代码的成本确实降低了，但审查代码的认知负荷反而上升了。如果要花三十分钟手动审查一个 agent 生成的 PR、逐一检查边界情况、清理通用的布局样式，那 agent 并不会节省时间，它只是把劳动从编写侧转移到了审查侧。审查负担过重的话，软件质量就会急剧下滑。</p>
+      <p>这个正则里的完整词边界非常关键。没有它，短 slug 会匹配到更长且完全无关的词里，普通提示词也会整天触发召回。有了边界，只有真正提到项目名时才会命中。</p>
+      <p>如果匹配到某个 slug，hook 就注入同样类型的召回指令：在回答前，先拉取这个项目的上下文。没有匹配到就啥也不加，静默退出。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">8 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">8 / 17</div></div>
   </div>
 </div>
 
@@ -235,12 +240,15 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <p>好的 AX 意味着 agent 在交付前完成充分的验证工作，且验证应该附带证据证明，包括：测试结果和日志、截图和浏览器流程录制、无障碍检查和边界情况探索等。</p>
-      <p>类型检查、单元测试和 lint 仍然重要。但产品层面的问题往往出在编译器看不到的地方，比如响应式布局在某些分辨率下崩溃、loading 状态一直不消失、某个业务流程代码能编译通过但功能上完全不通。除了基本的静态代码检测，e2e 测试也很重要。</p>
-      <p>Agent 可以全天候运转，但开发者的专注力很有限。凡是 agent 能在闭环里自行验证的环节，就不应该消耗人的注意力。</p>
+      <div class="h3">离开时，异步提取本次会话的新记忆</div>
+      <p>这里较为麻烦一些，使用 <code>SessionEnd</code> 在会话关闭时完成以下工作：</p>
+      <div class="list-item"><span class="bullet">•</span><div>读取完整会话历史内容（transcript）。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div>把 transcript 发给 LLM，让它提取真正重要的内容。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div>对每条内容在向量库中进行去重。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div>写入留下来的内容。</div></div>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">9 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">9 / 17</div></div>
   </div>
 </div>
 
@@ -249,13 +257,18 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h2">原则四：安全必须是系统性的</div>
-      <p>好的 DX 让危险操作变得困难，好的 AX 需要让危险操作变得不可能。</p>
-      <p>agent 的改动很快且批量执行，prompt 很容易被绕过。安全必须做的足够立体：沙箱限制执行环境，最小化凭证和网络权限，隔离开发与生产数据，高风险操作交由人工确认。</p>
-      <p>每次看到有人在社交媒体上说 xx agent 删了数据库，第一个念头都是：为什么系统会允许这种事发生？为什么 agent 有这个权限？</p>
+      <p class="tight">这个过程通常耗时数秒，不适合放在主流程中完成以避免会话关闭的卡顿感。</p>
+      <p class="tight">所以我的设计里， <code>SessionEnd</code> 这个 hook 仅仅只是启动一个 detached 后台进程，然后立刻返回：</p>
+      <div class="code-block">(
+  "$PYTHON_BIN" "$SCRIPT_PATH" \
+    "$TRANSCRIPT_PATH" "$SESSION_ID" "$HOOK_EVENT" "$CWD" \
+    &lt;/dev/null &gt; "$LOG_FILE" 2&gt;&amp;1 &amp;
+  disown
+) &gt;/dev/null 2&gt;&amp;1</div>
+      <p class="tight">提取工作会在终端关闭之后继续运行，不需要当场等待。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">10 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">10 / 17</div></div>
   </div>
 </div>
 
@@ -264,11 +277,14 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <p>当 agent 的用户不再只是开发者时，沙箱原则同样适用。如果 PM、设计师或运营人员使用 agent 来迭代产品界面，他们也不应该有本地机器的 root 权限或生产环境的凭证。</p>
-      <p>安全不能指望非技术人员能理解 <code>rm -rf</code>、OAuth scope 或生产环境变量的危害。</p>
+      <div class="h2">三个踩坑点</div>
+      <p>写入链路比读取链路复杂，其中有三个主要的坑点：并行运行、环境变量继承、提炼去重。</p>
+      <div class="h3">并发踩踏死锁</div>
+      <p class="tight">在一口气关掉三四个 Claude Code 会话的 case 下，如果不加锁，就会出现三四个并行提取任务写同一个向量库的情况。</p>
+      <p class="tight">我的解法是在本地加两层锁。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">11 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">11 / 17</div></div>
   </div>
 </div>
 
@@ -277,13 +293,11 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h2">原则五：模型路由应当是基础设施</div>
-      <p>我们在前沿模型的排名和评分上投入了很多注意力。但对团队来说，真正重要的问题是：</p>
-      <p class="tight">谁能使用 agent？针对哪些系统？带有什么上下文？遵循什么审查流程？走哪条模型路由？以及留下什么审计痕迹？</p>
-      <p>模型路由应该像水电一样，稳定运行、不需要操心。团队需要能灵活切换供应商、按任务选择合适的模型，但不应该让每个开发者都成为模型选型专家。</p>
+      <p>第一层是全局锁，核心是利用 <code>mkdir</code> 命令去创建一个特定的文件夹。在操作系统层面，创建同名文件夹是一个"原子操作"：不管有多小的时间差，最终只会有一个进程创建成功。我设定只有创建成功的那个进程才有资格连接并写入向量库，而其他创建失败的进程都会认为"别人在干活"并直接退出，这样就把并发死锁直接挡在了门外。</p>
+      <p>第二层则是针对单个会话的"专属锁"。有时候终端关闭时由于进程异常或信号重发，会连续多次触发同一个会话的关闭流程。为了防范这种"抽风"，我引入了类似游戏技能的 120 秒冷却机制：同一个会话结算一次后，两分钟内绝不会再被二次提取。这就从根源上避免了重复执行的问题。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">12 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">12 / 17</div></div>
   </div>
 </div>
 
@@ -292,11 +306,12 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <p>低风险的摘要、分类、脚手架代码或常规审查用便宜快速的模型就够了，确定性的语法校验本来就该由 linter 和类型检查处理，昂贵的推理模型只在多文件的复杂判断上才有必要。</p>
-      <p>治理也要内置到 agent 的工作流中。管理员要能看得到用量和成本，审查者看得到执行依据，模型 provider 可以丝滑切换。</p>
+      <div class="h3">环境变量继承</div>
+      <p>提取器本身只是一个普通的 Python 脚本，但因为它是被 Claude Code 触发的，作为"子进程"，它会默认继承"父进程"所有的环境变量（比如特定的 API 请求地址 <code>ANTHROPIC_BASE_URL</code>、OAuth token 以及一堆 <code>CLAUDE_CODE_*</code> 变量）。</p>
+      <p>这就导致了一个非常隐蔽的 Bug：Python 脚本在尝试自己去调用外部 LLM 接口时，会被这些继承来的残留变量"带偏"。它发出的网络请求会被错误地重定向，或是带上错误的认证信息，导致提取器频频报错，误以为自己还在 Claude 的内置环境里。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">13 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">13 / 17</div></div>
   </div>
 </div>
 
@@ -305,13 +320,10 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h2">原则六：设计系统和代码架构是 agent 的最佳信息源</div>
-      <p>代码库不再只是给人看的，要让 agent 可靠干活，代码库必须最准确地反映产品的实际运作方式。</p>
-      <p>如果代码库混乱，文档与实际代码不符、Storybook 版本落后，agent 会把这些内容整合成为一份外强中干的垃圾产出。</p>
-      <p>让代码库为 AI 做好准备，靠的是经典的软件工程原则：高度的封装搭配简洁的接口、类型化 API、可预测的路由、干净的目录结构。</p>
+      <p>我的解决方式是"打扫干净屋子再请客"：在真正执行 Python 命令之前，先在终端命令里加上一段 <code>unset</code>，把这些继承来的、带有干扰性的 Claude 专属变量全部剔除。让 Python 脚本在一个完全干净的独立环境中运行。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">14 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">14 / 17</div></div>
   </div>
 </div>
 
@@ -320,11 +332,12 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <p>道理和 UI 设计中的渐进式披露一样：把实现细节藏在干净的接口背后，agent 需要处理的信息量会更少，这就意味着更低的 token 消耗和更少的逻辑错误。</p>
-      <p>设计系统同理。代码库越是强制 agent 复用已有的组件、token 和无障碍模式，输出就越不可能退化为通用的垃圾代码。团队已经有现成的 Button 组件，agent 就不应该自己再造一个。</p>
+      <div class="h3">只保留值得记住的内容</div>
+      <p>后台脚本接收到完整的会话日志（transcript）后，我将其发给 Gemini 2.5 Flash Lite 进行提炼，并附带一个提取范围指向的 prompt：只提取架构决策及原因、个人开发偏好、Bug 根因，以及当前项目的特定事实，其他统一丢弃。</p>
+      <p>选择 Flash Lite 是因为它包含在免费额度中，而且单纯的上下文提取其实也用不到 sota 的模型。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">15 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">15 / 17</div></div>
   </div>
 </div>
 
@@ -333,12 +346,12 @@
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body">
-      <div class="h2">原则七：agent 是跨职能协作的粘合剂</div>
-      <p>Agent 体验从开发者开始，但它实质上解决的是整个组织的协调问题。</p>
-      <p>agent 可以让功能的 V1 变得很廉价，但 V2、V3、V4 的迭代问题它解决不了。没有共享工作空间，开发者就变成了一个高薪的信息中转站：从设计师那里复制视觉反馈，再翻译成 agent 能理解的 prompt，然后本地跑工作空间，手动管理分支。</p>
+      <p>经过大模型筛选过滤后，留下来的优质内容会被标准化为一个结构化的 JSON：包含核心的经验事实、它所属的项目作用域，以及具体的分类标签（比如标明这是 <code>decision</code> 还是 <code>learning</code>）。</p>
+      <p>在最终写入之前，我还会把这段 JSON 文本在向量库中做一轮预搜索。如果发现与库中已有记忆的余弦相似度（cosine similarity）超过了 <code>0.88</code>，就会认为是是重复内容不再写入，避免长期记忆被重复语义稀释。</p>
+      <p>最后，经历层层筛选留下来的记忆才会被正式写入 Pinecone 向量库。在这个环节我特意设置了 <code>infer=False</code>，强制要求系统按大模型吐出的原文原样存储。核心的提炼总结在 Gemini 那一步已经做得足够完整了，底层的向量库没必要再画蛇添足地进行二次改写。</p>
     
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">16 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">16 / 17</div></div>
   </div>
 </div>
 
@@ -346,25 +359,11 @@
   <div class="bg-paper"></div>
   <div class="content">
     <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
-    <div class="post-body">
-      <p>好的 AX 应当是把协作的场所从聊天窗口和需求文档搬到可交互的产品界面上。</p>
-      <p>通过交互式预览部署和分角色的权限控制，设计师、运营或 PM 可以在一个安全、受限的预览环境中直接和 agent 对话。他们可以测试响应式状态、迭代文案、调整布局，开发者继续把关架构、安全和系统集成。</p>
-      <p>开发者不应该是复制粘贴和翻译 prompt 的工具人，而是拥有系统设计能力的平台工程师。</p>
-    
-    </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">17 / 18</div></div>
-  </div>
-</div>
-
-<div class="slide" id="slide-18">
-  <div class="bg-paper"></div>
-  <div class="content">
-    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/07</div></div></div>
     <div class="post-body quote-card">
-      <div class="quote">DX 成为一门学科，是因为我们意识到软件质量取决于我们构建的系统，AX 也将同样如此。<small>好的 agent 体验应当是给有创造力的人腾出空间，让他们把精力放在判断、品味、架构和策略这些真正需要人的地方。</small></div>
+      <div class="quote">注入指令的 hook，往往比直接运行命令的 hook 更有价值。<small>通过这套机制，现在 Claude Code 可以自动在合适的时机提取当前项目和跨项目的关键记忆。</small></div>
       <p class="note" style="margin-top:32px;">完整内容请移步微信公众号「墨筝」阅读原文。</p>
     </div>
-    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">18 / 18</div></div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">17 / 17</div></div>
   </div>
 </div>
 

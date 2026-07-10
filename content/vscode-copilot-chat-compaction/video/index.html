@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "DM Sans"; font-weight: 400; src: url("fonts/DMSans.woff2") format("woff2"); }
+    @font-face { font-family: "DM Sans"; font-weight: 800; src: url("fonts/DMSans.woff2") format("woff2"); }
+    @font-face { font-family: "JetBrains Mono"; font-weight: 500; src: url("fonts/JetBrainsMono.woff2") format("woff2"); }
+    @font-face { font-family: "JetBrains Mono"; font-weight: 700; src: url("fonts/JetBrainsMono.woff2") format("woff2"); }
+    @font-face { font-family: "PingFang SC"; src: local("PingFang SC"); }
+    @font-face { font-family: "Microsoft YaHei"; src: local("Microsoft YaHei"); }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #1C1C1E;
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #F2EDE3;
+    }
+
+    /* ─── Scene shell ─── */
+    .scene {
+      position: absolute;
+      top: 0; left: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #1C1C1E;
+    }
+    .scene-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: 340px 68px 80px;
+      gap: 26px;
+      box-sizing: border-box;
+    }
+
+    /* ─── z-index stacking (higher index = rendered on top) ─── */
+    #scene1 { z-index: 1; }
+    #scene2 { z-index: 2; opacity: 0; }
+    #scene3 { z-index: 3; opacity: 0; }
+    #scene4 { z-index: 4; opacity: 0; }
+    #scene5 { z-index: 5; opacity: 0; }
+    #scene6 { z-index: 6; opacity: 0; }
+    #scene7 { z-index: 7; opacity: 0; }
+    #scene8 { z-index: 8; opacity: 0; }
+
+    /* ─── Global decorative bg glow ─── */
+    .bg-glow {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,167,106,0.055) 0%, transparent 68%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Persistent watermark ─── */
+    .watermark {
+      position: absolute;
+      top: 228px;
+      left: 60px;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 26px;
+      font-weight: 500;
+      color: #F2EDE3;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .watermark-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #D4A76A;
+      flex-shrink: 0;
+    }
+
+    /* ─── Shared atoms ─── */
+    .tag-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: #D4A76A;
+      letter-spacing: 0.10em;
+    }
+    .gold-line {
+      width: 72px;
+      height: 4px;
+      background: #D4A76A;
+      border-radius: 2px;
+    }
+    .panel {
+      background: #2C2A28;
+      border: 1px solid rgba(212,167,106,0.18);
+      border-radius: 16px;
+      padding: 30px 34px;
+    }
+    .row-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(212,167,106,0.14);
+      flex-shrink: 0;
+    }
+
+    /* ─── Scene 1 — Title ─── */
+    .s1-eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      color: #D4A76A;
+      letter-spacing: 0.10em;
+    }
+    .s1-main {
+      font-family: "DM Sans", sans-serif;
+      font-size: 76px;
+      font-weight: 800;
+      color: #D4A76A;
+      line-height: 1.0;
+      letter-spacing: -0.025em;
+    }
+    .s1-cn {
+      font-size: 82px;
+      font-weight: 700;
+      color: #F2EDE3;
+      line-height: 1.15;
+    }
+    .s1-sub {
+      font-size: 34px;
+      color: #7A7876;
+      line-height: 1.6;
+      max-width: 880px;
+    }
+
+    /* ─── Scene 2 — Hook ─── */
+    .s2-tag {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: #7A7876;
+    }
+    .s2-hero {
+      font-size: 54px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: #F2EDE3;
+    }
+    .s2-hero em {
+      font-style: normal;
+      color: #D4A76A;
+    }
+    .s2-body {
+      font-size: 32px;
+      color: #7A7876;
+      line-height: 1.65;
+    }
+    .s2-punchline {
+      font-size: 36px;
+      font-weight: 600;
+      color: #F2EDE3;
+      line-height: 1.5;
+    }
+    .s2-punchline em {
+      font-style: normal;
+      color: #D4A76A;
+    }
+
+    /* ─── Scene 3 — @vscode/prompt-tsx ─── */
+    .s3-title {
+      font-size: 50px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #F2EDE3;
+    }
+    .s3-title-mono {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      color: #D4A76A;
+      display: block;
+      margin-top: 6px;
+    }
+    .s3-sub {
+      font-size: 30px;
+      color: #7A7876;
+      line-height: 1.5;
+    }
+    .attr-card {
+      background: #2C2A28;
+      border: 1px solid rgba(212,167,106,0.18);
+      border-radius: 14px;
+      padding: 26px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .attr-name {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 700;
+      color: #D4A76A;
+    }
+    .attr-desc {
+      font-size: 28px;
+      color: #F2EDE3;
+      line-height: 1.45;
+    }
+    .attr-note {
+      font-size: 23px;
+      color: #7A7876;
+      line-height: 1.5;
+    }
+    .code-block {
+      background: #111110;
+      border: 1px solid rgba(212,167,106,0.10);
+      border-radius: 12px;
+      padding: 20px 26px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 1.75;
+      color: #F2EDE3;
+    }
+    .ck { color: #D4A76A; }
+    .cm { color: #7A7876; }
+    .cs { color: #A8C97F; }
+
+    /* ─── Scene 4 — Scheduling ─── */
+    .s4-title {
+      font-size: 52px;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+    .s4-sub {
+      font-size: 30px;
+      color: #7A7876;
+    }
+    .step-card {
+      background: #2C2A28;
+      border: 1px solid rgba(212,167,106,0.15);
+      border-radius: 14px;
+      padding: 22px 26px;
+      display: flex;
+      gap: 22px;
+      align-items: flex-start;
+    }
+    .step-num {
+      font-family: "DM Sans", sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      color: #D4A76A;
+      line-height: 1;
+      min-width: 50px;
+      padding-top: 2px;
+    }
+    .step-body { display: flex; flex-direction: column; gap: 7px; }
+    .step-name { font-size: 28px; font-weight: 600; color: #F2EDE3; }
+    .step-detail { font-size: 23px; color: #7A7876; line-height: 1.55; }
+
+    /* ─── Scene 5 — Threshold & Cache ─── */
+    .s5-title {
+      font-size: 50px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .threshold-row {
+      display: flex;
+      gap: 20px;
+    }
+    .threshold-card {
+      flex: 1;
+      background: #2C2A28;
+      border: 1px solid rgba(212,167,106,0.18);
+      border-radius: 16px;
+      padding: 28px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .threshold-pct {
+      font-family: "DM Sans", sans-serif;
+      font-size: 90px;
+      font-weight: 800;
+      line-height: 1;
+      color: #D4A76A;
+    }
+    .threshold-muted { color: #7A7876; }
+    .threshold-label {
+      font-size: 25px;
+      color: #7A7876;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .threshold-label strong { color: #F2EDE3; font-weight: 600; }
+    .jitter-box {
+      background: #111110;
+      border-radius: 12px;
+      padding: 18px 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #A8C97F;
+      text-align: center;
+    }
+    .s5-insight {
+      font-size: 30px;
+      color: #F2EDE3;
+      line-height: 1.65;
+      background: rgba(212,167,106,0.07);
+      border-left: 3px solid #D4A76A;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+    }
+    .s5-insight em { font-style: normal; color: #D4A76A; }
+
+    /* ─── Scene 6 — Compression Logic ─── */
+    .s6-title {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    .s6-title em { font-style: normal; color: #D4A76A; }
+    .s6-sub {
+      font-size: 30px;
+      color: #7A7876;
+    }
+    .compress-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+    }
+    .compress-num {
+      font-family: "DM Sans", sans-serif;
+      font-size: 34px;
+      font-weight: 800;
+      color: rgba(212,167,106,0.55);
+      line-height: 1;
+      min-width: 38px;
+      padding-top: 4px;
+    }
+    .compress-body { display: flex; flex-direction: column; gap: 5px; }
+    .compress-name { font-size: 30px; font-weight: 600; color: #F2EDE3; line-height: 1.4; }
+    .compress-detail { font-size: 24px; color: #7A7876; line-height: 1.5; }
+
+    /* ─── Scene 7 — State Snapshot ─── */
+    .s7-title {
+      font-size: 50px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .s7-subtitle {
+      font-size: 36px;
+      font-weight: 600;
+      color: #D4A76A;
+      margin-top: -4px;
+    }
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .snapshot-item {
+      background: #2C2A28;
+      border: 1px solid rgba(212,167,106,0.12);
+      border-radius: 12px;
+      padding: 17px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .snapshot-num {
+      font-family: "DM Sans", sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: rgba(212,167,106,0.45);
+      min-width: 34px;
+    }
+    .snapshot-name { font-size: 26px; color: #F2EDE3; font-weight: 500; }
+    .s7-rule {
+      font-size: 28px;
+      color: #F2EDE3;
+      line-height: 1.65;
+      background: rgba(212,167,106,0.07);
+      border-left: 3px solid #D4A76A;
+      padding: 15px 20px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* ─── Scene 8 — CTA ─── */
+    .s8-pre {
+      font-size: 34px;
+      color: #7A7876;
+    }
+    .s8-title {
+      font-size: 58px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .design-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      padding: 10px 0;
+    }
+    .design-dot {
+      width: 11px;
+      height: 11px;
+      background: #D4A76A;
+      border-radius: 50%;
+      margin-top: 12px;
+      flex-shrink: 0;
+    }
+    .design-body { display: flex; flex-direction: column; gap: 5px; }
+    .design-strong { font-size: 28px; font-weight: 600; color: #D4A76A; }
+    .design-detail { font-size: 24px; color: #7A7876; line-height: 1.5; }
+    .cta-box {
+      background: rgba(212,167,106,0.10);
+      border: 1px solid rgba(212,167,106,0.32);
+      border-radius: 18px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      margin-top: 8px;
+    }
+    .cta-label { font-size: 26px; color: #7A7876; }
+    .cta-brand {
+      font-family: "DM Sans", sans-serif;
+      font-size: 58px;
+      font-weight: 800;
+      color: #D4A76A;
+      line-height: 1;
+    }
+    .cta-desc { font-size: 26px; color: #F2EDE3; }
+  </style>
+</head>
+<body>
+
+<div data-composition-id="root" data-width="1080" data-height="1920" data-start="0">
+
+  <!-- ─── Persistent watermark (above all scenes) ─── -->
+  <div class="watermark" style="z-index:200">
+    <div class="watermark-dot"></div>
+    公众号：墨筝
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCENE 1 — TITLE  (0 – 6 s)
+  ════════════════════════════════════════════ -->
+  <div id="scene1" class="scene">
+    <div class="bg-glow" style="top:-80px;right:-180px;"></div>
+    <div class="scene-content">
+      <div id="s1-eyebrow" class="s1-eyebrow">SOURCE CODE TEARDOWN</div>
+      <div id="s1-line"    class="gold-line"></div>
+      <div id="s1-main"    class="s1-main">VS Code Copilot</div>
+      <div id="s1-cn"      class="s1-cn">上下文压缩<br>怎么做到的？</div>
+      <div id="s1-sub"     class="s1-sub">我去读了源码，发现了一堆令人叹服的工程细节</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCENE 2 — HOOK  (5.4 – 12.4 s)
+  ════════════════════════════════════════════ -->
+  <div id="scene2" class="scene">
+    <div class="bg-glow" style="bottom:-120px;left:-200px;"></div>
+    <div class="scene-content">
+      <div id="s2-tag"       class="s2-tag">作为 Pro+ 高频用户</div>
+      <div id="s2-hero"      class="s2-hero">几乎感觉不到<em>停顿</em>等待</div>
+      <div id="s2-panel"     class="panel">
+        <div class="s2-body">在 VS Code Copilot 里长时间跑 Agent 任务，上下文压缩几乎是无感的——没有明显的请求等待，对话流畅延续。</div>
+      </div>
+      <div id="s2-punchline" class="s2-punchline">这背后是一套<em>多层级上下文调度系统</em></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCENE 3 — @vscode/prompt-tsx  (11.8 – 20.8 s)
+  ════════════════════════════════════════════ -->
+  <div id="scene3" class="scene">
+    <div class="bg-glow" style="top:-60px;right:-160px;"></div>
+    <div class="scene-content" style="gap:22px">
+      <div id="s3-tag"   class="tag-label">CORE INFRA</div>
+      <div id="s3-title" class="s3-title">
+        核心基建
+        <span class="s3-title-mono">@vscode/prompt-tsx</span>
+      </div>
+      <div id="s3-sub"   class="s3-sub">Token 预算感知的 Prompt 渲染器</div>
+      <div id="s3-a1"    class="attr-card">
+        <div class="attr-name">priority</div>
+        <div class="attr-desc">超出预算时，优先丢弃低优先级节点</div>
+        <div class="attr-note">用户输入 900 &gt; 工具调用 899 &gt; 历史记录 700</div>
+      </div>
+      <div id="s3-a2"    class="attr-card">
+        <div class="attr-name">flexGrow</div>
+        <div class="attr-desc">剩余 Token 按比例分配给动态节点</div>
+        <div class="attr-note">用户输入×2 + 工具调用×2 + 历史×1，共分 5 份</div>
+      </div>
+      <div id="s3-code"  class="code-block">
+        <span class="cm">// 超出预算时抛出，触发压缩流程</span><br>
+        <span class="ck">throw new</span> BudgetExceededError()
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCENE 4 — SCHEDULING  (20.2 – 29.2 s)
+  ════════════════════════════════════════════ -->
+  <div id="scene4" class="scene">
+    <div class="bg-glow" style="bottom:-80px;right:-180px;"></div>
+    <div class="scene-content" style="gap:22px">
+      <div id="s4-tag"   class="tag-label">SCHEDULING</div>
+      <div id="s4-title" class="s4-title">后台为主<br>前台兜底</div>
+      <div id="s4-sub"   class="s4-sub">每次提问背后的内部执行链路</div>
+      <div id="s4-s1"    class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-name">预检挂载</div>
+          <div class="step-detail">检查后台压缩结果 → 已完成即原位替换，零额外请求</div>
+        </div>
+      </div>
+      <div id="s4-s2"    class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-name">常态渲染 + 异常协同</div>
+          <div class="step-detail">进行中 → 挂起等待复用 | 空闲 → 强制串行 | 依然超额 → 降级渲染</div>
+        </div>
+      </div>
+      <div id="s4-s3"    class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-name">后置预热分发</div>
+          <div class="step-detail">响应完毕后评估 Token 占用率 → 闲时静默派发后台压缩</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCENE 5 — THRESHOLD & CACHE  (28.6 – 36.6 s)
+  ════════════════════════════════════════════ -->
+  <div id="scene5" class="scene">
+    <div class="bg-glow" style="top:-100px;left:-180px;"></div>
+    <div class="scene-content" style="gap:24px">
+      <div id="s5-tag"    class="tag-label">THRESHOLD + CACHE</div>
+      <div id="s5-title"  class="s5-title">阈值判定与<br>Prompt Cache 利用</div>
+      <div id="s5-thresh" class="threshold-row">
+        <div class="threshold-card">
+          <div class="threshold-pct">80%</div>
+          <div class="threshold-label"><strong>缓存温热态</strong><br>触发后台压缩</div>
+        </div>
+        <div class="threshold-card">
+          <div class="threshold-pct threshold-muted">90%</div>
+          <div class="threshold-label"><strong>冷启动态</strong><br>无缓存，延迟触发</div>
+        </div>
+      </div>
+      <div id="s5-jitter" class="jitter-box">界标扰动：0.78 ~ 0.82</div>
+      <div id="s5-tip"    class="s5-insight">全量克隆上下文，仅末尾追加摘要指令 → <em>前置文本不变，最大化缓存命中率</em></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCENE 6 — COMPRESSION LOGIC  (36.0 – 45.0 s)
+  ════════════════════════════════════════════ -->
+  <div id="scene6" class="scene">
+    <div class="bg-glow" style="bottom:-100px;right:-160px;"></div>
+    <div class="scene-content" style="gap:18px">
+      <div id="s6-tag"   class="tag-label">ALGORITHM</div>
+      <div id="s6-title" class="s6-title"><em>近端保留</em> + <em>远端滚动折叠</em></div>
+      <div id="s6-sub"   class="s6-sub">增量压缩，不从头生成摘要</div>
+      <div id="s6-1"     class="compress-step">
+        <div class="compress-num">01</div>
+        <div class="compress-body">
+          <div class="compress-name">保留最近几轮对话</div>
+          <div class="compress-detail">确保用户可以延续当前讨论</div>
+        </div>
+      </div>
+      <div class="row-divider"></div>
+      <div id="s6-2"     class="compress-step">
+        <div class="compress-num">02</div>
+        <div class="compress-body">
+          <div class="compress-name">剔除最终溢出轮次</div>
+          <div class="compress-detail">只对完整的安全历史进行压缩</div>
+        </div>
+      </div>
+      <div class="row-divider"></div>
+      <div id="s6-3"     class="compress-step">
+        <div class="compress-num">03</div>
+        <div class="compress-body">
+          <div class="compress-name">命中已有存档点</div>
+          <div class="compress-detail">读到旧摘要即停止回溯，叠加生成新摘要</div>
+        </div>
+      </div>
+      <div class="row-divider"></div>
+      <div id="s6-4"     class="compress-step">
+        <div class="compress-num">04</div>
+        <div class="compress-body">
+          <div class="compress-name">原位替换</div>
+          <div class="compress-detail">放入虚拟 &lt;conversation-summary&gt; 节点衔接后续对话</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCENE 7 — STATE SNAPSHOT  (44.4 – 53.4 s)
+  ════════════════════════════════════════════ -->
+  <div id="scene7" class="scene">
+    <div class="bg-glow" style="top:-80px;right:-160px;"></div>
+    <div class="scene-content" style="gap:20px">
+      <div id="s7-tag"      class="tag-label">SUMMARY DESIGN</div>
+      <div id="s7-title"    class="s7-title">摘要的本质</div>
+      <div id="s7-subtitle" class="s7-subtitle">高密度状态快照</div>
+      <div id="s7-grid"     class="snapshot-grid">
+        <div class="snapshot-item"><div class="snapshot-num">01</div><div class="snapshot-name">会话概述</div></div>
+        <div class="snapshot-item"><div class="snapshot-num">02</div><div class="snapshot-name">技术底座</div></div>
+        <div class="snapshot-item"><div class="snapshot-num">03</div><div class="snapshot-name">代码库演变</div></div>
+        <div class="snapshot-item"><div class="snapshot-num">04</div><div class="snapshot-name">问题排解</div></div>
+        <div class="snapshot-item"><div class="snapshot-num">05</div><div class="snapshot-name">进度跟踪</div></div>
+        <div class="snapshot-item"><div class="snapshot-num">06</div><div class="snapshot-name">当前焦点</div></div>
+        <div class="snapshot-item"><div class="snapshot-num">07</div><div class="snapshot-name">行为快照</div></div>
+        <div class="snapshot-item"><div class="snapshot-num">08</div><div class="snapshot-name">后续计划</div></div>
+      </div>
+      <div id="s7-rule"     class="s7-rule">沿用当前主模型，temperature = 0，不降级，不关闭流式输出</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCENE 8 — CTA  (52.8 – 59.0 s)
+  ════════════════════════════════════════════ -->
+  <div id="scene8" class="scene">
+    <div class="bg-glow" style="bottom:-80px;left:-180px;"></div>
+    <div class="scene-content" style="gap:20px">
+      <div id="s8-pre"   class="s8-pre">三个关键设计</div>
+      <div id="s8-title" class="s8-title">让压缩<br>丝滑无感</div>
+      <div id="s8-d1"    class="design-row">
+        <div class="design-dot"></div>
+        <div class="design-body">
+          <div class="design-strong">渲染层弹性降级</div>
+          <div class="design-detail">priority 机制本地优先裁剪次要节点</div>
+        </div>
+      </div>
+      <div id="s8-d2"    class="design-row">
+        <div class="design-dot"></div>
+        <div class="design-body">
+          <div class="design-strong">调度层异步掩盖</div>
+          <div class="design-detail">后台压缩在用户阅读间隙静默执行</div>
+        </div>
+      </div>
+      <div id="s8-d3"    class="design-row">
+        <div class="design-dot"></div>
+        <div class="design-body">
+          <div class="design-strong">存储层冷热分离</div>
+          <div class="design-detail">热快照常驻 + 按需读取本地冷归档</div>
+        </div>
+      </div>
+      <div id="s8-cta"   class="cta-box">
+        <div class="cta-label">完整源码拆解</div>
+        <div class="cta-brand">墨筝</div>
+        <div class="cta-desc">公众号同名</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── BGM ─── -->
+  <audio id="bgm" src="bgm.mp3" data-start="0" data-duration="60" data-track-index="1" data-volume="0.3"></audio>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // ═══ SCENE 1 — TITLE (0 – 6 s) ═══
+    tl.from("#s1-eyebrow", { y: 28, opacity: 0, duration: 0.5, ease: "power3.out" }, 0.2);
+    tl.from("#s1-line",    { scaleX: 0, opacity: 0, duration: 0.65, ease: "power2.out", transformOrigin: "left center" }, 0.5);
+    tl.from("#s1-main",    { y: 56, opacity: 0, duration: 0.7, ease: "expo.out" }, 0.75);
+    tl.from("#s1-cn",      { y: 60, opacity: 0, duration: 0.7, ease: "power3.out" }, 1.1);
+    tl.from("#s1-sub",     { y: 30, opacity: 0, duration: 0.6, ease: "power2.out" }, 1.6);
+
+    // Transition → Scene 2 at 5.4 s
+    tl.to("#scene2", { opacity: 1, duration: 0.6, ease: "power2.inOut" }, 5.4);
+
+    // ═══ SCENE 2 — HOOK (5.4 – 12.4 s) ═══
+    tl.from("#s2-tag",       { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, 6.0);
+    tl.from("#s2-hero",      { y: 58, opacity: 0, duration: 0.7, ease: "expo.out" }, 6.3);
+    tl.from("#s2-panel",     { y: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, 6.8);
+    tl.from("#s2-punchline", { x: -32, opacity: 0, duration: 0.55, ease: "power2.out" }, 7.4);
+
+    // Transition → Scene 3 at 11.8 s
+    tl.to("#scene3", { opacity: 1, duration: 0.6, ease: "power2.inOut" }, 11.8);
+
+    // ═══ SCENE 3 — prompt-tsx (11.8 – 20.8 s) ═══
+    tl.from("#s3-tag",  { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, 12.4);
+    tl.from("#s3-title",{ y: 44, opacity: 0, duration: 0.65, ease: "expo.out" }, 12.7);
+    tl.from("#s3-sub",  { y: 22, opacity: 0, duration: 0.4, ease: "power2.out" }, 13.2);
+    tl.from("#s3-a1",   { y: 40, opacity: 0, duration: 0.55, ease: "power3.out" }, 13.6);
+    tl.from("#s3-a2",   { y: 40, opacity: 0, duration: 0.55, ease: "power3.out" }, 14.2);
+    tl.from("#s3-code", { y: 28, opacity: 0, duration: 0.5, ease: "power2.out" }, 14.8);
+
+    // Transition → Scene 4 at 20.2 s
+    tl.to("#scene4", { opacity: 1, duration: 0.6, ease: "power2.inOut" }, 20.2);
+
+    // ═══ SCENE 4 — SCHEDULING (20.2 – 29.2 s) ═══
+    tl.from("#s4-tag",   { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, 20.8);
+    tl.from("#s4-title", { y: 52, opacity: 0, duration: 0.65, ease: "expo.out" }, 21.1);
+    tl.from("#s4-sub",   { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, 21.6);
+    tl.from("#s4-s1",    { x: -38, opacity: 0, duration: 0.5, ease: "power3.out" }, 22.0);
+    tl.from("#s4-s2",    { x: -38, opacity: 0, duration: 0.5, ease: "power3.out" }, 22.5);
+    tl.from("#s4-s3",    { x: -38, opacity: 0, duration: 0.5, ease: "power3.out" }, 23.0);
+
+    // Transition → Scene 5 at 28.6 s
+    tl.to("#scene5", { opacity: 1, duration: 0.6, ease: "power2.inOut" }, 28.6);
+
+    // ═══ SCENE 5 — THRESHOLD (28.6 – 36.6 s) ═══
+    tl.from("#s5-tag",    { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, 29.2);
+    tl.from("#s5-title",  { y: 46, opacity: 0, duration: 0.65, ease: "expo.out" }, 29.5);
+    tl.from("#s5-thresh", { y: 50, opacity: 0, duration: 0.65, ease: "power3.out" }, 30.0);
+    tl.from("#s5-jitter", { scale: 0.88, opacity: 0, duration: 0.5, ease: "back.out(1.6)" }, 30.7);
+    tl.from("#s5-tip",    { x: -28, opacity: 0, duration: 0.5, ease: "power2.out" }, 31.2);
+
+    // Transition → Scene 6 at 36.0 s
+    tl.to("#scene6", { opacity: 1, duration: 0.6, ease: "power2.inOut" }, 36.0);
+
+    // ═══ SCENE 6 — COMPRESSION LOGIC (36.0 – 45.0 s) ═══
+    tl.from("#s6-tag",   { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, 36.6);
+    tl.from("#s6-title", { y: 44, opacity: 0, duration: 0.65, ease: "expo.out" }, 36.9);
+    tl.from("#s6-sub",   { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, 37.4);
+    tl.from("#s6-1",     { x: -32, opacity: 0, duration: 0.45, ease: "power2.out" }, 37.8);
+    tl.from("#s6-2",     { x: -32, opacity: 0, duration: 0.45, ease: "power2.out" }, 38.3);
+    tl.from("#s6-3",     { x: -32, opacity: 0, duration: 0.45, ease: "power2.out" }, 38.8);
+    tl.from("#s6-4",     { x: -32, opacity: 0, duration: 0.45, ease: "power2.out" }, 39.3);
+
+    // Transition → Scene 7 at 44.4 s
+    tl.to("#scene7", { opacity: 1, duration: 0.6, ease: "power2.inOut" }, 44.4);
+
+    // ═══ SCENE 7 — STATE SNAPSHOT (44.4 – 53.4 s) ═══
+    tl.from("#s7-tag",      { y: 20, opacity: 0, duration: 0.4, ease: "power2.out" }, 45.0);
+    tl.from("#s7-title",    { y: 46, opacity: 0, duration: 0.65, ease: "expo.out" }, 45.3);
+    tl.from("#s7-subtitle", { y: 22, opacity: 0, duration: 0.4, ease: "power2.out" }, 45.8);
+    tl.from("#s7-grid",     { y: 52, opacity: 0, duration: 0.7, ease: "power3.out" }, 46.2);
+    tl.from("#s7-rule",     { x: -28, opacity: 0, duration: 0.5, ease: "power2.out" }, 47.0);
+
+    // Transition → Scene 8 at 52.8 s
+    tl.to("#scene8", { opacity: 1, duration: 0.6, ease: "power2.inOut" }, 52.8);
+
+    // ═══ SCENE 8 — CTA (52.8 – 59.0 s) ═══
+    tl.from("#s8-pre",   { y: 22, opacity: 0, duration: 0.4, ease: "power2.out" }, 53.4);
+    tl.from("#s8-title", { y: 52, opacity: 0, duration: 0.65, ease: "expo.out" }, 53.7);
+    tl.from("#s8-d1",    { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 54.2);
+    tl.from("#s8-d2",    { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 54.6);
+    tl.from("#s8-d3",    { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 55.0);
+    tl.from("#s8-cta",   { y: 42, opacity: 0, scale: 0.95, duration: 0.65, ease: "back.out(1.4)" }, 55.5);
+
+    // Final fade-out (scene 8 only)
+    tl.to("#scene8", { opacity: 0, duration: 0.9, ease: "power2.in" }, 58.1);
+    tl.set("#scene8", { visibility: "hidden" }, 59.0);
+
+    window.__timelines["root"] = tl;
+  </script>
+
+</div>
+
+</body>
+</html>

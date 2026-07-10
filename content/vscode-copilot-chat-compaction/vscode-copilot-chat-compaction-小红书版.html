@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VS Code Copilot 是如何丝滑地压缩上下文的？</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #2c2825;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 90px 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  }
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(28,28,30,0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px; display: flex; align-items: center;
+    justify-content: center; gap: 12px;
+  }
+  .toolbar .btn {
+    background: #1C1C1E; color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15);
+    padding: 9px 22px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer;
+  }
+  .toolbar .btn.accent { background: #C4956A; border-color: #C4956A; }
+  .toolbar .progress { color: rgba(255,255,255,0.7); font-size: 12px; margin-left: 8px; }
+
+  .slide {
+    width: 540px; height: 720px; margin-bottom: 40px;
+    position: relative; overflow: hidden; border-radius: 8px;
+    box-shadow: 0 6px 28px rgba(28,28,30,0.35); background: #F2EDE3;
+  }
+  .bg-paper {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #F6F1E7 0%, #F2EDE3 55%, #ECE4D2 100%);
+  }
+  .bg-paper::after {
+    content: ''; position: absolute; inset: 0; opacity: 0.04;
+    background-image: linear-gradient(rgba(28,28,30,0.6) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(28,28,30,0.6) 1px, transparent 1px);
+    background-size: 28px 28px; pointer-events: none;
+  }
+  .bg-paper::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 240px; height: 240px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,149,106,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .content {
+    position: relative; z-index: 2; height: 100%;
+    padding: 32px 40px 24px; display: flex; flex-direction: column;
+    color: #333; letter-spacing: 0;
+  }
+
+  .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
+  .avatar-wrap { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #C4956A; overflow: hidden; background: linear-gradient(135deg, #C4956A, #8a6240); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #F2EDE3; font-weight: 700; font-family: "Songti SC", serif; font-size: 18px; }
+  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .meta .name { font-size: 15px; font-weight: 700; color: #1C1C1E; }
+  .meta .date { font-size: 13px; color: #888; margin-top: 2px; }
+
+  .post-body { flex: 1; overflow: hidden; }
+  .post-body .h1 {
+    font-size: 27px; font-weight: 800; color: #1C1C1E;
+    margin-bottom: 16px; line-height: 1.35;
+    text-align: center; padding: 12px 0;
+    border-top: 2px solid #1C1C1E; border-bottom: 2px solid #1C1C1E;
+    font-family: "Songti SC", "Source Han Serif SC", serif;
+    letter-spacing: 0;
+  }
+  .post-body .h2 {
+    font-size: 22px; font-weight: 700; color: #1C1C1E;
+    margin-bottom: 12px; border-left: 4px solid #C4956A; padding-left: 12px;
+  }
+  .post-body .h3 {
+    font-size: 19px; font-weight: 700; color: #2C2A28;
+    margin-bottom: 9px; margin-top: 4px;
+    letter-spacing: 0;
+  }
+  .post-body p { font-size: 17px; line-height: 1.55; margin-bottom: 8px; }
+  .post-body p.tight { font-size: 15.8px; line-height: 1.48; margin-bottom: 6px; }
+  .post-body strong { color: #1C1C1E; font-weight: 700; }
+  .note { color: #666; font-size: 15px; line-height: 1.55; margin-top: 8px; }
+  .list-item { display: flex; gap: 8px; margin-bottom: 7px; font-size: 16px; line-height: 1.48; }
+  .list-item .bullet { color: #999; font-weight: bold; flex-shrink: 0; }
+  .list-item.sub { margin-left: 18px; font-size: 15.2px; }
+  code { background: #E8E0D1; color: #1C1C1E; padding: 1px 5px; border-radius: 4px; font-family: "SF Mono", Menlo, monospace; font-size: 0.9em; white-space: normal; word-break: break-word; }
+  .code-block {
+    background: #1C1C1E; color: #F2EDE3; border-radius: 8px;
+    padding: 12px 14px; font-size: 12.6px;
+    font-family: "SF Mono", Menlo, monospace;
+    white-space: pre-wrap; word-break: break-word;
+    line-height: 1.45; margin: 10px 0 12px;
+  }
+  .quote-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .quote { font-size: 24px; line-height: 1.55; color: #1C1C1E; font-weight: 800; font-family: "Songti SC", "Source Han Serif SC", serif; }
+  .quote small { display: block; margin-top: 18px; font-size: 15px; line-height: 1.7; color: #666; font-family: inherit; font-weight: 400; }
+  .post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(28,28,30,0.08); flex-shrink: 0; }
+  .post-footer .brand { font-size: 12px; color: #888; }
+  .post-footer .brand .gz { color: #C4956A; font-weight: 700; }
+  .post-footer .page { font-size: 12px; color: #888; }
+  .swipe-hint { text-align: center; font-size: 12px; letter-spacing: 0; margin-top: auto; padding-bottom: 8px; color: rgba(28,28,30,0.35); }
+  .swipe-arrows { display: inline-block; letter-spacing: 3px; font-weight: 300; opacity: 0.7; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button class="btn" onclick="downloadOne()">下载当前</button>
+  <span class="progress" id="progress"></span>
+</div>
+
+<div class="slide" id="slide-1">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="h1">VS Code Copilot<br>是如何丝滑地压缩上下文的？</div>
+      <p>作为 VS Code Copilot 的 Pro+ 会员和高频用户，我感受最爽的就是其丝滑的上下文管理体验，使用过程中几乎感觉不到上下文压缩带来的停顿等待。</p>
+      <p>我很好奇它是怎么做到这点的。</p>
+      <p>于是，我去读了其 chat 实现的源码，发现了一堆令人叹服的工程细节。我认为 Copilot 的上下文管理是可以作为 Agent 产品的范例来效仿的。</p>
+    </div>
+    <div class="swipe-hint"><span class="swipe-arrows">‹ ‹ ‹</span> 左滑查看更多</div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">1 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <p class="tight">ps：独立的 <code>vscode-copilot-chat</code> 仓库已于 2026 年 5 月停止更新并被归档。目前 Agent 的全部核心逻辑都在主库 <code>microsoft/vscode</code> 的 <code>extensions/copilot/</code> 目录下，本文拆解源于这份最新代码实现。</p>
+      <div class="h2">核心基建：@vscode/prompt-tsx</div>
+      <p class="tight">在讲具体的压缩机制前，需要先介绍 <code>@vscode/prompt-tsx</code>，它是一个自带 Token 预算感知能力的 Prompt 渲染器。与传统的“直接拼接字符串传入 <code>messages</code> 数组”的做法不同。Copilot 通过 TSX 组件拼装出完整的 Prompt 骨架（PromptElement），然后渲染器负责将其扁平化，再转换为发送给大模型的对话数组（<code>ChatMessage[]</code>），并在这一过程中自动适配给定的 Token 预算。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">2 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <p>先瞅一眼精简后的 Agent 真实 Prompt 结构（<code>agentPrompt.tsx</code>）：</p>
+      <div class="code-block">return &lt;&gt;
+  {baseInstructions}
+  &lt;AgentConversationHistory flexGrow={1} priority={700} promptContext={ctx} /&gt;
+  &lt;AgentUserMessage    flexGrow={2} priority={900} {...userMessageProps} /&gt;
+  &lt;ChatToolCalls       flexGrow={2} priority={899} toolCallRounds={ctx.toolCallRounds}
+                       truncateAt={maxToolResultLength} /&gt;
+&lt;/&gt;;</div>
+                  <p class="tight">裁剪的取舍由每个元素上的两个属性控制：</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">3 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="list-item"><span class="bullet">•</span><div><strong><code>priority</code>（优先级）</strong>：当渲染树超出预算时，渲染器会最先丢弃优先级最低的内容。在这里，当前用户输入（<code>900</code>）和最新的工具调用（<code>899</code>）优先级高于历史记录（<code>700</code>），而历史记录的优先级又高于 Copilot 模版指令。如果是同一优先级的节点，则按代码声明顺序依次裁剪。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><strong><code>flexGrow</code>（空间伸缩比）</strong>：控制剩余预算的分配方式。带有 <code>flexGrow</code> 的元素会延后到所有非动态的次要节点都处理完毕后，再进行体积测量。此时系统会将剩余的所有 Token 额度打包，按 <code>flexGrow</code> 的比例切分并灌入。</div></div>
+      <p class="tight">在这个例子中，剩余额度会分成 5 份：用户输入（<code>flexGrow={2}</code>）与最新工具调用（<code>flexGrow={2}</code>）会优先各自瓜分 40% 的主力空间，剩下的 20% 再分配给历史对话（<code>flexGrow={1}</code>）来填充。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">4 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <p class="tight">除了底层的优先级调度，<code>@vscode/prompt-tsx</code> 还提供了几个控制配额的属性：</p>
+      <div class="list-item"><span class="bullet">•</span><div><code>TokenLimit</code>：为特定子树施加 Token 硬上限。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><code>PrioritizedList</code>：为子元素列表按序分配递减（或递增）的优先级，通过这种精确的打分排序，确保了越旧的对话轮次被优先丢弃。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><code>TextChunk</code>：应对大段文本，尽可能多地保留预算内能塞下的内容。</div></div>
+      <p class="tight">每一个组件节点在执行生命周期方法 <code>render(state, sizing)</code> 时，都会收到一个包含 <code>tokenBudget</code> 和异步 <code>countTokens()</code> 函数的 <code>PromptSizing</code> 参数，节点可以自主测量体积并执行内部约束。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">5 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <p class="tight">上述例子中，通过传入 <code>truncateAt={maxToolResultLength}</code> ，就能允许工具输出自我设限（比如截取不超过窗口 50% 额度）。</p>
+      <p class="tight">当上下文容量超出上限时，<code>prompt-tsx</code> 会抛出 <code>BudgetExceededError</code> 异常，此时Copilot从普通的节点裁断策略切换到上下文压缩流程。</p>
+      <div class="h2">调度协作：压缩链路的内部执行顺序</div>
+      <p class="tight">如果在逻辑上只依靠捕获 <code>BudgetExceededError</code> 来触发压缩，会有严重的体验问题：前台捕获异常属于串行阻塞流程。Copilot需要尝试渲染、遭遇报错、临时发起摘要任务然后等待模型返回，最后重新渲染，这会阻断用户的提问交互。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">6 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <p class="tight">Copilot 在对话轮次中会交替执行上述渲染器的裁剪策略和后台的并行压缩任务。当用户提交问题后，引擎内部的执行链路如下：</p>
+      <div class="list-item"><span class="bullet">1</span><div><strong>预检与挂载（Pre-Render）</strong>：在执行正式渲染之前，Copilot首先检查后台压缩器（<code>backgroundSummarizer</code>）。若后台在此前的空闲时段已经完成了摘要生成（状态为 <code>Completed</code>），且当前上下文占比达到了应用阈值（<code>applyMinRatio</code>），Copilot立即提取摘要并原位替换长对话历史。该操作为单纯的内存状态同步，无额外请求开销。</div></div>
+      <div class="list-item"><span class="bullet">2</span><div><strong>常态渲染与异常协同（Render &amp; Fallback）</strong>：提取结果后（或无可提取产物时），Copilot按组件优先级正式渲染 Prompt。若经计算并未超限，流程顺利结束；如果依然抛出 <code>BudgetExceededError</code>，则进入前后台协同的排险分支：</div></div>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">7 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="list-item sub"><span class="bullet">•</span><div>异步挂起：若后台任务处于 <code>InProgress</code>（执行中）状态，Copilot挂起当前线程（<code>await waitForCompletion</code>）以等待后台作业完毕，并复用其结果，避免重复发起大模型请求。</div></div>
+      <div class="list-item sub"><span class="bullet">•</span><div>强制串行：若后台任务处于 <code>Idle</code>（空闲）状态，表明之前的容量尚未触及后台警戒线，此时的超额是由当前过大的输入（如单次粘贴海量代码）瞬间击穿上限导致的。Copilot被迫调用 <code>renderWithSummarization</code> 触发兜底：阻塞主流程，强制模型先完成历史摘要生成，释放空间后再处理当前提问。</div></div>
+      <div class="list-item sub"><span class="bullet">•</span><div>降级渲染：若强制压缩后仍抛出 <code>BudgetExceededError</code>，Copilot记录失败状态，调用 <code>renderWithoutSummarization</code> 取消摘要任务，直接切除超额历史进行渲染。</div></div>
+      <div class="list-item"><span class="bullet">3</span><div><strong>后置评估与预热分发（Post-Render）</strong>：当本轮提问全部响应发出后，Copilot会重新评估最终的 Token 占用率。如发觉整体容量逼近警戒位，且当前不存在进行中的压缩任务，Copilot会再次派发异步任务（<code>_startBackgroundSummarization</code>），并在客户端闲置时静默执行，为下一轮对话准备好可用的压缩快照。</div></div>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">8 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="h2">阈值判定与 Prompt Cache 利用</div>
+      <p class="tight">在判断阈值时，Copilot 不仅会参考模型的预设上限，还会解析用户配置中的 <code>effectiveMaxTokens</code> 参数，参数设置的规则为：</p>
+      <div class="list-item"><span class="bullet">•</span><div><code>0</code> 到 <code>1</code> 之间的浮点数（如 <code>0.8</code>）：按比例换算为容量上限。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><code>≥100</code> 的整数（如 <code>4000</code>）：作为绝对的 Token 数量硬上限。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div>非法数值（如 <code>50</code>）：直接报错中断。</div></div>
+      <p class="tight">此外，对于代码搜索等高产出工具，系统会先扣除工具配额，再将剩余预算乘以 <code>0.9</code>。强制预留 10% 的缓冲空间，专门用来吸收不受控的超长输出，防止运行时 Token 溢出报错。</p>
+      <p class="tight">为了最大化利用提示词缓存减少摘要请求消耗，Copilot 后台还做了一些非常精细的操作：</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">9 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="list-item"><span class="bullet">1</span><div><strong>热温分类与界标扰动（Jitter）</strong>：当关联上下文处于缓存“温热态”时，单次压缩成本极低，上下文窗口占比阈值设定为 <code>80%</code>，同时，为了避免固定阈值造成的局部卡顿体感，底层策略加入了 <code>0.78</code> 至 <code>0.82</code> 间的界标扰动。在冷启动（如挂机后唤醒）状态下，无缓存可用，阈值会推迟到 <code>90%</code> 再触发压缩。</div></div>
+      <div class="list-item"><span class="bullet">2</span><div><strong>全量克隆与静默提取</strong>：单独发起摘要请求会改变 Prompt 结构，导致提示词缓存失效。为最大化利用缓存，Copilot在后台压缩时会全量克隆当前的对话上下文，仅在末尾追加一条生成摘要的指令。</div></div>
+      <p class="tight">由于前置文本保持不变，大模型能直接命中已有缓存以降低计算开销。最后，Copilot从返回结果中剥离并保存 <code>&lt;summary&gt;</code> 标签内容即可。</p>
+      <div class="list-item"><span class="bullet">3</span><div><strong>容量滑落废弃</strong>：摘要生成是异步执行，如果中间用户切换至上下文窗口更大的模型，原有的占比则会滑落。为了避免无效的摘要替换，Copilot 在应用摘要前会执行二次校验：若当前容量占比已跌至 <code>0.65</code> 以下，则丢弃摘要结果，沿用原始会话内容。</div></div>
+      <div class="h2">内部的切分逻辑</div>
+      <p class="tight">Copilot 并非简单地把整段对话扔给 LLM 去生成一个全盘摘要，它执行的是一套“近端保留 + 远端滚动折叠”的增量压缩逻辑。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">10 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="list-item"><span class="bullet">1</span><div><strong>保留最近上下文</strong>：Copilot 会逆向回溯会话历史，原样保留最近的几轮对话，以确保用户可以延续当前的对话讨论。</div></div>
+      <div class="list-item"><span class="bullet">2</span><div><strong>剔除溢出轮次</strong>：当发生多轮连续的工具调用时，Copilot 会将最终导致溢出的那次调用从摘要范围中剔除，确保只对超载前的、完整的安全历史进行压缩。</div></div>
+      <div class="list-item"><span class="bullet">3</span><div><strong>命中已有存档点</strong>：在逆向遍历历史记录时，Copilot 一旦读取到带有 <code>.summary</code> 标记的过往摘要节点，就会立即中止回溯。全新的压缩任务会直接提取这份旧摘要，将其与新产生的对话文本一并交给模型，最终融合成一份最新摘要，避免每次压缩都必须从头开始，节省计算开销。</div></div>
+      <div class="list-item"><span class="bullet">4</span><div><strong>原位替换</strong>：当模型生成并返回压缩产物后，Copilot 将其放进一个虚拟的 <code>&lt;conversation-summary&gt;</code> 对话节点中，覆盖掉原会话内容。这个新节点将作为稳定的元数据驻留，继续衔接后续的对话轮次。</div></div>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">11 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <p class="tight">此外，在保留最近上下文的机制设计下，Copilot 必须防范另一种极端情况：某个刚调用的读取工具可能直接返回了十万行的报错日志，对于这种 case，底层配置对工具输出施加了严格的大小限制：任何单一工具的返回文本，其体积不可超过模型总 Token 额度的 50%。</p>
+      <p class="tight">当出现长文本超限时，渲染器会直接剔除长文本的中间区块，仅按比例留存开头的 40% 与末尾的 60%。</p>
+      <p class="tight">这种策略既能有效保留报错的异常堆栈与关键信息，又避免了庞大工具输出瞬间阻断上下文窗口的问题。</p>
+      <div class="h2">摘要的本质：高密度的状态快照</div>
+      <p class="tight">当大量的历史对话被折叠后，Agent 极易出现“失忆”或上下文断层。因此，这里的“摘要”并不是简单的几句话概括，而是Copilot 要求模型把当前的任务目标、代码改动记录、抛过的异常以及接下来的计划等具体细节完整记录下来，生成一份可随时恢复工作记忆的<strong>状态快照</strong>。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">12 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <p class="tight">为了保证这份快照足够精准，Copilot在生成摘要时会直接沿用当前交互的模型，不会为了省钱偷偷降级到小模型。此外，Copilot 还会把 <code>temperature</code> 锁死为 <code>0</code> 以榨取最高的确定性，并且不会关闭流式响应。</p>
+      <p class="tight">在默认模式下，Copilot 还做了一个非常巧妙的参数设定：在把完整的工具定义传给模型的同时，额外附加了 <code>tool_choice: 'none'</code> 以禁用工具调用。这样既能保证模型能看懂工具语义，知道过去做了什么，又能避免其擅自调用新工具，先专注把总结工作干完。</p>
+      <p class="tight">执行压缩时，模型必须先在 <code>&lt;analysis&gt;</code> 标签中利用思维链（CoT）推理现状，随后在 <code>&lt;summary&gt;</code> 标签内雷打不动地交出这 8 个维度的现场数据：</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">13 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="list-item"><span class="bullet">1</span><div>会话概述：当前任务的核心目标、背景上下文以及用户意图的演进阶段。</div></div>
+      <div class="list-item"><span class="bullet">2</span><div>技术底座：开发涉及的核心架构、框架与设计模式。</div></div>
+      <div class="list-item"><span class="bullet">3</span><div>代码库演变：精准标记变动的文件目录及其变更缘由与核心逻辑状态。</div></div>
+      <div class="list-item"><span class="bullet">4</span><div>问题排解：遇到的报错信息、对应的解决方案与调试线索。</div></div>
+      <div class="list-item"><span class="bullet">5</span><div>进度跟踪：已完成、待处理以及已验证稳定的任务进度。</div></div>
+      <div class="list-item"><span class="bullet">6</span><div>当前焦点：触发压缩前，Copilot 最后停留的具体代码或操作。</div></div>
+      <div class="list-item"><span class="bullet">7</span><div>行为快照：近期下发的终端命令以及执行的工具调用反馈。</div></div>
+      <div class="list-item"><span class="bullet">8</span><div>后续计划：未决的待办清单与恢复状态后所需执行的首要指令。</div></div>
+      <p class="tight">这种详尽的结构化压缩内容能让 Agent 在后续对话中迅速找回工作状态。</p>
+      <p class="tight">但部分模型未必能完美遵循这种格式要求，如果执行失败，Copilot 会自动降级到极简模式：不强制数据结构，仅做最简单的文字概括。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">14 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="h2">会话面包屑：上下文留索引，本地存明细</div>
+      <p class="tight">压缩是有损的。历史对话一旦被折叠，就会丢失一些原生细节。</p>
+      <p class="tight">但在后续排错中，模型往往还需要回头查阅具体的代码片段或报错日志。</p>
+      <p class="tight">因此，Copilot 会在摘要最后附上一段固定的提示，给模型指明查阅原始记录的路径：“如果你需要读取压缩前的确切细节（比如原生代码片段、报错信息或过去的输出等），请使用 <code>readFile</code> 工具直接读取本地归档文件 <code>transcriptPath</code>。”</p>
+      <p class="tight">这段提示文本只在生成摘要时写入一次，在后续对话中会原样复用。</p>
+      <p class="tight">完整的原生对话记录存放于本地硬盘，摘要仅作为轻量索引。模型只有在需要确切细节时，才会调用工具去读取本地文件。这种“按需加载”的设计，最大程度节约了宝贵的上下文空间。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">15 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-16">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="h2">针对特定模型的兼容处理</div>
+      <p class="tight">不同模型的 API 存在行为差异，Copilot 在底层代码中增加了以下特定兼容逻辑：</p>
+      <div class="list-item"><span class="bullet">•</span><div><strong>Opus 系列</strong>：额外追加一段约束指令，明确要求模型“禁止调用工具，仅输出文本”。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><strong>Anthropic（开启 Thinking 时）</strong>：Copilot会保留最后一次的“思考过程”，待摘要生成完毕后，重新插入到新一轮对话的起始位置以保持推理连贯。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><strong>Anthropic（调用 tool_search 时）</strong>：Anthropic 接口会严格校验历史工具记录的一致性。由于摘要请求中通常不再声明 <code>tool_search</code> 这一特殊工具，客户端必须在发请求前主动剔除这部分记录，避免导致校验失败抛出 HTTP 400 错误</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><strong>Gemini</strong>：如果此前的上下文裁剪导致某些 <code>function_call</code> 丢失了配套的返回结果，Gemini 同样会回抛 HTTP 400。客户端会在发送请求前主动清理这些失效的孤立节点。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><strong>GPT-4.1</strong>：渲染摘要后，会在末尾追加“请继续”相关的提示词以维持对话状态。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><strong>提示词缓存</strong>：生成的摘要结果只会写入一次，并在随后的对话轮次中直接复用，最大化模型的缓存命中率。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><strong>PreCompact 钩子机制</strong>：在压缩上下文前 Copilot 会执行该钩子函数，通常主要用于日志和转录的本地写入。钩子为非阻塞性，即使报错也不会中断主压缩任务。</div></div>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">16 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-17">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body">
+      <div class="h2">相关配置项</div>
+      <p class="tight">VS Code 为上述压缩流程提供了以下设置项：</p>
+      <div class="list-item"><span class="bullet">•</span><div><code>chat.summarizeAgentConversationHistory.enabled</code>：压缩机制总开关（默认开启），统一控制前台与后台的压缩行为。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><code>chat.advanced.summarizeAgentConversationHistoryThreshold</code>：触发压缩的上下文占比阈值。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><code>chat.advanced.agentHistorySummarizationMode</code>：指定摘要的生成模式（<code>auto</code>、<code>full</code> 或 <code>simple</code>）。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><code>chat.conversationCompaction.usePrismCompaction</code>：是否启用 Prism 通道执行压缩（实验性）。</div></div>
+      <div class="list-item"><span class="bullet">•</span><div><code>chat.conversationCompaction.prismModelFilter</code>：配合上述开关使用，指定只有特定主模型才触发 Prism 通道。</div></div>
+      <p class="tight">ps: Prism 是一个用于降低算力消耗的轻量级模型路由。默认情况下，摘要由当前交互的主模型（如 GPT-4o）生成以维系缓存上下文；开启此选项后，摘要任务会被转交给速度更快、成本更低的小模型独立处理。</p>
+      <p class="note">因篇幅限制，完整总结请移步微信公众号「墨筝」阅读原文。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">17 / 18</div></div>
+  </div>
+</div>
+
+<div class="slide" id="slide-18">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <div class="post-header"><div class="avatar-wrap"><img src="../_shared/avatar.jpg" onerror="this.parentNode.innerHTML='墨'" alt="墨筝"></div><div class="meta"><div class="name">墨筝</div><div class="date">07/05</div></div></div>
+    <div class="post-body quote-card">
+      <div class="quote">在模型窗口依然存在硬性约束的当下，单纯拼接 Prompt 已经走到尽头。<small>Copilot 这套融合了组件化思想、并发调度与缓存治理的架构，我认为堪称 Agent 上下文管理的范本。</small></div>
+      <p class="note" style="margin-top:32px;">完整内容请移步微信公众号「墨筝」阅读原文。</p>
+    </div>
+    <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><div class="page">18 / 18</div></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const progressEl = document.getElementById('progress');
+const slides = () => Array.from(document.querySelectorAll('.slide'));
+const EXPORT_SCALE = 2;
+
+function assertExportLibraries() {
+  const missing = [];
+  if (!window.html2canvas) missing.push('html2canvas');
+  if (!window.JSZip) missing.push('JSZip');
+  if (missing.length) {
+    throw new Error(`导出依赖未加载：${missing.join(', ')}。请确认网络可访问 jsDelivr CDN，或用本地服务打开此 HTML。`);
+  }
+}
+
+function saveBlob(blob, filename) {
+  if (window.saveAs) {
+    window.saveAs(blob, filename);
+    return;
+  }
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function flattenAlpha(canvas) {
+  const output = document.createElement('canvas');
+  output.width = canvas.width;
+  output.height = canvas.height;
+  const ctx = output.getContext('2d');
+  ctx.fillStyle = '#F2EDE3';
+  ctx.fillRect(0, 0, output.width, output.height);
+  ctx.drawImage(canvas, 0, 0);
+  return output;
+}
+
+async function waitForSlideImages(slide) {
+  const images = Array.from(slide.querySelectorAll('img'));
+  await Promise.all(images.map((img) => {
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return new Promise((resolve) => {
+      img.addEventListener('load', resolve, { once: true });
+      img.addEventListener('error', resolve, { once: true });
+    });
+  }));
+}
+
+async function renderSlide(slide) {
+  await waitForSlideImages(slide);
+  const canvas = await html2canvas(slide, {
+    scale: EXPORT_SCALE,
+    backgroundColor: null,
+    useCORS: true,
+    allowTaint: false,
+    logging: false,
+    width: 540,
+    height: 720
+  });
+  return flattenAlpha(canvas);
+}
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    try {
+      canvas.toBlob((blob) => {
+        if (!blob) reject(new Error('canvas.toBlob 返回空结果，可能是图片跨域污染导致'));
+        else resolve(blob);
+      }, 'image/png');
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+async function downloadOne() {
+  try {
+    assertExportLibraries();
+    const allSlides = slides();
+    const raw = prompt(`下载第几张？1-${allSlides.length}`, '1');
+    if (!raw) return;
+    const index = Math.max(1, Math.min(allSlides.length, parseInt(raw, 10) || 1));
+    progressEl.textContent = `正在导出 ${index}/${allSlides.length}`;
+    const canvas = await renderSlide(allSlides[index - 1]);
+    const blob = await canvasToBlob(canvas);
+    saveBlob(blob, `vscode-copilot-chat-compaction-${String(index).padStart(2, '0')}.png`);
+    progressEl.textContent = '导出完成';
+  } catch (error) {
+    console.error(error);
+    const message = error && error.message ? error.message : String(error);
+    progressEl.textContent = `下载失败：${message}`;
+    alert(`下载失败：${message}`);
+  }
+}
+
+async function downloadAll() {
+  try {
+    assertExportLibraries();
+    const allSlides = slides();
+    const zip = new JSZip();
+    for (let i = 0; i < allSlides.length; i++) {
+      progressEl.textContent = `正在导出 ${i + 1}/${allSlides.length}`;
+      const canvas = await renderSlide(allSlides[i]);
+      const blob = await canvasToBlob(canvas);
+      zip.file(`vscode-copilot-chat-compaction-${String(i + 1).padStart(2, '0')}.png`, blob);
+    }
+    progressEl.textContent = '正在打包 ZIP';
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveBlob(content, 'vscode-copilot-chat-compaction-xhs.zip');
+    progressEl.textContent = `导出完成：${allSlides.length} 张`;
+  } catch (error) {
+    console.error(error);
+    const message = error && error.message ? error.message : String(error);
+    progressEl.textContent = `下载失败：${message}`;
+    alert(`下载失败：${message}`);
+  }
+}
+</script>
+</body>
+</html>

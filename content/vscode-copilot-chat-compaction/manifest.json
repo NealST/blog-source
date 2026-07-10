@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "created": "2026-07-04T00:00:00+08:00",
+  "source": "source/_posts/vscode-copilot-chat-compaction.md",
+  "title": "VS Code Copilot 是如何丝滑地压缩上下文的？",
+  "slug": "vscode-copilot-chat-compaction",
+  "outputs": {
+    "wechat": {
+      "html": "content/vscode-copilot-chat-compaction/preview.html",
+      "cover_image": "content/vscode-copilot-chat-compaction/cover.png",
+      "title": "VS Code Copilot 是如何丝滑地压缩上下文的？",
+      "author": "墨筝",
+      "digest": "拆解 VS Code Copilot 的上下文压缩机制：prompt-tsx 的预算感知渲染、后台摘要预热、提示词缓存复用、滚动折叠与本地转录索引。",
+      "markdown": "source/_posts/vscode-copilot-chat-compaction.md",
+      "images": [
+        "content/vscode-copilot-chat-compaction/配图-1.png",
+        "content/vscode-copilot-chat-compaction/配图-2.png",
+        "content/vscode-copilot-chat-compaction/配图-3.png",
+        "content/vscode-copilot-chat-compaction/配图-4.png",
+        "content/vscode-copilot-chat-compaction/配图-5.png",
+        "content/vscode-copilot-chat-compaction/配图-6.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/vscode-copilot-chat-compaction/vscode-copilot-chat-compaction-小红书版.html",
+      "copy": {
+        "title": "扒源码才发现！VS Code如何丝滑压缩上下文｜AI架构拆解",
+        "body": "作为 VS Code Copilot 高频用户，我最好奇的就是它几乎无感的上下文压缩体验。\n于是我去读了源码，发现了一套堪称 Agent 典范的上下文架构！\n\n不再是暴力拼接字符串，它到底做对了什么？\n1️⃣ 组件化 Prompt：采用自带 Token 预算感知的渲染器，精准通过优先级裁剪次要节点。\n2️⃣ 前后台轮转并发：后置静默生成历史摘要，只有输入瞬间打穿容量时，才触发强制阻塞，完美避开大部分卡顿。\n3️⃣ 高密度状态快照：摒弃简单的总结，将冗长的历史提炼为包含任务、报错、代码改动等 8 个维度的结构化记录。\n4️⃣ 缓存复用与本地索引：逆向折叠历史、无缝利用提示词缓存，并仅当模型需要细节时按需读取本地完整的对话归档。\n\n只有懂了这些细节，才能构建出更原生的 Agent 体验。\n\n完整的深度拆解见后图👇\n\n.",
+        "tags": [
+          "AI工具",
+          "Agent",
+          "VSCodeCopilot",
+          "大模型",
+          "架构设计",
+          "源码分析",
+          "AI工程化",
+          "独立开发"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>封面 - Claude Code 被封禁的始末</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 12px 24px; display: flex; gap: 12px; z-index: 999; }
+.toolbar button { padding: 8px 16px; border: none; border-radius: 6px; background: #C4956A; color: #fff; font-size: 14px; cursor: pointer; font-weight: 600; }
+.toolbar button:hover { background: #b8845a; }
+.cover { width: 900px; height: 383px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 40px; }
+.bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+.bg-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse at 22% 50%, rgba(196,149,106,0.07) 0%, transparent 50%), radial-gradient(ellipse at 78% 45%, rgba(255,132,120,0.05) 0%, transparent 45%); }
+
+.content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 400px 0 70px; z-index: 2; }
+.kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative; }
+.kicker::before { content: ''; position: absolute; top: 0; left: 0; width: 32px; height: 1px; background: #C4956A; }
+.title { font-size: 44px; font-weight: 800; letter-spacing: -0.022em; line-height: 1.2; color: #F2EDE3; margin-top: 18px; }
+.title .accent { color: #C4956A; }
+.lede { font-size: 15px; font-weight: 400; font-style: italic; color: rgba(255,255,255,0.55); margin-top: 16px; max-width: 420px; line-height: 1.55; }
+
+.hero-art { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); z-index: 1; }
+
+.brand { position: absolute; top: 20px; left: 24px; display: flex; align-items: center; gap: 8px; z-index: 3; }
+.brand svg { width: 22px; height: 22px; }
+.brand-text { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); letter-spacing: 1px; }
+
+.subtitle { position: absolute; bottom: 24px; right: 30px; font-size: 12px; color: rgba(255,255,255,0.3); z-index: 3; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="downloadCover('main')">下载头图 (900x383)</button>
+  <button onclick="downloadCover('secondary')">下载次图 (200x200)</button>
+</div>
+
+<div class="cover" id="cover-main">
+  <div class="bg-dark"></div>
+  <div class="bg-gradient"></div>
+
+  <!-- 右侧视觉：一段看似正常的 prompt 中，隐藏着水印字符和替换的分隔符 -->
+  <div class="hero-art">
+    <svg width="340" height="290" viewBox="0 0 340 290" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="scanGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#C4956A" stop-opacity="0.14"/>
+          <stop offset="100%" stop-color="#C4956A" stop-opacity="0.00"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Prompt 卡片（看似正常的一段话） -->
+      <rect x="18" y="46" width="304" height="150" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.18)" stroke-width="1.2"/>
+      <text x="34" y="70" font-size="9" font-weight="700" fill="rgba(255,255,255,0.45)" letter-spacing="1.4" font-family="-apple-system, sans-serif">SYSTEM PROMPT</text>
+      <line x1="34" y1="80" x2="112" y2="80" stroke="rgba(196,149,106,0.55)" stroke-width="1"/>
+
+      <!-- 第一行：正常英文 -->
+      <text x="34" y="108" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.75)">You are a</text>
+      <text x="105" y="108" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.75)">coding agent…</text>
+
+      <!-- 第二行：被植入水印的关键行 -->
+      <text x="34" y="140" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.75)">Today</text>
+      <!-- 高亮的 Unicode 撇号 -->
+      <text x="76" y="140" font-size="17" font-weight="800" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#C4956A">’</text>
+      <text x="87" y="140" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.75)">s date is 2026</text>
+      <!-- 高亮的斜线分隔符 -->
+      <text x="216" y="140" font-size="15" font-weight="800" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#C4956A">/</text>
+      <text x="226" y="140" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.75)">06</text>
+      <text x="246" y="140" font-size="15" font-weight="800" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#C4956A">/</text>
+      <text x="256" y="140" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.75)">30.</text>
+
+      <!-- 下划线高亮 3 处水印 -->
+      <line x1="74" y1="146" x2="86" y2="146" stroke="#C4956A" stroke-width="1.5"/>
+      <line x1="214" y1="146" x2="226" y2="146" stroke="#C4956A" stroke-width="1.5"/>
+      <line x1="244" y1="146" x2="256" y2="146" stroke="#C4956A" stroke-width="1.5"/>
+
+      <!-- 提示行 -->
+      <text x="34" y="170" font-size="13" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="rgba(255,255,255,0.35)">Help the user with…</text>
+
+      <!-- 放大镜（覆盖在异常撇号上，暗示"被发现的暗水印"） -->
+      <g transform="translate(212, 88)">
+        <circle cx="0" cy="0" r="48" fill="url(#scanGlow)"/>
+        <circle cx="0" cy="0" r="34" fill="none" stroke="#C4956A" stroke-width="2"/>
+        <circle cx="0" cy="0" r="34" fill="none" stroke="rgba(196,149,106,0.25)" stroke-width="6"/>
+        <line x1="24" y1="24" x2="46" y2="46" stroke="#C4956A" stroke-width="3" stroke-linecap="round"/>
+      </g>
+
+      <!-- 底部标签：三个隐写位 -->
+      <g transform="translate(18, 216)">
+        <rect x="0" y="0" width="96" height="26" rx="4" fill="rgba(196,149,106,0.12)" stroke="rgba(196,149,106,0.5)" stroke-width="1"/>
+        <text x="48" y="17" text-anchor="middle" font-size="9.5" font-weight="700" fill="#C4956A" letter-spacing="0.5" font-family="-apple-system, sans-serif">时区 · CN</text>
+
+        <rect x="104" y="0" width="96" height="26" rx="4" fill="rgba(196,149,106,0.12)" stroke="rgba(196,149,106,0.5)" stroke-width="1"/>
+        <text x="152" y="17" text-anchor="middle" font-size="9.5" font-weight="700" fill="#C4956A" letter-spacing="0.5" font-family="-apple-system, sans-serif">代理 · Host</text>
+
+        <rect x="208" y="0" width="96" height="26" rx="4" fill="rgba(255,132,120,0.14)" stroke="rgba(255,132,120,0.55)" stroke-width="1"/>
+        <text x="256" y="17" text-anchor="middle" font-size="9.5" font-weight="700" fill="#FF8478" letter-spacing="0.5" font-family="-apple-system, sans-serif">AI · Lab</text>
+      </g>
+
+      <!-- 顶部小水印标记 -->
+      <text x="322" y="30" text-anchor="end" font-size="9" fill="rgba(255,132,120,0.55)" letter-spacing="1.2" font-family="-apple-system, sans-serif">HIDDEN WATERMARK</text>
+      <circle cx="330" cy="25" r="3" fill="#FF8478"/>
+    </svg>
+  </div>
+
+  <!-- 品牌角标 -->
+  <div class="brand">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+
+  <!-- 内容 -->
+  <div class="content">
+    <div class="kicker">TRUST · SPYWARE · CLAUDE CODE</div>
+    <h1 class="title">Claude Code <br>被<span class="accent">封禁</span>的始末</h1>
+    <p class="lede">一段看似寻常的 Prompt，藏着针对中国用户的 Unicode 暗水印</p>
+  </div>
+
+  <div class="subtitle">Fingerprint · Steganography · Anthropic</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadCover(type) {
+  const el = document.getElementById('cover-main');
+  const canvas = await renderSlide(el);
+
+  if (type === 'main') {
+    canvas.toBlob(blob => saveAs(blob, 'claude-code-spyware-cover-900x383.png'), 'image/png');
+  } else {
+    const crop = document.createElement('canvas');
+    crop.width = 400; crop.height = 400;
+    const ctx = crop.getContext('2d');
+    const sx = 80, sy = (canvas.height - 400) / 2;
+    ctx.drawImage(canvas, sx, sy, 400, 400, 0, 0, 400, 400);
+    crop.toBlob(blob => saveAs(blob, 'claude-code-spyware-cover-200x200.png'), 'image/png');
+  }
+}
+</script>
+</body>
+</html>

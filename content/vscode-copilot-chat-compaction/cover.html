@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>封面 - VS Code Copilot 上下文压缩</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 12px 24px; display: flex; gap: 12px; z-index: 999; }
+.toolbar button { padding: 8px 16px; border: none; border-radius: 6px; background: #C4956A; color: #fff; font-size: 14px; cursor: pointer; font-weight: 600; }
+.toolbar button:hover { background: #b8845a; }
+.cover { width: 900px; height: 383px; position: relative; overflow: hidden; border-radius: 8px; margin-bottom: 40px; }
+.bg-dark { position: absolute; inset: 0; background: #1C1C1E; }
+.bg-lines { position: absolute; inset: 0; opacity: 0.95; }
+.content { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-columns: 1fr 392px; }
+.copy { padding: 82px 24px 58px 58px; display: flex; flex-direction: column; justify-content: center; }
+.kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #C4956A; text-transform: uppercase; padding-top: 10px; position: relative; }
+.kicker::before { content: ''; position: absolute; top: 0; left: 0; width: 32px; height: 1px; background: #C4956A; }
+.title { font-size: 40px; font-weight: 800; letter-spacing: 0; line-height: 1.22; color: #F2EDE3; margin-top: 16px; max-width: 470px; }
+.title .accent { color: #C4956A; }
+.lede { font-size: 15px; line-height: 1.58; color: rgba(255,255,255,0.56); margin-top: 17px; max-width: 440px; }
+.tags { position: absolute; left: 58px; bottom: 28px; display: flex; gap: 14px; font-size: 11px; color: rgba(255,255,255,0.34); letter-spacing: 0.1em; text-transform: uppercase; }
+.brand { position: absolute; top: 22px; left: 26px; display: flex; align-items: center; gap: 8px; z-index: 3; }
+.brand svg { width: 22px; height: 22px; }
+.brand-text { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); letter-spacing: 1px; }
+.diagram { position: relative; display: flex; align-items: center; justify-content: center; padding: 42px 34px 34px 4px; }
+.diagram svg { width: 360px; height: 292px; display: block; }
+.node-label { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.6px; }
+.node-sub { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 8px; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="downloadCover('main')">下载头图 (900x383)</button>
+  <button onclick="downloadCover('secondary')">下载次图 (200x200)</button>
+</div>
+
+<div class="cover" id="cover-main">
+  <div class="bg-dark"></div>
+  <svg class="bg-lines" viewBox="0 0 900 383" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="goldFade" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#C4956A" stop-opacity="0"/>
+        <stop offset="0.55" stop-color="#C4956A" stop-opacity="0.16"/>
+        <stop offset="1" stop-color="#C4956A" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="M470 62 C560 38 650 44 812 92" stroke="url(#goldFade)" stroke-width="1.2" fill="none"/>
+    <path d="M486 318 C590 275 690 300 858 248" stroke="url(#goldFade)" stroke-width="1" fill="none"/>
+    <path d="M414 120 L884 120" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+    <path d="M414 208 L884 208" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  </svg>
+
+  <div class="brand">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="13" cy="16" r="10" stroke="rgba(255,255,255,0.5)" stroke-width="2.2" fill="none"/>
+      <ellipse cx="13" cy="8.5" rx="7" ry="1.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="14" cy="17" rx="3.5" ry="2" fill="#C4956A"/>
+      <polygon points="10,17 7.5,14.5 7.5,19.5" fill="#C4956A"/>
+      <circle cx="16" cy="16.3" r="0.7" fill="#F2EDE3"/>
+      <line x1="26" y1="4" x2="26" y2="16" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M26 16 Q26 22 22 22" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="4" r="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+    <span class="brand-text">墨筝</span>
+  </div>
+
+  <div class="content">
+    <div class="copy">
+      <div class="kicker">CONTEXT COMPACTION · VS CODE COPILOT</div>
+      <h1 class="title">Copilot 如何<span class="accent">丝滑压缩</span><br>超长上下文？</h1>
+      <p class="lede">从 prompt-tsx 的弹性预算，到后台摘要、缓存命中与本地转录索引，一次拆开 Agent 上下文管理的工程细节。</p>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 0 360 292" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <rect x="18" y="36" width="94" height="46" rx="8" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)"/>
+        <text x="65" y="56" text-anchor="middle" fill="#F2EDE3" class="node-label">History</text>
+        <text x="65" y="71" text-anchor="middle" fill="rgba(255,255,255,0.45)" class="node-sub">priority 700</text>
+
+        <rect x="18" y="122" width="94" height="46" rx="8" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)"/>
+        <text x="65" y="142" text-anchor="middle" fill="#F2EDE3" class="node-label">Tool Calls</text>
+        <text x="65" y="157" text-anchor="middle" fill="rgba(255,255,255,0.45)" class="node-sub">truncate 50%</text>
+
+        <rect x="18" y="208" width="94" height="46" rx="8" fill="rgba(196,149,106,0.16)" stroke="#C4956A"/>
+        <text x="65" y="228" text-anchor="middle" fill="#C4956A" class="node-label">User Input</text>
+        <text x="65" y="243" text-anchor="middle" fill="rgba(255,255,255,0.50)" class="node-sub">priority 900</text>
+
+        <path d="M112 59 C145 59 148 92 174 92" stroke="rgba(196,149,106,0.62)" stroke-width="1.8" fill="none"/>
+        <path d="M112 145 C144 145 148 126 174 126" stroke="rgba(196,149,106,0.50)" stroke-width="1.8" fill="none"/>
+        <path d="M112 231 C146 231 149 162 174 162" stroke="#C4956A" stroke-width="2.2" fill="none"/>
+
+        <rect x="174" y="78" width="74" height="98" rx="10" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.24)"/>
+        <text x="211" y="108" text-anchor="middle" fill="#F2EDE3" class="node-label">Prompt</text>
+        <text x="211" y="124" text-anchor="middle" fill="#C4956A" class="node-label">TSX</text>
+        <path d="M193 142 H229" stroke="rgba(255,255,255,0.22)"/>
+        <text x="211" y="158" text-anchor="middle" fill="rgba(255,255,255,0.45)" class="node-sub">budget aware</text>
+
+        <path d="M248 127 C270 127 273 96 294 96" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none"/>
+        <path d="M248 127 C270 127 273 151 294 151" stroke="#C4956A" stroke-width="2" fill="none"/>
+        <path d="M248 127 C270 127 273 206 294 206" stroke="rgba(143,188,187,0.62)" stroke-width="1.7" fill="none"/>
+
+        <rect x="294" y="74" width="54" height="44" rx="7" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.18)"/>
+        <text x="321" y="94" text-anchor="middle" fill="rgba(255,255,255,0.42)" class="node-label">Cut</text>
+        <text x="321" y="108" text-anchor="middle" fill="rgba(255,255,255,0.32)" class="node-sub">local</text>
+
+        <rect x="288" y="128" width="66" height="46" rx="8" fill="rgba(196,149,106,0.18)" stroke="#C4956A" filter="url(#softGlow)"/>
+        <text x="321" y="148" text-anchor="middle" fill="#C4956A" class="node-label">Summary</text>
+        <text x="321" y="163" text-anchor="middle" fill="rgba(255,255,255,0.50)" class="node-sub">background</text>
+
+        <rect x="294" y="184" width="54" height="44" rx="7" fill="rgba(143,188,187,0.12)" stroke="rgba(143,188,187,0.54)"/>
+        <text x="321" y="204" text-anchor="middle" fill="#8FBCBB" class="node-label">Disk</text>
+        <text x="321" y="218" text-anchor="middle" fill="rgba(255,255,255,0.40)" class="node-sub">transcript</text>
+
+        <circle cx="250" cy="30" r="3" fill="#C4956A"/>
+        <circle cx="278" cy="31" r="2" fill="rgba(255,255,255,0.35)"/>
+        <circle cx="306" cy="30" r="2.5" fill="rgba(143,188,187,0.6)"/>
+        <text x="250" y="52" fill="rgba(255,255,255,0.35)" class="node-sub">cache hit</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span>PROMPT TSX</span>
+    <span>BACKGROUND SUMMARY</span>
+    <span>TRANSCRIPT INDEX</span>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+function flattenAlpha(canvas, bgColor) {
+  const isTransparent = !bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)';
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = isTransparent ? '#1C1C1E' : bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+
+async function renderSlide(el) {
+  const origRadius = el.style.borderRadius;
+  el.style.borderRadius = '0';
+  const bgEl = el.querySelector('.bg-light, .bg-dark');
+  const bg = bgEl ? getComputedStyle(bgEl).backgroundColor : getComputedStyle(el).backgroundColor;
+  const raw = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: null });
+  el.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+
+async function downloadCover(type) {
+  const el = document.getElementById('cover-main');
+  const canvas = await renderSlide(el);
+
+  if (type === 'main') {
+    canvas.toBlob(blob => saveAs(blob, 'vscode-copilot-chat-compaction-cover-900x383.png'), 'image/png');
+  } else {
+    const crop = document.createElement('canvas');
+    crop.width = 400; crop.height = 400;
+    const ctx = crop.getContext('2d');
+    const sx = Math.round((canvas.width - 400) / 2);
+    const sy = Math.round((canvas.height - 400) / 2);
+    ctx.drawImage(canvas, sx, sy, 400, 400, 0, 0, 400, 400);
+    crop.toBlob(blob => saveAs(blob, 'vscode-copilot-chat-compaction-cover-200x200.png'), 'image/png');
+  }
+}
+</script>
+</body>
+</html>

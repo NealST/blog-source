@@ -1,25 +1,16 @@
 {
   "version": "1.0",
-  "created": "2026-05-31T12:00:00+08:00",
-  "title": "给 Claude Code 装上『永久记忆』",
+  "created": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "source": "source/_posts/claude-code-memory.md",
+  "title": "如何优雅地给 Claude Code 外接长期记忆",
   "outputs": {
-    "wechat": {
-      "html": "content/claude-code-memory/preview.html",
-      "cover_image": "content/claude-code-memory/cover.png",
-      "title": "给 Claude Code 装上『永久记忆』",
-      "author": "墨筝",
-      "digest": "用三个 Hook 把会话生命周期包起来：入口召回、过程补召回、退出捕获。一套真正能跑通的 Hook + mem0 + Pinecone 长期记忆架构，附三个踩坑复盘。",
-      "markdown": "source/_posts/claude-code-memory.md",
-      "images": [
-        "content/claude-code-memory/配图-1.png",
-        "content/claude-code-memory/配图-2.png",
-        "content/claude-code-memory/配图-3.png",
-        "content/claude-code-memory/配图-4.png",
-        "content/claude-code-memory/配图-5.png",
-        "content/claude-code-memory/配图-6.png",
-        "content/claude-code-memory/配图-7.png",
-        "content/claude-code-memory/配图-8.png"
-      ]
+    "xiaohongshu": {
+      "html": "content/claude-code-memory/claude-code-memory-小红书版.html",
+      "copy": {
+        "title": "如何优雅地给 Claude Code 外接长期记忆",
+        "body": "最近给我的 Claude Code 接入了 mem0_search 工具，作为一个长期记忆层，自动追踪项目上下文。怎么让 Claude 判断何时需要记忆？这套方案利用了 SessionStart、UserPromptSubmit 和 SessionEnd Hooks。重点坑点：并发踩踏死锁、环境变量继承、内容去重。详细代码与拆解见图，希望能帮你提升开发心流。\n\n完整长文请移步微信公众号『墨筝』阅读。",
+        "tags": ["AI", "Claude", "效率工具", "生产力", "程序员", "独立开发者"]
+      }
     }
   }
 }

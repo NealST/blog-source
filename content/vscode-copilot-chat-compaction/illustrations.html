@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>配图 - VS Code Copilot 上下文压缩</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.slide-label { color: rgba(255,255,255,0.56); font-size: 13px; margin: 36px 0 12px; align-self: flex-start; width: 800px; max-width: 100%; }
+.slide-label:first-of-type { margin-top: 0; }
+.slide { width: 800px; min-height: 450px; position: relative; overflow: hidden; border-radius: 0; margin-bottom: 8px; background: #FFFFFF; }
+.content { position: relative; padding: 42px 48px 48px; z-index: 2; }
+.brand { position: absolute; top: 20px; left: 24px; display: flex; align-items: center; gap: 7px; color: rgba(28,28,30,0.42); font-size: 11px; font-weight: 600; letter-spacing: 1px; }
+.page-num { position: absolute; right: 24px; bottom: 20px; color: rgba(28,28,30,0.26); font-size: 11px; }
+.tag { display: inline-block; margin: 18px 0 10px; color: #A07848; font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+.title { color: #1C1C1E; font-size: 27px; line-height: 1.25; font-weight: 800; letter-spacing: 0; margin-bottom: 7px; }
+.sub { color: rgba(28,28,30,0.58); font-size: 13px; line-height: 1.55; max-width: 610px; }
+.art { width: 704px; height: 270px; margin-top: 20px; display: block; }
+.ink { stroke: #1C1C1E; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.thin { stroke-width: 1.35; }
+.gold { stroke: #A07848; }
+.gold-fill { fill: #A07848; }
+.red { stroke: #D85C48; }
+.red-fill { fill: #D85C48; }
+.blue { stroke: #5B7FA6; }
+.blue-fill { fill: #5B7FA6; }
+.soft { stroke: rgba(28,28,30,0.26); }
+.paper { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1.7; }
+.note { fill: rgba(28,28,30,0.62); font-size: 14px; font-weight: 700; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.note-small { fill: rgba(28,28,30,0.50); font-size: 12px; font-weight: 650; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.note-gold { fill: #A07848; }
+.note-red { fill: #D85C48; }
+.note-blue { fill: #5B7FA6; }
+</style>
+</head>
+<body>
+
+<div class="slide-label">配图 1 · 放在「核心基建：@vscode/prompt-tsx」之后</div>
+<div class="slide" data-num="1">
+  <div class="brand">MOZHENG</div>
+  <div class="page-num">1/6</div>
+  <div class="content">
+    <div class="tag">PROMPT BUDGET</div>
+    <div class="title">有限预算里，谁先被挤出去？</div>
+    <div class="sub">prompt-tsx 把 Prompt 渲染成一棵带优先级和弹性空间的树，当前输入和工具结果比旧历史更抗裁剪。</div>
+    <svg class="art" viewBox="0 0 704 270" xmlns="http://www.w3.org/2000/svg">
+      <path class="ink thin soft" d="M70 194 C180 182 273 183 410 194 C492 201 568 199 640 190"/>
+      <path class="ink gold" d="M96 184 L604 184"/>
+      <path class="ink" d="M344 184 L331 229 M344 184 L357 229"/>
+      <ellipse cx="344" cy="184" rx="8" ry="8" fill="#1C1C1E"/>
+      <g transform="translate(118 100) rotate(-6)">
+        <rect class="paper" x="0" y="0" width="108" height="68" rx="8"/>
+        <line class="ink thin soft" x1="16" y1="20" x2="92" y2="20"/>
+        <line class="ink thin soft" x1="16" y1="36" x2="74" y2="36"/>
+        <text class="note-small" x="20" y="58">历史记录</text>
+      </g>
+      <g transform="translate(286 74) rotate(2)">
+        <rect class="paper" x="0" y="0" width="126" height="82" rx="9"/>
+        <path class="ink gold" d="M12 18 H114"/>
+        <text class="note note-gold" x="26" y="48">当前输入</text>
+        <text class="note-small" x="32" y="68">priority 900</text>
+      </g>
+      <g transform="translate(476 104) rotate(5)">
+        <rect class="paper" x="0" y="0" width="112" height="66" rx="8"/>
+        <text class="note-small" x="22" y="32">工具结果</text>
+        <text class="note-small note-gold" x="24" y="50">flexGrow</text>
+      </g>
+      <g transform="translate(55 197) rotate(17)">
+        <rect class="paper" x="0" y="0" width="78" height="42" rx="6"/>
+        <text class="note-small note-red" x="17" y="27">先裁</text>
+      </g>
+      <g transform="translate(324 135)">
+        <ellipse cx="0" cy="0" rx="17" ry="20" fill="#1C1C1E"/>
+        <circle cx="-5" cy="-4" r="2" fill="#FFFFFF"/><circle cx="5" cy="-4" r="2" fill="#FFFFFF"/>
+        <path class="ink" d="M-8 -17 L-14 -27 L-3 -20 M8 -17 L14 -27 L3 -20"/>
+        <path class="ink" d="M-10 18 L-18 31 M10 18 L18 31 M15 6 C27 4 28 16 20 20"/>
+      </g>
+      <text class="note note-gold" x="508" y="92">预算线</text>
+      <text class="note-small note-blue" x="274" y="232">本地先裁剪，尽量不打断提问</text>
+    </svg>
+  </div>
+</div>
+
+<div class="slide-label">配图 2 · 放在「调度协作：压缩链路的内部执行顺序」之后</div>
+<div class="slide" data-num="2">
+  <div class="brand">MOZHENG</div>
+  <div class="page-num">2/6</div>
+  <div class="content">
+    <div class="tag">BACKGROUND SUMMARY</div>
+    <div class="title">前台继续走，后台先把摘要烤好</div>
+    <div class="sub">常态是后台预热；只有瞬间击穿预算时，前台才等待或强制串行摘要。</div>
+    <svg class="art" viewBox="0 0 704 270" xmlns="http://www.w3.org/2000/svg">
+      <path class="ink gold" d="M82 96 C178 78 262 79 358 96 C456 113 552 111 630 91"/>
+      <path class="ink thin soft" d="M82 186 C184 204 282 204 382 186 C482 168 556 168 630 188"/>
+      <path class="ink thin soft" d="M90 140 H622" stroke-dasharray="5 9"/>
+      <text class="note note-gold" x="96" y="72">当前提问</text>
+      <text class="note-small note-blue" x="104" y="214">后台摘要</text>
+      <g transform="translate(226 62)">
+        <ellipse cx="0" cy="0" rx="17" ry="20" fill="#1C1C1E"/>
+        <circle cx="-5" cy="-4" r="2" fill="#FFFFFF"/><circle cx="5" cy="-4" r="2" fill="#FFFFFF"/>
+        <path class="ink" d="M-8 -17 L-14 -27 L-3 -20 M8 -17 L14 -27 L3 -20"/>
+        <path class="ink" d="M-10 18 L-17 31 M9 18 L18 29 M18 4 C30 4 28 16 19 18"/>
+        <circle class="gold-fill" cx="35" cy="18" r="10"/>
+        <path class="ink" d="M25 25 L49 25"/>
+      </g>
+      <g transform="translate(350 169)">
+        <ellipse cx="0" cy="0" rx="15" ry="18" fill="#1C1C1E"/>
+        <circle cx="-5" cy="-4" r="2" fill="#FFFFFF"/><circle cx="5" cy="-4" r="2" fill="#FFFFFF"/>
+        <path class="ink" d="M-8 -15 L-14 -24 L-3 -18 M8 -15 L14 -24 L3 -18"/>
+        <path class="ink" d="M-8 16 L-15 28 M8 16 L16 28 M15 6 C25 6 24 16 17 18"/>
+        <rect class="paper" x="30" y="-28" width="80" height="50" rx="6"/>
+        <path class="ink gold" d="M42 -3 H98"/>
+        <text class="note-small note-gold" x="44" y="16">快照</text>
+      </g>
+      <g transform="translate(548 92)">
+        <rect class="paper" x="0" y="0" width="84" height="56" rx="8"/>
+        <path class="ink gold" d="M16 28 H68"/>
+        <path class="ink gold" d="M58 20 L68 28 L58 36"/>
+        <text class="note-small" x="17" y="50">下一轮</text>
+      </g>
+      <g transform="translate(455 130)">
+        <path class="ink red" d="M0 0 C20 -18 42 -18 60 0"/>
+        <text class="note-small note-red" x="9" y="25">兜底等待</text>
+      </g>
+      <text class="note-small" x="287" y="133">不重复发摘要请求</text>
+    </svg>
+  </div>
+</div>
+
+<div class="slide-label">配图 3 · 放在「阈值判定与 Prompt Cache 利用」之后</div>
+<div class="slide" data-num="3">
+  <div class="brand">MOZHENG</div>
+  <div class="page-num">3/6</div>
+  <div class="content">
+    <div class="tag">PROMPT CACHE</div>
+    <div class="title">前面一字不动，只在尾巴挂一个任务</div>
+    <div class="sub">后台摘要请求克隆完整上下文，仅追加摘要指令，尽量命中提示词缓存。</div>
+    <svg class="art" viewBox="0 0 704 270" xmlns="http://www.w3.org/2000/svg">
+      <path class="ink" d="M70 118 C138 78 208 150 278 108 C350 64 426 148 494 106 C548 72 592 91 636 112"/>
+      <path class="ink thin soft" d="M70 168 C138 128 208 200 278 158 C350 114 426 198 494 156 C548 122 592 141 636 162"/>
+      <path class="ink gold" d="M520 160 L640 160"/>
+      <rect class="paper" x="572" y="135" width="72" height="42" rx="7"/>
+      <text class="note-small note-gold" x="586" y="161">摘要指令</text>
+      <g transform="translate(408 118)">
+        <ellipse cx="0" cy="0" rx="16" ry="19" fill="#1C1C1E"/>
+        <circle cx="-5" cy="-4" r="2" fill="#FFFFFF"/><circle cx="5" cy="-4" r="2" fill="#FFFFFF"/>
+        <path class="ink" d="M-8 -16 L-14 -25 L-3 -19 M8 -16 L14 -25 L3 -19"/>
+        <path class="ink" d="M-9 17 L-17 29 M8 17 L16 29 M15 5 C27 5 27 16 18 18"/>
+      </g>
+      <g transform="translate(104 42)">
+        <path class="ink" d="M0 96 A58 58 0 0 1 116 96"/>
+        <line class="ink thin soft" x1="58" y1="96" x2="58" y2="44"/>
+        <path class="ink gold" d="M58 96 L94 60"/>
+        <text class="note-small note-gold" x="25" y="122">78-82%</text>
+        <text class="note-small note-red" x="86" y="42">90%</text>
+      </g>
+      <text class="note" x="86" y="90">原样克隆</text>
+      <text class="note note-gold" x="480" y="130">只加尾注</text>
+      <text class="note-small note-blue" x="294" y="214">缓存温热时更早预热，冷启动时推迟</text>
+      <circle class="gold-fill" cx="310" cy="52" r="4"/><circle class="blue-fill" cx="330" cy="52" r="3"/><circle class="red-fill" cx="348" cy="52" r="3"/>
+    </svg>
+  </div>
+</div>
+
+<div class="slide-label">配图 4 · 放在「内部的切分逻辑」之后</div>
+<div class="slide" data-num="4">
+  <div class="brand">MOZHENG</div>
+  <div class="page-num">4/6</div>
+  <div class="content">
+    <div class="tag">ROLLING FOLD</div>
+    <div class="title">近端原样保留，远端滚动折叠</div>
+    <div class="sub">压缩并不是全量重写，而是命中旧摘要后继续融合，把最近几轮上下文留在明面上。</div>
+    <svg class="art" viewBox="0 0 704 270" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(76 100)">
+        <path class="paper" d="M0 0 L70 20 L140 0 L210 20 L280 0 L350 20 L420 0 L490 20 L560 0 L560 80 L490 100 L420 80 L350 100 L280 80 L210 100 L140 80 L70 100 L0 80 Z"/>
+        <path class="ink thin soft" d="M70 20 V100 M140 0 V80 M210 20 V100 M280 0 V80 M350 20 V100 M420 0 V80 M490 20 V100"/>
+      </g>
+      <rect x="98" y="138" width="110" height="62" rx="8" fill="rgba(160,120,72,0.16)" stroke="#A07848" stroke-width="2"/>
+      <text class="note note-gold" x="122" y="173">旧摘要</text>
+      <path class="ink gold" d="M207 154 C256 118 317 118 362 154"/>
+      <path class="ink gold" d="M352 145 L363 154 L349 160"/>
+      <text class="note-small note-gold" x="236" y="128">继续融合</text>
+      <g transform="translate(444 68)">
+        <rect class="paper" x="0" y="0" width="72" height="112" rx="8"/>
+        <text class="note-small" x="13" y="58">最近</text>
+      </g>
+      <g transform="translate(525 82)">
+        <rect class="paper" x="0" y="0" width="72" height="112" rx="8"/>
+        <text class="note-small" x="13" y="58">原样</text>
+      </g>
+      <g transform="translate(420 150)">
+        <ellipse cx="0" cy="0" rx="16" ry="19" fill="#1C1C1E"/>
+        <circle cx="-5" cy="-4" r="2" fill="#FFFFFF"/><circle cx="5" cy="-4" r="2" fill="#FFFFFF"/>
+        <path class="ink" d="M-8 -16 L-14 -25 L-3 -19 M8 -16 L14 -25 L3 -19"/>
+        <path class="ink" d="M-9 17 L-17 29 M8 17 L16 29 M15 5 C27 5 27 16 18 18"/>
+      </g>
+      <g transform="translate(586 202) rotate(-5)">
+        <rect class="paper" x="0" y="0" width="78" height="36" rx="6"/>
+        <text class="note-small note-red" x="12" y="24">巨长日志</text>
+      </g>
+      <text class="note" x="404" y="52">近端保留</text>
+      <text class="note note-gold" x="100" y="218">远端折叠</text>
+      <text class="note-small note-blue" x="266" y="232">只压缩完整、安全的历史轮次</text>
+    </svg>
+  </div>
+</div>
+
+<div class="slide-label">配图 5 · 放在「摘要的本质：高密度的状态快照」之后</div>
+<div class="slide" data-num="5">
+  <div class="brand">MOZHENG</div>
+  <div class="page-num">5/6</div>
+  <div class="content">
+    <div class="tag">STATE SNAPSHOT</div>
+    <div class="title">摘要不是概括，是可恢复的现场快照</div>
+    <div class="sub">任务目标、代码改动、错误线索、工具反馈和后续计划，都被压成一份高密度工作记忆。</div>
+    <svg class="art" viewBox="0 0 704 270" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(102 68)">
+        <rect class="paper" x="0" y="0" width="98" height="46" rx="8"/><text class="note-small" x="18" y="29">任务目标</text>
+        <rect class="paper" x="28" y="70" width="98" height="46" rx="8"/><text class="note-small" x="46" y="99">代码变更</text>
+        <rect class="paper" x="-12" y="138" width="98" height="46" rx="8"/><text class="note-small note-red" x="9" y="167">报错线索</text>
+      </g>
+      <g transform="translate(502 70)">
+        <rect class="paper" x="0" y="0" width="96" height="44" rx="8"/><text class="note-small" x="23" y="28">工具反馈</text>
+        <rect class="paper" x="-28" y="76" width="96" height="44" rx="8"/><text class="note-small" x="-3" y="104">进度</text>
+        <rect class="paper" x="8" y="144" width="96" height="44" rx="8"/><text class="note-small note-blue" x="29" y="172">下一步</text>
+      </g>
+      <g transform="translate(272 76)">
+        <rect class="paper" x="0" y="40" width="160" height="76" rx="10"/>
+        <path class="ink" d="M20 40 V8 H140 V40"/>
+        <path class="ink" d="M12 116 C20 152 140 152 148 116"/>
+        <rect x="54" y="126" width="52" height="52" rx="7" fill="rgba(160,120,72,0.18)" stroke="#A07848" stroke-width="2"/>
+        <path class="ink gold" d="M67 152 H93 M80 139 V165"/>
+      </g>
+      <path class="ink gold" d="M236 94 C260 108 270 115 287 126 M236 160 C260 154 270 150 287 145 M462 94 C438 108 428 115 411 126 M462 160 C438 154 428 150 411 145"/>
+      <g transform="translate(354 88)">
+        <ellipse cx="0" cy="0" rx="16" ry="19" fill="#1C1C1E"/>
+        <circle cx="-5" cy="-4" r="2" fill="#FFFFFF"/><circle cx="5" cy="-4" r="2" fill="#FFFFFF"/>
+        <path class="ink" d="M-8 -16 L-14 -25 L-3 -19 M8 -16 L14 -25 L3 -19"/>
+        <path class="ink" d="M-9 17 L-17 29 M8 17 L16 29 M15 5 C27 5 27 16 18 18"/>
+      </g>
+      <text class="note note-gold" x="312" y="226">高密度状态块</text>
+      <path class="ink gold" d="M386 204 C430 218 466 210 494 184"/>
+      <path class="ink gold" d="M480 184 L496 183 L490 198"/>
+      <text class="note-small note-blue" x="474" y="223">恢复现场</text>
+    </svg>
+  </div>
+</div>
+
+<div class="slide-label">配图 6 · 放在「会话面包屑：上下文留索引，本地存明细」之后</div>
+<div class="slide" data-num="6">
+  <div class="brand">MOZHENG</div>
+  <div class="page-num">6/6</div>
+  <div class="content">
+    <div class="tag">BREADCRUMB INDEX</div>
+    <div class="title">上下文里留索引，原始细节留在本地</div>
+    <div class="sub">摘要负责指路；真正的代码片段、报错输出和原始记录，需要时再从 transcriptPath 读取。</div>
+    <svg class="art" viewBox="0 0 704 270" xmlns="http://www.w3.org/2000/svg">
+      <rect class="paper" x="92" y="92" width="120" height="78" rx="9"/>
+      <text class="note" x="122" y="124">摘要索引</text>
+      <text class="note-small note-gold" x="114" y="150">summary</text>
+      <path class="ink gold" d="M214 134 C278 106 336 166 394 136 C440 112 478 112 514 130" stroke-dasharray="5 10"/>
+      <circle class="gold-fill" cx="260" cy="120" r="4"/><circle class="gold-fill" cx="314" cy="148" r="4"/><circle class="gold-fill" cx="372" cy="141" r="4"/><circle class="gold-fill" cx="438" cy="122" r="4"/>
+      <g transform="translate(526 70)">
+        <rect x="0" y="0" width="118" height="148" rx="10" fill="#FFFFFF" stroke="#1C1C1E" stroke-width="2"/>
+        <line class="ink thin soft" x1="0" y1="48" x2="118" y2="48"/>
+        <line class="ink thin soft" x1="0" y1="96" x2="118" y2="96"/>
+        <rect x="12" y="62" width="94" height="28" rx="5" fill="rgba(160,120,72,0.16)" stroke="#A07848" stroke-width="1.8"/>
+        <text class="note-small" x="22" y="31">transcript</text>
+        <text class="note-small note-gold" x="28" y="81">raw log</text>
+      </g>
+      <g transform="translate(330 132)">
+        <ellipse cx="0" cy="0" rx="16" ry="19" fill="#1C1C1E"/>
+        <circle cx="-5" cy="-4" r="2" fill="#FFFFFF"/><circle cx="5" cy="-4" r="2" fill="#FFFFFF"/>
+        <path class="ink" d="M-8 -16 L-14 -25 L-3 -19 M8 -16 L14 -25 L3 -19"/>
+        <path class="ink" d="M-9 17 L-17 29 M8 17 L16 29 M15 5 C27 5 27 16 18 18"/>
+        <circle class="ink blue" cx="-36" cy="-22" r="13"/>
+        <path class="ink blue" d="M-26 -12 L-16 -2"/>
+      </g>
+      <text class="note note-gold" x="254" y="94">面包屑</text>
+      <text class="note-small note-blue" x="286" y="218">按需读取原始细节</text>
+      <text class="note-small note-red" x="540" y="232">冷归档，不塞满上下文</text>
+    </svg>
+  </div>
+</div>
+
+</body>
+</html>
