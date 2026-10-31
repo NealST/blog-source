@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "created": "2026-09-12T17:00:00+08:00",
+  "source": "source/_posts/redis-langcache.md",
+  "title": "LangCache 帮你节省 90% 的模型调用成本和延迟耗时",
+  "outputs": {
+    "wechat": {
+      "html": "content/redis-langcache/preview.html",
+      "cover_image": "content/redis-langcache/cover.png",
+      "title": "LangCache 帮你节省 90% 的模型调用成本和延迟耗时",
+      "author": "墨筝",
+      "digest": "相似问题不必反复调用大模型。实测 Redis LangCache 响应约快 6 倍，并可省去缓存命中请求的全部输入与输出 Token。",
+      "images": [
+        "content/redis-langcache/配图-2.png"
+      ],
+      "markdown": "source/_posts/redis-langcache.md"
+    },
+    "xiaohongshu": {
+      "html": "content/redis-langcache/redis-langcache-小红书版.html",
+      "copy": {
+        "title": "模型成本最高省90%｜LangCache实测",
+        "body": "同一问题换种说法，大模型却会重新消耗 Token 生成答案。\n\nRedis LangCache 先将问题转为向量，与历史问题匹配。命中后直接返回缓存，不再调用模型。\n\n实测：\n1️⃣ 直接推理：2.232 秒，514 输入 + 250 输出 Token\n2️⃣ LangCache：0.373 秒，输入、输出 Token 均为 0\n\n响应约快 6 倍。Redis 官方称 API 成本最高节省 90%，缓存响应最高快 15 倍。效果取决于可安全复用的问题比例。\n\n链接在评论区。\n\n.\n#AI工具 #大模型 #Redis #LangCache #语义缓存 #AI开发 #降本增效 #技术分享",
+        "tags": [
+          "AI工具",
+          "大模型",
+          "LLM",
+          "Redis",
+          "LangCache",
+          "语义缓存",
+          "AI开发",
+          "开发者工具",
+          "降本增效",
+          "技术分享"
+        ]
+      }
+    }
+  }
+}

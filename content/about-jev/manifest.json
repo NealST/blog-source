@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "created": "2026-10-10T00:00:00+08:00",
+  "source": "source/_posts/about-jev.md",
+  "title": "一文说透 Jev",
+  "slug": "about-jev",
+  "outputs": {
+    "wechat": {
+      "html": "content/about-jev/preview.html",
+      "cover_image": "content/about-jev/cover.png",
+      "title": "关于 Jev, 看这篇就够了",
+      "author": "墨筝",
+      "digest": "拆解 Jev 的结构化判断、真实调用成本与三大问题原语，结合置信度门禁、技术边界和快慢模型协同，梳理工程接入与上线验证。",
+      "markdown": "source/_posts/about-jev.md",
+      "images": [
+        "content/about-jev/xiaohei-illustrations/01-language-tax.png",
+        "content/about-jev/xiaohei-illustrations/02-real-cost.png",
+        "content/about-jev/配图-3.png",
+        "content/about-jev/配图-4.png",
+        "content/about-jev/xiaohei-illustrations/05-type-safety.png",
+        "content/about-jev/配图-6.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/about-jev/Jev-小红书版.html",
+      "images_dir": "content/about-jev/xiaohongshu",
+      "copy": {
+        "title": "Jev拆解｜不写文本的AI决策模型",
+        "body": "一个 AI 模型，网络里甚至没有生成字符串的路径。Jev 不负责写答案，只负责给业务代码返回选择、评分和概率。\n\n这篇长文把它拆成了一本工程账：为什么逐字生成会变成“语言税”，官方的 193 倍速度和 444 倍成本优势该怎么理解，以及单次调用很便宜，为什么高频循环仍可能每月烧掉 5000 美元。\n\n真正值得关注的不是宣传数字，而是概率校准、弃权机制和每次可接受决策的综合成本。轮播按原文顺序展开，完整技术边界、架构范式与 TypeScript 实战见公众号「墨筝」。",
+        "tags": [
+          "AI",
+          "Jev",
+          "AI工程",
+          "Agent",
+          "模型选型",
+          "结构化输出",
+          "软件架构",
+          "TypeScript",
+          "人工智能",
+          "开发者"
+        ]
+      }
+    }
+  }
+}

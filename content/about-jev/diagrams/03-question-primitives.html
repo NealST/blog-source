@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jev 的三种独立问题原语</title>
+<style>
+.jev03-scroll { width: 100%; max-width: 960px; min-width: 0; overflow-x: auto; }
+.jev03-frame { width: 960px; background: #FFFFFF; }
+#jev03-svg { display: block; width: 100%; min-width: 960px; background: #FFFFFF; }
+#jev03-svg text { font-family: 'Geist', 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #1C1C1E; font-size: 12px; letter-spacing: 0; }
+#jev03-svg .jev03-title { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#jev03-svg .jev03-name { font-weight: 600; }
+#jev03-svg .jev03-note { font-weight: 400; }
+#jev03-svg .jev03-node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#jev03-svg .jev03-input { fill: #F2EDE3; stroke: #7A7876; stroke-width: 1; }
+#jev03-svg .jev03-focal { fill: #F2EDE3; stroke: #C4956A; stroke-width: 1.2; }
+#jev03-svg .jev03-edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#jev03-arrow); }
+@media print { .jev03-scroll { overflow-x: visible; } .jev03-frame { width: 100%; } #jev03-svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="jev03-scroll">
+<div class="slide bg-light jev03-frame" data-num="3">
+<svg id="jev03-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="03-question-primitives-title 03-question-primitives-desc">
+<title id="03-question-primitives-title">Jev 的三种独立问题原语</title>
+<desc id="03-question-primitives-desc">State 与 Questions 汇入一次 Jev 请求，独立评估 Noul、Choice 和 Score，分别返回是的概率、分类及概率分布、档位概率的加权平均得分，各问题不读取其他问题的答案。</desc>
+<defs>
+<marker id="jev03-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#7A7876"/></marker>
+<marker id="jev03-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#C4956A"/></marker>
+<marker id="jev03-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2C2A28"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="jev03-title" x="40" y="64">同一份上下文，一次请求，三种独立判断</text>
+<g transform="scale(2)">
+<g class="jev03-edge" data-edges="5">
+<path d="M140 88 H208 Q216 88 216 96 V104"/>
+<path d="M140 164 H168"/>
+<path d="M264 128 H280 Q288 128 288 120 V96 Q288 88 296 88 H308"/>
+<path d="M264 152 H308"/>
+<path d="M264 176 H280 Q288 176 288 184 V216 Q288 224 296 224 H308"/>
+</g>
+<g data-node="state">
+<rect class="jev03-input" x="20" y="64" width="120" height="48" rx="4"/>
+<text class="jev03-name" x="32" y="84">State / 上下文</text>
+<text x="32" y="102">文本、对象或数组</text>
+</g>
+<g data-node="questions">
+<rect class="jev03-input" x="20" y="140" width="120" height="48" rx="4"/>
+<text class="jev03-name" x="32" y="160">Questions / 问题</text>
+<text x="32" y="178">每题有唯一 key</text>
+</g>
+<g data-node="jev">
+<rect class="jev03-focal" x="168" y="104" width="96" height="96" rx="4"/>
+<text class="jev03-name" x="216" y="136" text-anchor="middle">Jev</text>
+<text x="216" y="156" text-anchor="middle">单次请求</text>
+<text x="216" y="176" text-anchor="middle">并行评估</text>
+</g>
+<g data-node="noul">
+<rect class="jev03-node" x="308" y="64" width="152" height="48" rx="4"/>
+<text class="jev03-name" x="320" y="84">Noul / 是或否</text>
+<text x="320" y="102">输出“是”的概率 [0, 1]</text>
+</g>
+<g data-node="choice">
+<rect class="jev03-node" x="308" y="128" width="152" height="48" rx="4"/>
+<text class="jev03-name" x="320" y="148">Choice / 固定选项</text>
+<text x="320" y="166">选项、分布、置信度</text>
+</g>
+<g data-node="score">
+<rect class="jev03-node" x="308" y="192" width="152" height="64" rx="4"/>
+<text class="jev03-name" x="320" y="212">Score / 分级评估</text>
+<text x="320" y="230">档位概率的加权平均</text>
+<text x="320" y="248">得分、分布、置信度</text>
+</g>
+<path d="M20 264 H460" fill="none" stroke="#1C1C1E" stroke-opacity="0.16"/>
+<text class="jev03-note" x="20" y="280">问题彼此独立；依赖前题答案时，由代码分步调用。</text>
+</g>
+</svg>
+</div>
+</div>
+</body>
+</html>

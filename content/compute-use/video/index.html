@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "DM Sans"; src: url("fonts/DMSans.woff2") format("woff2"); font-weight: 400 900; }
+    @font-face { font-family: "JetBrains Mono"; src: url("fonts/JetBrainsMono.woff2") format("woff2"); font-weight: 400 800; }
+    @font-face { font-family: "PingFang SC"; src: local("PingFang SC"); }
+    @font-face { font-family: "Microsoft YaHei"; src: local("Microsoft YaHei"); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #1C1C1E; }
+    body { color: #F2EDE3; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #1C1C1E; }
+    .scene { position: absolute; inset: 0; overflow: hidden; background: #1C1C1E; }
+    #scene2, #scene3, #scene4, #scene5, #scene6, #scene7, #scene8 { opacity: 0; }
+    #scene1 { z-index: 1; } #scene2 { z-index: 2; } #scene3 { z-index: 3; } #scene4 { z-index: 4; }
+    #scene5 { z-index: 5; } #scene6 { z-index: 6; } #scene7 { z-index: 7; } #scene8 { z-index: 8; }
+    .content { position: relative; z-index: 3; width: 100%; height: 100%; padding: 330px 64px 110px; display: flex; flex-direction: column; gap: 28px; }
+    .grid { position: absolute; inset: 0; opacity: .18; background-image: linear-gradient(rgba(212,167,106,.22) 2px, transparent 2px), linear-gradient(90deg, rgba(212,167,106,.22) 2px, transparent 2px); background-size: 90px 90px; }
+    .halo { position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(212,167,106,.15), transparent 68%); }
+    .watermark { position: absolute; z-index: 99; top: 224px; left: 58px; display: flex; align-items: center; gap: 12px; font-size: 26px; color: rgba(242,237,227,.72); }
+    .watermark i { width: 9px; height: 9px; border-radius: 50%; background: #D4A76A; }
+    .meta { font: 500 22px "JetBrains Mono", monospace; color: #D4A76A; letter-spacing: .08em; }
+    h1, h2 { letter-spacing: 0; }
+    h1 { font-size: 92px; line-height: 1.08; font-weight: 800; }
+    h2 { font-size: 58px; line-height: 1.18; font-weight: 750; }
+    .lead { font-size: 34px; line-height: 1.55; color: #8D8983; }
+    .gold { color: #D4A76A; }
+    .rule { height: 4px; width: 100%; background: #D4A76A; transform-origin: left; }
+    .ghost { position: absolute; z-index: 1; font: 800 230px/1 "DM Sans"; color: rgba(212,167,106,.07); white-space: nowrap; }
+    .coord { font: 800 112px/1.05 "DM Sans"; color: #D4A76A; }
+    .target { position: absolute; width: 170px; height: 170px; border: 4px solid #D4A76A; border-radius: 50%; }
+    .target::before, .target::after { content: ""; position: absolute; background: #D4A76A; }
+    .target::before { width: 230px; height: 3px; left: -34px; top: 80px; }
+    .target::after { width: 3px; height: 230px; left: 80px; top: -34px; }
+    .loop { margin-top: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .node { min-height: 170px; padding: 28px; border: 2px solid rgba(212,167,106,.22); background: #2C2A28; display: flex; flex-direction: column; justify-content: space-between; }
+    .node b { font-size: 36px; } .node span { font: 500 22px "JetBrains Mono"; color: #8D8983; }
+    .vendor { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 18px; }
+    .vendor-row { min-height: 168px; padding: 28px 30px; border-top: 2px solid rgba(242,237,227,.16); display: grid; grid-template-columns: 230px 1fr; align-items: center; gap: 24px; }
+    .vendor-name { font: 800 33px "DM Sans"; } .vendor-copy { font-size: 29px; line-height: 1.45; color: #B6B0A8; }
+    .axis { display: flex; justify-content: space-between; border-top: 3px solid #D4A76A; padding-top: 17px; font-size: 27px; font-weight: 650; }
+    .paper { width: 100%; height: 720px; object-fit: contain; background: #F4F0E7; }
+    .evolution { display: flex; align-items: center; justify-content: space-between; gap: 18px; font-size: 32px; font-weight: 700; }
+    .evolution .arrow { color: #D4A76A; font: 800 58px "DM Sans"; }
+    .stamp { align-self: flex-start; padding: 15px 22px; border: 4px solid #D7655B; color: #D7655B; font-size: 44px; font-weight: 800; transform: rotate(-3deg); }
+    .big-stat { font: 800 112px/1 "DM Sans"; color: #D4A76A; }
+    .paths { display: flex; flex-direction: column; gap: 20px; margin-top: 22px; }
+    .path { position: relative; min-height: 160px; padding: 30px; border: 2px solid rgba(242,237,227,.16); display: grid; grid-template-columns: 210px 1fr; align-items: center; gap: 24px; overflow: hidden; }
+    .path::before { content: ""; position: absolute; left: 0; bottom: 0; height: 7px; width: var(--fill); background: #D4A76A; }
+    .path b { font-size: 34px; } .path span { font-size: 28px; color: #8D8983; line-height: 1.45; }
+    .defenses { display: flex; flex-direction: column; gap: 22px; margin-top: 22px; }
+    .defense { display: flex; align-items: center; gap: 30px; min-height: 160px; padding: 28px 32px; background: #2C2A28; border: 2px solid rgba(212,167,106,.18); }
+    .defense-num { font: 800 62px "DM Sans"; color: #D4A76A; }
+    .defense b { display: block; font-size: 34px; margin-bottom: 8px; } .defense p { font-size: 27px; color: #8D8983; }
+    .risk { position: absolute; right: 70px; bottom: 190px; width: 32px; height: 32px; border-radius: 50%; background: #D7655B; box-shadow: 0 0 0 18px rgba(215,101,91,.13); }
+    .conclusions { display: flex; flex-direction: column; gap: 18px; }
+    .conclusion { font-size: 32px; line-height: 1.4; padding: 20px 0; border-bottom: 2px solid rgba(242,237,227,.14); }
+    .cta { margin-top: auto; border-top: 4px solid #D4A76A; padding-top: 26px; display: flex; justify-content: space-between; align-items: end; }
+    .cta b { font-size: 66px; } .cta span { font-size: 27px; color: #8D8983; text-align: right; }
+  </style>
+</head>
+<body>
+<div data-hf-id="hf-ljj4" id="root" data-composition-id="main" data-start="0" data-duration="88" data-width="1080" data-height="1920">
+  <div data-hf-id="hf-l0u9" class="watermark"><i data-hf-id="hf-wt6k"></i>公众号：墨筝</div>
+
+  <section data-hf-id="hf-gzy3" id="scene1" class="scene" data-layout-allow-occlusion="">
+    <div data-hf-id="hf-kxq8" class="grid"></div><div data-hf-id="hf-gc1f" class="halo" data-layout-ignore="" style="right:-230px;top:260px"></div><div data-hf-id="hf-r5pq" class="ghost" data-layout-ignore="" style="left:-70px;bottom:250px">CLICK</div>
+    <div data-hf-id="hf-mdj7" id="target" class="target" style="right:100px;top:460px"></div>
+    <div data-hf-id="hf-mcm7" class="content">
+      <div data-hf-id="hf-ty1d" id="s1-meta" class="meta">COMPUTER USE / 01</div>
+      <div data-hf-id="hf-z848" id="s1-coord" class="coord">(135, 193)</div>
+      <div data-hf-id="hf-dgpv" id="s1-rule" class="rule"></div>
+      <h1 data-hf-id="hf-dz54" id="s1-title">AI 怎么从<br data-hf-id="hf-x5px">一张截图<br data-hf-id="hf-rsrt"><span data-hf-id="hf-bzz6" class="gold">点中屏幕？</span></h1>
+      <p data-hf-id="hf-lc0c" id="s1-lead" class="lead">拆解 OpenAI、Anthropic 与 Google 的底层路线</p>
+    </div>
+  </section>
+
+  <section data-hf-id="hf-64gg" id="scene2" class="scene" data-layout-allow-occlusion="">
+    <div data-hf-id="hf-6qwo" class="grid"></div><div data-hf-id="hf-sx6q" class="ghost" data-layout-ignore="" style="right:-120px;top:370px">LOOP</div>
+    <div data-hf-id="hf-i7rz" class="content">
+      <div data-hf-id="hf-l97m" id="s2-meta" class="meta">SHARED LOOP / 02</div><h2 data-hf-id="hf-7bvo" id="s2-title">三家共用同一个核心回路</h2>
+      <div data-hf-id="hf-pkwa" class="loop">
+        <div data-hf-id="hf-7v2x" id="n1" class="node"><span data-hf-id="hf-h7ov">01 / OBSERVE</span><b data-hf-id="hf-iu5u">观察屏幕</b></div>
+        <div data-hf-id="hf-bt6y" id="n2" class="node"><span data-hf-id="hf-abje">02 / THINK</span><b data-hf-id="hf-55z7">模型推理</b></div>
+        <div data-hf-id="hf-hywr" id="n3" class="node"><span data-hf-id="hf-xwhx">03 / ACT</span><b data-hf-id="hf-avro">输出动作</b></div>
+        <div data-hf-id="hf-uhf8" id="n4" class="node"><span data-hf-id="hf-mna6">04 / LOOP</span><b data-hf-id="hf-csuw">重新截图</b></div>
+      </div>
+      <p data-hf-id="hf-on5p" id="s2-lead" class="lead">截图或元素树进入模型，点击、输入、滚动交给客户端执行。</p>
+    </div>
+  </section>
+
+  <section data-hf-id="hf-6w49" id="scene3" class="scene" data-layout-allow-occlusion="">
+    <div data-hf-id="hf-6be1" class="halo" data-layout-ignore="" style="left:-260px;bottom:60px"></div><div data-hf-id="hf-xyrk" class="ghost" data-layout-ignore="" style="left:10px;top:500px">3 WAYS</div>
+    <div data-hf-id="hf-htgy" class="content">
+      <div data-hf-id="hf-oo4j" id="s3-meta" class="meta">VENDOR MAP / 03</div><h2 data-hf-id="hf-6qep" id="s3-title">差异不在回路<br data-hf-id="hf-szow">而在<span data-hf-id="hf-a61i" class="gold">怎么感知、怎么行动</span></h2>
+      <div data-hf-id="hf-2vaq" class="vendor">
+        <div data-hf-id="hf-wduw" id="v1" class="vendor-row"><div data-hf-id="hf-ue4s" class="vendor-name">OpenAI</div><div data-hf-id="hf-80z7" class="vendor-copy">截图主导 + 代码执行<br data-hf-id="hf-sldv">原生 computer 兜底</div></div>
+        <div data-hf-id="hf-51qr" id="v2" class="vendor-row"><div data-hf-id="hf-yopi" class="vendor-name">Anthropic</div><div data-hf-id="hf-rdq3" class="vendor-copy">桌面输出物理像素<br data-hf-id="hf-qluq">网页优先 AXTree 引用</div></div>
+        <div data-hf-id="hf-13mq" id="v3" class="vendor-row"><div data-hf-id="hf-bd11" class="vendor-name">Google</div><div data-hf-id="hf-gn4e" class="vendor-copy">坐标归一化到<br data-hf-id="hf-q7jp">1000 x 1000 网格</div></div>
+      </div>
+      <div data-hf-id="hf-1i0r" id="s3-axis" class="axis"><span data-hf-id="hf-a67m">感知通道</span><span data-hf-id="hf-7s8b">动作空间</span></div>
+    </div>
+  </section>
+
+  <section data-hf-id="hf-y88e" id="scene4" class="scene" data-layout-allow-occlusion="">
+    <div data-hf-id="hf-5jzl" class="grid"></div>
+    <div data-hf-id="hf-n6t8" class="content" style="padding-top:310px">
+      <div data-hf-id="hf-s188" id="s4-meta" class="meta">OPENAI EVOLUTION / 04</div><h2 data-hf-id="hf-xjiw" id="s4-title">从单步点击<br data-hf-id="hf-regs">到<span data-hf-id="hf-jpgy" class="gold">脚本执行</span></h2>
+      <img data-hf-id="hf-0deg" id="s4-img" class="paper" src="assets/01-two-control-layers.png" alt="本地权限与 API 执行器是两个控制层">
+      <div data-hf-id="hf-ssq7" id="s4-evo" class="evolution"><span data-hf-id="hf-9xjt">click(x, y)</span><span data-hf-id="hf-v68i" class="arrow">→</span><span data-hf-id="hf-f4d5">Playwright<br data-hf-id="hf-r05r">PyAutoGUI</span></div>
+    </div>
+  </section>
+
+  <section data-hf-id="hf-26cf" id="scene5" class="scene" data-layout-allow-occlusion="">
+    <div data-hf-id="hf-gvqb" class="halo" data-layout-ignore="" style="right:-180px;top:330px"></div>
+    <div data-hf-id="hf-fu7o" class="content" style="padding-top:310px">
+      <div data-hf-id="hf-xzs6" id="s5-meta" class="meta">GROUNDING / 05</div><h2 data-hf-id="hf-z54n" id="s5-title">真正的瓶颈不是看懂<br data-hf-id="hf-p0mm">而是<span data-hf-id="hf-ygag" class="gold">点准那一像素</span></h2>
+      <img data-hf-id="hf-k429" id="s5-img" class="paper" src="assets/02-grounding-bottleneck.png" alt="视觉定位的几何瓶颈">
+      <div data-hf-id="hf-0153" id="s5-stamp" class="stamp">看懂 ≠ 点准</div>
+      <div data-hf-id="hf-pmtt" id="s5-stat" class="big-stat">92.7%</div>
+      <p data-hf-id="hf-3ckd" id="s5-lead" class="lead">高分辨率降低 Grounding Error，也同步推高视觉 token 成本。</p>
+    </div>
+  </section>
+
+  <section data-hf-id="hf-tigk" id="scene6" class="scene" data-layout-allow-occlusion="">
+    <div data-hf-id="hf-5yam" class="grid"></div><div data-hf-id="hf-dqpb" class="ghost" data-layout-ignore="" style="right:-200px;bottom:150px">HYBRID</div>
+    <div data-hf-id="hf-hf5x" class="content">
+      <div data-hf-id="hf-0el2" id="s6-meta" class="meta">PIXELS VS STRUCTURE / 06</div><h2 data-hf-id="hf-m6nq" id="s6-title">生产环境正在收敛到<br data-hf-id="hf-ombl"><span data-hf-id="hf-zrs4" class="gold">混合模式</span></h2>
+      <div data-hf-id="hf-p49o" class="paths">
+        <div data-hf-id="hf-3vpy" id="p1" class="path" style="--fill:42%"><b data-hf-id="hf-2ek9">纯像素</b><span data-hf-id="hf-bebw">通用，但慢、贵、容易受布局变化影响</span></div>
+        <div data-hf-id="hf-yfkf" id="p2" class="path" style="--fill:68%"><b data-hf-id="hf-xtnn">元素引用</b><span data-hf-id="hf-q2ba">确定性高，但 Canvas 与非标准组件会失效</span></div>
+        <div data-hf-id="hf-y96b" id="p3" class="path" style="--fill:100%"><b data-hf-id="hf-ln34" class="gold">混合模式</b><span data-hf-id="hf-oupu">DOM / AXTree 优先，视觉截图动态兜底</span></div>
+      </div>
+      <p data-hf-id="hf-4pze" id="s6-lead" class="lead">不是路线之争，而是确定性、成本与通用性的调度。</p>
+    </div>
+  </section>
+
+  <section data-hf-id="hf-ua4d" id="scene7" class="scene" data-layout-allow-occlusion="">
+    <div data-hf-id="hf-8341" class="halo" data-layout-ignore="" style="left:-250px;top:250px"></div>
+    <div data-hf-id="hf-k7b4" class="content">
+      <div data-hf-id="hf-y2up" id="s7-meta" class="meta">DEFENSE IN DEPTH / 07</div><h2 data-hf-id="hf-xsse" id="s7-title">AI 真能操作电脑时<br data-hf-id="hf-qsyj">安全必须有<span data-hf-id="hf-c62o" class="gold">三层</span></h2>
+      <div data-hf-id="hf-3sfz" class="defenses">
+        <div data-hf-id="hf-85on" id="d1" class="defense"><div data-hf-id="hf-kltc" class="defense-num">01</div><div data-hf-id="hf-yeow"><b data-hf-id="hf-nc7l">环境沙箱</b><p data-hf-id="hf-9d2n">隔离真实账号、文件与凭据</p></div></div>
+        <div data-hf-id="hf-xa70" id="d2" class="defense"><div data-hf-id="hf-jew9" class="defense-num">02</div><div data-hf-id="hf-y7yw"><b data-hf-id="hf-i4oi">人工确认</b><p data-hf-id="hf-7o2n">高危操作必须停下来问人</p></div></div>
+        <div data-hf-id="hf-y1ut" id="d3" class="defense"><div data-hf-id="hf-jt7a" class="defense-num">03</div><div data-hf-id="hf-x11t"><b data-hf-id="hf-josr">注入检测</b><p data-hf-id="hf-g56x">扫描屏幕里的恶意指令</p></div></div>
+      </div>
+      <p data-hf-id="hf-s6t7" id="s7-lead" class="lead">目标不是绝对不被攻破，而是<span data-hf-id="hf-x2tq" class="gold">单层失效，损害仍可控</span>。</p>
+    </div><div data-hf-id="hf-fdsi" id="risk" class="risk"></div>
+  </section>
+
+  <section data-hf-id="hf-4hfm" id="scene8" class="scene" data-layout-allow-occlusion="">
+    <div data-hf-id="hf-4rdj" class="grid"></div>
+    <div data-hf-id="hf-kcjz" class="content" style="padding-top:300px">
+      <div data-hf-id="hf-g319" id="s8-meta" class="meta">THE TAKEAWAY / 08</div><h2 data-hf-id="hf-grkb" id="s8-title">Computer Use 的终局<br data-hf-id="hf-r79k">不是更会“模仿点击”</h2>
+      <img data-hf-id="hf-4jyt" id="s8-img" class="paper" src="assets/03-modular-grounding.png" alt="规划与定位模块化分工">
+      <div data-hf-id="hf-vr1o" class="conclusions">
+        <div data-hf-id="hf-f7ws" id="c1" class="conclusion">回路已经收敛，差异在感知与动作表达</div>
+        <div data-hf-id="hf-igx4" id="c2" class="conclusion">结构推理 + 视觉兜底成为主流</div>
+        <div data-hf-id="hf-zm15" id="c3" class="conclusion">脚本确定性与模型灵活性正在融合</div>
+      </div>
+      <div data-hf-id="hf-bj3m" id="cta" class="cta"><b data-hf-id="hf-tvby">墨筝</b><span data-hf-id="hf-mb18">完整技术拆解<br data-hf-id="hf-q0ch">公众号同名</span></div>
+    </div>
+  </section>
+
+  <audio data-hf-id="hf-lwfz" id="bgm" src="bgm.mp3" data-start="0" data-duration="88" data-track-index="1" data-volume="0.3"></audio>
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  const reveal = (scene, previousScene, at) => {
+    tl.to(scene, { opacity: 1, duration: .55, ease: "power2.inOut" }, at);
+    tl.set(previousScene, { visibility: "hidden" }, at + .55);
+  };
+
+  tl.from("#s1-meta", { y: 24, opacity: 0, duration: .45, ease: "power2.out" }, .2)
+    .from("#s1-coord", { x: -90, opacity: 0, duration: .7, ease: "expo.out" }, .55)
+    .from("#target", { scale: 1.8, opacity: 0, duration: .65, ease: "back.out(1.6)" }, .8)
+    .from("#s1-rule", { scaleX: 0, duration: .6, ease: "power3.out" }, 1.1)
+    .from("#s1-title", { y: 70, opacity: 0, duration: .7, ease: "expo.out" }, 1.35)
+    .from("#s1-lead", { y: 26, opacity: 0, duration: .5, ease: "power2.out" }, 2.0)
+    .to("#target", { scale: 1.08, duration: 1.1, repeat: 3, yoyo: true, ease: "sine.inOut" }, 1.7);
+
+  reveal("#scene2", "#scene1", 7.5);
+  tl.from("#s2-meta", { y: 20, opacity: 0, duration: .4 }, 8.0).from("#s2-title", { y: 48, opacity: 0, duration: .65, ease: "expo.out" }, 8.25)
+    .from(["#n1", "#n2", "#n3", "#n4"], { y: 46, opacity: 0, duration: .48, stagger: .34, ease: "power3.out" }, 8.9)
+    .from("#s2-lead", { x: -35, opacity: 0, duration: .55, ease: "power2.out" }, 10.6);
+
+  reveal("#scene3", "#scene2", 16.5);
+  tl.from("#s3-meta", { opacity: 0, y: 20, duration: .4 }, 17.0).from("#s3-title", { y: 50, opacity: 0, duration: .65, ease: "expo.out" }, 17.25)
+    .from(["#v1", "#v2", "#v3"], { x: 70, opacity: 0, duration: .5, stagger: .45, ease: "power3.out" }, 18.0)
+    .from("#s3-axis", { scaleX: 0, opacity: 0, transformOrigin: "left", duration: .6, ease: "power2.out" }, 19.7);
+
+  reveal("#scene4", "#scene3", 26.5);
+  tl.from("#s4-meta", { opacity: 0, y: 20, duration: .4 }, 27.0).from("#s4-title", { y: 48, opacity: 0, duration: .65, ease: "expo.out" }, 27.25)
+    .from("#s4-img", { x: 110, opacity: 0, duration: .8, ease: "power3.out" }, 28.0).from("#s4-evo", { y: 35, opacity: 0, duration: .55, ease: "back.out(1.3)" }, 29.0);
+
+  reveal("#scene5", "#scene4", 37.5);
+  tl.from("#s5-meta", { opacity: 0, y: 20, duration: .4 }, 38.0).from("#s5-title", { y: 50, opacity: 0, duration: .65, ease: "expo.out" }, 38.25)
+    .from("#s5-img", { scale: .92, opacity: 0, duration: .75, ease: "power3.out" }, 39.0).from("#s5-stamp", { scale: 1.5, opacity: 0, duration: .45, ease: "back.out(2)" }, 40.0)
+    .from("#s5-stat", { y: 30, opacity: 0, duration: .5, ease: "expo.out" }, 40.5).from("#s5-lead", { opacity: 0, y: 18, duration: .45 }, 41.0);
+
+  reveal("#scene6", "#scene5", 48.5);
+  tl.from("#s6-meta", { opacity: 0, y: 20, duration: .4 }, 49.0).from("#s6-title", { y: 48, opacity: 0, duration: .65, ease: "expo.out" }, 49.25)
+    .from(["#p1", "#p2", "#p3"], { x: -70, opacity: 0, duration: .55, stagger: .48, ease: "power3.out" }, 50.0)
+    .from("#s6-lead", { y: 25, opacity: 0, duration: .5, ease: "power2.out" }, 52.0);
+
+  reveal("#scene7", "#scene6", 59.5);
+  tl.from("#s7-meta", { opacity: 0, y: 20, duration: .4 }, 60.0).from("#s7-title", { y: 48, opacity: 0, duration: .65, ease: "expo.out" }, 60.25)
+    .from(["#d1", "#d2", "#d3"], { x: -65, opacity: 0, duration: .5, stagger: .48, ease: "power3.out" }, 61.0)
+    .from("#risk", { x: 260, opacity: 0, duration: .8, ease: "power4.out" }, 61.8).from("#s7-lead", { y: 25, opacity: 0, duration: .5 }, 63.0);
+
+  reveal("#scene8", "#scene7", 70.5);
+  tl.from("#s8-meta", { opacity: 0, y: 20, duration: .4 }, 71.0).from("#s8-title", { y: 48, opacity: 0, duration: .65, ease: "expo.out" }, 71.2)
+    .from("#s8-img", { scale: .94, opacity: 0, duration: .7, ease: "power3.out" }, 71.8)
+    .from(["#c1", "#c2", "#c3"], { x: -45, opacity: 0, duration: .4, stagger: .3, ease: "power2.out" }, 72.5)
+    .from("#cta", { y: 34, opacity: 0, duration: .55, ease: "back.out(1.4)" }, 73.6)
+    .to("#scene8", { opacity: 0, duration: .8, ease: "power2.in" }, 87.2);
+
+  tl.to(".grid", { backgroundPosition: "90px 90px", duration: 11, ease: "none", repeat: 7 }, 0);
+  tl.to(".halo", { scale: 1.12, opacity: .7, duration: 3, yoyo: true, repeat: 14, ease: "sine.inOut" }, 0);
+  window.__timelines.main = tl;
+</script>
+</body>
+</html>

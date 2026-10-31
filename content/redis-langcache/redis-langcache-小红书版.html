@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>LangCache 帮你节省 90% 的模型调用成本和延迟耗时</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#2c2825;display:flex;flex-direction:column;align-items:center;padding:90px 20px 80px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif}
+.toolbar{position:fixed;inset:0 0 auto;z-index:100;background:rgba(28,28,30,.95);padding:12px 20px;display:flex;justify-content:center;align-items:center;gap:12px}.btn{background:#1C1C1E;color:#F2EDE3;border:1px solid rgba(255,255,255,.15);padding:9px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}.btn.accent{background:#C4956A;border-color:#C4956A}.progress{color:rgba(255,255,255,.7);font-size:12px}
+.slide{width:540px;height:720px;margin-bottom:40px;position:relative;overflow:hidden;border-radius:8px;box-shadow:0 6px 28px rgba(28,28,30,.35);background:#F2EDE3}.bg-paper{position:absolute;inset:0;background:linear-gradient(135deg,#F6F1E7 0%,#F2EDE3 55%,#ECE4D2 100%)}.bg-paper:after{content:"";position:absolute;inset:0;opacity:.04;background-image:linear-gradient(rgba(28,28,30,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(28,28,30,.6) 1px,transparent 1px);background-size:28px 28px}.slide[data-theme="dark"]{background:#1C1C1E}.slide[data-theme="dark"] .bg-paper{background:radial-gradient(circle at 82% 18%,rgba(196,149,106,.16),transparent 36%),#1C1C1E}.slide[data-theme="dark"] .bg-paper:after{display:none}
+.slide.img-only{height:auto;min-height:0;background:transparent;border-radius:0;box-shadow:none}.slide.img-only .bg-paper{display:none}.slide.img-only .content{height:auto;padding:0}.slide.img-only img.main-img{width:100%;height:auto;object-fit:unset;display:block}
+.content{position:relative;z-index:2;height:100%;padding:32px 40px 24px;display:flex;flex-direction:column;color:#333;letter-spacing:.3px}.post-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-shrink:0}.avatar-wrap{position:relative;width:44px;height:44px;border-radius:50%;border:1.5px solid #C4956A;overflow:hidden;background:linear-gradient(135deg,#C4956A,#8a6240);flex-shrink:0}.avatar-wrap .avatar-fallback{position:absolute;inset:0;z-index:0;display:flex;align-items:center;justify-content:center;color:#F2EDE3;font-size:20px;font-weight:700;font-family:"Songti SC",serif}.avatar-wrap .avatar{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;display:block}.meta .name{font-size:15px;font-weight:700;color:#1C1C1E}.meta .date{font-size:13px;color:#888;margin-top:2px}.slide[data-theme="dark"] .meta .name{color:#F2EDE3}.slide[data-theme="dark"] .meta .date{color:rgba(242,237,227,.5)}
+.post-body{flex:1;overflow:hidden}.post-body.middle{display:flex;flex-direction:column;justify-content:center;padding-bottom:28px}.post-body .h1{font-size:27px;font-weight:800;color:#1C1C1E;margin-bottom:18px;line-height:1.35;text-align:center;padding:14px 0;border-top:2px solid #1C1C1E;border-bottom:2px solid #1C1C1E;font-family:"Songti SC","Source Han Serif SC",serif;letter-spacing:1px}.slide[data-theme="dark"] .post-body .h1{color:#F2EDE3;border-color:rgba(242,237,227,.75)}.post-body .h2{font-size:22px;font-weight:700;color:#1C1C1E;margin:4px 0 12px;border-left:4px solid #C4956A;padding-left:12px}.post-body .h3{font-size:19px;font-weight:700;color:#2C2A28;margin:4px 0 10px}.post-body p{font-size:18px;line-height:1.6;color:#333;margin-bottom:8px;word-break:break-word}.post-body strong{color:#1C1C1E;font-weight:700}.slide[data-theme="dark"] .post-body p{color:rgba(242,237,227,.84)}.slide[data-theme="dark"] .post-body strong{color:#F2EDE3}.list-item{display:flex;gap:8px;margin-bottom:7px;font-size:18px;line-height:1.6;color:#333}.list-item .bullet{color:#999;font-weight:700;flex-shrink:0}
+.swipe-hint{text-align:center;font-size:12px;letter-spacing:1px;margin-top:auto;padding-bottom:8px;color:rgba(242,237,227,.5)}.swipe-arrows{letter-spacing:3px;opacity:.7}.post-footer{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(28,28,30,.08);flex-shrink:0}.post-footer .brand{font-size:11px;color:#888;letter-spacing:.5px}.post-footer .gz{color:#C4956A;font-weight:700}.post-footer .page{font-size:12px;color:#888}.slide[data-theme="dark"] .post-footer{border-color:rgba(242,237,227,.12)}.slide[data-theme="dark"] .post-footer .brand,.slide[data-theme="dark"] .post-footer .page{color:rgba(242,237,227,.45)}
+.quote-card{flex:1;display:flex;align-items:center;justify-content:center;text-align:center}.q{font-size:18px;line-height:1.7;font-weight:400;color:#F2EDE3}.q .punch{display:block;margin-top:18px;font-size:20px;font-weight:600}.q .hl{color:#C4956A}.end-mark{text-align:center;color:#C4956A;font-size:13px;letter-spacing:3px;opacity:.6;margin:0 0 12px}
+</style>
+</head>
+<body>
+<div class="toolbar"><button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button><button class="btn" onclick="downloadOne()">下载当前</button><span class="progress" id="progress"></span></div>
+
+<div class="slide" data-theme="dark" id="slide-1"><div class="bg-paper"></div><div class="content">
+  <div class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/12</div></div></div>
+  <div class="post-body"><div class="h1">LangCache 帮你节省 90% 的模型调用成本和延迟耗时</div><p>对于大模型应用来说，每次收到的问题可能都不是全新的。</p></div>
+  <div class="swipe-hint"><span class="swipe-arrows">‹ ‹ ‹</span> 左滑查看更多</div><div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><span class="page">1 / 11</span></div>
+</div></div>
+
+<div class="slide" id="slide-2"><div class="bg-paper"></div><div class="content">
+  <div class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/12</div></div></div>
+  <div class="post-body"><p>比如，一个客服助手可能会收到下面三个问题：</p><div class="list-item"><span class="bullet">•</span><span>“购买月度套餐后可以退款吗？”</span></div><div class="list-item"><span class="bullet">•</span><span>“月度订阅支持退款吗？”</span></div><div class="list-item"><span class="bullet">•</span><span>“我可以取消套餐并拿回已支付的费用吗？”</span></div><p>尽管表述略有不同，但实际问的是同一件事，答案也一样。</p></div>
+  <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><span class="page">2 / 11</span></div>
+</div></div>
+
+<div class="slide img-only" id="slide-3"><div class="content"><img class="main-img" src="xhs-source-images/01.jpg" alt="原文插图 1"></div></div>
+
+<div class="slide" id="slide-4"><div class="bg-paper"></div><div class="content">
+  <div class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/12</div></div></div>
+  <div class="post-body middle"><p>对于大模型应用来说通常会把每种问法都当作新的请求，重新组织提示词，再把请求发送给底层模型，最后再生成一篇已经回答过的答案。</p><p>前缀缓存可以减少一部分重复计算。</p><p>当多个请求使用相同的系统提示词或上下文作为开头时，模型会复用这部分公共前缀已经计算好的 KV 状态。</p></div>
+  <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><span class="page">4 / 11</span></div>
+</div></div>
+
+<div class="slide img-only" id="slide-5"><div class="content"><img class="main-img" src="xhs-source-images/02.jpg" alt="原文插图 2"></div></div>
+
+<div class="slide" id="slide-6"><div class="bg-paper"></div><div class="content">
+  <div class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/12</div></div></div>
+  <div class="post-body"><p>但模型还是要处理新增的 Token，并解码生成完整答案。</p><p>因此，即便命中了前缀缓存，模型仍然要执行一次生成调用。</p><p>要进一步减少这类调用，应用层可以额外做一份答案缓存。</p><p>当新问题到来时，先使用 embedding 模型将其转换为向量，并与之前回答过的问题进行比较。如果找到相似度匹配的向量结果，就直接返回缓存中的回答，不再调用底层大模型。</p></div>
+  <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><span class="page">6 / 11</span></div>
+</div></div>
+
+<div class="slide img-only" id="slide-7"><div class="content"><img class="main-img" src="xhs-source-images/03.jpg" alt="原文插图 3"></div></div>
+
+<div class="slide" id="slide-8"><div class="bg-paper"></div><div class="content">
+  <div class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/12</div></div></div>
+  <div class="post-body middle"><p>一旦命中缓存，这次大语言模型调用所需的输入 Token、输出 Token 和解码时间就都可以省掉。</p><p>理论很简单，但在实际落地时，会有很多细节需要考虑，比如 embedding 实现，相似度匹配策略和阈值、过期策略和数据隔离，失败的退避策略，错误匹配的监控等等。</p><p>Redis 推出了对应的托管服务 Redis LangCache，可以让你直接在应用中开箱即用。</p></div>
+  <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><span class="page">8 / 11</span></div>
+</div></div>
+
+<div class="slide" id="slide-9"><div class="bg-paper"></div><div class="content">
+  <div class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/12</div></div></div>
+  <div class="post-body"><p>它会在内部生成向量、搜索以往的回答，并在再次调用模型之前返回匹配的答案。</p><p>Redis 还提供了访问范围控制、自定义过滤、TTL、淘汰策略和缓存监控等功能。</p><p>我简单测试了一下，对比 Redis LangCache 与直接调用大语言模型的效果：</p><p>测试中，面对一个换了表达方式的问题，直接调用模型耗时 2.232 秒，使用了 514 个输入 Token 和 250 个输出 Token。</p></div>
+  <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><span class="page">9 / 11</span></div>
+</div></div>
+
+<div class="slide" id="slide-10"><div class="bg-paper"></div><div class="content">
+  <div class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/12</div></div></div>
+  <div class="post-body"><p>Redis 在 0.373 秒内返回了之前的回答，没有消耗任何大语言模型的输入或输出 Token。在这次测试中，响应速度约为直接调用模型的 6 倍。</p><p>Redis 官方称，LangCache 最多可以节省 90% 的 API 成本，缓存命中时的响应速度最高可提升至 15 倍。</p><p>实际效果还是取决于业务请求中有多少内容可以安全复用。</p><p>Redis LangCache 上手体验：https://redis.io/langcache/</p></div>
+  <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><span class="page">10 / 11</span></div>
+</div></div>
+
+<div class="slide" data-theme="dark" id="slide-11"><div class="bg-paper"></div><div class="content">
+  <div class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/12</div></div></div>
+  <div class="post-body quote-card"><div class="q">Redis 官方称，LangCache 最多可以节省 90% 的 API 成本，<span class="punch">缓存命中时的响应速度最高可提升至 <span class="hl">15 倍</span>。</span></div></div><div class="end-mark">— END —</div>
+  <div class="post-footer"><div class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</div><span class="page">11 / 11</span></div>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE=2,progressEl=document.getElementById("progress");
+const slides=()=>Array.from(document.querySelectorAll(".slide"));
+function flattenAlpha(canvas,bg){const out=document.createElement("canvas");out.width=canvas.width;out.height=canvas.height;const ctx=out.getContext("2d");ctx.fillStyle=bg;ctx.fillRect(0,0,out.width,out.height);ctx.drawImage(canvas,0,0);return out}
+async function fetchAsDataURL(url){const response=await fetch(url,{mode:"cors",cache:"force-cache"});if(!response.ok)throw new Error("HTTP "+response.status);const blob=await response.blob();return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)})}
+async function inlineRemoteImages(){const images=Array.from(document.querySelectorAll("img"));await Promise.all(images.map(async image=>{const src=image.getAttribute("src")||"";if(!src||src.startsWith("data:")||src.startsWith("blob:")||src.startsWith("../"))return;const stripped=src.replace(/^https?:\/\//,"");const candidates=[src,"https://wsrv.nl/?url="+encodeURIComponent(stripped),"https://images.weserv.nl/?url="+encodeURIComponent(stripped),"https://corsproxy.io/?"+encodeURIComponent(src)];let dataUrl=null;for(const candidate of candidates){try{dataUrl=await fetchAsDataURL(candidate);break}catch(error){console.warn(candidate,error)}}if(!dataUrl)throw new Error("原文图片下载失败："+src);image.src=dataUrl;if(image.decode){try{await image.decode()}catch(error){console.warn(error)}}}))}
+async function renderSlide(slide){const radius=slide.style.borderRadius;slide.style.borderRadius="0";if(slide.classList.contains("img-only")){const image=slide.querySelector("img.main-img");if(!image||!image.naturalWidth)throw new Error("原文图片加载失败");const canvas=document.createElement("canvas");canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;canvas.getContext("2d").drawImage(image,0,0);slide.style.borderRadius=radius;return canvas}const raw=await html2canvas(slide,{scale:SCALE,backgroundColor:null,useCORS:true,allowTaint:false,logging:false,width:540,height:720});slide.style.borderRadius=radius;return flattenAlpha(raw,slide.dataset.theme==="dark"?"#1C1C1E":"#F2EDE3")}
+function canvasToBlob(canvas){return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("canvas.toBlob 返回空结果")),"image/png"))}
+function saveBlob(blob,name){if(window.saveAs){saveAs(blob,name);return}const url=URL.createObjectURL(blob),anchor=document.createElement("a");anchor.href=url;anchor.download=name;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+async function prepare(){progressEl.textContent="预加载图片...";await inlineRemoteImages();await Promise.all(Array.from(document.querySelectorAll("img")).map(image=>image.complete?Promise.resolve():new Promise(resolve=>{image.onload=resolve;image.onerror=resolve})))}
+async function downloadOne(){try{await prepare();const all=slides(),raw=prompt(`下载第几张？1-${all.length}`,"1");if(!raw)return;const index=Math.max(1,Math.min(all.length,parseInt(raw,10)||1));progressEl.textContent=`正在导出 ${index}/${all.length}`;saveBlob(await canvasToBlob(await renderSlide(all[index-1])),`redis-langcache-xhs-${String(index).padStart(2,"0")}.png`);progressEl.textContent="导出完成"}catch(error){progressEl.textContent="下载失败："+error.message;alert(progressEl.textContent)}}
+async function downloadAll(){try{await prepare();const all=slides(),zip=new JSZip();for(let index=0;index<all.length;index++){progressEl.textContent=`正在导出 ${index+1}/${all.length}`;zip.file(`redis-langcache-xhs-${String(index+1).padStart(2,"0")}.png`,await canvasToBlob(await renderSlide(all[index])))}saveBlob(await zip.generateAsync({type:"blob"}),"redis-langcache-xhs.zip");progressEl.textContent=`导出完成：${all.length} 张`}catch(error){progressEl.textContent="下载失败："+error.message;alert(progressEl.textContent)}}
+</script>
+</body>
+</html>

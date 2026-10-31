@@ -1,0 +1,593 @@
+{
+  "passed": true,
+  "colors": {
+    "strong": [
+      "rgb(28, 28, 30)"
+    ],
+    "h3": [
+      "rgb(44, 42, 40)"
+    ],
+    "bullet": [
+      "rgb(153, 153, 153)"
+    ],
+    "paper": [
+      "rgb(242, 237, 227)"
+    ]
+  },
+  "geometry": [
+    {
+      "slide": "slide-1",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 240.0625,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-001",
+          "start": 0,
+          "end": 103,
+          "text": "前不久，Anthropic 发布了 Claude Opus 5.5。因为它省 Token、指令遵循能力也很强，很多开发者拿它来写复杂代码和大型项目，评价甚高，甚至有人感叹那个熟悉的 Claude 又回来了。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-2",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 551.546875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-002",
+          "start": 0,
+          "end": 38,
+          "text": "之后 Anthropic 紧接着推出了 Claude Sonnet 5.5。"
+        },
+        {
+          "id": "block-003",
+          "start": 0,
+          "end": 76,
+          "text": "官方在发布公告里称：“单价与前代 Sonnet 5 相同，但单任务成本最高降低 30%，输出速度提升 30% 以上，是迄今最快的 Sonnet 模型。”"
+        },
+        {
+          "id": "block-004",
+          "start": 0,
+          "end": 88,
+          "text": "不过我们在实际接入后发现了一个反常现象：在特定场景（尤其是高强度思考）下，单价更便宜的 Sonnet 5.5，最终跑完一个任务的开销，反而比顶级旗舰 Opus 5.5 还要贵。"
+        },
+        {
+          "id": "block-005",
+          "start": 0,
+          "end": 56,
+          "text": "为什么单价便宜，做起事来反而可能更贵？两代 Sonnet 到底迭代了什么，与顶级旗舰 Opus 相比该如何抉择？"
+        },
+        {
+          "id": "block-006",
+          "start": 0,
+          "end": 12,
+          "text": "先看结论：核心规格与价格"
+        },
+        {
+          "id": "block-007",
+          "start": 0,
+          "end": 79,
+          "text": "Claude Sonnet 5.5 定位是中端主力，主打速度快、单价便宜；Claude Opus 5.5 则是顶级旗舰，适合处理那些逻辑复杂、步骤多的大任务。"
+        },
+        {
+          "id": "block-008",
+          "start": 0,
+          "end": 32,
+          "text": "Sonnet 5.5 与 Opus 5.5 的基础标称定价如下："
+        },
+        {
+          "id": "block-009",
+          "start": 0,
+          "end": 67,
+          "text": "Sonnet 5.5：输入每百万 Token 2 美元，输出每百万 Token 10 美元（与前代 Sonnet 5 定价完全一致）；"
+        }
+      ]
+    },
+    {
+      "slide": "slide-3",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 222.578125,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-010",
+          "start": 0,
+          "end": 44,
+          "text": "Opus 5.5：输入每百万 Token 4 美元，输出每百万 Token 20 美元；"
+        },
+        {
+          "id": "block-011",
+          "start": 0,
+          "end": 71,
+          "text": "Prompt 缓存读取（Cache Read）：Sonnet 5.5 与 Opus 5.5 完全相同，都是每百万 Token 0.20 美元；"
+        },
+        {
+          "id": "block-012",
+          "start": 0,
+          "end": 50,
+          "text": "Batch API 批处理：Sonnet 5.5 与 Opus 5.5 均支持 50% 的价格折扣。"
+        },
+        {
+          "id": "block-013",
+          "start": 0,
+          "end": 32,
+          "text": "以下是两代 Sonnet 以及与 Opus 系列的核心参数对照："
+        }
+      ]
+    },
+    {
+      "slide": "slide-4",
+      "imageOnly": true,
+      "width": 540,
+      "height": 169.703125,
+      "used": 169.703125,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    },
+    {
+      "slide": "slide-5",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 28.796875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-015",
+          "start": 0,
+          "end": 28,
+          "text": "Sonnet 5.5 与 Sonnet 5 核心参数对比"
+        }
+      ]
+    },
+    {
+      "slide": "slide-6",
+      "imageOnly": true,
+      "width": 540,
+      "height": 410.390625,
+      "used": 410.390625,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    },
+    {
+      "slide": "slide-7",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 57.59375,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-017",
+          "start": 0,
+          "end": 44,
+          "text": "Sonnet 5.5、Sonnet 5、Opus 5.5 与 Opus 5 规格横向对比"
+        }
+      ]
+    },
+    {
+      "slide": "slide-8",
+      "imageOnly": true,
+      "width": 540,
+      "height": 274.96875,
+      "used": 274.96875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    },
+    {
+      "slide": "slide-9",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 28.796875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-019",
+          "start": 0,
+          "end": 28,
+          "text": "Sonnet 5.5 与 Opus 5.5 选型核心差异"
+        }
+      ]
+    },
+    {
+      "slide": "slide-10",
+      "imageOnly": true,
+      "width": 540,
+      "height": 317.84375,
+      "used": 317.84375,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    },
+    {
+      "slide": "slide-11",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 508.546875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-021",
+          "start": 0,
+          "end": 32,
+          "text": "Sonnet 5.5 与 Opus 5.5 的定价与关键配置细节"
+        },
+        {
+          "id": "block-022",
+          "start": 0,
+          "end": 17,
+          "text": "为什么标价没变，官方却说更便宜了？"
+        },
+        {
+          "id": "block-023",
+          "start": 0,
+          "end": 43,
+          "text": "既然输入输出的单价还是 2 美元和 10 美元，官方说的“最高省 30%”是从哪来的？"
+        },
+        {
+          "id": "block-024",
+          "start": 0,
+          "end": 112,
+          "text": "这并不是因为换了分词器。迁移文档写得很清楚，Sonnet 5.5 沿用了 Sonnet 5 的分词器，相同的文字切出来的 Token 数量一模一样。它之所以能省钱，是因为模型表达更精炼，完成同一项任务所需要的输出字数变少了。"
+        },
+        {
+          "id": "block-025",
+          "start": 0,
+          "end": 112,
+          "text": "此外，Prompt 缓存的最小起步门槛从过去的 1024 Token 降低到了 512 Token。这意味着更短的 System Prompt 现在也能享受到 90% 的缓存读取优惠，这对日常频繁调用的项目是个实打实的好处。"
+        },
+        {
+          "id": "block-026",
+          "start": 0,
+          "end": 69,
+          "text": "在基础规格上，Sonnet 5.5 与旗舰 Opus 5.5 保持了一致（相比前代 Sonnet 5 的 200K 上下文有了大幅提升）："
+        },
+        {
+          "id": "block-027",
+          "start": 0,
+          "end": 66,
+          "text": "上下文窗口：Sonnet 5.5 与 Opus 5.5 均为 100 万（1M）Token（前代 Sonnet 5 为 200K）；"
+        }
+      ]
+    },
+    {
+      "slide": "slide-12",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 518.75,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-028",
+          "start": 0,
+          "end": 66,
+          "text": "单次最大输出：Sonnet 5.5 与 Opus 5.5 均为 128K Token（Batch API 测试版支持到 300K）；"
+        },
+        {
+          "id": "block-029",
+          "start": 0,
+          "end": 22,
+          "text": "知识库截止时间：均为 2026 年 6 月。"
+        },
+        {
+          "id": "block-030",
+          "start": 0,
+          "end": 49,
+          "text": "不过，Sonnet 5.5 与 Opus 5.5 在默认思考强度（Effort）的设定上正好相反："
+        },
+        {
+          "id": "block-031",
+          "start": 0,
+          "end": 79,
+          "text": "Sonnet 5.5：在 Claude Code 和 Claude.ai 网页端默认是 Medium（中度），但在直接调用 API 时默认是 High（高）；"
+        },
+        {
+          "id": "block-032",
+          "start": 0,
+          "end": 21,
+          "text": "Opus 5.5：默认则是 Medium。"
+        },
+        {
+          "id": "block-033",
+          "start": 0,
+          "end": 84,
+          "text": "也就是说，如果你不做任何调整直接用默认配置拿 Sonnet 5.5 和 Opus 5.5 跑对比，实际上是在拿“全力思考的 Sonnet”去打“克制思考的 Opus”。"
+        },
+        {
+          "id": "block-034",
+          "start": 0,
+          "end": 27,
+          "text": "Sonnet 5.5 与 Opus 5.5 的跑分对比"
+        },
+        {
+          "id": "block-035",
+          "start": 0,
+          "end": 87,
+          "text": "Anthropic 官方给出的发布测试数据是最合理的起点。在官方公布的 8 项评测中，Opus 5.5 在 7 项上胜出，但领先幅度都很小，差距大多在 3.2 个百分点以内。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-13",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 115.1875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-035",
+          "start": 87,
+          "end": 229,
+          "text": "而在终端交互评测 Terminal-Bench 4.0 上，Sonnet 5.5 跑出了 70.6%，超过了 Opus 5.5 的 66.4%；在测试实际办公场景的 GDPval-AA 评测中，Sonnet 5.5 拿到 1844 分，与 Opus 5.5 的 1846 分基本打平。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-14",
+      "imageOnly": true,
+      "width": 540,
+      "height": 264.125,
+      "used": 264.125,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    },
+    {
+      "slide": "slide-15",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 454.953125,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-037",
+          "start": 0,
+          "end": 24,
+          "text": "Terminal Bench 评测得分背后的注脚"
+        },
+        {
+          "id": "block-038",
+          "start": 0,
+          "end": 23,
+          "text": "不过，在看这些数字时，有几个细节需要客观看待："
+        },
+        {
+          "id": "block-039",
+          "start": 0,
+          "end": 97,
+          "text": "前代 Sonnet 5 的基准分偏低前代 Sonnet 5 在这项测试里的得分只有 10.3%。从 10% 提升到 70% 看上去非常震撼，但有一部分原因是旧模型对这一版测试格式的适配比较吃亏。"
+        },
+        {
+          "id": "block-040",
+          "start": 0,
+          "end": 273,
+          "text": "Sonnet 5.5 与 Opus 5.5 的测试档位并不一致仔细看官方图表的附注就会发现：Sonnet 5.5 拿下的 70.6%，是在 Max（最高强度思考）下跑出来的，而 Opus 5.5 的 66.4% 是在 Xhigh（超高强度）下跑出来的。如果拉到完全相同的 Xhigh 档位，官方数据显示 Sonnet 5.5 只有 61.5%，依然低于 Opus 5.5 的 66.4%。更关键的是成本差异：Sonnet 5.5 在 Max 档位单次尝试需要花费 12.54 美元，而 Opus 5.5 在 Xhigh 档位只需 7.35 美元。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-16",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 483.75,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-041",
+          "start": 0,
+          "end": 189,
+          "text": "独立第三方测试的结论并不一致独立评测机构 Artificial Analysis 在自己的环境下测试 Terminal-Bench，Sonnet 5.5 得到 64%，Opus 5.5 得到 60%，两者的差距远没有官方图表那么悬殊。而在 Vals 的测试集中，Sonnet 5.5 得分 53.03%，Opus 5.5 则是 61.62%，依然是 Opus 5.5 明显领先。"
+        },
+        {
+          "id": "block-042",
+          "start": 0,
+          "end": 134,
+          "text": "所以，不能简单地说 Sonnet 5.5 整体上已经超越了 Opus 5.5。在各家综合测试中，Opus 5.5 依然保持着微弱的优势；Sonnet 5.5 的核心价值在于，在很多日常评测中它能紧紧咬住旗舰的成绩，但单价只有 Opus 5.5 的一半，吐字速度也更快。"
+        },
+        {
+          "id": "block-043",
+          "start": 0,
+          "end": 15,
+          "text": "评测中还有两个值得留意的细节："
+        },
+        {
+          "id": "block-044",
+          "start": 0,
+          "end": 101,
+          "text": "一是思考预算不是越多越好：比如在 FrontierCode 编程测试中，Sonnet 5.5 在 Xhigh 档位能拿到 52.1%，但强行提到 Max 档反而掉到了 46.2%（后面我们会细说原因）。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-17",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 389.953125,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-045",
+          "start": 0,
+          "end": 92,
+          "text": "二是早期测试中的插曲：Artificial Analysis 在早期测试时遇到过结构化输出的 Bug，官方表示正式版已修复，当时的数据可能稍微低估了 Sonnet 5.5 的真实表现。"
+        },
+        {
+          "id": "block-046",
+          "start": 0,
+          "end": 14,
+          "text": "单任务成本：半价并不总是靠谱"
+        },
+        {
+          "id": "block-047",
+          "start": 0,
+          "end": 95,
+          "text": "纸面计算下，一笔包含 10 万输入 Token 和 2 万输出 Token 的常规请求，Sonnet 5.5 约花费 0.40 美元，Opus 5.5 约花费 0.80 美元，刚好就是半价。"
+        },
+        {
+          "id": "block-048",
+          "start": 0,
+          "end": 34,
+          "text": "但一旦引入思考过程（Reasoning Tokens），就不一样了。"
+        },
+        {
+          "id": "block-049",
+          "start": 0,
+          "end": 65,
+          "text": "Artificial Analysis 在其智能指数（Intelligence Index）中评估了各模型跑完单项任务的实际花费："
+        }
+      ]
+    },
+    {
+      "slide": "slide-18",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 139.5625,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    }
+  ],
+  "png_count": 18,
+  "exports": [
+    {
+      "filename": "Claude模型对比-01.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-02.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-03.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-04.png",
+      "width": 1400,
+      "height": 440,
+      "imageOnly": true
+    },
+    {
+      "filename": "Claude模型对比-05.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-06.png",
+      "width": 1400,
+      "height": 1064,
+      "imageOnly": true
+    },
+    {
+      "filename": "Claude模型对比-07.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-08.png",
+      "width": 921,
+      "height": 469,
+      "imageOnly": true
+    },
+    {
+      "filename": "Claude模型对比-09.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-10.png",
+      "width": 914,
+      "height": 538,
+      "imageOnly": true
+    },
+    {
+      "filename": "Claude模型对比-11.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-12.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-13.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-14.png",
+      "width": 920,
+      "height": 450,
+      "imageOnly": true
+    },
+    {
+      "filename": "Claude模型对比-15.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-16.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-17.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "Claude模型对比-18.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    }
+  ],
+  "mobile": "passed"
+}

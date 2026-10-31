@@ -1,0 +1,15 @@
+Generate one standalone 16:9 horizontal Chinese article illustration.
+
+Pure white background, minimalist black hand-drawn line art, slightly wobbly thin pen lines, extensive empty white space, no texture, no shadow, no gradient, no commercial vector style, no PPT infographic, no realistic UI, no cute decoration.
+
+Show two serious deadpan 小黑 characters: small solid-black cats with white dot eyes, pointed ears, short tails, thin legs, blank expressions. They must perform the core action, not act as mascots.
+
+Core metaphor: the two models receive the exact same bare frontend skeleton but apply different visual taste.
+
+Composition: In the center, draw one continuous bare building frame divided by a single thin construction line. The roof beam, columns, and floor line must visibly continue across both halves. On the left, one 小黑 uses a ruler to fit three compact square panels tightly into the frame. On the right, another 小黑 uses a bending tool to curve three spacious rounded panels, with only one restrained warm-gold accent line. Both cats are actively working. No furniture, no font specimen, no plants, no stars, no rabbits, no faces on objects, no toolboxes, no decorative icons. Keep the scene sparse and architectural, occupying about half the canvas, with the top third mostly empty.
+
+Chinese handwritten labels: only three labels — “同一骨架” above the shared roof, “Fable” near the left cat, and “Qwen” near the right cat. No other words anywhere. Make these three labels large, correct, and legible.
+
+Color: black line art and black cats; matte warm gold #A07848 only on the right-side curved panel edge and the downward arrow from “同一骨架”. No red, no blue, no orange.
+
+Do not write any title in the top-left. Do not add a formal divider, chart, screen UI, or comparison table. The result should feel like a strange but restrained product-design sketch, clear in one second, not cute and not instructional.

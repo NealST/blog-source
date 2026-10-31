@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一文说透 Jev · 正文配图</title>
+<style>
+body { margin: 0; background: #F6F7F8; color: #1C1C1E; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; letter-spacing: 0; }
+.gallery { max-width: 800px; margin: 0 auto; padding: 24px 16px 40px; }
+.gallery-header h1 { margin: 0 0 12px; font-size: 24px; line-height: 1.4; }
+.gallery-header nav { display: flex; gap: 24px; margin-bottom: 28px; }
+.gallery-header a { color: #2C2A28; text-underline-offset: 4px; }
+.gallery-item { margin: 0 0 32px; min-width: 0; }
+.gallery-item h2 { margin: 0 0 8px; font-size: 18px; line-height: 1.5; }
+.slide-label { margin-bottom: 12px; color: #545454; font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+.diagram-scroll { width: 100%; overflow-x: auto; }
+.gallery-item .slide { background: #FFFFFF; border-radius: 0; }
+.gallery-item .diagram-slide { width: 800px; height: 500px; overflow: hidden; }
+.gallery-item .xiaohei-row { width: 100%; }
+.xiaohei-row img { display: block; width: 100%; height: auto; }
+#jev03-svg, #jev04-svg, #jev06-svg { display: block; width: 800px; height: 500px; background: #FFFFFF; }
+#jev03-svg text { font-family: 'Geist', 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #1C1C1E; font-size: 12px; letter-spacing: 0; }
+#jev03-svg .jev03-title { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#jev03-svg .jev03-name { font-weight: 600; }
+#jev03-svg .jev03-note { font-weight: 400; }
+#jev03-svg .jev03-node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#jev03-svg .jev03-input { fill: #F2EDE3; stroke: #7A7876; stroke-width: 1; }
+#jev03-svg .jev03-focal { fill: #F2EDE3; stroke: #C4956A; stroke-width: 1.2; }
+#jev03-svg .jev03-edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#jev03-arrow); }
+#jev04-svg text { font-family: 'Geist', 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #1C1C1E; letter-spacing: 0; }
+#jev04-svg .jev04-title { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#jev04-svg .jev04-name { font-weight: 600; }
+#jev04-svg .jev04-node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#jev04-svg .jev04-decision { fill: #F2EDE3; stroke: #1C1C1E; stroke-width: 1; }
+#jev04-svg .jev04-focal { fill: #F2EDE3; stroke: #C4956A; stroke-width: 1.2; }
+#jev04-svg .jev04-edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#jev04-arrow); }
+#jev06-svg text { font-family: 'Geist', 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #1C1C1E; letter-spacing: 0; }
+#jev06-svg .jev06-title { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#jev06-svg .jev06-name { font-weight: 600; }
+#jev06-svg .jev06-node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#jev06-svg .jev06-input { fill: #F2EDE3; stroke: #7A7876; stroke-width: 1; }
+#jev06-svg .jev06-focal { fill: #F2EDE3; stroke: #C4956A; stroke-width: 1.2; }
+#jev06-svg .jev06-edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#jev06-arrow); }
+</style>
+</head>
+<body>
+<main class="gallery">
+<header class="gallery-header">
+<h1>一文说透 Jev · 正文配图</h1>
+<nav aria-label="文章产物"><a href="cover.png">封面</a><a href="preview.html">公众号预览</a></nav>
+</header>
+<section class="gallery-item">
+<h2>01 · 语言税</h2>
+<div class="slide-label">小黑 01 · 放在「我们为什么需要一个“不写文本”的模型？」之后 · 文件:01-language-tax.png</div>
+<div class="slide xiaohei-row" data-xiaohei="01-language-tax.png">
+<img src="xiaohei-illustrations/01-language-tax.png" alt="只要一个判断，却先生成长文本">
+</div>
+</section>
+<section class="gallery-item">
+<h2>02 · 真实成本</h2>
+<div class="slide-label">小黑 02 · 放在「警惕高频死循环：单次便宜不等于功能便宜」之后 · 文件:02-real-cost.png</div>
+<div class="slide xiaohei-row" data-xiaohei="02-real-cost.png">
+<img src="xiaohei-illustrations/02-real-cost.png" alt="单次调用便宜，频次和善后仍有成本">
+</div>
+</section>
+<section class="gallery-item">
+<h2>03 · 三大核心原语</h2>
+<div class="slide-label">配图 3 · 放在「它的工作原理与三大核心原语」之后</div>
+<div class="diagram-scroll">
+<div class="slide diagram-slide" data-num="3">
+<svg id="jev03-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="03-question-primitives-title 03-question-primitives-desc">
+<title id="03-question-primitives-title">Jev 的三种独立问题原语</title>
+<desc id="03-question-primitives-desc">State 与 Questions 汇入一次 Jev 请求，独立评估 Noul、Choice 和 Score，分别返回是的概率、分类及概率分布、档位概率的加权平均得分，各问题不读取其他问题的答案。</desc>
+<defs>
+<marker id="jev03-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#7A7876"/></marker>
+<marker id="jev03-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#C4956A"/></marker>
+<marker id="jev03-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2C2A28"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="jev03-title" x="40" y="64">同一份上下文，一次请求，三种独立判断</text>
+<g transform="scale(2)">
+<g class="jev03-edge" data-edges="5">
+<path d="M140 88 H208 Q216 88 216 96 V104"/>
+<path d="M140 164 H168"/>
+<path d="M264 128 H280 Q288 128 288 120 V96 Q288 88 296 88 H308"/>
+<path d="M264 152 H308"/>
+<path d="M264 176 H280 Q288 176 288 184 V216 Q288 224 296 224 H308"/>
+</g>
+<g data-node="state">
+<rect class="jev03-input" x="20" y="64" width="120" height="48" rx="4"/>
+<text class="jev03-name" x="32" y="84">State / 上下文</text>
+<text x="32" y="102">文本、对象或数组</text>
+</g>
+<g data-node="questions">
+<rect class="jev03-input" x="20" y="140" width="120" height="48" rx="4"/>
+<text class="jev03-name" x="32" y="160">Questions / 问题</text>
+<text x="32" y="178">每题有唯一 key</text>
+</g>
+<g data-node="jev">
+<rect class="jev03-focal" x="168" y="104" width="96" height="96" rx="4"/>
+<text class="jev03-name" x="216" y="136" text-anchor="middle">Jev</text>
+<text x="216" y="156" text-anchor="middle">单次请求</text>
+<text x="216" y="176" text-anchor="middle">并行评估</text>
+</g>
+<g data-node="noul">
+<rect class="jev03-node" x="308" y="64" width="152" height="48" rx="4"/>
+<text class="jev03-name" x="320" y="84">Noul / 是或否</text>
+<text x="320" y="102">输出“是”的概率 [0, 1]</text>
+</g>
+<g data-node="choice">
+<rect class="jev03-node" x="308" y="128" width="152" height="48" rx="4"/>
+<text class="jev03-name" x="320" y="148">Choice / 固定选项</text>
+<text x="320" y="166">选项、分布、置信度</text>
+</g>
+<g data-node="score">
+<rect class="jev03-node" x="308" y="192" width="152" height="64" rx="4"/>
+<text class="jev03-name" x="320" y="212">Score / 分级评估</text>
+<text x="320" y="230">档位概率的加权平均</text>
+<text x="320" y="248">得分、分布、置信度</text>
+</g>
+<path d="M20 264 H460" fill="none" stroke="#1C1C1E" stroke-opacity="0.16"/>
+<text class="jev03-note" x="20" y="280">问题彼此独立；依赖前题答案时，由代码分步调用。</text>
+</g>
+</svg>
+</div>
+</div>
+</section>
+<section class="gallery-item">
+<h2>04 · 置信度门禁</h2>
+<div class="slide-label">配图 4 · 放在「业务协同：从模糊的 PRD 到清晰的三态分支」之后</div>
+<div class="diagram-scroll">
+<div class="slide diagram-slide" data-num="4">
+<svg id="jev04-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="04-confidence-gate-title 04-confidence-gate-desc">
+<title id="04-confidence-gate-title">按条件顺序设置 Jev 业务门禁</title>
+<desc id="04-confidence-gate-desc">先在 intent.confidence 小于 0.5 时转人工，否则仅当 intent.choice 等于 refund 且置信度严格大于 0.9 时进入退款流程，其余情况请求用户确认，阈值须经私有数据回测且敏感操作另需确定性权限检查或人工复核。</desc>
+<defs>
+<marker id="jev04-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#7A7876"/></marker>
+<marker id="jev04-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#C4956A"/></marker>
+<marker id="jev04-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2C2A28"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="jev04-title" x="40" y="64">置信度门禁：先判断，再进入对应分支</text>
+<g transform="scale(2)">
+<g class="jev04-edge" data-edges="4">
+<path data-from="uncertain" data-to="human" data-branch="yes" d="M256 88 H348"/>
+<path data-from="uncertain" data-to="refund-guard" data-branch="no" d="M148 116 V140"/>
+<path data-from="refund-guard" data-to="confirm" data-branch="no" d="M272 180 H280 Q288 180 288 172 V156 Q288 148 296 148 H348"/>
+<path data-from="refund-guard" data-to="refund" data-branch="yes" d="M148 220 V232 Q148 240 156 240 H312 Q320 240 320 232 V220 Q320 212 328 212 H348"/>
+</g>
+<g data-label="yes-first">
+<rect x="288" y="64" width="24" height="16" fill="#FFFFFF"/>
+<text x="300" y="76" text-anchor="middle">是</text>
+</g>
+<g data-label="no-first">
+<rect x="156" y="120" width="24" height="16" fill="#FFFFFF"/>
+<text x="168" y="132" text-anchor="middle">否</text>
+</g>
+<g data-label="no-second">
+<rect x="308" y="124" width="24" height="16" fill="#FFFFFF"/>
+<text x="320" y="136" text-anchor="middle">否</text>
+</g>
+<g data-label="yes-second">
+<rect x="208" y="216" width="24" height="16" fill="#FFFFFF"/>
+<text x="220" y="228" text-anchor="middle">是</text>
+</g>
+<g data-node="uncertain" data-condition="intent.confidence &lt; 0.5">
+<polygon class="jev04-decision" points="40,88 148,60 256,88 148,116"/>
+<text class="jev04-name" x="148" y="88" text-anchor="middle">intent.confidence</text>
+<text x="148" y="104" text-anchor="middle">&lt; 0.5 ?</text>
+</g>
+<g data-node="human">
+<rect class="jev04-node" x="348" y="64" width="112" height="48" rx="4"/>
+<text class="jev04-name" x="404" y="92" text-anchor="middle">转人工队列</text>
+</g>
+<g data-node="refund-guard" data-condition="intent.choice == refund and intent.confidence &gt; 0.9">
+<polygon class="jev04-focal" points="24,180 148,140 272,180 148,220"/>
+<text class="jev04-name" x="148" y="172" text-anchor="middle">choice == refund</text>
+<text x="148" y="190" text-anchor="middle">且 confidence &gt; 0.9 ?</text>
+</g>
+<g data-node="confirm">
+<rect class="jev04-node" x="348" y="124" width="112" height="48" rx="4"/>
+<text class="jev04-name" x="404" y="144" text-anchor="middle">请求用户确认</text>
+<text x="404" y="162" text-anchor="middle">其余情况 / else</text>
+</g>
+<g data-node="refund">
+<rect class="jev04-node" x="348" y="188" width="112" height="48" rx="4"/>
+<text class="jev04-name" x="404" y="208" text-anchor="middle">进入退款流程</text>
+<text x="404" y="226" text-anchor="middle">不等于直接转账</text>
+</g>
+<path d="M20 248 H460" fill="none" stroke="#1C1C1E" stroke-opacity="0.16"/>
+<text x="20" y="264">阈值仅为示例，需用私有业务数据回测。</text>
+<text x="20" y="280">敏感操作：确定性权限检查或人工复核。</text>
+</g>
+</svg>
+</div>
+</div>
+</section>
+<section class="gallery-item">
+<h2>05 · 类型与语义边界</h2>
+<div class="slide-label">小黑 05 · 放在「Jev 有哪些已知缺陷与技术边界（Jaggedness）？」之后 · 文件:05-type-safety.png</div>
+<div class="slide xiaohei-row" data-xiaohei="05-type-safety.png">
+<img src="xiaohei-illustrations/05-type-safety.png" alt="类型约束不会保证语义正确">
+</div>
+</section>
+<section class="gallery-item">
+<h2>06 · 快慢协同</h2>
+<div class="slide-label">配图 6 · 放在「进阶：超越“便宜分类器”的三大系统级架构范式」之后</div>
+<div class="diagram-scroll">
+<div class="slide diagram-slide" data-num="6">
+<svg id="jev06-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="06-fast-slow-title 06-fast-slow-desc">
+<title id="06-fast-slow-title">Jev 与生成模型的快慢协同</title>
+<desc id="06-fast-slow-desc">输入与上下文先交给只做快速判断的 Jev，业务代码据此选择轻量生成模型或慢推理模型及人工升级，结果转交或校验后才输出，敏感工具由代码的权限校验及沙箱提供硬边界而不是风险评分，本图省略反馈循环。</desc>
+<defs>
+<marker id="jev06-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#7A7876"/></marker>
+<marker id="jev06-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#C4956A"/></marker>
+<marker id="jev06-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2C2A28"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="jev06-title" x="40" y="64">快判断，慢生成：控制权留在业务代码</text>
+<g transform="scale(2)">
+<g class="jev06-edge" data-edges="6">
+<path d="M132 88 H164"/>
+<path d="M284 88 H328"/>
+<path d="M372 128 V132 Q372 140 364 140 H236 Q228 140 228 148 V152"/>
+<path d="M416 128 V152"/>
+<path d="M228 200 V240"/>
+<path d="M416 216 V240"/>
+</g>
+<g data-node="input">
+<rect class="jev06-input" x="20" y="64" width="112" height="48" rx="4"/>
+<text class="jev06-name" x="32" y="84">输入 / 上下文</text>
+<text x="32" y="102">任务所需直接证据</text>
+</g>
+<g data-node="jev">
+<rect class="jev06-focal" x="164" y="64" width="120" height="48" rx="4"/>
+<text class="jev06-name" x="176" y="84">Jev 快判断</text>
+<text x="176" y="102">只判断，不生成</text>
+</g>
+<g data-node="code">
+<rect class="jev06-node" x="328" y="64" width="132" height="64" rx="4"/>
+<text class="jev06-name" x="340" y="84">业务代码路由</text>
+<text x="340" y="102">敏感工具：</text>
+<text x="340" y="120">权限 / 沙箱硬边界</text>
+</g>
+<g data-node="light">
+<rect class="jev06-node" x="164" y="152" width="128" height="48" rx="4"/>
+<text class="jev06-name" x="176" y="172">轻量模型</text>
+<text x="176" y="190">简单任务 / 生成</text>
+</g>
+<g data-node="slow">
+<rect class="jev06-node" x="328" y="152" width="132" height="64" rx="4"/>
+<text class="jev06-name" x="340" y="172">慢推理模型</text>
+<text x="340" y="190">复杂任务 / 生成</text>
+<text x="340" y="208">必要时升级人工</text>
+</g>
+<g data-node="checked-output">
+<rect class="jev06-node" x="164" y="240" width="296" height="32" rx="4"/>
+<text class="jev06-name" x="312" y="260" text-anchor="middle">结果转交 / 校验后输出</text>
+</g>
+<text x="20" y="176">风险分数</text>
+<text x="20" y="196">仅作预警</text>
+<text x="20" y="216">不替代权限</text>
+</g>
+</svg>
+</div>
+</div>
+</section>
+</main>
+</body>
+</html>

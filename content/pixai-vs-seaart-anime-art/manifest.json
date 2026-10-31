@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "created": "2026-08-02T13:14:00+08:00",
+  "source": "source/_posts/pixai-vs-seaart-anime-art.md",
+  "title": "PixAI 与 SeaArt：动漫创作怎么选？",
+  "slug": "pixai-vs-seaart-anime-art",
+  "outputs": {
+    "wechat": {
+      "html": "content/pixai-vs-seaart-anime-art/preview.html",
+      "cover_image": "content/pixai-vs-seaart-anime-art/pixai-vs-seaart-cover.jpg",
+      "title": "PixAI 与 SeaArt：动漫创作怎么选？",
+      "author": "墨筝",
+      "digest": "对比 PixAI 与 SeaArt 的动漫生成、角色一致性、LoRA、图片编辑和视频能力，并用两组相同提示词测试实际效果。",
+      "markdown": "source/_posts/pixai-vs-seaart-anime-art.md"
+    },
+    "xiaohongshu": {
+      "html": "content/pixai-vs-seaart-anime-art/pixai-vs-seaart-小红书版.html",
+      "images_dir": "content/pixai-vs-seaart-anime-art/xhs-images",
+      "copy": {
+        "title": "动漫创作选PixAI还是SeaArt",
+        "body": "同样是动漫 AI 绘图平台，PixAI 和 SeaArt 的方向完全不同。\n\nPixAI 更专注动漫模型、LoRA 和角色一致性，适合原创角色、VTuber 与连续内容。SeaArt 覆盖写实、3D、修图和视频，工具更全。\n\n我把两款平台的模型、工作流和实际生成效果放在一起对比。简单说：动漫是主线，优先 PixAI；动漫只是流程的一部分，SeaArt 更合适。\n\n完整测试与提示词见公众号「墨筝」。\n\n.\n#AI绘画 #动漫创作 #PixAI #SeaArt #LoRA #AI工具 #角色设计 #VTuber #StableDiffusion #二次元",
+        "tags": [
+          "#AI绘画",
+          "#动漫创作",
+          "#PixAI",
+          "#SeaArt",
+          "#LoRA",
+          "#AI工具",
+          "#角色设计",
+          "#VTuber",
+          "#StableDiffusion",
+          "#二次元"
+        ]
+      }
+    }
+  }
+}

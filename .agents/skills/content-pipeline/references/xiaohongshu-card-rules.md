@@ -38,7 +38,7 @@
 - **重点文字（加粗）**：黑色加粗（`#1C1C1E` + `font-weight:700`）。**⛔ 禁止金色 `#C4956A`**——加粗本身已足够强调，金色泛滥会让整页没有视觉重心。
 - **内联代码**：`background: #E8E0D1; color: #1C1C1E`。**⛔ 禁止 `#b8621b` 等非品牌色**。
 - **表格**：转化为结构化键值对排版（小红书不支持表格）。
-- **图片**：原文 `![]()` **必须**独占一整张卡片，完全无 Header/Footer/页码，整张就是一张干净图。
+- **图片**：原文 `![]()` **必须**作为一张独立轮播素材，完全无 Header/Footer/页码、宣纸底、黑色底、边框、圆角、阴影或 3:4 留白。**禁止把原图嵌入 540×720 卡片画布。**预览时按原图宽高比显示；下载时直接将原图转换为 PNG，保持原图宽高比和有效像素尺寸。图片本身就是这一张轮播图的全部内容。
 - **代码块**：
   - ≤ 8 行：整块保留，暗底卡片样式（`background: #1C1C1E; color: #F2EDE3; border-radius: 8px; padding: 14px 16px; font-size: 14px; font-family: 'SF Mono', Menlo, monospace; white-space: pre-wrap; word-break: break-word`）
   - \> 8 行：截断到前 8 行，末尾追加灰色注释行 `// 完整代码见公众号原文「墨筝」`
@@ -107,6 +107,24 @@
 - 图片独占卡片周围不需要衔接句
 - **段落容量下限**：纯文字卡片至少 3 段正文 / 或 1 段 + 3 条列表 / 或 1 个 h2 + 2 段正文
 - **拆页前先做版式合并**：连续短段落可以放在同一张卡片，但必须保持为独立 `<p>` 或独立列表项，不能合并成新句子。
+- **单段短文本卡片必须垂直居中**：当一张卡片确实只承载 1 段短文（无法合并到相邻卡且无其他标题/列表/代码），文字**不得**顶在头部导致下方大片留白。给 `.post-body` 增加 `center-single` 修饰类实现整段垂直居中，字号可提到 20px、行高 1.7、`text-align: center`，让稀疏卡片自身构成"金句留白"式的视觉停顿：
+
+  ```css
+  .post-body.center-single {
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .post-body.center-single p {
+    font-size: 20px; line-height: 1.7; margin-bottom: 0; text-align: center;
+  }
+  ```
+
+  ```html
+  <div class="post-body center-single">
+    <p>原文那句短短的话。</p>
+  </div>
+  ```
+
+  仅用于 1 段短文本；如果卡片还有 h2 / 列表 / 代码 / 多段，仍使用默认顶对齐。
 
 ---
 
@@ -120,6 +138,7 @@
 4. **表格/list 后跟一张短卡** → 将后续原文段落移动到同卡或下一卡，禁止压缩为新段落
 5. **图片独占卡前后留一张短卡** → 文字搬到图片前后的内容卡，保持原文不变
 6. **封底整段加粗** → 检查 `.q` 区域内 `<strong>` 覆盖字数是否超过总字数 30%，是则拆为 `.punch`（仅最后一句 punchline）+ 普通字重文字
+7. **单段短文本卡顶部留白严重** → 若确实无法合并（前后已满 / 前后是图片独占卡），必须给 `.post-body` 加 `center-single` 类使其垂直居中，禁止把文字挤在顶部让下方大面积空白
 
 ---
 
@@ -167,10 +186,12 @@
 8. **`.h3` 标签**：必须 `color: #2C2A28`。搜索 CSS 中 `.post-body .h3`，确认无 `#C4956A`
 9. **`.bullet` 圆点**：必须 `color: #999`。搜索 CSS 中 `.list-item .bullet`，确认无 `#C4956A`
 10. **`code` 内联代码**：必须 `color: #1C1C1E`。搜索 CSS 中 `code {`，确认无 `#b8621b` 等非品牌色
+11. **深色主题覆盖**：封面/封底使用深色背景时，必须在通用正文规则之后显式覆盖 `strong` 等内容文字为浅色（封面至少包含 `.cover .post-body strong { color: #F2EDE3; }`）；禁止让墨色正文规则直接落到墨色背景上
+12. **渲染后对比度审计**：用浏览器 computed style 检查每张卡片的核心文字，以元素自身或最近祖先的**不透明背景**为准计算 WCAG 对比度；`rgb(...)` 视为不透明，`rgba(...)` 仅在 alpha 接近 1 时视为不透明。正文、标题、加粗、链接、列表和代码文字不得低于 `4.5:1`；发现失败项必须修复后重新导出全部图片
 
 ### C. 结构完整性
-11. **封面滑动引导**：第 1 张必须有 `<div class="swipe-hint">← 左滑查看更多</div>`（见 `xiaohongshu-text-card.md` 六B 节）
-12. **页码准确**：每张卡 footer 中 `n / N` 的 N 等于实际总卡片数
+13. **封面滑动引导**：第 1 张必须有 `<div class="swipe-hint">← 左滑查看更多</div>`（见 `xiaohongshu-text-card.md` 六B 节）
+14. **页码准确**：每张卡 footer 中 `n / N` 的 N 等于实际总卡片数
 
 ### D. 仅在全部验证通过后才告知用户"生成完成"
 
@@ -226,7 +247,7 @@
 
 **关键技术要求**：
 
-1. **`flattenAlpha()`**：透明通道展平为底色。图片独占 slide 走 `#1C1C1E` 底色，其余走 `#F2EDE3`
+1. **`flattenAlpha()`**：仅用于文字卡。封面/封底走 `#1C1C1E`，普通文字卡走 `#F2EDE3`。**原文图片不得调用 `flattenAlpha()`，不得补底或扩成 3:4；必须单独走原图画布导出逻辑。**
 2. **跨域图片必须先 inline**：远端图床通常不返回 CORS 头，必须在下载前跑 `inlineRemoteImages()`：
    - 先尝试直连 `fetch(src, { mode: 'cors' })` → blob → dataURL
    - 失败 fallback 到代理：`wsrv.nl` → `images.weserv.nl` → `corsproxy.io`
@@ -235,3 +256,4 @@
 4. **错误暴露**：`try/catch` 包裹，失败时写 `#progress` 并 `alert()`
 5. **`toBlob` 返回值检查**：null 即仍被污染，应抛错
 6. **头像不得在导出克隆中隐藏**：不要在 `html2canvas` 的 `onclone` 中对 `.avatar-wrap img` 执行 `display:none`。若担心污染 canvas，应先把头像转为 data URL 或在导出前等待图片加载完成；导出的 PNG 必须保留真实头像。
+7. **头像回退层不得透出**：真实头像加载成功时必须完整覆盖“墨”字 fallback。fallback 使用 `position:absolute; inset:0; z-index:0`，头像使用 `position:absolute; inset:0; z-index:1; width:100%; height:100%; object-fit:cover`。禁止让 fallback 和 `<img>` 作为普通 flex 子项并排，否则会出现头像中夹带“墨”字。

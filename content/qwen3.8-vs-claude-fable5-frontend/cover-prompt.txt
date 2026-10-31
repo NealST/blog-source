@@ -1,0 +1,13 @@
+Generate one premium editorial cover image for a Chinese technology article comparing two frontier AI models on frontend UI design.
+
+Aspect and crop safety:
+Generate at 16:9, but compose all critical visual elements inside the central horizontal 2.35:1 safe band so the image can be center-cropped into a WeChat cover. No important element near the top or bottom edges.
+
+Visual concept:
+In a matte ink-black studio void, two distinct abstract design machines face the same minimal wireframe browser window in the center. The left machine is precise, compact, ivory-toned, and architectural, assembling dense square interface cards. The right machine is more rounded and expressive, using a restrained warm amber-gold glow to shape spacious interface cards with playful geometry. Both arrive at equally polished frontend layouts from the same skeleton. A very subtle balance motif suggests close competition. The visual should communicate “same layout logic, different design taste” and “high quality at different costs.”
+
+Art direction:
+High-end editorial technology photography mixed with refined 3D product visualization. Matte charcoal-black background (#1C1C1E), warm off-white surfaces (#F2EDE3), a single restrained warm gold accent (#C4956A). Deep but soft cinematic lighting, crisp material edges, premium Apple-event restraint, extensive negative space, elegant symmetry with small intentional differences, sophisticated and credible rather than futuristic fantasy.
+
+Constraints:
+No words, no letters, no numbers, no logos, no brand marks, no human faces, no mascots, no screenshots, no code, no neon cyberpunk, no blue-purple gradient, no busy circuitry, no clutter, no decorative particles, no split-screen border. One coherent scene only. Keep the central browser-window skeleton and both machines legible after a center crop to 2.35:1.

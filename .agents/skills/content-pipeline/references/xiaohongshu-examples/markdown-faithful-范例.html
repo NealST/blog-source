@@ -54,17 +54,17 @@
     color: #333; letter-spacing: 0.3px;
   }
   
-  /* Pure-image slide: no chrome, just an image filling the card */
-  .slide.img-only { background: #1C1C1E; }
+  /* 原文图片本身就是独立轮播素材，不嵌入 540×720 卡片 */
+  .slide.img-only { height: auto; min-height: 0; background: transparent; border-radius: 0; box-shadow: none; }
   .slide.img-only .bg-paper { display: none; }
-  .slide.img-only .content { padding: 0; }
+  .slide.img-only .content { height: auto; padding: 0; }
   .slide.img-only img.main-img {
-    width: 100%; height: 100%; object-fit: contain; display: block;
+    width: 100%; height: auto; object-fit: unset; display: block;
   }
 
   .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
   .avatar-wrap { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #C4956A; overflow: hidden; background: linear-gradient(135deg, #C4956A, #8a6240); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #F2EDE3; font-weight: 700; font-family: "Songti SC", serif; font-size: 18px; }
-  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-wrap img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
   .meta .name { font-size: 15px; font-weight: 700; color: #1C1C1E; }
   .meta .date { font-size: 13px; color: #888; margin-top: 2px; }
 
@@ -260,7 +260,17 @@ async function renderSlide(s) {
   const origRadius = s.style.borderRadius;
   s.style.borderRadius = '0';
   const isImgOnly = s.classList.contains('img-only');
-  const bg = isImgOnly ? '#1C1C1E' : '#F2EDE3';
+  if (isImgOnly) {
+    const img = s.querySelector('img.main-img');
+    if (!img || !img.naturalWidth) throw new Error('原文图片加载失败');
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    s.style.borderRadius = origRadius;
+    return canvas;
+  }
+  const bg = '#F2EDE3';
   const raw = await html2canvas(s, { scale: SCALE, useCORS: true, allowTaint: false, backgroundColor: null, width: 540, height: 720, logging: false });
   s.style.borderRadius = origRadius;
   return flattenAlpha(raw, bg);

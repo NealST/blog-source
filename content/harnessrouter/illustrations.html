@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自由切换 agent harness · 正文配图</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #F6F7F8; color: #1C1C1E; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; letter-spacing: 0; }
+.gallery { max-width: 800px; margin: 0 auto; padding: 24px 16px 40px; }
+.gallery-header h1 { margin: 0 0 12px; font-size: 24px; line-height: 1.4; }
+.gallery-header nav { display: flex; gap: 24px; margin-bottom: 28px; }
+.gallery-header a { color: #2C2A28; text-underline-offset: 4px; }
+.gallery-item { margin: 0 0 32px; min-width: 0; }
+.gallery-item h2 { margin: 0 0 8px; font-size: 18px; line-height: 1.5; }
+.slide-label { margin-bottom: 12px; color: #545454; font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+.diagram-scroll { width: 100%; overflow-x: auto; }
+.slide { background: #FFFFFF; border-radius: 0; }
+.diagram-slide { width: 800px; height: 500px; overflow: hidden; }
+.xiaohei-row { width: 100%; }
+.xiaohei-row img { display: block; width: 100%; height: auto; }
+#uhpobj-svg { width: 800px; height: 500px; display: block; background: #FFFFFF; }
+#uhpobj-svg text { font-family: 'Geist', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #1C1C1E; letter-spacing: 0; }
+#uhpobj-svg .t { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#uhpobj-svg .nm { font-size: 12px; font-weight: 600; }
+#uhpobj-svg .sub { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 8px; fill: #7A7876; }
+#uhpobj-svg .cn { font-size: 8px; font-weight: 500; fill: #7A7876; }
+#uhpobj-svg .zone-nm { font-size: 12px; font-weight: 600; fill: #1C1C1E; }
+#uhpobj-svg .input { fill: rgba(122,120,118,0.10); stroke: #8C8A87; stroke-width: 1; }
+#uhpobj-svg .opt { fill: rgba(28,28,30,0.02); stroke: rgba(28,28,30,0.20); stroke-width: 1; stroke-dasharray: 3,2; }
+#uhpobj-svg .zone { fill: rgba(196,149,106,0.10); stroke: #C4956A; stroke-width: 1; }
+#uhpobj-svg .node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#uhpobj-svg .store { fill: rgba(28,28,30,0.05); stroke: #7A7876; stroke-width: 1; }
+#uhpobj-svg .edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#uhpobj-arrow); }
+#uhpobj-svg .mask { fill: #FFFFFF; }
+#uhpst-svg { width: 800px; height: 500px; display: block; background: #FFFFFF; }
+#uhpst-svg text { font-family: 'Geist', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #1C1C1E; letter-spacing: 0; }
+#uhpst-svg .t { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#uhpst-svg .nm { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; }
+#uhpst-svg .sub { font-size: 8px; font-weight: 500; fill: #7A7876; }
+#uhpst-svg .cn { font-size: 8px; font-weight: 500; fill: #7A7876; }
+#uhpst-svg .run { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#uhpst-svg .term { fill: rgba(28,28,30,0.05); stroke: #7A7876; stroke-width: 1; }
+#uhpst-svg .focal { fill: rgba(196,149,106,0.10); stroke: #C4956A; stroke-width: 1; }
+#uhpst-svg .edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#uhpst-arrow); }
+#uhpst-svg .edge-accent { fill: none; stroke: #C4956A; stroke-width: 1; marker-end: url(#uhpst-arrow-accent); }
+#uhpst-svg .loop { fill: none; stroke: #7A7876; stroke-width: 1; stroke-dasharray: 3,2; }
+#uhpst-svg .mask { fill: #FFFFFF; }
+#uhparc-svg { width: 800px; height: 500px; display: block; background: #FFFFFF; }
+#uhparc-svg text { font-family: 'Geist', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #1C1C1E; letter-spacing: 0; }
+#uhparc-svg .t { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#uhparc-svg .nm { font-size: 12px; font-weight: 600; }
+#uhparc-svg .sub { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 8px; fill: #7A7876; }
+#uhparc-svg .cn { font-size: 8px; font-weight: 500; fill: #7A7876; }
+#uhparc-svg .zone { fill: rgba(28,28,30,0.02); stroke: rgba(28,28,30,0.30); stroke-width: 1; stroke-dasharray: 4,3; }
+#uhparc-svg .zone-lb { font-size: 8px; font-weight: 500; fill: #8C8A87; }
+#uhparc-svg .node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#uhparc-svg .input { fill: rgba(122,120,118,0.10); stroke: #8C8A87; stroke-width: 1; }
+#uhparc-svg .store { fill: rgba(28,28,30,0.05); stroke: #7A7876; stroke-width: 1; }
+#uhparc-svg .ext { fill: rgba(28,28,30,0.03); stroke: rgba(28,28,30,0.30); stroke-width: 1; }
+#uhparc-svg .focal { fill: rgba(196,149,106,0.10); stroke: #C4956A; stroke-width: 1; }
+#uhparc-svg .edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#uhparc-arrow); }
+#uhparc-svg .mask { fill: #FFFFFF; }
+</style>
+</head>
+<body>
+<main class="gallery">
+<header class="gallery-header">
+<h1>自由切换 agent harness · 正文配图</h1>
+<nav aria-label="文章产物"><a href="cover.png">封面</a><a href="preview.html">公众号预览</a></nav>
+</header>
+<section class="gallery-item">
+<h2>1 · UHP 的一次任务落在哪些对象上</h2>
+<div class="slide-label">配图 1 · 放在「2. 协议如何标准化 Harness：UHP 的契约设计」之后</div>
+<div class="diagram-scroll">
+<div class="slide diagram-slide" data-num="1">
+<svg id="uhpobj-svg" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="uhpobj-title uhpobj-desc">
+<title id="uhpobj-title">UHP 的一次任务落在哪些对象上</title>
+<desc id="uhpobj-desc">Harness 配置绑定一个 Session，Environment 与 Memory 以只读方式挂载；Session 内按顺序排列多次 Response，后一次通过 previous_response_id 续接前一次；输入文件进入任务，Agent 生成的产物归集到 Container。</desc>
+<defs>
+<marker id="uhpobj-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#7A7876"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="t" x="40" y="60">一次任务落在哪些对象上</text>
+<g transform="scale(2)">
+
+<path class="edge" d="M120 80 H148"/>
+<path class="edge" d="M120 158 H148"/>
+<path class="edge" d="M252 124 H288"/>
+<path class="edge" d="M206 212 V152"/>
+<path class="edge" d="M338 148 V212"/>
+
+<rect class="mask" x="126" y="62" width="20" height="14" rx="2"/>
+<text class="cn" x="136" y="72" text-anchor="middle">绑定</text>
+<rect class="mask" x="126" y="140" width="20" height="14" rx="2"/>
+<text class="cn" x="136" y="150" text-anchor="middle">挂载</text>
+<rect class="mask" x="262" y="106" width="20" height="14" rx="2"/>
+<text class="cn" x="272" y="116" text-anchor="middle">续接</text>
+<rect class="mask" x="214" y="174" width="20" height="14" rx="2"/>
+<text class="cn" x="224" y="184" text-anchor="middle">输入</text>
+<rect class="mask" x="346" y="174" width="20" height="14" rx="2"/>
+<text class="cn" x="356" y="184" text-anchor="middle">产物</text>
+
+<rect class="zone" x="152" y="40" width="240" height="144" rx="8"/>
+<text class="zone-nm" x="168" y="64">Session 会话</text>
+<text class="sub" x="168" y="80">context + working directory</text>
+
+<rect class="mask" x="16" y="56" width="104" height="48" rx="6"/>
+<rect class="input" x="16" y="56" width="104" height="48" rx="6"/>
+<text class="nm" x="68" y="80" text-anchor="middle">Harness 配置</text>
+<text class="sub" x="68" y="94" text-anchor="middle">chrn_...</text>
+
+<rect class="mask" x="16" y="136" width="104" height="44" rx="6"/>
+<rect class="opt" x="16" y="136" width="104" height="44" rx="6"/>
+<text class="nm" x="68" y="158" text-anchor="middle">Environment</text>
+<text class="sub" x="68" y="172" text-anchor="middle">+ Memory</text>
+
+<rect class="mask" x="160" y="100" width="92" height="48" rx="6"/>
+<rect class="node" x="160" y="100" width="92" height="48" rx="6"/>
+<text class="nm" x="206" y="124" text-anchor="middle">Response</text>
+<text class="sub" x="206" y="138" text-anchor="middle">resp_a1b2c3</text>
+
+<rect class="mask" x="292" y="100" width="92" height="48" rx="6"/>
+<rect class="node" x="292" y="100" width="92" height="48" rx="6"/>
+<text class="nm" x="338" y="124" text-anchor="middle">Response</text>
+<text class="sub" x="338" y="138" text-anchor="middle">resp_d4e5f6</text>
+
+<rect class="mask" x="160" y="212" width="92" height="44" rx="6"/>
+<rect class="store" x="160" y="212" width="92" height="44" rx="6"/>
+<text class="nm" x="206" y="234" text-anchor="middle">File 输入</text>
+<text class="sub" x="206" y="248" text-anchor="middle">file_id</text>
+
+<rect class="mask" x="292" y="212" width="92" height="44" rx="6"/>
+<rect class="store" x="292" y="212" width="92" height="44" rx="6"/>
+<text class="nm" x="338" y="234" text-anchor="middle">Container 产物</text>
+<text class="sub" x="338" y="248" text-anchor="middle">container_id</text>
+
+<line x1="16" y1="272" x2="464" y2="272" stroke="rgba(28,28,30,0.16)" stroke-width="1"/>
+<text class="cn" x="16" y="286">同一个 Session 内的多次 Response 共享上下文与工作目录，后一次用 previous_response_id 续接前一次</text>
+</g>
+</svg>
+</div>
+</div>
+</section>
+<section class="gallery-item">
+<h2>2 · UHP 任务的五种状态</h2>
+<div class="slide-label">配图 2 · 放在「一个最小的协议示例」之后</div>
+<div class="diagram-scroll">
+<div class="slide diagram-slide" data-num="2">
+<svg id="uhpst-svg" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="uhpst-title uhpst-desc">
+<title id="uhpst-title">UHP 任务的五种状态</title>
+<desc id="uhpst-desc">任务提交后进入 in_progress，再按不同条件进入四种终态：正常结束为 completed，达到步数上限或超时为 incomplete，调用方主动取消为 cancelled，执行异常为 failed；客户端断开流式连接不会改变任务状态。</desc>
+<defs>
+<marker id="uhpst-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#7A7876"/></marker>
+<marker id="uhpst-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#C4956A"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="t" x="40" y="60">一次任务的五种状态</text>
+<g transform="scale(2)">
+
+<path class="edge" d="M34 150 H72"/>
+<path class="edge" d="M172 136 H228 Q232 136 232 132 V80 Q232 76 236 76 H300"/>
+<path class="edge" d="M172 146 H240 Q244 146 244 142 V136 Q244 132 248 132 H300"/>
+<path class="edge" d="M172 156 H240 Q244 156 244 160 V184 Q244 188 248 188 H300"/>
+<path class="edge-accent" d="M172 166 H228 Q232 166 232 170 V240 Q232 244 236 244 H300"/>
+<path class="loop" d="M100 126 C100 98 144 98 144 126"/>
+
+<rect class="mask" x="43" y="128" width="20" height="14" rx="2"/>
+<text class="cn" x="53" y="138" text-anchor="middle">提交</text>
+<rect class="mask" x="250" y="54" width="36" height="14" rx="2"/>
+<text class="cn" x="268" y="64" text-anchor="middle">正常完成</text>
+<rect class="mask" x="252" y="110" width="44" height="14" rx="2"/>
+<text class="cn" x="274" y="120" text-anchor="middle">步数或超时</text>
+<rect class="mask" x="256" y="166" width="36" height="14" rx="2"/>
+<text class="cn" x="274" y="176" text-anchor="middle">主动取消</text>
+<rect class="mask" x="250" y="222" width="36" height="14" rx="2"/>
+<text class="cn" x="268" y="232" text-anchor="middle">执行异常</text>
+<rect class="mask" x="78" y="84" width="88" height="14" rx="2"/>
+<text class="cn" x="122" y="94" text-anchor="middle">SSE 断开，状态不变</text>
+
+<circle cx="28" cy="150" r="3" fill="#1C1C1E"/>
+
+<rect class="mask" x="72" y="126" width="100" height="48" rx="8"/>
+<rect class="run" x="72" y="126" width="100" height="48" rx="8"/>
+<text class="nm" x="122" y="148" text-anchor="middle">in_progress</text>
+<text class="sub" x="122" y="162" text-anchor="middle">执行中</text>
+
+<rect class="mask" x="300" y="56" width="108" height="40" rx="8"/>
+<rect class="term" x="300" y="56" width="108" height="40" rx="8"/>
+<text class="nm" x="354" y="74" text-anchor="middle">completed</text>
+<text class="sub" x="354" y="88" text-anchor="middle">执行完毕</text>
+
+<rect class="mask" x="300" y="112" width="108" height="40" rx="8"/>
+<rect class="term" x="300" y="112" width="108" height="40" rx="8"/>
+<text class="nm" x="354" y="130" text-anchor="middle">incomplete</text>
+<text class="sub" x="354" y="144" text-anchor="middle">预算用尽而停止</text>
+
+<rect class="mask" x="300" y="168" width="108" height="40" rx="8"/>
+<rect class="term" x="300" y="168" width="108" height="40" rx="8"/>
+<text class="nm" x="354" y="186" text-anchor="middle">cancelled</text>
+<text class="sub" x="354" y="200" text-anchor="middle">调用方取消</text>
+
+<rect class="mask" x="300" y="224" width="108" height="40" rx="8"/>
+<rect class="focal" x="300" y="224" width="108" height="40" rx="8"/>
+<text class="nm" x="354" y="242" text-anchor="middle">failed</text>
+<text class="sub" x="354" y="256" text-anchor="middle">执行失败</text>
+
+<line x1="16" y1="278" x2="464" y2="278" stroke="rgba(28,28,30,0.16)" stroke-width="1"/>
+<text class="cn" x="16" y="292">任务失败时 HTTP 仍可能返回 200，必须读 Response 的 status，不能只看状态码</text>
+</g>
+</svg>
+</div>
+</div>
+</section>
+<section class="gallery-item">
+<h2>3 · 社区版单容器内的三层结构</h2>
+<div class="slide-label">配图 3 · 放在「1. 单容器内的三层架构」之后</div>
+<div class="diagram-scroll">
+<div class="slide diagram-slide" data-num="3">
+<svg id="uhparc-svg" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="uhparc-title uhparc-desc">
+<title id="uhparc-title">社区版单容器内的三层结构</title>
+<desc id="uhparc-desc">产品后端只访问容器对外发布的 3000 端口；容器内 Console 代理到 Gateway，Gateway 解析协议与配置并读写状态存储，再把任务交给 Runner；Runner 在会话工作目录中启动 Harness CLI，由 CLI 调用模型服务。</desc>
+<defs>
+<marker id="uhparc-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#7A7876"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="t" x="40" y="60">社区版单容器内的三层结构</text>
+<g transform="scale(2)">
+
+<rect class="zone" x="120" y="32" width="252" height="248" rx="8"/>
+<text class="zone-lb" x="136" y="48">容器边界 · 仅 3000 端口对外发布</text>
+
+<path class="edge" d="M96 76 H144"/>
+<path class="edge" d="M194 96 V112"/>
+<path class="edge" d="M194 156 V172"/>
+<path class="edge" d="M194 216 V232"/>
+<path class="edge" d="M244 136 H268"/>
+<path class="edge" d="M244 196 H268"/>
+<path class="edge" d="M244 254 H392"/>
+
+<rect class="mask" x="106" y="54" width="28" height="14" rx="2"/>
+<text class="sub" x="120" y="64" text-anchor="middle">:3000</text>
+<rect class="mask" x="202" y="96" width="36" height="14" rx="2"/>
+<text class="cn" x="220" y="106" text-anchor="middle">同源代理</text>
+<rect class="mask" x="202" y="156" width="36" height="14" rx="2"/>
+<text class="cn" x="220" y="166" text-anchor="middle">内部请求</text>
+<rect class="mask" x="202" y="216" width="36" height="14" rx="2"/>
+<text class="cn" x="220" y="226" text-anchor="middle">启动进程</text>
+<rect class="mask" x="246" y="114" width="20" height="14" rx="2"/>
+<text class="cn" x="256" y="124" text-anchor="middle">读写</text>
+<rect class="mask" x="246" y="174" width="20" height="14" rx="2"/>
+<text class="cn" x="256" y="184" text-anchor="middle">读写</text>
+<rect class="mask" x="300" y="232" width="36" height="14" rx="2"/>
+<text class="cn" x="318" y="242" text-anchor="middle">模型调用</text>
+
+<rect class="mask" x="12" y="56" width="84" height="40" rx="6"/>
+<rect class="input" x="12" y="56" width="84" height="40" rx="6"/>
+<text class="nm" x="54" y="74" text-anchor="middle">产品后端</text>
+<text class="sub" x="54" y="88" text-anchor="middle">UHP client</text>
+
+<rect class="mask" x="144" y="56" width="100" height="40" rx="6"/>
+<rect class="node" x="144" y="56" width="100" height="40" rx="6"/>
+<text class="nm" x="194" y="74" text-anchor="middle">控制台</text>
+<text class="sub" x="194" y="88" text-anchor="middle">Console :3000</text>
+
+<rect class="mask" x="144" y="116" width="100" height="40" rx="6"/>
+<rect class="focal" x="144" y="116" width="100" height="40" rx="6"/>
+<text class="nm" x="194" y="134" text-anchor="middle">网关层</text>
+<text class="sub" x="194" y="148" text-anchor="middle">Gateway :8080</text>
+
+<rect class="mask" x="144" y="176" width="100" height="40" rx="6"/>
+<rect class="node" x="144" y="176" width="100" height="40" rx="6"/>
+<text class="nm" x="194" y="194" text-anchor="middle">执行层</text>
+<text class="sub" x="194" y="208" text-anchor="middle">Runner :8081</text>
+
+<rect class="mask" x="144" y="236" width="100" height="36" rx="6"/>
+<rect class="node" x="144" y="236" width="100" height="36" rx="6"/>
+<text class="nm" x="194" y="252" text-anchor="middle">运行时</text>
+<text class="sub" x="194" y="265" text-anchor="middle">Harness CLI</text>
+
+<rect class="mask" x="268" y="116" width="88" height="40" rx="6"/>
+<rect class="store" x="268" y="116" width="88" height="40" rx="6"/>
+<text class="nm" x="312" y="134" text-anchor="middle">状态与密钥</text>
+<text class="sub" x="312" y="148" text-anchor="middle">SQLite / Secret</text>
+
+<rect class="mask" x="268" y="176" width="88" height="40" rx="6"/>
+<rect class="store" x="268" y="176" width="88" height="40" rx="6"/>
+<text class="nm" x="312" y="194" text-anchor="middle">会话目录</text>
+<text class="sub" x="312" y="208" text-anchor="middle">workspace</text>
+
+<rect class="mask" x="392" y="236" width="76" height="36" rx="6"/>
+<rect class="ext" x="392" y="236" width="76" height="36" rx="6"/>
+<text class="nm" x="430" y="252" text-anchor="middle">模型服务</text>
+<text class="sub" x="430" y="265" text-anchor="middle">Provider</text>
+</g>
+</svg>
+</div>
+</div>
+</section>
+<section class="gallery-item">
+<h2>4 · 用真实任务做上线前验证</h2>
+<div class="slide-label">小黑 04 · 放在「5. 正式接入前的小范围验证」之后 · 文件:02-leak-test.png</div>
+<div class="slide xiaohei-row" data-xiaohei="02-leak-test.png">
+<img src="xiaohei-illustrations/02-leak-test.png" alt="只验证一次回复不够，续接、产物与取消环节才是常见失败点">
+</div>
+</section>
+<section class="gallery-item">
+<h2>5 · 只给够用的凭据</h2>
+<div class="slide-label">小黑 05 · 放在「4. 社区版在隔离强度与资源容量上的明确边界」之后 · 文件:03-minimal-key.png</div>
+<div class="slide xiaohei-row" data-xiaohei="03-minimal-key.png">
+<img src="xiaohei-illustrations/03-minimal-key.png" alt="Agent 能执行命令，注入的凭据必须遵循最小权限原则">
+</div>
+</section>
+</main>
+</body>
+</html>

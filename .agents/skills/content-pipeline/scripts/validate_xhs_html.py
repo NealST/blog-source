@@ -74,9 +74,10 @@ INLINE_RULES = [
 def check_swipe_hint(content: str) -> list[str]:
     """第 1 张封面卡必须有滑动引导。"""
     errors = []
-    slides = re.findall(r'<div\s+class="slide"[^>]*id="slide-1"[\s\S]*?(?=<div\s+class="slide"|$)', content)
+    slide_tag = r'<div\s+class="[^"]*\bslide\b[^"]*"'
+    slides = re.findall(rf'{slide_tag}[^>]*id="slide-1"[\s\S]*?(?={slide_tag}|$)', content)
     if not slides:
-        slides = re.findall(r'<div\s+class="slide"[\s\S]*?(?=<div\s+class="slide"|$)', content)
+        slides = re.findall(rf'{slide_tag}[\s\S]*?(?={slide_tag}|$)', content)
     if slides:
         first_slide = slides[0]
         if 'swipe-hint' not in first_slide and '左滑' not in first_slide:
@@ -87,7 +88,8 @@ def check_swipe_hint(content: str) -> list[str]:
 def check_white_background(content: str) -> list[str]:
     """内容页禁止使用纯白 #FFFFFF 背景。"""
     errors = []
-    slides = re.findall(r'<div\s+class="slide"[^>]*>([\s\S]*?)(?=<div\s+class="slide"|$)', content)
+    slide_tag = r'<div\s+class="[^"]*\bslide\b[^"]*"'
+    slides = re.findall(rf'{slide_tag}[^>]*>[\s\S]*?(?={slide_tag}|$)', content)
     for i, slide_html in enumerate(slides):
         slide_num = i + 1
         if slide_num == 1 or slide_num == len(slides):
@@ -102,7 +104,7 @@ def check_white_background(content: str) -> list[str]:
 def check_page_numbers(content: str) -> list[str]:
     """页码 n/N 中的 N 必须等于实际 slide 数。"""
     errors = []
-    slide_count = len(re.findall(r'<div\s+class="slide"', content))
+    slide_count = len(re.findall(r'<div\s+class="[^"]*\bslide\b[^"]*"', content))
     if slide_count == 0:
         return errors
     page_totals = re.findall(r'class="page">[^<]*?(\d+)\s*/\s*(\d+)', content)
@@ -121,10 +123,60 @@ def check_bg_paper_format(content: str) -> list[str]:
     return errors
 
 
+def check_image_only_export(content: str) -> list[str]:
+    """原文图片必须保持自身宽高比，不能嵌入固定 3:4 卡片。"""
+    errors = []
+    if 'img-only' not in content:
+        return errors
+    if not re.search(
+        r'\.slide\.img-only[^\{]*\{[^}]*height\s*:\s*auto',
+        content,
+        re.IGNORECASE,
+    ):
+        errors.append('  [图片] .img-only 未设置 height:auto，原图仍可能被嵌入 540×720 卡片')
+    uses_contain = re.search(
+        r'\.slide\.img-only\s+img\.main-img[^\{]*\{[^}]*object-fit\s*:\s*contain',
+        content,
+        re.IGNORECASE,
+    )
+    overrides_contain = re.search(
+        r'\.slide\.img-only\s+img\.main-img[^\{]*\{[^}]*object-fit\s*:\s*unset',
+        content,
+        re.IGNORECASE,
+    )
+    if uses_contain and not overrides_contain:
+        errors.append('  [图片] 原图使用 object-fit:contain，会产生卡片留白；应按原图宽高比显示')
+    if 'naturalWidth' not in content or 'naturalHeight' not in content:
+        errors.append('  [图片] 下载逻辑未使用 naturalWidth × naturalHeight，无法保证原图比例独立导出')
+    return errors
+
+
+def check_avatar_fallback_coverage(content: str) -> list[str]:
+    """头像成功加载后必须完整覆盖“墨”字回退层。"""
+    errors = []
+    has_fallback = 'avatar-fallback' in content or re.search(r'<span[^>]*>\s*墨\s*</span>', content)
+    if not has_fallback:
+        return errors
+    fallback_absolute = re.search(
+        r'(?:\.avatar-wrap\s*>?\s*span|\.avatar-wrap\s+\.avatar-fallback)[^{]*\{[^}]*position\s*:\s*absolute',
+        content,
+        re.IGNORECASE,
+    )
+    avatar_absolute = re.search(
+        r'(?:\.avatar-wrap\s*>?\s*img|\.avatar-wrap\s+\.avatar)[^{]*\{[^}]*position\s*:\s*absolute',
+        content,
+        re.IGNORECASE,
+    )
+    if not fallback_absolute or not avatar_absolute:
+        errors.append('  [头像] fallback 与真实头像未分层绝对定位，可能在头像中露出“墨”字')
+    return errors
+
+
 def check_header_footer(content: str) -> list[str]:
     """每张内容卡都应有 header 和 footer。"""
     errors = []
-    slides = re.findall(r'<div\s+class="slide"[^>]*>([\s\S]*?)(?=<div\s+class="slide"|$)', content)
+    slide_tag = r'<div\s+class="[^"]*\bslide\b[^"]*"'
+    slides = re.findall(rf'{slide_tag}[^>]*>[\s\S]*?(?={slide_tag}|$)', content)
     for i, slide_html in enumerate(slides):
         slide_num = i + 1
         is_img_only = 'img-only' in slide_html
@@ -162,6 +214,8 @@ def validate(filepath: str) -> list[str]:
     errors.extend(check_white_background(content))
     errors.extend(check_page_numbers(content))
     errors.extend(check_bg_paper_format(content))
+    errors.extend(check_image_only_export(content))
+    errors.extend(check_avatar_fallback_coverage(content))
     errors.extend(check_header_footer(content))
 
     return errors

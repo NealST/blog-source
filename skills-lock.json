@@ -19,6 +19,12 @@
       "skillPath": "skills/css-animations/SKILL.md",
       "computedHash": "df468749b06a8ec7369cfea69bf71bf65e46cfc376e837e439e26f4230852c6b"
     },
+    "diagram-design": {
+      "source": "cathrynlavery/diagram-design",
+      "sourceType": "github",
+      "skillPath": "skills/diagram-design/SKILL.md",
+      "computedHash": "f89f11b1cc3acbb7ac40c8937aff53496f1abaa37f74973174867ff26f4623db"
+    },
     "gsap": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

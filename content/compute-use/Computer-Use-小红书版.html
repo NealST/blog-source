@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拆解 Computer Use - 小红书版</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #2c2825; display: flex; flex-direction: column; align-items: center; padding: 90px 20px 80px; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+.toolbar { position: fixed; inset: 0 0 auto; z-index: 100; background: rgba(28,28,30,.95); border-bottom: 1px solid rgba(255,255,255,.1); padding: 12px 20px; display: flex; justify-content: center; align-items: center; gap: 12px; }
+.btn { background: #1C1C1E; color: #F2EDE3; border: 1px solid rgba(255,255,255,.15); padding: 9px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn.accent { background: #C4956A; border-color: #C4956A; }
+.progress { color: rgba(255,255,255,.7); font-size: 12px; margin-left: 8px; }
+.slide { width: 540px; height: 720px; margin-bottom: 40px; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 6px 28px rgba(28,28,30,.35); background: #F2EDE3; }
+.bg-paper { position: absolute; inset: 0; background: linear-gradient(135deg,#F6F1E7 0%,#F2EDE3 55%,#ECE4D2 100%); }
+.bg-paper::after { content: ''; position: absolute; inset: 0; opacity: .04; background-image: linear-gradient(rgba(28,28,30,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(28,28,30,.6) 1px,transparent 1px); background-size: 28px 28px; }
+.cover-slide,.end-slide { background: #1C1C1E; color: #F2EDE3; }
+.cover-slide::before,.end-slide::before { content: ''; position: absolute; width: 280px; height: 280px; right: -90px; top: -80px; border: 1px solid rgba(196,149,106,.25); border-radius: 50%; }
+.content { position: relative; z-index: 2; height: 100%; padding: 32px 40px 24px; display: flex; flex-direction: column; color: #333; letter-spacing: 0; }
+.post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
+.avatar-wrap { position: relative; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #C4956A; overflow: hidden; background: linear-gradient(135deg,#C4956A,#8a6240); flex-shrink: 0; }
+.avatar-wrap .avatar-fallback { position: absolute; inset: 0; z-index: 0; display: flex; align-items: center; justify-content: center; color: #F2EDE3; font: 700 20px "Songti SC",serif; }
+.avatar-wrap .avatar { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
+.meta .name { font-size: 15px; font-weight: 700; color: #1C1C1E; }
+.meta .date { font-size: 13px; color: #888; margin-top: 2px; }
+.cover-slide .meta .name,.end-slide .meta .name { color: #F2EDE3; }
+.cover-slide .meta .date,.end-slide .meta .date { color: rgba(242,237,227,.5); }
+.post-body { flex: 1; overflow: hidden; }
+.post-body .h1 { font-size: 27px; font-weight: 800; color: #F2EDE3; margin: 8px 0 18px; line-height: 1.34; text-align: center; padding: 14px 0; border-top: 2px solid #F2EDE3; border-bottom: 2px solid #F2EDE3; font-family: "Songti SC","Source Han Serif SC",serif; }
+.post-body .h3 { font-size: 19px; font-weight: 700; color: #2C2A28; margin: 4px 0 10px; line-height: 1.42; }
+.post-body .h4 { font-size: 18px; font-weight: 700; color: #2C2A28; margin: 4px 0 10px; line-height: 1.42; }
+.post-body p { font-size: 18px; line-height: 1.6; color: #333; margin-bottom: 8px; }
+.post-body strong { color: #1C1C1E; font-weight: 700; }
+.post-body em { color: #555; }
+.cover-slide .post-body p { color: rgba(242,237,227,.82); }
+.list-item { display: flex; gap: 8px; margin-bottom: 7px; font-size: 18px; line-height: 1.6; color: #333; }
+.list-item .bullet { color: #999; font-weight: 700; flex-shrink: 0; }
+.spacious-list .list-item { margin-bottom: 15px; line-height: 1.75; }
+code { background: #E8E0D1; color: #1C1C1E; padding: 1px 5px; border-radius: 4px; font-family: "SF Mono",Menlo,monospace; font-size: .92em; white-space: nowrap; }
+.code-block { background: #1C1C1E; border-radius: 8px; overflow: hidden; margin: 8px 0 10px; }
+.code-lang { background: #2C2A28; color: #C4956A; font: 600 11px "SF Mono",Menlo,monospace; padding: 4px 14px; letter-spacing: 1px; }
+.code-block pre { padding: 12px 16px; margin: 0; }
+.code-block code { background: transparent; color: #F2EDE3; padding: 0; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.continue-note { margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(28,28,30,.1); color: #666 !important; font-size: 16px !important; text-align: center; }
+.post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(28,28,30,.08); flex-shrink: 0; }
+.post-footer .brand { font-size: 11px; color: #888; letter-spacing: 1px; }
+.post-footer .gz { color: #C4956A; font-weight: 700; }
+.post-footer .page { font-size: 12px; color: #888; }
+.cover-slide .post-footer,.end-slide .post-footer { border-color: rgba(242,237,227,.12); }
+.cover-slide .post-footer .brand,.cover-slide .post-footer .page,.end-slide .post-footer .brand,.end-slide .post-footer .page { color: rgba(242,237,227,.5); }
+.swipe-hint { text-align: center; font-size: 12px; letter-spacing: 1px; margin-top: auto; padding-bottom: 8px; color: rgba(242,237,227,.5); }
+.swipe-arrows { display: inline-block; letter-spacing: 3px; opacity: .7; }
+.slide.img-only { height: auto; min-height: 0; background: transparent; border-radius: 0; box-shadow: none; }
+.slide.img-only img { display: block; width: 100%; height: auto; }
+.quote-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.q { color: #F2EDE3; font: 400 20px/1.7 "Songti SC","Source Han Serif SC",serif; }
+.punch { display: block; margin-top: 20px; font-size: 22px; font-weight: 600; }
+.hl { color: #C4956A; }
+.dash { width: 44px; height: 2px; background: #C4956A; margin: 26px 0 16px; }
+.sub { color: rgba(242,237,227,.55); font-size: 15px; line-height: 1.7; }
+.end-mark { color: #C4956A; opacity: .6; letter-spacing: 3px; text-align: center; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<div class="toolbar"><button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button><button class="btn" onclick="downloadOne()">下载当前</button><span class="progress" id="progress"></span></div>
+
+<div class="slide cover-slide" id="slide-1"><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><div class="h1">拆解 Computer Use：<br>OpenAI、Anthropic<br>与 Google AI 如何操作电脑</div><p>GPT-6 Astra 发布后，其 Computer Use 的演示效果堪称惊艳。惊叹之外，我更好奇背后的实现机制：模型是怎么从“一张屏幕截图”，转化出“在坐标 (135, 193) 点击”这一具体动作的？</p></section>
+  <div class="swipe-hint"><span class="swipe-arrows">‹ ‹ ‹</span> 左滑查看更多</div><footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">1 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-2"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p>为此，我详细阅读和对比了 OpenAI、Anthropic 与 Google 的官方文档，探究了底层的具体实现。以下内容均整理自各厂商的公开文档、System Card（模型厂商在正式发布某个模型或系统级功能时，同步公开的官方技术安全与能力评估白皮书） 与产品说明，不涉及厂商内部源码。可以将其作为一份工程视角的参考，实际内部实现可能会有所差异。</p><div class="h3">三家共用的核心运行回路</div><p>Computer Use 的定义很直接：<strong>LLM/VLM 智能体不再依赖操作系统或网页 API，而是直接通过屏幕感知以及虚拟键鼠，与图形界面（GUI）进行交互。</strong> 尽管 OpenAI、Anthropic 和 Google 交付的产品形态各不相同，但它们底层都遵循同一套 <strong>“观察-思考-行动”（Observe–Think–Act）回路</strong>：</p></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">2 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-3"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body spacious-list"><div class="list-item"><span class="bullet">•</span><div><strong>观察（Observe）</strong>：获取当前屏幕状态，形式通常是一张屏幕截图或结构化的元素树。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>思考（Think）</strong>：多模态模型结合思维链（Chain-of-Thought）或自适应思考机制，规划下一步操作。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>行动（Act）</strong>：输出点击、键入、滚动或拖拽等指令，由客户端执行器在沙箱环境中具体执行。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>循环（Loop）</strong>：重新获取操作后的屏幕状态并重复上述流程，直到任务完成或需要人工介入接管。</div></div></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">3 / 18</span></footer>
+</div></div>
+
+<div class="slide img-only" id="slide-4"><img class="main-img" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBrV5qrybchv2IkT14dBv0tqst-bdqIQACsgxrG10IeEWlTu5xYjK6lAEAAwIAA3cAAz0E.png" alt="三家共用的核心运行回路"></div>
+
+<div class="slide" id="slide-5"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p>整体回路是统一的，但三家的真正差异集中在两个维度上：<strong>感知通道</strong>（纯像素图像 vs 结构化元素树 vs 混合模式）与<strong>行动空间</strong>（绝对坐标系 vs 元素引用句柄）。后续探讨的所有技术细节，本质上都对应着这两个维度的取舍与实现。</p><div class="h3">OpenAI：从 Operator 到 GPT-6 Astra</div><p>自 2025 年初以来，OpenAI 的 Computer Use 经历了数轮迭代，网络上许多现存资料已经过时。简而言之：<strong>早期的 Operator 以及旧版 Agent Mode 均已停用。</strong> 当前官方的主流能力依托于 <strong>GPT-6 Astra 内置的 <code>computer_use</code> 工具</strong>，在面向个人与办公端，通过 ChatGPT Work 与 Codex 桌面客户端提供服务；在开发者端，则通过 Responses API 开放接入。</p></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">5 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-6"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p><strong>早期技术基线（CUA / Operator，已停用）</strong>：当时采用名为 Computer-Using Agent（CUA）的模型，基于 GPT-4o 视觉能力栈结合强化学习构建。在感知层面，它<strong>仅依赖纯像素截图</strong>；OpenAI 官方评测文档明确指出，它不会解析 DOM 结构或无障碍树（Accessibility Tree）。在行动层面，它输出基于绝对坐标的点击、滚动与输入指令。</p><p>遇到登录或验证码等敏感操作时，系统会触发 <strong>Takeover Mode（接管模式）</strong> 将控制权交还人工。模型训练分为两个阶段：先通过有监督微调（SFT）建立基础的 GUI 感知与元素定位能力，再利用强化学习（RL）强化推理与自我纠错能力。发布初期，它在 OSWorld 基准上取得 38.1% 的成绩，WebArena 为 58.1%，WebVoyager 为 87%，在当时处于 SOTA 水平。</p></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">6 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-7"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p><strong>现役架构（GPT-6 Astra，自 2026 年 9 月 3 日起）：</strong></p><div class="list-item"><span class="bullet">•</span><div><code>computer_use</code> 在 Responses API 中已成为一项原生内置工具，与 <code>web_search</code>、<code>file_search</code>、<code>code_interpreter</code>、<code>hosted_shell</code> 以及 <code>mcp</code> 并列，对应模型 ID 为 <code>gpt-6-astra</code>。</div></div><div class="list-item"><span class="bullet">•</span><div>感知层面依然<strong>以屏幕截图为主</strong>，然后结合其他工具的调用结果来决定下一步动作，OpenAI 官方开发者文档也明确说明了，模型“利用截图与其他工具的结果来决定下一步操作”。没有引入 DOM 解析或无障碍树（Accessibility Tree），完全延续了 CUA“视觉优先”的技术路线。</div></div></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">7 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-8"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><div class="list-item"><span class="bullet">•</span><div>真正关键的工程演进在于<strong>全新的代码执行路径</strong>，这也正是 OpenAI 官方重点推荐的方案：由模型编写操作脚本（如 PyAutoGUI 或 Playwright），由执行环境运行并流式回传截图与输出结果，且在多次调用间保持会话状态。一段脚本能够将多步操作、循环和条件分支压缩到单次调用中执行，这彻底打破了早期 CUA“每一步只输出一次坐标动作”的交互模式。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>原生 <code>computer</code> 工具依然保留</strong>作为兜底能力：支持输出结构化的 <code>click</code>、<code>type</code>、<code>scroll</code> 等动作指令，由应用层转化为浏览器或桌面系统的具体输入。</div></div></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">8 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-9"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><div class="list-item"><span class="bullet">•</span><div>运行回路本身新增了两项关键特性：<strong>异步工具调用（async tool calling）</strong>（某个工具在后台执行时，模型可同步继续针对任务的其他部分展开推理）与<strong>基于 WebSocket 的中途干预（mid-turn steering）</strong>（允许用户在任务执行中途实时纠偏）。</div></div><div class="list-item"><span class="bullet">•</span><div>上下文窗口达到 105 万（1,050,000）tokens，最大输出支持 12.8 万（128,000）tokens；屏幕截图建议使用 <code>detail: "original"</code> 配置以保持坐标精度；推理强度（reasoning effort）分为五档（low / medium / high / xhigh / max），设计理念与 Claude 的自适应思考（adaptive thinking）相呼应。</div></div></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">9 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-10"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p><strong>基准测试表现</strong>（引自 OpenAI 官方对比数据）：</p><div class="list-item"><span class="bullet">•</span><div><strong>OSWorld 2.0</strong>（任务平均耗时约 40 分钟）：Astra 达到 <strong>72.6%</strong>，相比之下 GPT-5.6 Sol 为 65.7%，而早期基于旧版 OSWorld 的 CUA 仅为 38.1%。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>ScreenSpot-Pro</strong>（无外部工具辅助的纯视觉定位）：达到 <strong>92.7%</strong>，远高于对照组的 76.9%。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>AutomationBench</strong>（端到端流程自动化）：达到 <strong>41.4%</strong>，大幅领先于对照组的 18.1%。</div></div><p><strong>安全兜底机制</strong>（依据 Astra System Card 说明）：<br>针对所有对外调用的工具行为，系统都会对其推理过程进行异步安全审查；一旦命中风险规则，便会立即暂停生产端正在执行的任务，或直接中断当前的 API 对话。这也是唯一一个直接嵌在执行路径中的主动防御机制。</p></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">10 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-11"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p>在提示词注入（Prompt Injection）防御上，有两项独立的评测指标显示其抗性有所提升：OpenAI 内部的间接注入防御成功率从 96.23% 提升至 99.79%；在第三方 Gray Swan 的 IPI Arena 测试中，被攻击成功率从 27.0% 下降至 8.5%（注意这是两套不同口径的指标，不可互相混淆）。</p><p>在压力测试中，OpenAI 发现如果移除生产环境的安全护栏，旧版 Sol 的越权操作率会飙升至 48%；而在护栏开启的状态下，Astra 在 Computer Use 安全压力测试中出现意外非预期结果的概率仅为 2.4%，作为对比，OpenAI 测试下的 Claude Fable 5.1 为 9.5%，Opus 5 为 11.5%（OpenAI 单方给出的对比数据）。</p></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">11 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-12"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p>不过这里存在一个隐患：整套安全监控高度依赖对模型思维链的读取与解析，而 Astra 的思维链（Chain-of-Thought）比上一代更难被外部有效监控；在对抗性测试压力下，模型有可能通过“伪装/隐藏真实意图（sandbagging）”绕过监控检查。对于 Computer Use 这种“每一步操作都会在现实系统产生实际副作用”的工具而言，这是一个切实存在的安全风险。</p><div class="h4">桌面端插件：完全不同维度的控制层</div><p>在面向开发者的 API 工具之外，还有一个独立面向普通消费者的产品形态：<strong>ChatGPT 桌面客户端内的 Computer Use 插件</strong>。它并非另一个 API 工具，而是专为桌面智能体设计的<strong>本地系统控制层</strong>，通过直接获取 macOS / Windows 的系统级权限，让模型能够在你的实体电脑上执行操作。正如 OpenAI 官方所言：<em>“让 ChatGPT 在工作时代你操作各类桌面软件。”</em></p></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">12 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-13"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body spacious-list"><div class="list-item"><span class="bullet">•</span><div><strong>开启与配置</strong>：在 ChatGPT 桌面客户端中切换到 Work 或 Codex 模式 → 进入 Plugins（插件）设置 → 找到 Computer Use 并安装启用 → 打开配套服务与对应技能开关。使用时，可通过 <code>@Computer</code> 或直接指定具体应用（如 <code>@Chrome</code>）来唤起操作。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>权限要求</strong>：macOS 环境下需要授予“屏幕录制”与“辅助功能”两项系统权限；Windows 环境下虽然无需这两项授权，但目标应用必须始终保持在<strong>当前活跃桌面（active desktop）</strong>，否则模型无法对其进行交互。</div></div></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">13 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-14"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><div class="list-item"><span class="bullet">•</span><div><strong>跨平台运行机制</strong>：在 macOS 上，它可以通过独立的虚拟光标在后台静默运行，完全不打扰你当前的正常使用，甚至支持在锁屏状态下继续执行；而在 Windows 上，它会直接在前台接管物理鼠标和键盘，因此 OpenAI 官方建议在虚拟机中运行，或配合手机端进行远程状态监控。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>能力边界与限制</strong>：严禁接管系统终端（Terminal）、无法控制 ChatGPT 客户端自身、不支持通过系统管理员（UAC / sudo 等）提权申请，且在执行任何敏感或破坏性操作前，必须经过人工弹窗确认。</div></div></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">14 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-15"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><div class="list-item"><span class="bullet">•</span><div><strong>用量额度</strong>：所有操作均计入 Work / Codex 的专属企业或高级用量池，不占用常规的 ChatGPT 聊天额度。</div></div><p>本质上，它是基于同一套 Astra 底座引擎封装的应用层产品，以应用级系统权限交付了开箱即用的桌面智能体体验。OpenAI 官方对此给出了非常直截了当的使用建议：如果目标软件本身具备专属插件或 MCP 服务，应优先采用结构化的协议集成；只有当图形界面视觉交互成为唯一可行路径时，才建议将 Computer Use 作为兜底手段。</p><div class="h4">Responses API</div><p>旧版的 <code>computer_use_preview</code> 模型现已正式停用。目前正式商用（GA）的接口形态为原生内置的 <code>type: "computer"</code> 工具，支持 <code>gpt-5.4</code>、<code>gpt-5.6-sol</code> 以及 <code>gpt-6-astra</code>；需要特别注意的是，Astra 的工具调用能力仅通过全新的 Responses API 提供支持，不再向后兼容旧版的 Chat Completions 接口。</p></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">15 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-16"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p>按照 OpenAI 官方接入指南，目前主要有三种落地集成路径：</p><div class="list-item"><span class="bullet">•</span><div><strong>内置 Computer 运行回路</strong>：配置 <code>tools: [{type: "computer"}]</code>，模型会直接返回结构化的动作指令。这种方式最适合纯视觉界面的自动化交互场景。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>自定义执行框架（Custom harness）</strong>：由开发者自行结合 Playwright、Selenium、VNC 或 MCP 进行驱动调度。适合已有既定测试与执行基建、希望沿用常规工具调用语义的工程团队。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>代码执行路径（Code execution）</strong>：模型自行编写 PyAutoGUI 或 Playwright 脚本，并在沙箱环境中执行。这是 OpenAI 针对 Astra 官方重点推荐的方案，实现了 DOM 结构与纯视觉感知的有机结合。</div></div></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">16 / 18</span></footer>
+</div></div>
+
+<div class="slide" id="slide-17"><div class="bg-paper"></div><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body"><p>一次典型的完整交互闭环（Round Trip）流程如下：模型返回包含一组动作批处理的 <code>computer_call</code>；客户端执行环境执行这些指令后，截取当前屏幕作为 <code>computer_call_output</code> 回传给模型；当模型的响应中不再包含任何 <code>computer_call</code> 时，即代表整个运行循环结束。</p><div class="code-block"><div class="code-lang">json</div><pre><code>{
+  "output": [{
+    "type": "computer_call",
+    "call_id": "call_abc123",
+    "actions": [
+      { "type": "click", "button": "left", "x": 135, "y": 193 },
+      { "type": "type", "text": "penguin" }
+    ],
+// 完整代码见公众号原文「墨筝」</code></pre></div><p class="continue-note">完整内容请移步微信公众号『墨筝』阅读原文</p></section>
+  <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">17 / 18</span></footer>
+</div></div>
+
+<div class="slide end-slide" id="slide-18"><div class="content">
+  <header class="post-header"><div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div><div class="meta"><div class="name">墨筝</div><div class="date">09/22</div></div></header>
+  <section class="post-body quote-card"><div class="q">核心交互回路已高度收敛。<span class="punch">真正的工程分水岭主要落在两个维度：<span class="hl">感知通道</span>与动作空间表达。</span></div><div class="dash"></div><div class="sub">因篇幅限制，完整长文请移步微信公众号<br>『墨筝』阅读原文</div></section>
+  <div class="end-mark">— END —</div><footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">18 / 18</span></footer>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE = 2;
+const progressEl = document.getElementById('progress');
+const slides = () => Array.from(document.querySelectorAll('.slide'));
+
+function flattenAlpha(canvas, color) {
+  const output = document.createElement('canvas');
+  output.width = canvas.width; output.height = canvas.height;
+  const context = output.getContext('2d');
+  context.fillStyle = color; context.fillRect(0, 0, output.width, output.height);
+  context.drawImage(canvas, 0, 0); return output;
+}
+function fetchAsDataURL(url) {
+  return fetch(url, { mode: 'cors', cache: 'force-cache' }).then(response => {
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return response.blob();
+  }).then(blob => new Promise((resolve, reject) => {
+    const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob);
+  }));
+}
+async function inlineRemoteImages() {
+  for (const image of document.querySelectorAll('img')) {
+    const source = image.getAttribute('src') || '';
+    if (!source || source.startsWith('data:') || source.startsWith('blob:')) continue;
+    let url;
+    try { url = new URL(source, location.href); } catch (_) { continue; }
+    if (url.origin === location.origin || url.protocol === 'file:') continue;
+    const stripped = source.replace(/^https?:\/\//, '');
+    const candidates = [source, 'https://wsrv.nl/?url=' + encodeURIComponent(stripped), 'https://images.weserv.nl/?url=' + encodeURIComponent(stripped), 'https://corsproxy.io/?' + encodeURIComponent(source)];
+    let dataUrl = null;
+    for (const candidate of candidates) { try { dataUrl = await fetchAsDataURL(candidate); break; } catch (_) {} }
+    if (!dataUrl) throw new Error('原文图片下载失败：' + source);
+    image.src = dataUrl;
+    if (image.decode) { try { await image.decode(); } catch (_) {} }
+  }
+}
+async function renderSlide(slide) {
+  const imageOnly = slide.classList.contains('img-only');
+  if (imageOnly) {
+    const image = slide.querySelector('.main-img');
+    if (!image || !image.naturalWidth) throw new Error('原文图片加载失败');
+    const canvas = document.createElement('canvas'); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+    canvas.getContext('2d').drawImage(image, 0, 0); return canvas;
+  }
+  const raw = await html2canvas(slide, { scale: SCALE, useCORS: true, allowTaint: false, backgroundColor: null, width: 540, height: 720, logging: false });
+  return flattenAlpha(raw, slide.classList.contains('cover-slide') || slide.classList.contains('end-slide') ? '#1C1C1E' : '#F2EDE3');
+}
+function canvasToBlob(canvas) { return new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('canvas.toBlob 返回空结果')), 'image/png')); }
+function saveBlob(blob, name) { if (window.saveAs) return window.saveAs(blob, name); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = name; link.click(); }
+async function downloadAll() {
+  try { await inlineRemoteImages(); const zip = new JSZip(); const all = slides(); for (let i = 0; i < all.length; i++) { progressEl.textContent = `渲染第 ${i + 1}/${all.length} 张`; zip.file(`computer-use-${String(i + 1).padStart(2,'0')}.png`, await canvasToBlob(await renderSlide(all[i]))); } saveBlob(await zip.generateAsync({type:'blob'}), 'computer-use-xhs.zip'); progressEl.textContent = '18 张已打包'; } catch (error) { progressEl.textContent = '下载失败：' + error.message; alert(progressEl.textContent); }
+}
+let currentSlide = 0;
+const observer = new IntersectionObserver(entries => { const visible = entries.filter(entry => entry.isIntersecting).sort((a,b) => b.intersectionRatio-a.intersectionRatio)[0]; if (visible) currentSlide = slides().indexOf(visible.target); }, { threshold: [.25,.5,.75] });
+slides().forEach(slide => observer.observe(slide));
+async function downloadOne() { try { await inlineRemoteImages(); const all = slides(); const canvas = await renderSlide(all[currentSlide]); saveBlob(await canvasToBlob(canvas), `computer-use-${String(currentSlide + 1).padStart(2,'0')}.png`); progressEl.textContent = `已下载第 ${currentSlide + 1} 张`; } catch (error) { progressEl.textContent = '下载失败：' + error.message; alert(progressEl.textContent); } }
+</script>
+</body>
+</html>

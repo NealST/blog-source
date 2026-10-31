@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Computer Use 正文配图</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 80px; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+.slide-label { width: 800px; margin: 34px 0 10px; color: rgba(255,255,255,.55); font-size: 13px; }
+.slide-label:first-of-type { margin-top: 0; }
+.slide { position: relative; width: 800px; overflow: hidden; border-radius: 0; }
+.slide.dark { min-height: 480px; background: #1C1C1E; color: #F2EDE3; }
+.content { position: relative; padding: 60px 52px 58px; }
+.brand { position: absolute; top: 20px; left: 24px; color: rgba(255,255,255,.48); font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+.page-num { position: absolute; right: 24px; bottom: 20px; color: rgba(255,255,255,.28); font-size: 11px; }
+.section-tag { color: #C4956A; font-size: 11px; font-weight: 800; letter-spacing: 2px; margin-bottom: 14px; }
+.title { color: #F2EDE3; font-size: 29px; font-weight: 800; line-height: 1.3; }
+.subtitle { margin-top: 8px; color: rgba(255,255,255,.54); font-size: 13px; line-height: 1.6; }
+.defense-flow { display: grid; grid-template-columns: 1fr 30px 1fr 30px 1fr; align-items: stretch; margin-top: 34px; }
+.layer { min-height: 172px; padding: 20px 16px 18px; border: 1px solid rgba(196,149,106,.30); border-radius: 6px; background: rgba(255,255,255,.035); }
+.layer-number { color: #C4956A; font-family: Georgia, serif; font-size: 28px; line-height: 1; }
+.layer-title { margin-top: 14px; color: #F2EDE3; font-size: 16px; font-weight: 800; }
+.layer-desc { margin-top: 9px; color: rgba(255,255,255,.58); font-size: 11px; line-height: 1.65; }
+.arrow { display: flex; align-items: center; justify-content: center; color: #C4956A; font-size: 20px; }
+.containment { display: flex; align-items: center; gap: 12px; margin-top: 24px; padding: 12px 16px; border-left: 3px solid #A8C97F; background: rgba(168,201,127,.08); }
+.containment strong { color: #BAD68F; font-size: 12px; white-space: nowrap; }
+.containment span { color: rgba(255,255,255,.58); font-size: 11px; line-height: 1.55; }
+.xiaohei-row { background: #FFFFFF; }
+.xiaohei-row img { display: block; width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div class="slide-label">小黑 01 · 放在「桌面端插件：完全不同维度的控制层」之后 · 文件:01-two-control-layers.png</div>
+<div class="slide xiaohei-row" data-xiaohei="01-two-control-layers.png">
+  <img src="xiaohei-illustrations/01-two-control-layers.png" alt="桌面插件与 API 的两条控制路径">
+</div>
+
+<div class="slide-label">小黑 02 · 放在「VLM 究竟是如何“看屏并点击”的？」之后 · 文件:02-grounding-bottleneck.png</div>
+<div class="slide xiaohei-row" data-xiaohei="02-grounding-bottleneck.png">
+  <img src="xiaohei-illustrations/02-grounding-bottleneck.png" alt="视觉语义到像素坐标的定位瓶颈">
+</div>
+
+<div class="slide-label">配图 1 · 放在「安全防御与环境隔离：行业通行的“三件套”」之后</div>
+<div class="slide dark" data-num="1">
+  <div class="brand">墨筝 · COMPUTER USE</div>
+  <div class="page-num">1/1</div>
+  <div class="content">
+    <div class="section-tag">DEFENSE IN DEPTH</div>
+    <div class="title">不是一道高墙，而是三层连续闸口</div>
+    <div class="subtitle">任何单层都可能失效，关键是让风险无法一路直达真实资产</div>
+    <div class="defense-flow">
+      <div class="layer">
+        <div class="layer-number">01</div>
+        <div class="layer-title">环境沙箱</div>
+        <div class="layer-desc">VM / 容器 / 云浏览器<br>隔离账号、凭据与本地文件</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="layer">
+        <div class="layer-number">02</div>
+        <div class="layer-title">人工确认</div>
+        <div class="layer-desc">转账、发送、删除、登录<br>高危动作必须二次放行</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="layer">
+        <div class="layer-number">03</div>
+        <div class="layer-title">注入检测</div>
+        <div class="layer-desc">扫描截图与工具推理<br>命中风险即暂停或阻断</div>
+      </div>
+    </div>
+    <div class="containment">
+      <strong>单层失效可控</strong>
+      <span>工程目标不是绝对不被攻破，而是阻止一次穿透演变为核心资产损失。</span>
+    </div>
+  </div>
+</div>
+
+<div class="slide-label">小黑 03 · 放在「生态版图：浏览器智能体与 GUI 定位基座模型」之后 · 文件:03-modular-grounding.png</div>
+<div class="slide xiaohei-row" data-xiaohei="03-modular-grounding.png">
+  <img src="xiaohei-illustrations/03-modular-grounding.png" alt="规划模型与定位小模型的模块化分工">
+</div>
+</body>
+</html>

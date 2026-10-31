@@ -1,0 +1,9 @@
+Create a premium editorial 16:9 cover image for a Chinese technology analysis article about Claude Sonnet 5.5 versus Opus 5.5 and the paradox that a cheaper unit price can produce a higher total task cost.
+
+Core visual metaphor: a precise physical balance scale in a matte ink-black studio void. On the left pan sits a small elegant brushed-metal token spool with a modest warm-gold price tag, but an absurdly long ribbon of tiny blank token tiles keeps unrolling from it, piling up heavily and forcing that side downward. On the right pan sits a larger premium dark-metal block with a higher-priced warm-gold edge, yet only a short compact token ribbon, so its total weight is visibly lighter. The contradiction must be readable instantly at thumbnail size: cheap label, enormous consumption, heavier final cost.
+
+Composition: one dominant central balance scale occupying about 50% of the frame. Keep both pans and the contrast inside the central 70% horizontal safe area and central 55% vertical safe area so the image can be cropped from 16:9 to 2.35:1 without losing the subject. Leave generous dark negative space on the far left and right. Camera at a slightly low three-quarter angle, cinematic but restrained. Crisp silhouettes, no tiny details.
+
+Materials and lighting: matte charcoal-black background (#1C1C1E), precision-machined blackened steel, brushed metal, warm gold key light (#C4956A) tracing the token ribbon and scale fulcrum, one restrained cool cyan rim light to distinguish the two sides. Deep clean shadows, premium engineering photography, realistic physical object, high contrast, no glossy sci-fi clutter.
+
+Strict negatives: no text, no letters, no numbers, no logos, no brand marks, no watermark, no UI panels, no charts, no robots, no human faces, no glowing orb, no abstract network, no random particles, no dense data stream, no purple gradient, no decorative bokeh. One subject, one action, one visual focus.

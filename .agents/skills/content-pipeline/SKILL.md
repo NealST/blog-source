@@ -1,6 +1,6 @@
 ---
 name: content-pipeline
-description: 内容生产和分发管线。素材收集→出稿→排版→封面→多平台转换→一键分发。涵盖公众号写作排版、小红书轮播图、Chrome CDP 自动发布。
+description: 内容生产和分发管线。素材收集→出稿→排版→封面→多平台转换→一键分发。涵盖公众号写作排版、小红书轮播图、视频生成，Chrome CDP 自动发布。正文配图按语义选型：观点与隐喻调用 xiaohei-illustrations，架构、流程、状态、关系与数据图表调用 diagram-design。
 ---
 
 # 内容管线 Content Pipeline
@@ -24,11 +24,13 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 ├── preview.html                    # 公众号排版预览
 ├── cover.html                      # 公众号头图
 ├── illustrations.html              # 品牌配图（HTML→PNG）
+├── diagrams/                       # diagram-design 单图源文件（自包含 HTML）
 ├── xiaohei-illustrations/          # 小黑手绘配图（AI 生图 PNG）
 ├── manifest.json                   # 分发清单
 ├── [主题]-小红书版.html            # 小红书轮播图
-├── video/                          # HyperFrames 视频（Path C）
-│   ├── design.md / index.html / bgm.mp3 / output.mp4
+├── video/                          # 视频产物（Path C，按后端分目录）
+│   ├── hyperframes/                # design.md / index.html / bgm.mp3 / output.mp4
+│   └── handdraw/                   # job.json / inputs / work / outputs/film.mp4
 └── drafts/current.json             # 当前素材列表
 ```
 
@@ -69,19 +71,20 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 | 触发词 | 说明 |
 |-------|------|
 | "排版" | Markdown → 公众号 HTML |
-| "做头图" / "封面图" | 生成公众号头图 HTML |
+| "做头图" / "封面图" | 根据文章内容生成 TopView 公众号头图 |
 | "头图提示词" / "封面提示词" | 生成 DALL-E/Midjourney 极简生图 Prompt |
 | "做竖版封面" | 公众号封面 → 3:4 竖版（1080×1440） |
-| "做配图" / "准备配图" | 自动选型：流程/架构→品牌，观点/隐喻→小黑 |
+| "做配图" / "准备配图" | 自动选型：结构/数据→diagram-design 品牌图，观点/隐喻→小黑 |
 | "做小黑配图" | 全部走小黑手绘风格（→ xiaohei-illustrations skill） |
-| "做品牌配图" | 全部走品牌信息图（HTML→PNG） |
+| "做品牌配图" / "做架构图" / "做流程图" | 结构化图调用 diagram-design（HTML→PNG）；不适合成图的列表保留文字或表格 |
 | "排版+配图" / "全套排版" | 排版 + 头图 + 配图一起生成 |
 
 ### 视频生成（Path C）
 
 | 触发词 | 说明 |
 |-------|------|
-| "做视频" / "生成视频" / "video" | 博客文章 → HyperFrames 视频 |
+| "做视频" / "生成视频" / "video" | 博客文章 → 视频；默认 HyperFrames |
+| "手绘视频" / "白板动画" / "边画边讲" | 博客文章 → Sweety Handdraw Video |
 
 ### 分发
 
@@ -96,7 +99,7 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 
 - **Path A**：出稿 → 写文章 → 排版 → 封面/配图 → manifest
 - **Path B**：微信链接 → 抓取 → 分析 → 小红书轮播图 → 文案 → manifest → 分发
-- **Path C**：博客文章 → 提取核心内容 → design.md → HyperFrames 视频 → 渲染
+- **Path C**：博客文章 → 按内容/意图选择 HyperFrames 或 Handdraw → 渲染与验证
 
 ---
 
@@ -128,17 +131,26 @@ python3 md2wechat_formatter.py [文章路径] -o content/[slug]/preview.html
 
 ### 第 3 步：头图 + 配图
 
-**头图**：→ 读 `references/cover-template.md`
+**头图**：默认使用 `scripts/topview_image_gen.py` 根据文章内容直接生图，再裁切为公众号头图比例。仅当用户明确要求可编辑模板时，才生成 `cover.html`。完整提示词策略见 `references/cover-template.md`。
 **竖版封面**（可选）：→ 读 `references/cover-vertical-spec.md`
+
+**TopView 头图生成流程**：
+1. 提炼文章最有吸引力的单一矛盾、结果或视觉隐喻，优先使用具体数字、强反差或明确动作，不要把文章摘要直接画成图。
+2. 设计一个占据画面 40%-60% 的核心视觉主体，并为标题预留稳定的负空间；画面必须在缩略图尺寸下仍能一眼识别。
+3. 提示词应明确主体、动作、空间关系、光线、材质、主辅色和禁忌。默认要求无文字、无 Logo、无 UI 小字，避免生成错误文字；文章标题由公众号后台叠加或通过摘要承担。
+4. 技术内容默认采用墨色背景、暖金关键光，可根据产品识别色加入一种高对比辅助色。避免常见的发光球、抽象网络、无主体数据流和堆叠界面截图。
+5. 使用 TopView 生成 16:9、2K 原图，保存为 `content/[slug]/cover-source.png`，同时把完整提示词保存为 `content/[slug]/cover-prompt.txt`。
+6. 将原图居中裁切为 2.35:1，再缩放到 `1800×766`，输出 `content/[slug]/cover.png`。不得直接拉伸 16:9 原图。
+7. 生成后必须检查：主体是否被裁断、缩略图是否仍有视觉焦点、画面是否有错误文字、是否与文章主题直接相关。未通过则调整提示词重生成。
 
 **配图双模式**（小黑优先）：
 
 | 风格 | 适用场景 | 产出 | 流程 |
 |------|---------|------|------|
 | **小黑手绘图**（默认） | 见下方小黑触发条件 | `xiaohei-illustrations/*.png`（AI 直出） | → 调用 `xiaohei-illustrations` skill |
-| **品牌信息图**（仅结构化数据） | 见下方品牌触发条件 | `illustrations.html` → Playwright 截图 PNG | → 读 `references/cover-template.md` |
+| **品牌结构图与数据图表** | 结构关系或数据分布是核心信息 | `diagrams/NN-topic.html` → 汇入 `illustrations.html` → PNG | → 读 `../diagram-design/SKILL.md` 和 `references/diagram-design-integration.md` |
 
-**选型原则**：小黑是默认风格，除非段落内容明确需要结构化信息展示才用品牌。拿不准时一律走小黑。
+**选型原则**：小黑是默认风格，除非段落内容明确需要结构化信息展示才用 diagram-design。拿不准时一律走小黑；普通列表或简单表格已经能讲清的内容，不必强行画图。diagram-design 是品牌结构图的设计引擎，不替代 TopView 头图或小黑手绘。
 
 **小黑触发条件**（满足任一即走小黑）：
 - 观点表达：核心观点、立场判断、价值主张
@@ -156,14 +168,22 @@ python3 md2wechat_formatter.py [文章路径] -o content/[slug]/preview.html
 - 架构图：多个组件/模块 + 组件之间有数据流或依赖关系
 - 矩阵/表格型信息：二维对比、分类矩阵
 - 状态机：多个状态 + 状态之间的转移条件
+- 关系与时序：实体关联、调用先后、跨角色交接、依赖或拓扑变化
+- 数据图表：有来源的数值、单位与比较口径，需要展示趋势、分布或数量关系
+
+**冲突处理**：前后对比只表达观点或属性差异时仍走小黑或表格；若核心是组件连接、数据流或状态关系的变化，走 diagram-design。不得为凑图编造数值或关系。
 
 **选型流程**（用户说"做配图"时执行）：
 1. 消化正文，提炼需要配图的段落（认知锚点优先）
-2. 对每张图先检查是否命中品牌触发条件（4 条都不命中 → 小黑）
-3. 输出 shot list，标注每张图的风格、位置、主题
-4. 用户确认后分别调用对应流程生成
+2. 逐张分析原文已有图片表达的核心语义，建立已有视觉信息清单
+3. 删除与原图语义重复的候选配图；新图必须补充原图没有表达的观点、结构或数据
+4. 对每张图检查是否命中品牌触发条件；未命中 → 小黑，命中 → diagram-design；若表格/文字更清楚则取消该候选图
+5. 输出 shot list，标注风格、位置、主题、与原图的差异；diagram-design 图额外标注图型、语义模式（如有）、尺寸预设、信息来源与计划删减项
+6. 按对应技能生成。小黑保持原流程；diagram-design 按 `references/diagram-design-integration.md` 执行风格确认、单图设计、验证与 PNG 接入。用户要求直接生成可跳过 shot list 等待，但不能跳过 diagram-design 的首次品牌确认或覆盖 profile 的授权
 
 **关键规则**：**每个章节只配一张图**，不要给同一段落同时安排品牌图和小黑图。两种风格按段落分工，混合编排在同一篇文章里。
+
+**diagram-design 接入约定**：单图保存在 `diagrams/NN-topic.html`；将已验证的内联 SVG 与必要样式汇入 `illustrations.html` 的 `.slide[data-num="N"]`，不得用 iframe。每张图的 SVG ID 和样式作用域必须隔离。继续由 `render_pngs.py` 导出 `配图-N.png`，沿用下方 `slide-label`、占位符与 manifest 规则。默认纯白浅底、静态图，不直接沿用 diagram-design 的出厂配色；完整品牌映射、导出和检查步骤见集成参考。
 
 **配图与排版 HTML 关联**：两种风格最终产出都是 PNG，统一通过 `<!-- IMAGE:文件名.png -->` 占位符插入 `preview.html`。`illustrations.html` 中的 `slide-label` 既是给人看的位置说明，也是 `scripts/insert_image_placeholders.py` 用来生成占位符的输入。两种标签格式（可在同一文件中混用）：
 
@@ -235,7 +255,9 @@ python3 "${SKILL_DIR}/scripts/fetch_wechat_article.py" "<URL>" --json
 
 视觉样式规范见 `references/xiaohongshu-text-card.md`，生成逻辑和质量控制见 `references/xiaohongshu-card-rules.md`。
 
-头像路径：`content/[slug]/` 下用 `../_shared/avatar.jpg`，配 `onerror` 回退。
+头像路径：`content/[slug]/` 下用 `../_shared/avatar.jpg`，配 `onerror` 回退。真实头像必须绝对定位并完整覆盖底层“墨”字 fallback；头像加载成功时不得露出 fallback。
+
+**原文图片硬规则**：Markdown 原图不是 540×720 文字卡的内嵌元素。每张原图本身就是一张独立轮播素材，保持原始宽高比导出，不加 Header/Footer/页码、底色、边框、圆角、阴影或 3:4 留白。
 
 **格式校验**：生成的 HTML **必须使用 markdown-faithful 格式**（包含 `.post-header`、`.post-body`、`.post-footer` class 和 `.bg-paper` 宣纸背景）。**不得使用旧版** `.slide-title` + `.bg-light { background: #FFFFFF }` 格式，该格式已废弃。内容页背景统一使用宣纸底 `#F2EDE3`。
 
@@ -280,9 +302,16 @@ python3 "${SKILL_DIR}/scripts/validate_xhs_html.py" content/[slug]/*小红书版
 
 ## Path C：博客文章 → 视频
 
-将博客长文转化为 HyperFrames 视频。视频输出到 `content/[slug]/video/`，自带墨筝品牌水印和 BGM。
+将博客长文转化为视频。先选择后端，产物分别输出到 `content/[slug]/video/hyperframes/` 或 `content/[slug]/video/handdraw/`，不得共用中间文件。
 
 **视频定位**：导流型（teaser），精选亮点引导观众到公众号阅读全文。
+
+### 后端选择
+
+- **HyperFrames（默认）**：数据对比、产品演示、UI、代码和快速动效摘要。
+- **Sweety Handdraw Video**：故事、观点、机制讲解、寓言，以及用户明确要求手绘视频、白板动画或边画边讲。
+- 用户只说“做视频”且两者都适合时使用 HyperFrames；不得同时生成两套昂贵产物。
+- 后端一旦确定，不得在失败时静默切换。切换会改变视觉语言，必须告知用户并获得同意。
 
 ### 时长与内容决策
 
@@ -294,13 +323,28 @@ python3 "${SKILL_DIR}/scripts/validate_xhs_html.py" content/[slug]/*小红书版
 
 每个要点至少 4-5 秒可读时间。宁可少选几个，也不要缩短停留时间。
 
-### 流程
+### HyperFrames 流程
 
-1. **定位文章**：从 `source/_posts/[slug].md` 读取，创建 `content/[slug]/video/`
+1. **定位文章**：从 `source/_posts/[slug].md` 读取，创建 `content/[slug]/video/hyperframes/`
 2. **生成 design.md**：品牌色衍生（暗色基调，筝弦金暖金调性可提升至视频级 `#D4A76A`-`#E8A850`），字体必须从 hyperframes 内置列表选择
 3. **准备 BGM**：复制 `content/_shared/bgm.mp3`（共享 BGM 资源；若不存在则从 `content/ai-code-review-benchmark/video/bgm.mp3` 回退）
 4. **调用 hyperframes 生成视频**：进入目录，hyperframes 自动读取 design.md。品牌元素必带：常驻水印（`公众号：墨筝`，opacity 0.7）、BGM 音频轨（`data-volume="0.3"`）、尾屏 CTA。竖版布局（1080×1920）：顶部留 180px 平台安全区，scene-content padding `340px 64px 80px`，水印 `top:228px;left:60px`
 5. **校验 & 渲染**：`npx hyperframes lint && npx hyperframes render --output output.mp4`
+
+manifest 的 `outputs.video` 增加 `"backend": "hyperframes"`；旧 manifest 没有该字段时保持兼容。
+
+### Handdraw 流程
+
+执行前必须完整读取 `references/handdraw-video-integration.md` 和已安装的 `sweety-handdraw-video/SKILL.md`，由后者控制任务格式和质量门禁。核心顺序：
+
+1. **环境检查**：读取固定安装版本，运行 `setup.sh --check`；确认生图能力和一条可用配音路径。不得静默安装依赖、下载大模型或购买服务。
+2. **旁白先行**：从文章改编完整口播，保留事实、数字、来源和限定；真实音频生成 alignment，禁止手写时间戳。
+3. **预算与分镜**：写 `design.json`、`storyboard.json`、drawing plan，先按旁白运行预算检查，再生成插画。
+4. **素材门禁**：每张图先保存 brief/prompt 并绑定美术记录；先完成一个代表场景，通过看图、缩略图、线稿和部位检查后再扩展。
+5. **构建与预览**：依次运行 `doctor`、`build`、`verify --assets-only` 和 15 秒代表段渲染，实际查看描线、填色、字幕和封面衔接。
+6. **整片验收**：渲染 `outputs/film.mp4`，运行 `verify`；填写基于实际观察的 `review.json` 后才可 `finalize`。未实际听音必须保留 open check。
+
+manifest 的 `outputs.video` 使用 `"backend": "handdraw"`，`path` 指向 `content/[slug]/video/handdraw/outputs/film.mp4`，并记录 cover、captions、script、verification、job 与 `"aigc": true`。发布时仍须显式声明“AI 生成”。
 
 ---
 
@@ -353,13 +397,15 @@ npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/m
 |------|---------|
 | 出稿写文章 | → 写作 skill（`../writing/SKILL.md`） |
 | 品牌色/色板 | `references/brand-colors.md` — 墨筝色体系 single source of truth |
-| 生成头图/品牌配图 | `references/cover-template.md` — 头图 + 品牌信息图规范 |
+| 生成头图 | `references/cover-template.md` — 头图规范 |
+| 生成品牌结构图/数据图表 | `../diagram-design/SKILL.md` + `references/diagram-design-integration.md` — 图型设计、品牌适配、PNG 接入 |
 | 生成小黑配图 | `../xiaohei-illustrations/SKILL.md` — 小黑 IP 手绘风格 |
 | 横版→竖版封面 | `references/cover-vertical-spec.md` |
 | 小红书卡片生成规则 | `references/xiaohongshu-card-rules.md` — 内容拆分逻辑、字号层级、质量控制、下载工具栏 |
 | 小红书视觉样式 | `references/xiaohongshu-text-card.md` — 组件 CSS 模板、配色方案、Header/Footer HTML |
 | 小红书文案 | `references/platform-copy.md` |
-| 生成视频 | hyperframes skill（`../hyperframes/SKILL.md`） |
+| 生成 HyperFrames 视频 | hyperframes skill（`../hyperframes/SKILL.md`） |
+| 生成手绘视频 | `references/handdraw-video-integration.md` + 已安装的 sweety-handdraw-video skill |
 | 分发到各平台 | `references/distribute-platforms.md` |
 
 ---
@@ -374,3 +420,5 @@ npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/m
 | 导出图片模糊 | Path B | 检查 SCALE=2，浏览器缩放 100% |
 | manifest 不存在 | 通用 | 提示先运行内容生成 |
 | Chrome 启动失败 | 分发 | 降级 L3（手动模式） |
+| Handdraw render venv 缺失 | Path C | 报告 `setup.sh` 命令，征得用户同意后安装 |
+| Handdraw 无生图或配音能力 | Path C | 停止并说明缺失能力，不生成纯文字片、不静默切换后端 |

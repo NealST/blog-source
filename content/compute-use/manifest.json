@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "created": "2026-09-22T00:00:00+08:00",
+  "source": "source/_posts/compute-use.md",
+  "title": "拆解 Computer Use：OpenAI、Anthropic 与 Google AI 如何操作电脑",
+  "slug": "compute-use",
+  "outputs": {
+    "wechat": {
+      "html": "content/compute-use/preview.html",
+      "cover_image": "content/compute-use/cover.png",
+      "title": "拆解 Computer Use：OpenAI、Anthropic 与 Google AI 如何操作电脑",
+      "author": "墨筝",
+      "digest": "从截图到精准点击，拆解 OpenAI、Anthropic 与 Google 的 Computer Use 感知通道、动作空间、运行回路与安全机制。",
+      "markdown": "source/_posts/compute-use.md",
+      "images": [
+        "content/compute-use/xiaohei-illustrations/01-two-control-layers.png",
+        "content/compute-use/xiaohei-illustrations/02-grounding-bottleneck.png",
+        "content/compute-use/配图-1.png",
+        "content/compute-use/xiaohei-illustrations/03-modular-grounding.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/compute-use/Computer-Use-小红书版.html",
+      "copy": {
+        "title": "AI 是怎么点中屏幕的｜Computer Use 拆解",
+        "body": "模型是怎么从一张屏幕截图，转化出“在坐标 (135, 193) 点击”这一具体动作的？\n\n我对比了 OpenAI、Anthropic 与 Google 的官方 Computer Use 方案。三家的核心回路高度一致：观察屏幕、模型推理、输出动作、客户端执行，再重新截图进入下一轮。\n\n真正的差异主要在两个地方：\n1️⃣ 感知通道：纯像素、无障碍树，还是混合模式\n2️⃣ 动作空间：物理坐标，还是元素引用句柄\n3️⃣ 执行路径：单步点击，还是生成 Playwright / PyAutoGUI 脚本\n4️⃣ 安全机制：沙箱、人工确认与提示词注入检测\n\n纯视觉方案通用，但坐标误差、截图 token 成本和页面变化都会影响稳定性。生产环境正在走向 DOM / AXTree 优先、视觉兜底的混合路线。\n\n完整技术拆解请到微信公众号「墨筝」阅读原文。\n\n.\n#AI工具 #AIAgent #ComputerUse #OpenAI #Anthropic #Gemini #智能体 #自动化 #大模型 #技术拆解",
+        "tags": [
+          "AI工具",
+          "AIAgent",
+          "ComputerUse",
+          "OpenAI",
+          "Anthropic",
+          "Gemini",
+          "智能体",
+          "自动化",
+          "大模型",
+          "技术拆解"
+        ]
+      }
+    }
+  }
+}

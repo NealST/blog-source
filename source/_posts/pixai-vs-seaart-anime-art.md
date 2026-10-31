@@ -1,0 +1,141 @@
+---
+title: PixAI 与 SeaArt：动漫创作怎么选？
+date: 2026-07-10 20:00:00
+tags:
+  - AI
+  - AI-绘画
+  - PixAI
+  - SeaArt
+  - LoRA
+categories:
+  - AI
+---
+
+用 AI 生成动漫图片，并不像看起来那么简单。动漫的线条更干净，色彩也更平整，人物面部没有真人那么复杂，但这种画风对细节很敏感。
+
+有时花上几个小时调整提示词，人物的眼睛仍然不自然，手指和四肢也容易显得僵硬。
+
+我用过不少支持自定义 LoRA 的动漫 AI 图片生成器。[PixAI](https://pixai.art/en?utm_source=email&utm_medium=article&utm_content=jim)（https://pixai.art/en?utm_source=email&utm_medium=article&utm_content=jim）和 [SeaArt AI](https://www.seaart.ai/zhCN) （https://www.seaart.ai/zhCN）是目前我觉得最不错的两款产品。
+
+## PixAI 与 SeaArt 快速对比
+
+如果你主要制作动漫角色、原创人物、VTuber 素材或漫画风图片，或者需要持续创作同一个角色，PixAI 更适合作为起点。
+
+PixAI 更专注于动漫图片生成、LoRA 工作流和角色一致性，在查找动漫模型时也更方便。
+
+如果你想要一个用途更广的 AI 创作平台，除了动漫，还会制作写实图片、3D 画面，或需要图片编辑和动画功能，那么 SeaArt AI 更合适。
+
+简单来说，可以这样选择：
+
+- 主要创作动漫内容，选择 PixAI。
+- 动漫只是整体工作流的一部分，选择 SeaArt AI。
+- 如果你觉得 SeaArt 功能太杂，希望使用一个更专注于动漫的工作区，可以把 PixAI 作为 SeaArt 的替代方案。
+
+![](https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBmLxqbrVPcqXXN3omqowSl3cYQF_xvgAC8QxrGzeJcUd7I0WREQ1NRgEAAwIAA3cAAz0E.png)
+
+## PixAI 的动漫图片生成能力
+
+PixAI 是一个基于 Stable Diffusion 模型和 LoRA 的 AI 动漫创作平台，同时提供社区作品库。它并不追求覆盖所有图片风格，而是把主要精力放在动漫内容上。
+
+它适合生成动漫角色、漫画风图片、VTuber 概念图、壁纸和原创角色设定。定位明确，这也是 PixAI 在动漫生成上表现较好的主要原因。
+
+很多 AI 图片生成器也能画动漫，但本质上仍是通用绘图工具，只是在模型库中加入了一些动漫模型。PixAI 从模型、提示词到 LoRA 系统和社区内容，都围绕动漫创作来组织，整个使用流程更集中。
+
+PixAI 的主要优势包括：
+
+- 专用动漫模型：PixAI 提供包括 Tsubaki 系列在内的定制模型，专门用于动漫风格生成。
+- 角色一致性：Reference Pro 等工具可以在人物更换姿势、服装和视角时，尽量保留同一个角色的主要特征。
+- 云端 LoRA 训练：用户可以直接在平台内训练角色或画风 LoRA，不需要在本地安装和配置 Stable Diffusion。
+- Prompt Helper：用户输入简单的自然语言描述后，工具会将其扩展为更详细的标签式提示词，以适配动漫模型。
+- 动漫创作社区：作品库、模型和共享 LoRA 都以动漫内容为主，查找素材时不必从大量无关风格中筛选。
+
+注册账号后进入 Generate 页面，在输入框中描述想要的画面，就可以开始生成图片。同一页面还可以调整模型、图片尺寸、分辨率、宽高比、输出数量和其他参数。
+
+![](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*e1m0UnBHgK3V0uuiSxnbFw.png)
+
+点击 More Models 后，会打开模型选择窗口。这里有数百个自定义模型，包括动漫 checkpoint、角色 LoRA、画风模型和其他预设。用户可以根据目标效果选择合适的模型。
+
+![](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*QGwOlkQac3JKxorOEiCzMQ.png)
+
+用户不必每次都从零编写提示词。先选择一个接近目标画风的模型，再用 LoRA 和参考图控制人物与风格，通常更容易得到想要的结果。
+
+PixAI 免费方案提供每日积分。付费方案则包含无限 Turbo Mode、视频生成、Chat Editing、Reference Pro、Edit Pro、每月免费 LoRA 训练、单次生成使用更多 LoRA、上传私有模型和额外积分等权益。
+
+PixAI 还提供创作工具箱。打开左侧菜单中的 Toolbox，可以看到角色设定图生成器、广告生成器等工具，适合快速完成一些常见任务。
+
+![](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*qe844UQyfwhkmXPbqYY_JQ.png)
+
+## SeaArt AI 的动漫图片生成能力
+
+SeaArt AI 走的是另一条路线。它是一个基于 Stable Diffusion 生态的综合 AI 创作平台，除了动漫图片，还能制作写实人像、3D 半写实作品、奇幻海报、赛博朋克场景、商品图片、油画风格内容和 AI 视频。
+
+SeaArt 不像 PixAI 那样专注于动漫，它的长处是用途更广，适合同时尝试多种画风和创作形式。
+
+SeaArt AI 的主要功能包括：
+
+- 多种画风：支持动漫、写实、3D、奇幻、赛博朋克、油画和摄影等风格。
+- 生成控制：ControlNet 和图生图可以控制人物姿势、草图、深度和画面结构。
+- AI 动画与视频：可以让静态图片动起来，也可以根据文字或图片生成短视频。
+- 模型库：社区提供了大量 checkpoint 和 LoRA，覆盖多种视觉类型。
+- 图片处理工具：包括换脸、背景移除、智能擦除、局部重绘和图片放大。
+- Cyberpub：这是一个动漫 AI 对话社区，用户可以创建 AI 角色，与角色互动，并通过对话生成图片。
+
+SeaArt 的图片生成页面布局比较直观。提示词输入框位于页面中间，图片设置集中在左侧。生成之前，可以调整模型、图片尺寸、宽高比、生成模式和其他参数。
+
+![](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*iNquuSo3Gl5JzYNDTCaTNw.png)
+
+SeaArt 同样提供了数百个模型，但模型库覆盖的风格更广。动漫模型会和写实、3D、奇幻、人像及实验模型放在一起。
+
+![](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*9_XUm8XPCTeHe0tEkmBq5g.png)
+
+如果想找一种很具体的动漫画风，可能需要测试多个模型才能找到合适的选择。PixAI 在这方面更直接，SeaArt 的选择更多，同时筛选成本也更高。
+
+## 使用相同提示词测试
+
+为了直接比较两款平台，我用相同的提示词分别生成了两组图片。
+
+### 第一组：蜂蜜浴缸奇幻海报
+
+第一组使用的提示词如下：
+
+> A vibrant romantic comic-style fantasy poster of a beautiful woman bathing in a vintage bathtub filled with thick golden honey. The honey is rich amber, glossy, sticky, and viscous, with slow drips over the tub, strands stretching from her hands, visible swirls, and glowing translucent reflections. She looks elegant and dreamy, partially immersed, with loose beautiful hair and a relaxed playful expression. Around the tub are open honey jars, a honey-covered wooden dipper, honeycomb pieces, golden drops, and warm candlelight. The scene feels whimsical, luxurious, romantic, and theatrical.
+
+这段提示词要求生成一张浪漫的漫画风奇幻海报。画面中，一名女性泡在装满金色蜂蜜的复古浴缸里。蜂蜜要有浓稠、黏滑和半透明的质感，周围还有蜂蜜罐、木制蜂蜜棒、蜂巢和烛光。
+
+PixAI 效果如下：
+![](https://miro.medium.com/v2/resize:fit:1100/format:webp/0*waHzvv0myHev9C_m)
+
+SeaArt 效果如下:
+![](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*u9ZNrqlYYHiPV6owOB-ckw.png)
+
+两款平台生成的图片都不错，尤其是蜂蜜从浴缸边缘流下来的效果。琥珀色蜂蜜的黏稠感、表面光泽和暖色照明都表现得很自然。
+
+如果只看动漫风格，我仍然更喜欢 PixAI 的结果。
+
+PixAI 对人物面部、周围物件、色彩和整体构图的处理，更接近动漫海报。SeaArt 的结果也很好看，但整体偏向数字插画，动漫特征没有 PixAI 那么明显。
+
+### 第二组：复古动漫角色
+
+第二组提示词如下：
+
+> Lum, solo, close-up, dynamic angle, retro 1980s anime illustration. A beautiful girl with green-aqua hair, blue eyes, tiny yellow horns, and small pointy ears, wearing a detailed kimono. She has a cute face, soft eyeshadow, realistic skin texture, and a melancholic expression with slightly squinting eyes. She is surrounded by floating lanterns in a dark void, with glowing light particles drifting around her. Dramatic lighting, pale delicate colors against a deep black background, high contrast, flat colors, sharp line art, detailed background, official-art feel, wallpaper composition, high detail, anime screencap aesthetic.
+
+我想看看哪款工具更能表现复古动漫风格。
+
+PixAI 生成的人物更干净，面部、线条和构图也更符合我对动漫生成图的预期。
+![](https://miro.medium.com/v2/resize:fit:1100/format:webp/0*HW3jzPXF81E831sj)
+
+SeaArt 的结果也不错。它保留了更明显的颗粒感，接近老电视画面的质感，看起来更像复古动画中的一帧。
+![](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*6M7Ov8V7FEaLHzMZljMcOw.png)
+
+## 总结一下
+
+如果主要制作动漫图片和原创角色，而且看重 LoRA 工作流与角色一致性，PixAI 就更适合。
+
+SeaArt AI 则比较适合需要图片编辑、动画和多种画风的用户。
+
+现在的 AI 图片生成工具早已不只用于生成单张图片。用户可以设计角色、测试画风、训练 LoRA、制作角色设定图和海报，还能把静态图片转成视频。只需要一个下午，就能完成动漫短片项目前期视觉素材的初步版本。
+
+我比较喜欢 PixAI 这类平台，它简化了很多步骤，我不用先在本地配置复杂的模型和运行环境，就能快速验证自己的想法。
+
+选择动漫 AI 图片生成器时，不要只看单张图片的效果。模型管理、LoRA 训练和连续创作能力，也会影响整体效果和使用体验。

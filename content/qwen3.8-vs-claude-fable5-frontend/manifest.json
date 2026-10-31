@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "created": "2026-08-22T13:00:00+08:00",
+  "source": "source/_posts/qwen3.8-vs-claude-fable5-frontend.md",
+  "title": "10 个前端任务实测 Qwen3.8-Max VS Claude Fable 5",
+  "slug": "qwen3.8-vs-claude-fable5-frontend",
+  "outputs": {
+    "wechat": {
+      "html": "content/qwen3.8-vs-claude-fable5-frontend/preview.html",
+      "cover_image": "content/qwen3.8-vs-claude-fable5-frontend/cover.png",
+      "title": "10 个前端任务实测 Qwen3.8-Max VS Claude Fable 5",
+      "author": "墨筝",
+      "digest": "十项前端 UI 实测中，Qwen3.8-Max 与 Claude Fable 5 表现接近，但成本仅为后者的 36%。本文对比两者的设计审美、错误、执行逻辑、耗时与成本。",
+      "markdown": "source/_posts/qwen3.8-vs-claude-fable5-frontend.md",
+      "images": [
+        "content/qwen3.8-vs-claude-fable5-frontend/xiaohei-illustrations/01-same-skeleton-different-taste-v2.png",
+        "content/qwen3.8-vs-claude-fable5-frontend/xiaohei-illustrations/02-two-agent-workflows.png",
+        "content/qwen3.8-vs-claude-fable5-frontend/xiaohei-illustrations/03-cost-time-tradeoff.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/qwen3.8-vs-claude-fable5-frontend/Qwen3.8-Max-VS-Claude-Fable-5-小红书版.html",
+      "copy": {
+        "title": "10项实测｜Qwen和Claude谁更强",
+        "body": "连续跑了 10 个相同提示词的前端 UI 任务，Qwen3.8-Max 和 Claude Fable 5 的结果比预想中更接近。\n\n最终统计：Fable 胜 4 项，Qwen 胜 3 项，另有 3 项平局。\n\n1️⃣ Qwen 的视觉风格更鲜明，偏爱琥珀色、橙色和金色\n2️⃣ Fable 的信息密度更高，控件设计通常更稳\n3️⃣ Qwen 会深度推理并反复自查，Fable 多数任务一步直出\n4️⃣ 跑完全部任务，Qwen 花费 3.05 美元，Fable 花费 8.44 美元\n\n完整长文和全部 10 组 UI 对比图，请移步微信公众号「墨筝」阅读原文。\n\n.\n#AI编程 #前端开发 #UI设计 #Qwen #Claude #大模型测评 #人工智能 #程序员 #开发者工具 #网页设计",
+        "tags": [
+          "AI编程",
+          "前端开发",
+          "UI设计",
+          "Qwen",
+          "Claude",
+          "大模型测评",
+          "人工智能",
+          "程序员",
+          "开发者工具",
+          "网页设计"
+        ]
+      }
+    }
+  }
+}

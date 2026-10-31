@@ -84,7 +84,7 @@ def insert_placeholders(preview_path: str, items: list[tuple[str, str]]) -> int:
         anchor_norm = normalize_dashes(anchor)
         heading_lines = []
         for i, line in enumerate(lines):
-            if ('<h2' in line or '<h3' in line) and anchor_norm in normalize_dashes(line):
+            if any(f'<h{level}' in line for level in (2, 3, 4)) and anchor_norm in normalize_dashes(line):
                 heading_lines.append(i)
 
         if not heading_lines:
@@ -92,28 +92,25 @@ def insert_placeholders(preview_path: str, items: list[tuple[str, str]]) -> int:
             continue
 
         for heading_line in heading_lines:
-            # Find end of section: next h2 or h3
+            # Find the nearest section/view boundary. The formatter emits both a
+            # preview view and a copy view, so searching for the next heading
+            # before checking END can incorrectly cross into the second view.
             section_end = None
             for j in range(heading_line + 1, len(lines)):
-                if re.search(r'<h[23]\s', lines[j]):
+                if (
+                    re.search(r'<h[234]\s', lines[j])
+                    or '— END —' in lines[j]
+                    or '-- END --' in lines[j]
+                    or '</section>' in lines[j]
+                ):
                     section_end = j
                     break
-    
+
             if section_end is None:
-                for j in range(len(lines) - 1, heading_line, -1):
-                    if '— END —' in lines[j] or '-- END --' in lines[j]:
+                for j in range(heading_line + 1, len(lines)):
+                    if '</body>' in lines[j]:
                         section_end = j
                         break
-                if section_end is None:
-                    for j in range(len(lines) - 1, heading_line, -1):
-                        if '</section>' in lines[j]:
-                            section_end = j
-                            break
-                if section_end is None:
-                    for j in range(len(lines) - 1, heading_line, -1):
-                        if '</body>' in lines[j]:
-                            section_end = j
-                            break
                 if section_end is None:
                     section_end = len(lines) - 1
     

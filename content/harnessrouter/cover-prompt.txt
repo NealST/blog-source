@@ -1,0 +1,11 @@
+Create one premium 16:9 editorial technology cover image about freely swapping agent runtimes behind a single standard interface.
+
+Core visual metaphor: a precision quick-change bayonet mount. In the center, one machined metal module is locked onto a single standard socket, while three clearly different interchangeable modules rest in a calm arc nearby, waiting to be swapped in. One module is mid-rotation, locking into place with visible alignment notches and a knurled collar. The modules look mechanically different from each other, yet all share the exact same mounting ring, making interchangeability obvious at a glance.
+
+Composition: cinematic wide shot, single dominant subject occupying 45-55% of the frame, centered inside the middle 70% safe area so it survives a 2.35:1 center crop. Top and bottom edges stay quiet background only. Generous negative space around the mount. Strong silhouette, one clear action, readable at thumbnail size.
+
+Materials and lighting: matte ink-black background (#1C1C1E), dark anodized and machined metal with fine knurling, restrained warm gold key light (#C4956A) rimming the locked mount and the alignment notches, one subtle cool steel-blue reflection on the incoming module. Premium industrial product photography, soft cinematic side light, crisp edges, deep shadows, minimal scene.
+
+Mood: precise, reliable, infrastructure-grade engineering. Calm and deliberate rather than futuristic.
+
+No text, no letters, no numbers, no logo, no watermark, no UI panels, no code, no screens, no humanoid robot, no glowing orb, no abstract network globe, no data particles, no purple gradient, no clutter.

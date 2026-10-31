@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>按条件顺序设置 Jev 业务门禁</title>
+<style>
+.jev04-scroll { width: 100%; max-width: 960px; min-width: 0; overflow-x: auto; }
+.jev04-frame { width: 960px; background: #FFFFFF; }
+#jev04-svg { display: block; width: 100%; min-width: 960px; background: #FFFFFF; }
+#jev04-svg text { font-family: 'Geist', 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #1C1C1E; letter-spacing: 0; }
+#jev04-svg .jev04-title { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#jev04-svg .jev04-name { font-weight: 600; }
+#jev04-svg .jev04-node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#jev04-svg .jev04-decision { fill: #F2EDE3; stroke: #1C1C1E; stroke-width: 1; }
+#jev04-svg .jev04-focal { fill: #F2EDE3; stroke: #C4956A; stroke-width: 1.2; }
+#jev04-svg .jev04-edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#jev04-arrow); }
+@media print { .jev04-scroll { overflow-x: visible; } .jev04-frame { width: 100%; } #jev04-svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="jev04-scroll">
+<div class="slide bg-light jev04-frame" data-num="4">
+<svg id="jev04-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="04-confidence-gate-title 04-confidence-gate-desc">
+<title id="04-confidence-gate-title">按条件顺序设置 Jev 业务门禁</title>
+<desc id="04-confidence-gate-desc">先在 intent.confidence 小于 0.5 时转人工，否则仅当 intent.choice 等于 refund 且置信度严格大于 0.9 时进入退款流程，其余情况请求用户确认，阈值须经私有数据回测且敏感操作另需确定性权限检查或人工复核。</desc>
+<defs>
+<marker id="jev04-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#7A7876"/></marker>
+<marker id="jev04-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#C4956A"/></marker>
+<marker id="jev04-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2C2A28"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="jev04-title" x="40" y="64">置信度门禁：先判断，再进入对应分支</text>
+<g transform="scale(2)">
+<g class="jev04-edge" data-edges="4">
+<path data-from="uncertain" data-to="human" data-branch="yes" d="M256 88 H348"/>
+<path data-from="uncertain" data-to="refund-guard" data-branch="no" d="M148 116 V140"/>
+<path data-from="refund-guard" data-to="confirm" data-branch="no" d="M272 180 H280 Q288 180 288 172 V156 Q288 148 296 148 H348"/>
+<path data-from="refund-guard" data-to="refund" data-branch="yes" d="M148 220 V232 Q148 240 156 240 H312 Q320 240 320 232 V220 Q320 212 328 212 H348"/>
+</g>
+<g data-label="yes-first">
+<rect x="288" y="64" width="24" height="16" fill="#FFFFFF"/>
+<text x="300" y="76" text-anchor="middle">是</text>
+</g>
+<g data-label="no-first">
+<rect x="156" y="120" width="24" height="16" fill="#FFFFFF"/>
+<text x="168" y="132" text-anchor="middle">否</text>
+</g>
+<g data-label="no-second">
+<rect x="308" y="124" width="24" height="16" fill="#FFFFFF"/>
+<text x="320" y="136" text-anchor="middle">否</text>
+</g>
+<g data-label="yes-second">
+<rect x="208" y="216" width="24" height="16" fill="#FFFFFF"/>
+<text x="220" y="228" text-anchor="middle">是</text>
+</g>
+<g data-node="uncertain" data-condition="intent.confidence &lt; 0.5">
+<polygon class="jev04-decision" points="40,88 148,60 256,88 148,116"/>
+<text class="jev04-name" x="148" y="88" text-anchor="middle">intent.confidence</text>
+<text x="148" y="104" text-anchor="middle">&lt; 0.5 ?</text>
+</g>
+<g data-node="human">
+<rect class="jev04-node" x="348" y="64" width="112" height="48" rx="4"/>
+<text class="jev04-name" x="404" y="92" text-anchor="middle">转人工队列</text>
+</g>
+<g data-node="refund-guard" data-condition="intent.choice == refund and intent.confidence &gt; 0.9">
+<polygon class="jev04-focal" points="24,180 148,140 272,180 148,220"/>
+<text class="jev04-name" x="148" y="172" text-anchor="middle">choice == refund</text>
+<text x="148" y="190" text-anchor="middle">且 confidence &gt; 0.9 ?</text>
+</g>
+<g data-node="confirm">
+<rect class="jev04-node" x="348" y="124" width="112" height="48" rx="4"/>
+<text class="jev04-name" x="404" y="144" text-anchor="middle">请求用户确认</text>
+<text x="404" y="162" text-anchor="middle">其余情况 / else</text>
+</g>
+<g data-node="refund">
+<rect class="jev04-node" x="348" y="188" width="112" height="48" rx="4"/>
+<text class="jev04-name" x="404" y="208" text-anchor="middle">进入退款流程</text>
+<text x="404" y="226" text-anchor="middle">不等于直接转账</text>
+</g>
+<path d="M20 248 H460" fill="none" stroke="#1C1C1E" stroke-opacity="0.16"/>
+<text x="20" y="264">阈值仅为示例，需用私有业务数据回测。</text>
+<text x="20" y="280">敏感操作：确定性权限检查或人工复核。</text>
+</g>
+</svg>
+</div>
+</div>
+</body>
+</html>

@@ -17,6 +17,13 @@
         "content/glm-vs-kimi-code-benchmark/xiaohei-illustrations/02-hash-bucket.png",
         "content/glm-vs-kimi-code-benchmark/xiaohei-illustrations/03-cache-miss.png"
       ]
+    },
+    "video": {
+      "path": "content/glm-vs-kimi-code-benchmark/video/output.mp4",
+      "composition": "content/glm-vs-kimi-code-benchmark/video/index.html",
+      "duration": 60,
+      "format": "1080x1920",
+      "description": "文章视频讲解 — 双模型对决：规划分数、三处细节盲区、Building 一致性"
     }
   }
 }

@@ -43,6 +43,15 @@ font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
 - 卡片内 padding：`32px 40px 24px`（与 markdown-faithful 范例一致）
 - 段落字号：`18px / line-height 1.6`（与 markdown-faithful 范例一致）
 
+### 原文图片尺寸例外
+
+`540 × 720` 只适用于生成的文字卡、封面和封底。原文 Markdown 图片不进入该画布：
+
+- 每张原图本身就是一张独立轮播素材；
+- 保持原图宽高比，不裁切、不补黑边、不补宣纸底、不加圆角或阴影；
+- 预览容器使用 `height:auto`，导出时使用图片的 `naturalWidth × naturalHeight` 创建 PNG 画布；
+- 禁止用 `object-fit: contain` 把横图塞进 3:4 卡片。
+
 ---
 
 ## 四、Header 设计（每张卡都有）
@@ -90,7 +99,10 @@ content/_shared/avatar.jpg
   background: linear-gradient(135deg, #C4956A 0%, #8a6240 100%);
   box-shadow: 0 2px 10px rgba(28,28,30,0.18);
 }
-.avatar-wrap .avatar { width:100%; height:100%; object-fit: cover; position: relative; z-index: 1; }
+.avatar-wrap .avatar {
+  position: absolute; inset: 0; z-index: 1;
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
 .avatar-wrap .avatar-fallback {
   position: absolute; inset: 0; display: flex;
   align-items: center; justify-content: center;
@@ -98,6 +110,8 @@ content/_shared/avatar.jpg
   font-family: "Songti SC", serif; z-index: 0;
 }
 ```
+
+**验收要求**：头像加载成功时只能看到头像照片，不能看到“墨”字。`.avatar-fallback` 必须绝对定位在底层，`.avatar` 必须绝对定位并完整覆盖容器；两者不能作为普通 flex 子项并排。
 
 ### 日期自动注入
 
@@ -140,6 +154,7 @@ content/_shared/avatar.jpg
 /* ===== Body 核心样式（必须原样复制） ===== */
 .post-body p { font-size: 18px; line-height: 1.6; color: #333; margin-bottom: 8px; }
 .post-body strong { color: #1C1C1E; font-weight: 700; }   /* ❌ 禁止金色 */
+.cover .post-body strong { color: #F2EDE3; }              /* 深色封面必须显式覆盖 */
 .post-body .ink { color: #1C1C1E; font-weight: 700; }
 
 /* h3 子标题：深色，不用金色 */
@@ -175,6 +190,16 @@ code.cmd-block {
   box-shadow: 0 2px 6px rgba(196,149,106,0.3);
 }
 ```
+
+### 深浅主题文字覆盖规则
+
+正文页的墨色文字规则不能直接套到深色封面或深色封底。凡容器切换为 `#1C1C1E` 等深色背景，容器内所有承载内容的文字变体（至少包括 `p`、`strong`、`.ink`、标题、链接和代码注释）都必须由主题选择器显式指定浅色，不能依赖继承或通用正文选择器。深色封面的加粗文字固定使用：
+
+```css
+.cover .post-body strong { color: #F2EDE3; }
+```
+
+主题覆盖选择器必须与实际 HTML 容器 class 一致，并放在通用正文规则之后。生成后需在浏览器中读取最终 computed style 验证，不能只搜索 CSS 源码。
 
 ---
 

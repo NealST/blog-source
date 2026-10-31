@@ -1,0 +1,815 @@
+{
+  "passed": true,
+  "colors": {
+    "strong": [
+      "rgb(28, 28, 30)"
+    ],
+    "coverStrong": [
+      "rgb(242, 237, 227)"
+    ],
+    "h3": [
+      "rgb(44, 42, 40)"
+    ],
+    "bullet": [
+      "rgb(153, 153, 153)"
+    ],
+    "paper": [
+      "rgb(242, 237, 227)"
+    ]
+  },
+  "geometry": [
+    {
+      "slide": "slide-1",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 355.25,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-001",
+          "start": 0,
+          "end": 219,
+          "text": "Codex、Claude Code、Gemini CLI、OpenHands 这类工具并不仅是大模型的简单外壳。它们各自封装了完整的 Agent 控制循环、工具调用、文件读写与会话状态管理，这类运行环境通常被统称为 Agent Harness。在实际工程落地中，每套 harness 的启动方式、流式事件格式、会话恢复机制以及产物交付方式各不相同。如果业务系统需要对接多套 harness，往往必须为每套运行时重复开发一套接入与适配逻辑。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-2",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 543.34375,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-002",
+          "start": 0,
+          "end": 196,
+          "text": "为了解决接入层的重复建设与适配碎片化问题，社区提出了 UHP 协议（Unified Harness Protocol），将任务分发、流式状态、多轮会话以及文件产物等核心行为抽象为统一的 HTTP 交互契约；开源项目 HarnessRouter 则是该协议的参考网关实现，让业务系统只需对接一套兼容 OpenAI Responses 的标准接口，即可按需调度并路由至不同的底层 Harness。"
+        },
+        {
+          "id": "block-003",
+          "start": 0,
+          "end": 69,
+          "text": "本文深入拆解 UHP 协议的设计理念、HarnessRouter 的网关运行机制与部署方式，并客观梳理了其在当前阶段的工程边界与落地考量。"
+        },
+        {
+          "id": "block-004",
+          "start": 0,
+          "end": 10,
+          "text": "什么是 UHP 协议"
+        },
+        {
+          "id": "block-005",
+          "start": 0,
+          "end": 54,
+          "text": "要理解 UHP 协议，首先需要明确它所服务的对象，也就是它试图标准化的底层环境：Agent Harness。"
+        },
+        {
+          "id": "block-006",
+          "start": 0,
+          "end": 15,
+          "text": "1. 什么是 Harness？"
+        },
+        {
+          "id": "block-007",
+          "start": 0,
+          "end": 55,
+          "text": "这里的 Harness 指的是一套完整的 Agent 运行时环境（Runtime），通常涵盖以下核心组成部分："
+        },
+        {
+          "id": "block-008",
+          "start": 0,
+          "end": 23,
+          "text": "驱动大模型持续推理、决策和工具调用的控制循环；"
+        }
+      ]
+    },
+    {
+      "slide": "slide-3",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 467.953125,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-009",
+          "start": 0,
+          "end": 30,
+          "text": "Shell 命令执行、文件增删改查、代码检索等内置基础工具；"
+        },
+        {
+          "id": "block-010",
+          "start": 0,
+          "end": 55,
+          "text": "对外部扩展体系的接入支持，例如 MCP（Model Context Protocol）、Skills 或插件；"
+        },
+        {
+          "id": "block-011",
+          "start": 0,
+          "end": 42,
+          "text": "保存对话历史与文件系统工作目录（Working Directory）的会话状态管理；"
+        },
+        {
+          "id": "block-012",
+          "start": 0,
+          "end": 26,
+          "text": "将执行过程轨迹与最终交付结果返回给调用方的通信机制。"
+        },
+        {
+          "id": "block-013",
+          "start": 0,
+          "end": 80,
+          "text": "尽管 Codex、Claude Code、OpenHands 等工具都能胜任上述工作，但它们暴露的命令行参数、事件通知格式、会话管理方式以及恢复机制却大相径庭。"
+        },
+        {
+          "id": "block-014",
+          "start": 0,
+          "end": 81,
+          "text": "在产品研发中直接集成这些工具时，工程难度往往不在于发起第一次指令，而在于后续如何可靠地处理流式进度输出、超时与主动取消、产物回收、失败重试以及跨轮次的上下文恢复。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-4",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 525.953125,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-015",
+          "start": 0,
+          "end": 28,
+          "text": "2. 协议如何标准化 Harness：UHP 的契约设计"
+        },
+        {
+          "id": "block-016",
+          "start": 0,
+          "end": 75,
+          "text": "针对上述各 Harness 之间协议互不通用的问题，UHP 在业务产品与底层的 Agent Harness 之间建立了一层统一的 HTTP 交互契约："
+        },
+        {
+          "id": "block-017",
+          "start": 0,
+          "end": 62,
+          "text": "产品或服务  ── UHP/HTTP ──>  UHP Server  ── 实现自定 ──>  Agent Harness"
+        },
+        {
+          "id": "block-018",
+          "start": 0,
+          "end": 74,
+          "text": "协议只约束客户端与服务端之间的交互标准，不强制限制服务端底层的执行技术选型（无论是容器、操作系统子进程、任务队列还是远程 Worker 集群均可）。"
+        },
+        {
+          "id": "block-019",
+          "start": 0,
+          "end": 44,
+          "text": "为了完整表达 Agent Harness 的能力，UHP 抽象出了以下 6 个核心对象："
+        },
+        {
+          "id": "block-020",
+          "start": 0,
+          "end": 104,
+          "text": "Harness：一套可唯一定位的运行时配置实体，由底层运行时（Base Runtime）、默认模型、系统提示词（System Prompt）、Skills、MCP Server、插件以及步数/时间预算等构成；"
+        },
+        {
+          "id": "block-021",
+          "start": 0,
+          "end": 26,
+          "text": "Response：单次任务交互的输入请求与执行结果；"
+        }
+      ]
+    },
+    {
+      "slide": "slide-5",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 533.546875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-022",
+          "start": 0,
+          "end": 45,
+          "text": "Session：连续的 Response 序列，共享对话上下文历史与持久化的文件工作目录；"
+        },
+        {
+          "id": "block-023",
+          "start": 0,
+          "end": 51,
+          "text": "File 与 Container：随任务上传的输入文件，以及 Agent 在执行过程中生成的输出产物；"
+        },
+        {
+          "id": "block-024",
+          "start": 0,
+          "end": 49,
+          "text": "Environment 与 Memory：可选挂载的只读项目基线环境，以及跨会话持久化的长效记忆；"
+        },
+        {
+          "id": "block-025",
+          "start": 0,
+          "end": 66,
+          "text": "Streaming、Cancellation 与 Error：标准的流式进度事件、异步任务取消机制，以及结构化、机器可读的错误反馈。"
+        },
+        {
+          "id": "block-026",
+          "start": 0,
+          "end": 112,
+          "text": "在交互设计上，客户端首次提交任务时无需显式调用建会话接口，服务端会自动隐式创建 Session；当需要继续对话时，客户端只需将上一轮的 response.id 作为 previous_response_id 随请求传回即可。"
+        },
+        {
+          "id": "block-027",
+          "start": 0,
+          "end": 44,
+          "text": "这一设计既避免了一次性单轮任务繁琐的建会话步骤，也让多轮长任务的上下文传递保持简洁自然。"
+        },
+        {
+          "id": "block-028",
+          "start": 0,
+          "end": 48,
+          "text": "在协议版本管理上，UHP 采用基于日期的版本号规则（例如当前规范版本为 2026-10-19）。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-6",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 550.765625,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-028",
+          "start": 48,
+          "end": 145,
+          "text": "客户端可以通过 HTTP 请求头 UHP-Version 指定协议版本，也可以请求 GET /v1/uhp 端点查询服务端的当前版本、能力清单及符合性等级（Conformance Level）。"
+        },
+        {
+          "id": "block-029",
+          "start": 0,
+          "end": 54,
+          "text": "协议定义了 Core、Extended、Full 三个依次递增的规范等级，并配有一套标准化的一致性测试套件。"
+        },
+        {
+          "id": "block-030",
+          "start": 0,
+          "end": 9,
+          "text": "一个最小的协议示例"
+        },
+        {
+          "id": "block-031",
+          "start": 0,
+          "end": 75,
+          "text": "下面是一条基础的流式任务请求。input 为任务描述，model 指定模型，metadata.harness_id 指定执行该任务的 Harness："
+        },
+        {
+          "id": "block-032",
+          "start": 0,
+          "end": 162,
+          "text": "{\n  \"input\": \"请用三点概括 README.md\",\n  \"model\": \"claude-sonnet-4.6\",\n  \"metadata\": {\n    \"harness_id\": \"chrn_08dae611630d467ab3e67ed792570ae5\"\n  },\n  \"stream\": true\n}"
+        },
+        {
+          "id": "block-033",
+          "start": 0,
+          "end": 27,
+          "text": "将该请求发送至 POST /v1/responses。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-7",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 516.78125,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-033",
+          "start": 27,
+          "end": 120,
+          "text": "由于启用了 \"stream\": true，服务端会通过 Server-Sent Events（SSE）通道持续推送事件流。每条事件的 data 均为独立的 JSON 对象，核心结构如下："
+        },
+        {
+          "id": "block-034",
+          "start": 0,
+          "end": 350,
+          "text": "data: {\"type\":\"response.created\",\"sequence_number\":0,\"response\":{\"id\":\"resp_a1b2c3\",\"status\":\"in_progress\"}}\n\ndata: {\"type\":\"response.output_text.delta\",\"sequence_number\":1,\"item_id\":\"msg_1\",\"output_index\":0,\"content_index\":0,\"delta\":\"第一点\"}\n\ndata: {\"type\":\"response.completed\",\"sequence_number\":2,\"response\":{\"id\":\"resp_a1b2c3\",\"status\":\"completed\"}}"
+        },
+        {
+          "id": "block-035",
+          "start": 0,
+          "end": 89,
+          "text": "其中 sequence_number 从 0 开始严格单调递增，客户端可以借助该字段检测事件流是否存在乱序或丢包。流式响应的最后一条事件会返回完整的 Response 数据对象："
+        }
+      ]
+    },
+    {
+      "slide": "slide-8",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 439.484375,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-036",
+          "start": 0,
+          "end": 197,
+          "text": "{\n  \"id\": \"resp_a1b2c3\",\n  \"object\": \"response\",\n  \"created_at\": 1786400000,\n  \"status\": \"completed\",\n  \"error\": null,\n  \"incomplete_details\": null,\n  \"previous_response_id\": null,// 完整代码见公众号原文「墨筝」"
+        },
+        {
+          "id": "block-037",
+          "start": 0,
+          "end": 91,
+          "text": "若要在后续交互中延续该会话，下一轮请求只需传入 \"previous_response_id\": \"resp_a1b2c3\"。服务端会自动还原该轮对话的历史上下文与对应的工作目录状态。"
+        },
+        {
+          "id": "block-038",
+          "start": 0,
+          "end": 25,
+          "text": "在处理任务状态与错误时，需要特别注意以下三点机制："
+        },
+        {
+          "id": "block-039",
+          "start": 0,
+          "end": 21,
+          "text": "状态分类清晰：任务状态不仅包含成功与失败。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-9",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 546.046875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-039",
+          "start": 21,
+          "end": 160,
+          "text": "in_progress 表示正在执行；completed 表示正常执行完毕；incomplete 表示因为达到预设步数上限（max_step）或超时（timeout_seconds）而终止；cancelled 表示被调用方主动取消；只有底层执行发生异常时才会置为 failed。"
+        },
+        {
+          "id": "block-040",
+          "start": 0,
+          "end": 120,
+          "text": "长任务脱钩连接：客户端的 SSE 连接意外断开并不会导致后台任务终止，任务仍会在服务端继续运行。客户端可通过 GET /v1/responses/{response_id} 随时查询最新状态与产物；若确实需要中止任务，必须显式调用取消接口。"
+        },
+        {
+          "id": "block-041",
+          "start": 0,
+          "end": 180,
+          "text": "区分请求失败与任务失败：对于参数非法或鉴权错误等“请求级问题”，服务端直接返回 HTTP 4xx/5xx 状态码及统一的 error 对象；而当 Harness 或底层模型在执行期间出现异常时，由于请求本身已被正常受理，HTTP 状态码依然为 200，但 Response 对象中的 status 会被标记为 failed，并携带机器可读的 error 信息。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-10",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 491.546875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-041",
+          "start": 180,
+          "end": 212,
+          "text": "因此，客户端不能仅依据 HTTP 状态码来判断任务是否执行成功。"
+        },
+        {
+          "id": "block-042",
+          "start": 0,
+          "end": 31,
+          "text": "它与 OpenAI Responses API、MCP 的关系"
+        },
+        {
+          "id": "block-043",
+          "start": 0,
+          "end": 96,
+          "text": "UHP 的任务接口设计参考并沿用了 OpenAI Responses API 的基础结构。任务统一提交至 POST /v1/responses，文本流式事件和响应体结构也尽量复用业界既有规范。"
+        },
+        {
+          "id": "block-044",
+          "start": 0,
+          "end": 75,
+          "text": "在此基础上，UHP 通过 metadata 以及专有对象扩展了 Harness 选型、持久化会话、文件管理、主动取消、Skills 与工具治理等能力。"
+        },
+        {
+          "id": "block-045",
+          "start": 0,
+          "end": 169,
+          "text": "需要注意，这种兼容并非“完全等价”。在 UHP 体系中，工具调用是由底层 Harness 自主完成并执行的，而非交由 API 客户端回传执行结果。因此标准 Responses API 中的 tools 和 include 字段在 UHP 规范中虽然被解析接收，但会被静默忽略，并记录于 metadata.ignored_fields 中。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-11",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 506.75,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-046",
+          "start": 0,
+          "end": 108,
+          "text": "UHP 与 MCP 解决的则是完全不同层级的问题：MCP（Model Context Protocol）连接的是 Agent 与外部工具或数据源；而 UHP 连接的是业务应用系统与完整的 Agent Harness。"
+        },
+        {
+          "id": "block-047",
+          "start": 0,
+          "end": 80,
+          "text": "二者通常协同工作：业务应用通过 UHP 向 HarnessRouter 下发任务，Harness 在沙箱内部运行期间再调用配置好的 MCP 工具来完成具体操作。"
+        },
+        {
+          "id": "block-048",
+          "start": 0,
+          "end": 22,
+          "text": "HarnessRouter 的定位与核心概念"
+        },
+        {
+          "id": "block-049",
+          "start": 0,
+          "end": 119,
+          "text": "简单来说，UHP 是一套通信协议规范，定义了应用该如何调度 Agent Harness；HarnessRouter 则是该协议的开源参考实现，负责执行具体的任务分发与环境管理。UHP 属于开放协议，其他平台和服务同样可以独立实现这套协议。"
+        },
+        {
+          "id": "block-050",
+          "start": 0,
+          "end": 32,
+          "text": "在 HarnessRouter 中，有两个核心概念需要区分清楚："
+        },
+        {
+          "id": "block-051",
+          "start": 0,
+          "end": 56,
+          "text": "Harness Base：指底层的运行时引擎，例如 codex、claude-code 或 openhands；"
+        }
+      ]
+    },
+    {
+      "slide": "slide-12",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 368.5625,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-052",
+          "start": 0,
+          "end": 120,
+          "text": "配置好的 Harness（Configured Harness）：指基于某个基础运行时，固化了特定模型、系统提示词、Skills、MCP Server、工具调用权限与任务预算的具体配置实例，由服务端分配唯一的 chrn_... 格式 ID。"
+        },
+        {
+          "id": "block-053",
+          "start": 0,
+          "end": 85,
+          "text": "应用通常通过 chrn_... 标识来选择具体的 Harness。这样一来，同一个底层的 Base 运行时便可以灵活派生出多套权限、定位和行为完全不同的专用 Agent。"
+        },
+        {
+          "id": "block-054",
+          "start": 0,
+          "end": 61,
+          "text": "HarnessRouter 将多套 Agent Harness 聚合在统一的 UHP API 背后，屏蔽了各运行时的差异。"
+        },
+        {
+          "id": "block-055",
+          "start": 0,
+          "end": 64,
+          "text": "下图展示了从用户发起操作，到业务后端提交任务，再到 HarnessRouter 调度具体 Harness 并返回结果的完整链路："
+        }
+      ]
+    },
+    {
+      "slide": "slide-13",
+      "imageOnly": true,
+      "width": 540,
+      "height": 303.109375,
+      "used": 303.109375,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    },
+    {
+      "slide": "slide-14",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 525.75,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-057",
+          "start": 0,
+          "end": 37,
+          "text": "通过这套统一接口，业务系统无需再为不同 Harness 分别处理以下问题："
+        },
+        {
+          "id": "block-058",
+          "start": 0,
+          "end": 26,
+          "text": "选型与配置不同的 harness、模型与模型提供商；"
+        },
+        {
+          "id": "block-059",
+          "start": 0,
+          "end": 23,
+          "text": "启动长任务并对外提供标准化的 SSE 进度流；"
+        },
+        {
+          "id": "block-060",
+          "start": 0,
+          "end": 23,
+          "text": "持久化管理会话上下文、磁盘工作目录与执行快照；"
+        },
+        {
+          "id": "block-061",
+          "start": 0,
+          "end": 25,
+          "text": "任务输入文件的分发与 Agent 生成产物的归集；"
+        },
+        {
+          "id": "block-062",
+          "start": 0,
+          "end": 21,
+          "text": "任务执行取消机制、最大步数限制与超时控制；"
+        },
+        {
+          "id": "block-063",
+          "start": 0,
+          "end": 19,
+          "text": "统一错误分类、重试策略与幂等执行语义；"
+        },
+        {
+          "id": "block-064",
+          "start": 0,
+          "end": 33,
+          "text": "挂载 Skills、MCP Server、外部插件及只读基线环境。"
+        },
+        {
+          "id": "block-065",
+          "start": 0,
+          "end": 155,
+          "text": "目前 HarnessRouter 已经适配了包括 Codex、Claude Code、Hermes、Pi、DeepSeek Harness、OpenCode、Gemini CLI、Aider、OpenHands、Agent Zero、nanobot 和 ZeroClaw 在内的 26 个主流 harness。"
+        },
+        {
+          "id": "block-066",
+          "start": 0,
+          "end": 58,
+          "text": "PS：这 26 个适配项代表系统提供了接入基础，但并不意味着所有组合都能在所有模型与 Provider 下稳定工作。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-15",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 520.546875,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-066",
+          "start": 58,
+          "end": 152,
+          "text": "选型时建议查阅官方支持矩阵：https://github.com/HarnessRouter/harnessrouter/blob/main/docs/support-matrix.md。"
+        },
+        {
+          "id": "block-067",
+          "start": 0,
+          "end": 13,
+          "text": "项目主要提供两种部署形态："
+        },
+        {
+          "id": "block-068",
+          "start": 0,
+          "end": 69,
+          "text": "Community Edition（社区版）：支持私有化自托管，使用自身的 Provider API Key，数据均持久化在本地存储卷中；"
+        },
+        {
+          "id": "block-069",
+          "start": 0,
+          "end": 61,
+          "text": "HarnessRouter Cloud（云托管版）：官方托管服务，按会话提供独立的虚拟化沙箱环境，自带弹性伸缩与运维能力。"
+        },
+        {
+          "id": "block-070",
+          "start": 0,
+          "end": 35,
+          "text": "下文将重点介绍可直接私有化部署的 Community Edition。"
+        },
+        {
+          "id": "block-071",
+          "start": 0,
+          "end": 19,
+          "text": "HarnessRouter 的实现原理"
+        },
+        {
+          "id": "block-072",
+          "start": 0,
+          "end": 12,
+          "text": "1. 单容器内的三层架构"
+        },
+        {
+          "id": "block-073",
+          "start": 0,
+          "end": 38,
+          "text": "Community Edition 默认镜像内部包含三个协同工作的核心进程："
+        }
+      ]
+    },
+    {
+      "slide": "slide-16",
+      "imageOnly": true,
+      "width": 540,
+      "height": 337.5,
+      "used": 337.5,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    },
+    {
+      "slide": "slide-17",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 489.140625,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": [
+        {
+          "id": "block-075",
+          "start": 0,
+          "end": 73,
+          "text": "在容器对外端口映射中，仅有 Console 的 3000 端口暴露到容器外部，Gateway 与 Runner 默认仅监听容器内部的回环网络地址。"
+        },
+        {
+          "id": "block-076",
+          "start": 0,
+          "end": 95,
+          "text": "Console（控制台）：Web 可视化管理面板，同时兼任 API 的外部反向代理入口。主要用于配置 Provider 凭证、创建与调试 harness、检索历史会话及生成 API Key。"
+        },
+        {
+          "id": "block-077",
+          "start": 0,
+          "end": 177,
+          "text": "Gateway（网关层）：协议处理与控制核心。负责 UHP/Responses 接口路由、鉴权与 Workspace 权限隔离、harness 配置解析、模型路由、幂等校验、会话管理、任务取消以及产物文件索引。在自托管模式下，元数据持久化存储于 SQLite，大型文本和会话快照存储于文件系统，敏感凭证则由内置的本地 Secret Store 加密管理。"
+        },
+        {
+          "id": "block-078",
+          "start": 0,
+          "end": 24,
+          "text": "Runner（执行层）：底层环境与进程调度中枢。"
+        }
+      ]
+    },
+    {
+      "slide": "slide-18",
+      "imageOnly": false,
+      "width": 540,
+      "height": 720,
+      "used": 170.15625,
+      "overflow": false,
+      "horizontal": false,
+      "fragments": []
+    }
+  ],
+  "png_count": 18,
+  "exports": [
+    {
+      "filename": "HarnessRouter-01.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-02.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-03.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-04.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-05.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-06.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-07.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-08.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-09.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-10.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-11.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-12.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-13.png",
+      "width": 2560,
+      "height": 1437,
+      "imageOnly": true
+    },
+    {
+      "filename": "HarnessRouter-14.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-15.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-16.png",
+      "width": 1600,
+      "height": 1000,
+      "imageOnly": true
+    },
+    {
+      "filename": "HarnessRouter-17.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    },
+    {
+      "filename": "HarnessRouter-18.png",
+      "width": 1080,
+      "height": 1440,
+      "imageOnly": false
+    }
+  ],
+  "mobile": "passed"
+}

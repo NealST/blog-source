@@ -1,0 +1,51 @@
+{
+  "version": "1.0",
+  "created": "2026-07-25T15:34:00+08:00",
+  "source": "source/_posts/pxpipe-claude-code-token-cost.md",
+  "title": "pxpipe 是如何让 Claude Code 输入 Token 减少 53% 的",
+  "slug": "pxpipe-claude-code-token-cost",
+  "cover": {
+    "style": "medium"
+  },
+  "illustrations": {
+    "style": "mixed"
+  },
+  "outputs": {
+    "wechat": {
+      "html": "content/pxpipe-claude-code-token-cost/preview.html",
+      "cover_image": "content/pxpipe-claude-code-token-cost/cover.png",
+      "title": "pxpipe 是如何让 Claude Code 输入 Token 减少 53% 的",
+      "author": "墨筝",
+      "digest": "pxpipe 将 Claude Code 请求中的高密度文本渲染成 PNG，以更低的图片 Token 成本交给模型读取。实测输入量下降 53%，但精确字符存在误读风险。",
+      "markdown": "source/_posts/pxpipe-claude-code-token-cost.md",
+      "images": [
+        "content/pxpipe-claude-code-token-cost/xiaohei-illustrations/01-context-suitcase.png",
+        "content/pxpipe-claude-code-token-cost/xiaohei-illustrations/02-text-to-png.png",
+        "content/pxpipe-claude-code-token-cost/配图-3.png",
+        "content/pxpipe-claude-code-token-cost/xiaohei-illustrations/03-conversion-gate.png",
+        "content/pxpipe-claude-code-token-cost/xiaohei-illustrations/04-exact-string-risk.png",
+        "content/pxpipe-claude-code-token-cost/xiaohei-illustrations/05-savings-balance.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/pxpipe-claude-code-token-cost/pxpipe-claude-code-token-cost-小红书版.html",
+      "images_dir": "content/pxpipe-claude-code-token-cost/xhs-images",
+      "copy": {
+        "title": "输入Token减少53%｜pxpipe实测",
+        "body": "Claude Code 的请求里，系统提示词、工具说明、旧对话、代码和日志会被反复发送。pxpipe 在本地把适合转换的高密度文本渲染成 PNG，再交给模型读取。一组编码任务实测，输入 Token 减少了 53%。\n\n它不会无脑转图片，而是先比较文本与图片的 Token 成本；最近几轮对话仍保留文本，静态提示词、大文件和终端输出按阈值转换。\n\n代价也很明确：模型可能看懂代码，却认错 ID、哈希或密钥里的单个字符。要求字节级准确的任务不适合使用。\n\n完整原理、安装方式和模型配置见公众号「墨筝」。\n\n.\n#AI工具 #AI编程 #ClaudeCode #Token优化 #开发者工具 #开源工具 #效率工具 #程序员 #大模型 #独立开发",
+        "tags": [
+          "#AI工具",
+          "#AI编程",
+          "#ClaudeCode",
+          "#Token优化",
+          "#开发者工具",
+          "#开源工具",
+          "#效率工具",
+          "#程序员",
+          "#大模型",
+          "#独立开发"
+        ]
+      }
+    }
+  }
+}

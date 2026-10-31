@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import type { Manifest } from './cdp-utils.ts';
 
 // ─── Constants ───
@@ -293,6 +294,7 @@ export async function uploadRemoteImagesInHtml(html: string, token: string): Pro
 
   for (const { full, remoteUrl } of matches) {
     let tmpPath: string | null = null;
+    let convertedPath: string | null = null;
     try {
       const res = await fetchWithRetry(remoteUrl, { ...BUN_FETCH_OPTS });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -318,7 +320,24 @@ export async function uploadRemoteImagesInHtml(html: string, token: string): Pro
       const buffer = Buffer.from(await res.arrayBuffer());
       fs.writeFileSync(tmpPath, buffer);
 
-      const cdnUrl = await uploadContentImage(token, tmpPath);
+      // Substack commonly serves WebP bytes, which WeChat's uploadimg API
+      // rejects. Large source screenshots can also exceed its practical
+      // limits. On macOS, normalize every downloaded image to a bounded JPEG.
+      let uploadPath = tmpPath;
+      if (process.platform === 'darwin') {
+        const normalizedPath = path.join(tmpDir, `${path.parse(fileName).name}-wechat.jpg`);
+        execFileSync('sips', [
+          '-Z', '1600',
+          '-s', 'format', 'jpeg',
+          '-s', 'formatOptions', '82',
+          tmpPath,
+          '--out', normalizedPath,
+        ], { stdio: 'ignore' });
+        uploadPath = normalizedPath;
+        convertedPath = normalizedPath;
+      }
+
+      const cdnUrl = await uploadContentImage(token, uploadPath);
       processed = processed.replace(full, `src="${cdnUrl}"`);
       uploaded++;
 
@@ -331,6 +350,9 @@ export async function uploadRemoteImagesInHtml(html: string, token: string): Pro
     } finally {
       if (tmpPath && fs.existsSync(tmpPath)) {
         try { fs.unlinkSync(tmpPath); } catch {}
+      }
+      if (convertedPath && fs.existsSync(convertedPath)) {
+        try { fs.unlinkSync(convertedPath); } catch {}
       }
     }
   }

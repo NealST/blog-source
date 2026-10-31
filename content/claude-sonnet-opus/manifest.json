@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "created": "2026-10-16T00:00:00+08:00",
+  "source": "source/_posts/claude-sonnet-opus.md",
+  "title": "Claude Sonnet 5.5 对比 Opus 5.5 与 Sonnet 5",
+  "outputs": {
+    "wechat": {
+      "html": "/Users/nealkaffrey/projects/blog-source/content/claude-sonnet-opus/preview.html",
+      "cover_image": "/Users/nealkaffrey/projects/blog-source/content/claude-sonnet-opus/cover.png",
+      "title": "Claude Sonnet 5.5 对比 Opus 5.5 与 Sonnet 5",
+      "author": "墨筝",
+      "digest": "Sonnet 5.5 单价只有 Opus 5.5 的一半，但高强度思考下单任务总成本可能反而更高。本文拆解真实成本、思考档位与三款模型的日常分工策略。",
+      "images": [
+        "/Users/nealkaffrey/projects/blog-source/content/claude-sonnet-opus/xiaohei-illustrations/01-cheap-token-heavy-bill.png",
+        "/Users/nealkaffrey/projects/blog-source/content/claude-sonnet-opus/xiaohei-illustrations/02-effort-overthinking.png",
+        "/Users/nealkaffrey/projects/blog-source/content/claude-sonnet-opus/xiaohei-illustrations/03-model-escalation-workflow.png"
+      ],
+      "markdown": "/Users/nealkaffrey/projects/blog-source/source/_posts/claude-sonnet-opus.md"
+    },
+    "xiaohongshu": {
+      "html": "content/claude-sonnet-opus/Claude模型对比-小红书版.html",
+      "images_dir": "content/claude-sonnet-opus/xiaohongshu",
+      "copy": {
+        "title": "Sonnet半价却更贵｜Claude选型",
+        "body": "Sonnet 5.5 的输入输出单价只有 Opus 5.5 的一半，但把思考档位拉到 Max，单任务总成本反而可能贵一倍多。\n\n问题不在标价，而在隐藏的推理 Token。Sonnet 5.5 在高强度思考下平均输出约 19.3 万 Token，比 Opus 5.5 多近 60%。\n\n日常开发可以从 Sonnet 5.5 起步，用自动化检查把关；任务失败后升级到 Medium 档 Opus，而不是继续硬拉 Sonnet。复杂架构、跨仓库重构和高代价排错，则直接交给 Opus。\n\n完整跑分、接口变化和模型分工见公众号「墨筝」。",
+        "tags": [
+          "AI",
+          "Claude",
+          "Sonnet",
+          "Opus",
+          "模型选型",
+          "AI编程",
+          "ClaudeCode",
+          "Token成本",
+          "开发者",
+          "人工智能"
+        ]
+      }
+    }
+  }
+}

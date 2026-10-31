@@ -1,7 +1,7 @@
 # 墨筝风格排版规范
 
 > 公众号头图、文章配图、排版的统一规范。
-> 所有图片产出为 HTML 文件，浏览器打开后点击下载按钮导出 PNG。
+> 头图默认由 TopView 生成 PNG；品牌信息图仍由 HTML 模板导出 PNG。
 
 ---
 
@@ -21,7 +21,46 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 
 ---
 
-## 二、公众号头图（HTML 可下载）
+## 二、公众号头图（TopView 默认）
+
+公众号头图默认根据文章内容调用 TopView 生成。HTML 模板只作为用户明确要求可编辑封面时的备选方案。
+
+### 内容驱动的提示词策略
+
+1. **先定注意力钩子**：从文章中只选一个最强信息，例如反常识结果、量化收益、明显冲突或关键动作。不要在一张图里罗列多个观点。
+2. **再定视觉隐喻**：把抽象概念转成一个可拍摄、可感知的主体和动作。提示词要说清谁在做什么、什么被改变，以及变化前后的视觉反差。
+3. **为裁切设计构图**：TopView 输出 16:9，但公众号头图是 2.35:1。主体和关键动作放在中央约 70% 的安全区域，上下边缘只放背景，不放重要元素。
+4. **保证缩略图冲击力**：一个主体、一个动作、一个视觉焦点。使用轮廓清楚的形状、明暗反差和少量高饱和辅助色，避免密集细节。
+5. **默认不让模型写字**：提示词加入 `no text, no letters, no numbers, no logo, no watermark`。模型生成的文字不可靠，标题不应成为画面的一部分。
+6. **风格适配内容**：技术文章使用墨色背景、暖金关键光和精密实体材质；涉及具体品牌时，可以加入一种品牌识别色作为辅助色，但不得盖过墨筝主视觉。
+7. **避开空泛科技感**：禁止无明确主体的发光球、随机粒子、抽象数据流、泛化机器人头像和密集 UI 面板。
+
+提示词至少包含：文章主题、注意力钩子、核心主体、主体动作、空间关系、镜头与光线、材质、颜色、负空间、中央裁切安全区和负面约束。
+
+生成与裁切：
+
+```bash
+python3 scripts/topview_image_gen.py \
+  --prompt "<完整英文提示词>" \
+  --output content/[slug]/cover-source.png
+```
+
+生成后使用 Pillow 居中裁切为 2.35:1，并缩放到 `1800×766` 输出 `cover.png`。保留 `cover-source.png` 和 `cover-prompt.txt`，便于追溯与重做：
+
+```bash
+python3 - <<'PY'
+from PIL import Image
+
+with Image.open("content/[slug]/cover-source.png") as image:
+  crop_height = round(image.width / (1800 / 766))
+  top = (image.height - crop_height) // 2
+  image.crop((0, top, image.width, top + crop_height)).resize(
+    (1800, 766), Image.Resampling.LANCZOS
+  ).save("content/[slug]/cover.png")
+PY
+```
+
+### HTML 备选方案
 
 ### 尺寸
 
@@ -50,9 +89,9 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 
 > 居中布局只在**纯口号/极短标题**（如发布通告、宣言型短文）时启用，长文一律走左文右图。
 
-### AI 纯直发头图 Prompt 指南（开箱即用版）
+### HTML 备选方案的 AI 背景图 Prompt
 
-当用户需要直接发给 DALL-E/Midjourney，出图后不叠文字直接作为公众号头图时，请严格采用以下规范以保持「墨筝」品牌的高级感（苹果发布会级暗调实体、重点金光点缀、极简留白）：
+以下内容仅用于给 HTML 备选封面生成背景素材。最终标题由 HTML 叠加，不要求模型生成文字；TopView 默认流程仍以上文的内容驱动策略为准。
 
 **核心视觉参数（组装到每个 Prompt 的后半段）**:
 > A highly minimalist and elegant 16:9 aspect ratio cover image for a premium tech blog. The background is a clean, matte ink-dark surface (almost black #1C1C1E). Extensive negative space, deep shadows, cinematic soft lighting, no clutter, conveying a sense of premium engineering and extreme simplicity.
@@ -60,15 +99,15 @@ python3 md2wechat_formatter.py [文章路径] -o [输出HTML路径]
 **三款标准结构示例：**
 
 1. **极致掌控 / 抽象概念型（最推荐）**
-   > A highly minimalist 16:9 aspect ratio cover image. In the exact center, the bold and sleek 3D text "[短促的英文/大写关键词]" in warm off-white. Below or intersecting the text, a [抽象的核心实体，如 minimalist glowing gold control dial] emitting a very subtle warm gold (#C4956A) light. The background is a clean, matte ink-dark solid void. Extensive negative space, cinematic soft lighting, highly legible typography, premium Apple-style presentation, absolutely no clutter.
+  > A highly minimalist 16:9 aspect ratio cover background. In the exact center, place a [抽象的核心实体，如 minimalist glowing gold control dial] emitting a very subtle warm gold (#C4956A) light. The background is a clean, matte ink-dark solid void. Extensive negative space, cinematic soft lighting, premium Apple-style presentation, absolutely no clutter, no text, no letters, no logo, no watermark.
 
 2. **速度 / 断层升级型**
-   > A minimalist 16:9 aspect ratio tech blog cover. An empty, ink-black matte void background. A single, clean, dynamic streak of warm golden light curves abstractly across the space. The elegant 3D text "[短促的英文/大写关键词]" sits perfectly integrated with the light streak. Premium aesthetic, purely abstract, maximum structural negative space, no messy background details.
+  > A minimalist 16:9 aspect ratio tech blog cover background. An empty, ink-black matte void background. A single, clean, dynamic streak of warm golden light curves around one precise physical object. Premium aesthetic, maximum structural negative space, no messy background details, no text, no letters, no logo, no watermark.
 
 3. **架构网络 / 多线并发型**
-   > A highly minimalist 16:9 cover image. The sleek 3D text "[短促的英文/大写关键词]" in the center. Connected to it are precise, fine glowing golden geometric lines and elegant nodes forming a clean topological network. Clean dark charcoal black background. Elegant tech aesthetic, highly legible text, uncrowded layout, extremely high-end rendering.
+  > A highly minimalist 16:9 cover background. One precise physical hub sits in the center, connected to a few fine glowing golden geometric lines and restrained nodes. Clean dark charcoal black background, elegant tech aesthetic, uncrowded layout, extremely high-end rendering, no text, no letters, no logo, no watermark.
 
-*(提示用户：DALL-E 3 生成带字海报时，尽量使用英文或数字，如遇拼错提示其重绘即可。长比例建议必须带上 `16:9 aspect ratio` 方便上下剪裁。)*
+长比例提示词必须包含 `16:9 aspect ratio`，并按上文安全区规则为上下裁切留出空间。
 
 ### 截图背景指引
 

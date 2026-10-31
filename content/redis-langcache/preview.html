@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LangCache 帮你节省 90% 的模型调用成本和延迟耗时</title>
+
+
+<style>
+.phone-frame { display: none; }
+@media (min-width: 500px) {
+  body { background: #e8e8e8 !important; }
+  .phone-frame {
+    display: block; width: 375px; margin: 20px auto;
+    border-radius: 36px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.08);
+    overflow: hidden; background: #fff; position: relative;
+  }
+  .phone-frame::before {
+    content: ''; display: block; height: 44px;
+    background: #fff; border-bottom: 1px solid #e5e5e5;
+    border-radius: 36px 36px 0 0;
+  }
+  .phone-frame .phone-scroll {
+    height: 680px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  .phone-frame .phone-scroll::-webkit-scrollbar { width: 4px; }
+  .phone-frame .phone-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15); border-radius: 2px;
+  }
+  .phone-frame::after {
+    content: ''; display: block; height: 28px;
+    background: #fff; border-top: 1px solid #e5e5e5;
+    border-radius: 0 0 36px 36px;
+  }
+  .tip { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+  .phone-frame .content { max-width: 100% !important; margin: 0 !important; }
+  .mode-toggle {
+    position: fixed; bottom: 20px; right: 20px; z-index: 200;
+    padding: 8px 16px; border-radius: 20px; border: 1px solid #ccc;
+    background: #fff; font-size: 13px; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: -apple-system, 'PingFang SC', sans-serif;
+  }
+  .mode-toggle:hover { background: #f5f5f5; }
+}
+body.copy-mode .phone-frame { display: none; }
+body.copy-mode .copy-view { display: block; }
+body.copy-mode .tip { position: static; }
+body:not(.copy-mode) .copy-view { display: none; }
+</style>
+</head>
+<body style="background:#F2EDE3; padding:0; margin:0">
+<section class="tip" style='background:#eee; padding:10px; text-align:center; font-size:13px; color:#999; margin-bottom:0; font-family:-apple-system, "PingFang SC", sans-serif' align="center">全选下方内容 → 复制 → 粘贴到公众号编辑器（此行不会被复制）</section>
+<div class="phone-frame"><div class="phone-scroll"><section class="content" style='max-width:680px; margin:0 auto; padding:24px 16px 40px; background-color:#F2EDE3; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-size:16px; line-height:1.8; color:#333; letter-spacing:0.3px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale' bgcolor="#F2EDE3">
+<p style="margin:4px 0 28px; text-align:left; word-break:break-word; font-size:13px; color:#999; letter-spacing:1px; line-height:1" align="left">⏱ 预计阅读 2 分钟</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">对于大模型应用来说，每次收到的问题可能都不是全新的。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">比如，一个客服助手可能会收到下面三个问题：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">“购买月度套餐后可以退款吗？”</li>
+<li style="margin-bottom:6px">“月度订阅支持退款吗？”</li>
+<li style="margin-bottom:6px">“我可以取消套餐并拿回已支付的费用吗？”</li>
+</ul>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">尽管表述略有不同，但实际问的是同一件事，答案也一样。</p>
+<figure style="margin:20px 0; text-align:center" align="center"><img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBqipqpQmd6MXVuFs-nBhdJLkwlXJk8AAClQxrG2hYKUV_0hW7LEFiBAEAAwIAA3cAAz0E.png" style="max-width:100%; height:auto; border-radius:8px; margin:0 auto" height="auto"></figure>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">对于大模型应用来说通常会把每种问法都当作新的请求，重新组织提示词，再把请求发送给底层模型，最后再生成一篇已经回答过的答案。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">前缀缓存可以减少一部分重复计算。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当多个请求使用相同的系统提示词或上下文作为开头时，模型会复用这部分公共前缀已经计算好的 KV 状态。</p>
+<figure style="margin:20px 0; text-align:center" align="center"><img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBqitqpQnODWUp_KNKxudvgwiku8RUewAClgxrG2hYKUV98W1uakrjJgEAAwIAA3cAAz0E.png" style="max-width:100%; height:auto; border-radius:8px; margin:0 auto" height="auto"></figure>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">但模型还是要处理新增的 Token，并解码生成完整答案。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">因此，即便命中了前缀缓存，模型仍然要执行一次生成调用。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">要进一步减少这类调用，应用层可以额外做一份答案缓存。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当新问题到来时，先使用 embedding 模型将其转换为向量，并与之前回答过的问题进行比较。如果找到相似度匹配的向量结果，就直接返回缓存中的回答，不再调用底层大模型。</p>
+<figure style="margin:20px 0; text-align:center" align="center"><img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBqixqpQnrB5vcDHNQTSSh0cePbrVprwAClwxrG2hYKUWDRPMBs8evnAEAAwIAA3cAAz0E.png" style="max-width:100%; height:auto; border-radius:8px; margin:0 auto" height="auto"></figure>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">一旦命中缓存，这次大语言模型调用所需的输入 Token、输出 Token 和解码时间就都可以省掉。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">理论很简单，但在实际落地时，会有很多细节需要考虑，比如 embedding 实现，相似度匹配策略和阈值、过期策略和数据隔离，失败的退避策略，错误匹配的监控等等。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis 推出了对应的托管服务 Redis LangCache，可以让你直接在应用中开箱即用。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">它会在内部生成向量、搜索以往的回答，并在再次调用模型之前返回匹配的答案。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis 还提供了访问范围控制、自定义过滤、TTL、淘汰策略和缓存监控等功能。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">我简单测试了一下，对比 Redis LangCache 与直接调用大语言模型的效果：</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">测试中，面对一个换了表达方式的问题，直接调用模型耗时 2.232 秒，使用了 514 个输入 Token 和 250 个输出 Token。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis 在 0.373 秒内返回了之前的回答，没有消耗任何大语言模型的输入或输出 Token。在这次测试中，响应速度约为直接调用模型的 6 倍。</p>
+<!-- IMAGE:配图-2.png -->
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis 官方称，LangCache 最多可以节省 90% 的 API 成本，缓存命中时的响应速度最高可提升至 15 倍。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">实际效果还是取决于业务请求中有多少内容可以安全复用。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis LangCache 上手体验：https://redis.io/langcache/</p>
+<section style="margin:36px auto 0;max-width:320px;padding:16px 24px;text-align:center;border:1px solid #e8dfd0;border-radius:8px;background:#f5efe4;"><p style="margin:0 0 4px; text-align:center; word-break:break-word; font-size:14px; color:#1C1C1E; font-weight:600; letter-spacing:1px" align="center">关注公众号「<span style="color:#C4956A;">墨筝</span>」</p><p style="margin:0; text-align:center; word-break:break-word; font-size:12px; color:#999; letter-spacing:0.5px" align="center">第一时间获取深度科技内容</p></section>
+<p style="margin:40px 0 0; text-align:center; word-break:break-word; color:#C4956A; font-size:13px; letter-spacing:3px; opacity:0.6" align="center">— END —</p>
+</section></div></div><div class="copy-view"><section class="content" style='max-width:680px; margin:0 auto; padding:24px 16px 40px; background-color:#F2EDE3; font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-size:16px; line-height:1.8; color:#333; letter-spacing:0.3px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale' bgcolor="#F2EDE3">
+<p style="margin:4px 0 28px; text-align:left; word-break:break-word; font-size:13px; color:#999; letter-spacing:1px; line-height:1" align="left">⏱ 预计阅读 2 分钟</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">对于大模型应用来说，每次收到的问题可能都不是全新的。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">比如，一个客服助手可能会收到下面三个问题：</p>
+<ul style="margin:0 0 16px; padding-left:24px">
+<li style="margin-bottom:6px">“购买月度套餐后可以退款吗？”</li>
+<li style="margin-bottom:6px">“月度订阅支持退款吗？”</li>
+<li style="margin-bottom:6px">“我可以取消套餐并拿回已支付的费用吗？”</li>
+</ul>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">尽管表述略有不同，但实际问的是同一件事，答案也一样。</p>
+<figure style="margin:20px 0; text-align:center" align="center"><img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBqipqpQmd6MXVuFs-nBhdJLkwlXJk8AAClQxrG2hYKUV_0hW7LEFiBAEAAwIAA3cAAz0E.png" style="max-width:100%; height:auto; border-radius:8px; margin:0 auto" height="auto"></figure>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">对于大模型应用来说通常会把每种问法都当作新的请求，重新组织提示词，再把请求发送给底层模型，最后再生成一篇已经回答过的答案。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">前缀缓存可以减少一部分重复计算。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当多个请求使用相同的系统提示词或上下文作为开头时，模型会复用这部分公共前缀已经计算好的 KV 状态。</p>
+<figure style="margin:20px 0; text-align:center" align="center"><img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBqitqpQnODWUp_KNKxudvgwiku8RUewAClgxrG2hYKUV98W1uakrjJgEAAwIAA3cAAz0E.png" style="max-width:100%; height:auto; border-radius:8px; margin:0 auto" height="auto"></figure>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">但模型还是要处理新增的 Token，并解码生成完整答案。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">因此，即便命中了前缀缓存，模型仍然要执行一次生成调用。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">要进一步减少这类调用，应用层可以额外做一份答案缓存。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">当新问题到来时，先使用 embedding 模型将其转换为向量，并与之前回答过的问题进行比较。如果找到相似度匹配的向量结果，就直接返回缓存中的回答，不再调用底层大模型。</p>
+<figure style="margin:20px 0; text-align:center" align="center"><img alt="" src="https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBqixqpQnrB5vcDHNQTSSh0cePbrVprwAClwxrG2hYKUWDRPMBs8evnAEAAwIAA3cAAz0E.png" style="max-width:100%; height:auto; border-radius:8px; margin:0 auto" height="auto"></figure>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">一旦命中缓存，这次大语言模型调用所需的输入 Token、输出 Token 和解码时间就都可以省掉。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">理论很简单，但在实际落地时，会有很多细节需要考虑，比如 embedding 实现，相似度匹配策略和阈值、过期策略和数据隔离，失败的退避策略，错误匹配的监控等等。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis 推出了对应的托管服务 Redis LangCache，可以让你直接在应用中开箱即用。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">它会在内部生成向量、搜索以往的回答，并在再次调用模型之前返回匹配的答案。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis 还提供了访问范围控制、自定义过滤、TTL、淘汰策略和缓存监控等功能。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">我简单测试了一下，对比 Redis LangCache 与直接调用大语言模型的效果：</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">测试中，面对一个换了表达方式的问题，直接调用模型耗时 2.232 秒，使用了 514 个输入 Token 和 250 个输出 Token。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis 在 0.373 秒内返回了之前的回答，没有消耗任何大语言模型的输入或输出 Token。在这次测试中，响应速度约为直接调用模型的 6 倍。</p>
+<!-- IMAGE:配图-2.png -->
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis 官方称，LangCache 最多可以节省 90% 的 API 成本，缓存命中时的响应速度最高可提升至 15 倍。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">实际效果还是取决于业务请求中有多少内容可以安全复用。</p>
+<p style="margin:0 0 15px; text-align:left; word-break:break-word" align="left">Redis LangCache 上手体验：https://redis.io/langcache/</p>
+<section style="margin:36px auto 0;max-width:320px;padding:16px 24px;text-align:center;border:1px solid #e8dfd0;border-radius:8px;background:#f5efe4;"><p style="margin:0 0 4px; text-align:center; word-break:break-word; font-size:14px; color:#1C1C1E; font-weight:600; letter-spacing:1px" align="center">关注公众号「<span style="color:#C4956A;">墨筝</span>」</p><p style="margin:0; text-align:center; word-break:break-word; font-size:12px; color:#999; letter-spacing:0.5px" align="center">第一时间获取深度科技内容</p></section>
+<p style="margin:40px 0 0; text-align:center; word-break:break-word; color:#C4956A; font-size:13px; letter-spacing:3px; opacity:0.6" align="center">— END —</p>
+</section></div><button class="mode-toggle" onclick="document.body.classList.toggle(&#x27;copy-mode&#x27;);this.textContent=document.body.classList.contains(&#x27;copy-mode&#x27;)?&#x27;📱 手机预览&#x27;:&#x27;📋 复制模式&#x27;">📋 复制模式</button>
+</body>
+</html>

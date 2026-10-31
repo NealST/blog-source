@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社区版单容器内的三层结构</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Geist', 'PingFang SC', sans-serif; background: #FFFFFF; color: #1C1C1E; padding: 48px 32px; }
+.frame { max-width: 1000px; margin: 0 auto; }
+.diagram-container { width: 100%; overflow-x: auto; }
+#uhparc-svg { width: 100%; min-width: 960px; display: block; background: #FFFFFF; }
+#uhparc-svg text { font-family: 'Geist', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #1C1C1E; letter-spacing: 0; }
+#uhparc-svg .t { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#uhparc-svg .nm { font-size: 12px; font-weight: 600; }
+#uhparc-svg .sub { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 8px; fill: #7A7876; }
+#uhparc-svg .cn { font-size: 8px; font-weight: 500; fill: #7A7876; }
+#uhparc-svg .zone { fill: rgba(28,28,30,0.02); stroke: rgba(28,28,30,0.30); stroke-width: 1; stroke-dasharray: 4,3; }
+#uhparc-svg .zone-lb { font-size: 8px; font-weight: 500; fill: #8C8A87; }
+#uhparc-svg .node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#uhparc-svg .input { fill: rgba(122,120,118,0.10); stroke: #8C8A87; stroke-width: 1; }
+#uhparc-svg .store { fill: rgba(28,28,30,0.05); stroke: #7A7876; stroke-width: 1; }
+#uhparc-svg .ext { fill: rgba(28,28,30,0.03); stroke: rgba(28,28,30,0.30); stroke-width: 1; }
+#uhparc-svg .focal { fill: rgba(196,149,106,0.10); stroke: #C4956A; stroke-width: 1; }
+#uhparc-svg .edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#uhparc-arrow); }
+#uhparc-svg .mask { fill: #FFFFFF; }
+@media print { .diagram-container { overflow-x: visible; } #uhparc-svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="frame">
+<div class="diagram-container">
+<svg id="uhparc-svg" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="uhparc-title uhparc-desc">
+<title id="uhparc-title">社区版单容器内的三层结构</title>
+<desc id="uhparc-desc">产品后端只访问容器对外发布的 3000 端口；容器内 Console 代理到 Gateway，Gateway 解析协议与配置并读写状态存储，再把任务交给 Runner；Runner 在会话工作目录中启动 Harness CLI，由 CLI 调用模型服务。</desc>
+<defs>
+<marker id="uhparc-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#7A7876"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text class="t" x="40" y="60">社区版单容器内的三层结构</text>
+<g transform="scale(2)">
+
+<rect class="zone" x="120" y="32" width="252" height="248" rx="8"/>
+<text class="zone-lb" x="136" y="48">容器边界 · 仅 3000 端口对外发布</text>
+
+<path class="edge" d="M96 76 H144"/>
+<path class="edge" d="M194 96 V112"/>
+<path class="edge" d="M194 156 V172"/>
+<path class="edge" d="M194 216 V232"/>
+<path class="edge" d="M244 136 H268"/>
+<path class="edge" d="M244 196 H268"/>
+<path class="edge" d="M244 254 H392"/>
+
+<rect class="mask" x="106" y="54" width="28" height="14" rx="2"/>
+<text class="sub" x="120" y="64" text-anchor="middle">:3000</text>
+<rect class="mask" x="202" y="96" width="36" height="14" rx="2"/>
+<text class="cn" x="220" y="106" text-anchor="middle">同源代理</text>
+<rect class="mask" x="202" y="156" width="36" height="14" rx="2"/>
+<text class="cn" x="220" y="166" text-anchor="middle">内部请求</text>
+<rect class="mask" x="202" y="216" width="36" height="14" rx="2"/>
+<text class="cn" x="220" y="226" text-anchor="middle">启动进程</text>
+<rect class="mask" x="246" y="114" width="20" height="14" rx="2"/>
+<text class="cn" x="256" y="124" text-anchor="middle">读写</text>
+<rect class="mask" x="246" y="174" width="20" height="14" rx="2"/>
+<text class="cn" x="256" y="184" text-anchor="middle">读写</text>
+<rect class="mask" x="300" y="232" width="36" height="14" rx="2"/>
+<text class="cn" x="318" y="242" text-anchor="middle">模型调用</text>
+
+<rect class="mask" x="12" y="56" width="84" height="40" rx="6"/>
+<rect class="input" x="12" y="56" width="84" height="40" rx="6"/>
+<text class="nm" x="54" y="74" text-anchor="middle">产品后端</text>
+<text class="sub" x="54" y="88" text-anchor="middle">UHP client</text>
+
+<rect class="mask" x="144" y="56" width="100" height="40" rx="6"/>
+<rect class="node" x="144" y="56" width="100" height="40" rx="6"/>
+<text class="nm" x="194" y="74" text-anchor="middle">控制台</text>
+<text class="sub" x="194" y="88" text-anchor="middle">Console :3000</text>
+
+<rect class="mask" x="144" y="116" width="100" height="40" rx="6"/>
+<rect class="focal" x="144" y="116" width="100" height="40" rx="6"/>
+<text class="nm" x="194" y="134" text-anchor="middle">网关层</text>
+<text class="sub" x="194" y="148" text-anchor="middle">Gateway :8080</text>
+
+<rect class="mask" x="144" y="176" width="100" height="40" rx="6"/>
+<rect class="node" x="144" y="176" width="100" height="40" rx="6"/>
+<text class="nm" x="194" y="194" text-anchor="middle">执行层</text>
+<text class="sub" x="194" y="208" text-anchor="middle">Runner :8081</text>
+
+<rect class="mask" x="144" y="236" width="100" height="36" rx="6"/>
+<rect class="node" x="144" y="236" width="100" height="36" rx="6"/>
+<text class="nm" x="194" y="252" text-anchor="middle">运行时</text>
+<text class="sub" x="194" y="265" text-anchor="middle">Harness CLI</text>
+
+<rect class="mask" x="268" y="116" width="88" height="40" rx="6"/>
+<rect class="store" x="268" y="116" width="88" height="40" rx="6"/>
+<text class="nm" x="312" y="134" text-anchor="middle">状态与密钥</text>
+<text class="sub" x="312" y="148" text-anchor="middle">SQLite / Secret</text>
+
+<rect class="mask" x="268" y="176" width="88" height="40" rx="6"/>
+<rect class="store" x="268" y="176" width="88" height="40" rx="6"/>
+<text class="nm" x="312" y="194" text-anchor="middle">会话目录</text>
+<text class="sub" x="312" y="208" text-anchor="middle">workspace</text>
+
+<rect class="mask" x="392" y="236" width="76" height="36" rx="6"/>
+<rect class="ext" x="392" y="236" width="76" height="36" rx="6"/>
+<text class="nm" x="430" y="252" text-anchor="middle">模型服务</text>
+<text class="sub" x="430" y="265" text-anchor="middle">Provider</text>
+</g>
+</svg>
+</div>
+</div>
+</body>
+</html>

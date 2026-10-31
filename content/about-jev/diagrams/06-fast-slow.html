@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jev 与生成模型的快慢协同</title>
+<style>
+.jev06-scroll { width: 100%; max-width: 960px; min-width: 0; overflow-x: auto; }
+.jev06-frame { width: 960px; background: #FFFFFF; }
+#jev06-svg { display: block; width: 100%; min-width: 960px; background: #FFFFFF; }
+#jev06-svg text { font-family: 'Geist', 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #1C1C1E; letter-spacing: 0; }
+#jev06-svg .jev06-title { font-family: 'Instrument Serif', 'PingFang SC', serif; font-size: 28px; }
+#jev06-svg .jev06-name { font-weight: 600; }
+#jev06-svg .jev06-node { fill: #FFFFFF; stroke: #1C1C1E; stroke-width: 1; }
+#jev06-svg .jev06-input { fill: #F2EDE3; stroke: #7A7876; stroke-width: 1; }
+#jev06-svg .jev06-focal { fill: #F2EDE3; stroke: #C4956A; stroke-width: 1.2; }
+#jev06-svg .jev06-edge { fill: none; stroke: #7A7876; stroke-width: 1; marker-end: url(#jev06-arrow); }
+@media print { .jev06-scroll { overflow-x: visible; } .jev06-frame { width: 100%; } #jev06-svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="jev06-scroll">
+<div class="slide bg-light jev06-frame" data-num="6">
+<svg id="jev06-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="06-fast-slow-title 06-fast-slow-desc">
+<title id="06-fast-slow-title">Jev 与生成模型的快慢协同</title>
+<desc id="06-fast-slow-desc">输入与上下文先交给只做快速判断的 Jev，业务代码据此选择轻量生成模型或慢推理模型及人工升级，结果转交或校验后才输出，敏感工具由代码的权限校验及沙箱提供硬边界而不是风险评分，本图省略反馈循环。</desc>
+<defs>
+<marker id="jev06-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#7A7876"/></marker>
+<marker id="jev06-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#C4956A"/></marker>
+<marker id="jev06-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2C2A28"/></marker>
+</defs>
+<rect width="960" height="600" fill="#FFFFFF"/>
+<text class="jev06-title" x="40" y="64">快判断，慢生成：控制权留在业务代码</text>
+<g transform="scale(2)">
+<g class="jev06-edge" data-edges="6">
+<path d="M132 88 H164"/>
+<path d="M284 88 H328"/>
+<path d="M372 128 V132 Q372 140 364 140 H236 Q228 140 228 148 V152"/>
+<path d="M416 128 V152"/>
+<path d="M228 200 V240"/>
+<path d="M416 216 V240"/>
+</g>
+<g data-node="input">
+<rect class="jev06-input" x="20" y="64" width="112" height="48" rx="4"/>
+<text class="jev06-name" x="32" y="84">输入 / 上下文</text>
+<text x="32" y="102">任务所需直接证据</text>
+</g>
+<g data-node="jev">
+<rect class="jev06-focal" x="164" y="64" width="120" height="48" rx="4"/>
+<text class="jev06-name" x="176" y="84">Jev 快判断</text>
+<text x="176" y="102">只判断，不生成</text>
+</g>
+<g data-node="code">
+<rect class="jev06-node" x="328" y="64" width="132" height="64" rx="4"/>
+<text class="jev06-name" x="340" y="84">业务代码路由</text>
+<text x="340" y="102">敏感工具：</text>
+<text x="340" y="120">权限 / 沙箱硬边界</text>
+</g>
+<g data-node="light">
+<rect class="jev06-node" x="164" y="152" width="128" height="48" rx="4"/>
+<text class="jev06-name" x="176" y="172">轻量模型</text>
+<text x="176" y="190">简单任务 / 生成</text>
+</g>
+<g data-node="slow">
+<rect class="jev06-node" x="328" y="152" width="132" height="64" rx="4"/>
+<text class="jev06-name" x="340" y="172">慢推理模型</text>
+<text x="340" y="190">复杂任务 / 生成</text>
+<text x="340" y="208">必要时升级人工</text>
+</g>
+<g data-node="checked-output">
+<rect class="jev06-node" x="164" y="240" width="296" height="32" rx="4"/>
+<text class="jev06-name" x="312" y="260" text-anchor="middle">结果转交 / 校验后输出</text>
+</g>
+<text x="20" y="176">风险分数</text>
+<text x="20" y="196">仅作预警</text>
+<text x="20" y="216">不替代权限</text>
+</g>
+</svg>
+</div>
+</div>
+</body>
+</html>
