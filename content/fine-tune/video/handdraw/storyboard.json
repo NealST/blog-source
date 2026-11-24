@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "presentation": {
+    "mode": "focus_diagram",
+    "reason": "每个技术机制使用一张独立白板主图，故事角色保持一致"
+  },
+  "max_hold_seconds": 10,
+  "characters": [],
+  "boards": [
+    {
+      "id": "library-problem",
+      "purpose": "建立会说话的图书馆和三种改进工具",
+      "regions": [
+        {"id": "library", "purpose": "表现通用模型懂得多但不懂具体业务", "box": [0.06, 0.06, 0.94, 0.48], "visuals": ["v01"]},
+        {"id": "three-tools", "purpose": "区分提示词、RAG 与微调", "box": [0.06, 0.52, 0.94, 0.86], "visuals": ["v03"]}
+      ]
+    },
+    {
+      "id": "upgrade-path",
+      "purpose": "让六种微调方案在同一条改造路线中递进",
+      "regions": [
+        {"id": "heavy", "purpose": "全量微调与 PEFT 的成本反差", "box": [0.05, 0.06, 0.95, 0.35], "visuals": ["v05", "v06", "v07"]},
+        {"id": "adapter", "purpose": "LoRA 与 QLoRA 的外挂和压缩逻辑", "box": [0.05, 0.38, 0.95, 0.62], "visuals": ["v09", "v10", "v11", "v12"]},
+        {"id": "direction", "purpose": "DoRA 与 QDoRA 的大小方向拆分和最终选型", "box": [0.05, 0.65, 0.95, 0.88], "visuals": ["v13", "v15", "v16", "v17", "v19", "v20"]}
+      ]
+    }
+  ],
+  "shots": [
+    {
+      "id": "s01",
+      "beats": ["opening"],
+      "board": "library-problem",
+      "type": "scene_with_background",
+      "purpose": "先让观众看到会说话却说错话的图书馆，并明确重建还是外挂的悬念",
+      "composition": {
+        "layout": "scene",
+        "focus": "v01",
+        "context": [
+          {"visual": "v01", "element": "会说话的图书馆", "explains": "把通用大模型具象化"},
+          {"visual": "v01", "element": "错误话术纸条与拆楼锤", "explains": "显示业务错误和高成本选择"}
+        ]
+      },
+      "visuals": [
+        {"id": "v01", "kind": "illustration", "subject": "会说话的图书馆拿着错误客服话术，在拆楼锤与外挂卡片之间形成选择", "background": "简化小镇街角", "source": "inputs/illustrations/01-library-problem.png", "weight": 4}
+      ]
+    },
+    {
+      "id": "s02",
+      "beats": ["tools"],
+      "board": "library-problem",
+      "type": "closeup",
+      "purpose": "用三个具体工具区分提示词、RAG 和微调的职责",
+      "composition": {
+        "layout": "sequence",
+        "focus": "v03",
+        "context": [
+          {"visual": "v03", "element": "门口便签", "explains": "临时指令对应提示词"},
+          {"visual": "v03", "element": "资料车与调校扳手", "explains": "新事实对应 RAG，长期行为对应微调"}
+        ]
+      },
+      "visuals": [
+        {"id": "v03", "kind": "illustration", "subject": "管理员依次给图书馆贴便签、推资料车、拿调校扳手", "background": "同一座图书馆门口", "source": "inputs/illustrations/02-three-tools.png", "weight": 4}
+      ]
+    },
+    {
+      "id": "s03",
+      "beats": ["full"],
+      "board": "upgrade-path",
+      "type": "closeup",
+      "purpose": "同时呈现全量改造的自由度、复制成本和遗忘风险",
+      "composition": {
+        "layout": "comparison",
+        "focus": "v05",
+        "context": [
+          {"visual": "v05", "element": "被全部搬动的书架", "explains": "所有参数都参与更新"},
+          {"visual": "v05", "element": "三座沉重复制品和掉落旧书", "explains": "每个任务存完整模型且可能遗忘"}
+        ]
+      },
+      "visuals": [
+        {"id": "v05", "kind": "illustration", "subject": "工人搬动图书馆全部书架，旁边复制出三座沉重图书馆并掉落旧书", "background": "大型改造工地", "source": "inputs/illustrations/03-full-finetune.png", "weight": 5},
+        {"id": "v06", "kind": "diagram", "subject": "短线点出复制成本，并写下重", "weight": 1}
+      ]
+    },
+    {
+      "id": "s04",
+      "beats": ["peft"],
+      "board": "upgrade-path",
+      "type": "closeup",
+      "purpose": "把 PEFT 的冻结大多数参数和只动关键部分画成可操作机关",
+      "composition": {
+        "layout": "hero_with_context",
+        "focus": "v07",
+        "context": [
+          {"visual": "v07", "element": "大多数书架上的锁", "explains": "冻结绝大多数参数"},
+          {"visual": "v07", "element": "少数金色旋钮", "explains": "只训练小部分关键参数"}
+        ]
+      },
+      "visuals": [
+        {"id": "v07", "kind": "illustration", "subject": "图书馆大多数书架上锁，管理员只转动三个金色旋钮", "background": "简化书架内部", "source": "inputs/illustrations/04-peft-locks.png", "weight": 4}
+      ]
+    },
+    {
+      "id": "s05",
+      "beats": ["lora"],
+      "board": "upgrade-path",
+      "type": "closeup",
+      "purpose": "让两条低秩卡片组合成小适配器，并显示一底座多客户复用",
+      "composition": {
+        "layout": "sequence",
+        "focus": "v09",
+        "context": [
+          {"visual": "v09", "element": "两条细长改造卡组合", "explains": "用两个小矩阵承载增量"},
+          {"visual": "v09", "element": "多个客户卡包共用图书馆", "explains": "适配器体积小且可切换"}
+        ]
+      },
+      "visuals": [
+        {"id": "v09", "kind": "illustration", "subject": "冻结书架旁两条细长卡片拼成小适配器，三个客户各拿不同卡包", "background": "共享图书馆底座", "source": "inputs/illustrations/05-lora-cards.png", "weight": 5},
+        {"id": "v10", "kind": "text_group", "subject": "挂：在冻结底座旁外挂适配器", "weight": 1}
+      ]
+    },
+    {
+      "id": "s06",
+      "beats": ["qlora"],
+      "board": "upgrade-path",
+      "type": "comparison",
+      "purpose": "把十六位到四位的压缩和按层临时展开同时讲清",
+      "composition": {
+        "layout": "comparison",
+        "focus": "v11",
+        "context": [
+          {"visual": "v11", "element": "十六格书柜压成四格箱", "explains": "冻结基座体积约缩到四分之一"},
+          {"visual": "v11", "element": "只展开当前一层", "explains": "计算时逐层临时反量化"}
+        ]
+      },
+      "visuals": [
+        {"id": "v11", "kind": "illustration", "subject": "十六格大书柜压缩成四格旅行箱，只展开正在使用的一层", "background": "干净仓库地面", "source": "inputs/illustrations/06-qlora-compress.png", "weight": 5},
+        {"id": "v12", "kind": "diagram", "subject": "短线点出压缩结果，并写下省", "weight": 1}
+      ]
+    },
+    {
+      "id": "s07",
+      "beats": ["direction"],
+      "board": "upgrade-path",
+      "type": "closeup",
+      "purpose": "建立权重向量的长度和方向，并显示 LoRA 大幅转弯时的耦合",
+      "composition": {
+        "layout": "hero_with_context",
+        "focus": "v13",
+        "context": [
+          {"visual": "v13", "element": "指南针长箭头", "explains": "方向表示内容，长度表示强弱"},
+          {"visual": "v13", "element": "附加小箭头让结果又转又变长", "explains": "LoRA 的方向和大小耦合"}
+        ]
+      },
+      "visuals": [
+        {"id": "v13", "kind": "illustration", "subject": "大指南针上的箭头展示长度与方向，附加小箭头让结果转弯同时变长", "background": "白板上的测量刻度", "source": "inputs/illustrations/07-direction-coupling.png", "weight": 4}
+      ]
+    },
+    {
+      "id": "s08",
+      "beats": ["dora"],
+      "board": "upgrade-path",
+      "type": "process_sequence",
+      "purpose": "把 DoRA 的方向和大小解耦画成两个独立控制旋钮",
+      "composition": {
+        "layout": "modules",
+        "focus": "v15",
+        "context": [
+          {"visual": "v15", "element": "方向旋钮", "explains": "LoRA 只负责调整方向"},
+          {"visual": "v15", "element": "长度旋钮", "explains": "幅值单独训练后再乘回"}
+        ]
+      },
+      "visuals": [
+        {"id": "v15", "kind": "illustration", "subject": "管理员分别操作方向旋钮和长度旋钮，让指南针箭头独立转向和伸缩", "background": "简化控制台", "source": "inputs/illustrations/08-dora-controls.png", "weight": 4},
+        {"id": "v16", "kind": "text_group", "subject": "拆：方向和大小拆开控制", "weight": 1}
+      ]
+    },
+    {
+      "id": "s09",
+      "beats": ["qdora"],
+      "board": "upgrade-path",
+      "type": "scene_with_background",
+      "purpose": "把四位压缩和 DoRA 控制台叠加，并保留生态仍在成熟的限定",
+      "composition": {
+        "layout": "scene",
+        "focus": "v17",
+        "context": [
+          {"visual": "v17", "element": "四格压缩书柜", "explains": "继承 QLoRA 的低显存"},
+          {"visual": "v17", "element": "双旋钮和施工中标牌", "explains": "继承 DoRA 的解耦并提示生态成熟度"}
+        ]
+      },
+      "visuals": [
+        {"id": "v17", "kind": "illustration", "subject": "四格压缩书柜连接方向与长度双旋钮，旁边立着施工中标牌", "background": "简化技术工坊", "source": "inputs/illustrations/09-qdora-combine.png", "weight": 4}
+      ]
+    },
+    {
+      "id": "s10",
+      "beats": ["choice"],
+      "board": "upgrade-path",
+      "type": "overview_recap",
+      "callback": "回到完整改造路线，用路牌收束所有方案与使用边界",
+      "purpose": "给出可执行选型，并把提示词、RAG、微调的边界重新圈出",
+      "composition": {
+        "layout": "accumulating_board",
+        "focus": "v19",
+        "context": [
+          {"visual": "v19", "element": "LoRA、QLoRA、DoRA、QDoRA 路牌", "explains": "按硬件和效果要求选择"},
+          {"visual": "v19", "element": "提示词、RAG、微调三层检查站", "explains": "避免不必要的训练"}
+        ]
+      },
+      "visuals": [
+        {"id": "v19", "kind": "illustration", "subject": "小管理员站在四向选型路牌前，背后是已经改好的会说话图书馆", "background": "完整改造路线白板", "source": "inputs/illustrations/10-choice-roadmap.png", "weight": 5},
+        {"id": "v20", "kind": "text_group", "subject": "选：按任务边界选择方案", "weight": 1}
+      ]
+    }
+  ]
+}

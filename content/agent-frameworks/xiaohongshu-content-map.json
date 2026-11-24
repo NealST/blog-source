@@ -1,0 +1,26 @@
+{
+  "source": "source/_posts/agent-frameworks.md",
+  "total_slides": 18,
+  "truncated": true,
+  "truncated_after": "运行时接管了框架的部分职责：第一段",
+  "slides": [
+    {"slide": 1, "source": "标题；开场第一段"},
+    {"slide": 2, "source": "01-full-comparison.png"},
+    {"slide": 3, "source": "开场第二至第四段"},
+    {"slide": 4, "source": "是否真的需要 Agent 框架：标题、前两段、列表第 1 项"},
+    {"slide": 5, "source": "是否真的需要 Agent 框架：列表第 2 至第 4 项"},
+    {"slide": 6, "source": "持久化保障至框架雏形段落"},
+    {"slide": 7, "source": "02-four-problems.png"},
+    {"slide": 8, "source": "四项问题总结；Agent 技术栈的三层架构标题与引言"},
+    {"slide": 9, "source": "三层架构列表 3 项"},
+    {"slide": 10, "source": "03-three-layers.png"},
+    {"slide": 11, "source": "Agent Framework vs Agent Harness vs Agent Protocol：标题、引言、框架定义"},
+    {"slide": 12, "source": "运行时定义、协议定义"},
+    {"slide": 13, "source": "04-framework-harness-protocol.png"},
+    {"slide": 14, "source": "它们并非互相替代的关系：完整章节"},
+    {"slide": 15, "source": "迁移成本截然不同：完整章节"},
+    {"slide": 16, "source": "配图-3.png"},
+    {"slide": 17, "source": "运行时接管了框架的部分职责：标题与第一段"},
+    {"slide": 18, "source": "全文结尾建议中的原句；公众号阅读引导"}
+  ]
+}

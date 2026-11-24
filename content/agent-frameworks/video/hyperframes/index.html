@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026 AI Agent 框架对比</title>
+<style>
+@font-face{font-family:"ZCOOL XiaoWei";src:url("fonts/zcool-xiaowei.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"Noto Sans SC";src:url("fonts/noto-sans-sc.ttf") format("truetype");font-style:normal;font-weight:100 900;font-display:swap}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#1C1C1E;color:#F2EDE3}
+body{font-family:"Noto Sans SC",sans-serif}
+[data-composition-id="agent-frameworks-video"]{position:relative;width:1080px;height:1920px;overflow:hidden;background:#1C1C1E}
+.clip{position:absolute}
+section.clip{inset:0;overflow:hidden;background:#1C1C1E}
+.scene-bg{position:absolute;inset:0;background:radial-gradient(circle at 78% 24%,rgba(196,149,106,.22),transparent 34%),#1C1C1E}
+.grid{position:absolute;inset:-80px;background-image:linear-gradient(rgba(242,237,227,.055) 2px,transparent 2px),linear-gradient(90deg,rgba(242,237,227,.055) 2px,transparent 2px);background-size:80px 80px}
+.grain{position:absolute;inset:0;opacity:.13;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E")}
+.ghost{position:absolute;font-family:"IBM Plex Mono",monospace;font-size:260px;font-weight:700;color:rgba(196,149,106,.10);letter-spacing:-.08em;white-space:nowrap}
+.scene-content{position:relative;z-index:5;width:100%;height:100%;padding:340px 64px 80px;display:flex;flex-direction:column;gap:32px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:24px;font-weight:700;letter-spacing:.14em;color:#C4956A;text-transform:uppercase}
+.headline{font-family:"ZCOOL XiaoWei",serif;font-size:96px;font-weight:400;line-height:1.08;letter-spacing:-.045em;max-width:920px}
+.headline.small{font-size:76px}.headline .gold{color:#D8B28C}
+.subhead{font-size:38px;line-height:1.45;color:#B8B0A4;font-weight:350;max-width:900px}
+.rule{width:100%;height:3px;background:#C4956A;transform-origin:left center}
+.panel{background:#272528;border:2px solid #4A4540;border-radius:12px;padding:30px}
+.label{font-family:"IBM Plex Mono",monospace;font-size:22px;color:#C4956A;letter-spacing:.08em}
+.name{font-size:40px;font-weight:700;line-height:1.25}.desc{font-size:29px;line-height:1.45;color:#B8B0A4}
+.micro{font-family:"IBM Plex Mono",monospace;font-size:20px;color:#B8B0A4;letter-spacing:.06em}
+.watermark{position:absolute;left:60px;top:228px;z-index:90;font-family:"IBM Plex Mono",monospace;font-size:24px;color:#D8B28C;letter-spacing:.1em}
+.watermark::after{content:"";display:inline-block;width:180px;height:2px;margin-left:20px;vertical-align:middle;background:#C4956A}
+.transition{position:absolute;inset:0;z-index:80;background:#C4956A;transform:scaleX(0);transform-origin:left center}
+
+/* Scene 1 */
+.s1 .ghost{left:-40px;top:440px}.name-cloud{position:relative;height:470px;margin-top:8px}
+.cloud-item{position:absolute;font-family:"IBM Plex Mono",monospace;font-weight:700;color:#B8B0A4;border:2px solid #4A4540;background:rgba(39,37,40,.88);padding:16px 22px}
+.cloud-item:nth-child(1){left:0;top:20px;font-size:34px}.cloud-item:nth-child(2){right:8px;top:84px;font-size:30px}.cloud-item:nth-child(3){left:80px;top:190px;font-size:27px}.cloud-item:nth-child(4){right:100px;top:250px;font-size:28px}.cloud-item:nth-child(5){left:12px;top:338px;font-size:30px}.cloud-item:nth-child(6){right:0;top:372px;font-size:30px}
+.question{font-family:"ZCOOL XiaoWei",serif;font-size:110px;font-weight:400;line-height:1;color:#F2EDE3;margin-top:auto}
+.issue{position:absolute;right:64px;bottom:86px;font-family:"IBM Plex Mono",monospace;font-size:22px;color:#C4956A}
+
+/* Scene 2 */
+.s2 .ghost{right:-70px;top:360px}.loop-core{align-self:center;width:620px;text-align:center;padding:40px;border:3px solid #C4956A;background:#272528}
+.loop-code{font-family:"IBM Plex Mono",monospace;font-size:42px;font-weight:700}.loop-sub{font-size:28px;color:#B8B0A4;margin-top:14px}
+.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.cap{min-height:220px;display:flex;flex-direction:column;justify-content:center}.cap .name{font-size:36px}.cap .desc{font-size:26px;margin-top:12px}
+.step-badge{align-self:flex-end;font-family:"IBM Plex Mono",monospace;font-size:28px;color:#D8B28C;border:2px solid #C4956A;padding:12px 18px}
+
+/* Scene 3 */
+.s3 .ghost{left:-40px;top:360px}.layers{display:flex;flex-direction:column;gap:24px;margin-top:18px}
+.layer{position:relative;min-height:250px;padding:30px 34px;border:3px solid #4A4540;background:#272528;display:grid;grid-template-columns:180px 1fr;gap:18px;align-items:center}
+.layer.active{border-color:#C4956A}.layer-code{font-family:"IBM Plex Mono",monospace;font-size:60px;color:#C4956A;font-weight:700}.layer-title{font-size:42px;font-weight:800}.chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}.chip{font-family:"IBM Plex Mono",monospace;font-size:20px;border:2px solid #4A4540;padding:10px 12px;color:#B8B0A4}
+.not-choice{font-size:46px;font-weight:800;color:#D8B28C;margin-top:auto}
+
+/* Scene 4 */
+.s4 .ghost{right:-30px;top:300px}.frameworks{display:flex;flex-direction:column;gap:20px}
+.fw{display:grid;grid-template-columns:250px 1fr;align-items:center;gap:20px;min-height:190px}
+.fw:nth-child(2){margin-left:80px}.fw:nth-child(3){margin-right:70px}.fw:nth-child(4){margin-left:34px}
+.fw .name{color:#F2EDE3}.fw .desc{font-size:27px}.fw-tag{font-family:"IBM Plex Mono",monospace;font-size:20px;color:#C4956A;margin-top:10px}
+
+/* Scene 5 */
+.s5 .ghost{left:-100px;top:320px}.harness{border:3px solid #C4956A;background:#272528;padding:30px;display:flex;flex-direction:column;gap:24px}
+.cap-row{display:flex;flex-wrap:wrap;gap:12px}.cap-token{font-family:"IBM Plex Mono",monospace;font-size:21px;padding:12px 14px;border:2px solid #4A4540;color:#B8B0A4}
+.vendors{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.vendor{min-height:210px;padding:24px 18px;border:2px solid #4A4540;display:flex;flex-direction:column;justify-content:space-between}.vendor .name{font-size:34px}.vendor .micro{font-size:18px}
+.ownership{display:flex;align-items:center;gap:18px}.owner-side{font-size:28px;color:#B8B0A4}.owner-arrow{flex:1;height:3px;background:#C4956A;position:relative}.owner-arrow::after{content:"";position:absolute;right:-2px;top:-8px;border-left:16px solid #C4956A;border-top:9px solid transparent;border-bottom:9px solid transparent}
+
+/* Scene 6 */
+.s6 .ghost{right:-60px;top:330px}.network{position:relative;height:900px;margin-top:10px}
+.agent{position:absolute;left:40px;top:120px;width:430px;min-height:250px;border-color:#C4956A}.external{position:absolute;right:0;top:180px;width:360px;min-height:210px}.tools{position:absolute;left:160px;right:80px;bottom:40px;min-height:280px}
+.route-h{position:absolute;left:470px;right:350px;top:245px;height:4px;background:#C4956A}.route-v{position:absolute;left:250px;top:370px;bottom:320px;width:4px;background:#C4956A}
+.route-label{position:absolute;font-family:"IBM Plex Mono",monospace;font-size:30px;color:#D8B28C;background:#1C1C1E;padding:8px 12px}.a2a{left:510px;top:190px}.mcp{left:190px;top:520px}
+.tool-list{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.tool-list span{font-family:"IBM Plex Mono",monospace;font-size:22px;border:2px solid #4A4540;padding:12px}
+
+/* Scene 7 */
+.s7 .ghost{left:-40px;top:300px}.routes{display:flex;flex-direction:column;gap:18px;margin-top:8px}
+.route-row{display:grid;grid-template-columns:1.25fr 60px 1fr;gap:14px;align-items:center}.condition,.recommend{min-height:150px;padding:22px 24px;border:2px solid #4A4540;background:#272528;display:flex;align-items:center}.condition{font-size:28px;line-height:1.35}.recommend{font-size:32px;font-weight:800;border-color:#C4956A;color:#D8B28C}.arrow{height:3px;background:#C4956A;position:relative}.arrow::after{content:"";position:absolute;right:-2px;top:-7px;border-left:14px solid #C4956A;border-top:8px solid transparent;border-bottom:8px solid transparent}
+
+/* Scene 8 */
+.s8 .ghost{right:-50px;top:300px}.lock-world{position:relative;height:850px;margin-top:10px}
+.replaceable{position:absolute;left:0;top:40px;width:420px;min-height:190px}.runtime{position:absolute;right:0;top:280px;width:620px;min-height:300px;border:3px solid #C4956A}
+.state-row{display:flex;gap:12px;margin-top:22px}.state{font-family:"IBM Plex Mono",monospace;font-size:22px;padding:12px;border:2px solid #4A4540;color:#D8B28C}
+.chain{position:absolute;height:4px;background:#C4956A;transform-origin:left center}.chain.a{left:360px;top:210px;width:300px;rotation:18deg}.chain.b{left:330px;top:245px;width:390px;rotation:34deg}
+.clock{position:absolute;left:0;bottom:80px;font-family:"IBM Plex Mono",monospace;font-size:130px;font-weight:700;color:rgba(196,149,106,.28)}
+.final-question{font-family:"ZCOOL XiaoWei",serif;font-size:62px;font-weight:400;line-height:1.3;margin-top:auto;max-width:920px}.cta{font-size:32px;color:#D8B28C;border-top:3px solid #C4956A;padding-top:24px}
+</style>
+</head>
+<body>
+<div data-composition-id="agent-frameworks-video" data-width="1080" data-height="1920">
+  <div class="clip watermark" id="watermark" data-start="0" data-duration="90" data-track-index="4">公众号：墨筝</div>
+
+  <section id="scene-1" class="clip s1" data-start="0" data-duration="8" data-track-index="0">
+    <div class="scene-bg enter-bg"></div><div class="grid enter-grid"></div><div class="grain"></div><div class="ghost enter-ghost">AGENT</div>
+    <div class="scene-content">
+      <div class="eyebrow enter-a">ISSUE 2026 · FRAMEWORK MAP</div>
+      <div class="name-cloud">
+        <span class="cloud-item c1">LangGraph</span><span class="cloud-item c2">CrewAI</span><span class="cloud-item c3">OpenAI Agents SDK</span><span class="cloud-item c4">Google ADK</span><span class="cloud-item c5">MCP</span><span class="cloud-item c6">A2A</span>
+      </div>
+      <div class="rule enter-rule"></div>
+      <div class="question enter-q">到底该选哪个？</div>
+      <div class="issue enter-issue">01 / FULL MAP</div>
+    </div>
+  </section>
+
+  <section id="scene-2" class="clip s2" data-start="8" data-duration="11" data-track-index="0">
+    <div class="scene-bg enter-bg"></div><div class="grid enter-grid"></div><div class="grain"></div><div class="ghost enter-ghost">LOOP</div>
+    <div class="scene-content">
+      <div class="eyebrow enter-a">PRODUCTION READINESS</div>
+      <div class="headline small enter-b">一个循环，<span class="gold">还不是生产系统</span></div>
+      <div class="loop-core enter-core"><div class="loop-code">while True:</div><div class="loop-sub">调用模型 → 执行工具</div></div>
+      <div class="cap-grid">
+        <div class="panel cap cap1"><div class="name">持久化</div><div class="desc">中断后从检查点恢复</div></div>
+        <div class="panel cap cap2"><div class="name">人机协同</div><div class="desc">暂停、审批、继续执行</div></div>
+        <div class="panel cap cap3"><div class="name">可观测性</div><div class="desc">追踪调用、输入与结果</div></div>
+        <div class="panel cap cap4"><div class="name">沙盒隔离</div><div class="desc">限制代码与文件访问</div></div>
+      </div>
+      <div class="step-badge enter-step">TASK INTERRUPTED · 14 / 20</div>
+    </div>
+  </section>
+
+  <section id="scene-3" class="clip s3" data-start="19" data-duration="11" data-track-index="0">
+    <div class="scene-bg enter-bg"></div><div class="grid enter-grid"></div><div class="grain"></div><div class="ghost enter-ghost">L3 L2 L1</div>
+    <div class="scene-content">
+      <div class="eyebrow enter-a">THREE LAYERS</div>
+      <div class="headline small enter-b">这些工具，<span class="gold">不在同一层</span></div>
+      <div class="layers">
+        <div class="layer l3"><div class="layer-code">L3</div><div><div class="layer-title">编排框架</div><div class="chips"><span class="chip">LangGraph</span><span class="chip">CrewAI</span><span class="chip">Pydantic AI</span></div></div></div>
+        <div class="layer active l2"><div class="layer-code">L2</div><div><div class="layer-title">厂商运行时</div><div class="chips"><span class="chip">OpenAI</span><span class="chip">Claude</span><span class="chip">Google ADK</span></div></div></div>
+        <div class="layer l1"><div class="layer-code">L1</div><div><div class="layer-title">通信协议</div><div class="chips"><span class="chip">MCP</span><span class="chip">A2A</span></div></div></div>
+      </div>
+      <div class="not-choice enter-c">不是三选一，而是组合使用。</div>
+    </div>
+  </section>
+
+  <section id="scene-4" class="clip s4" data-start="30" data-duration="12" data-track-index="0">
+    <div class="scene-bg enter-bg"></div><div class="grid enter-grid"></div><div class="grain"></div><div class="ghost enter-ghost">PICK</div>
+    <div class="scene-content">
+      <div class="eyebrow enter-a">ORCHESTRATION FRAMEWORKS</div>
+      <div class="headline small enter-b">从约束出发，<span class="gold">别只看 Star</span></div>
+      <div class="frameworks">
+        <div class="panel fw fw1"><div><div class="name">LangGraph</div><div class="fw-tag">CONTROL + DURABILITY</div></div><div class="desc">复杂、持久、可控流程</div></div>
+        <div class="panel fw fw2"><div><div class="name">CrewAI</div><div class="fw-tag">FAST DEMO</div></div><div class="desc">最快做出多 Agent 原型</div></div>
+        <div class="panel fw fw3"><div><div class="name">Pydantic AI</div><div class="fw-tag">TYPED OUTPUT</div></div><div class="desc">结构化输出与持久任务</div></div>
+        <div class="panel fw fw4"><div><div class="name">Microsoft Agent Framework</div><div class="fw-tag">.NET + AZURE</div></div><div class="desc">微软技术栈的新项目入口</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="scene-5" class="clip s5" data-start="42" data-duration="11" data-track-index="0">
+    <div class="scene-bg enter-bg"></div><div class="grid enter-grid"></div><div class="grain"></div><div class="ghost enter-ghost">HARNESS</div>
+    <div class="scene-content">
+      <div class="eyebrow enter-a">VENDOR RUNTIMES</div>
+      <div class="headline small enter-b">模型厂商，<span class="gold">正在接管执行循环</span></div>
+      <div class="harness enter-harness">
+        <div class="label">COMMON HARNESS</div>
+        <div class="cap-row"><span class="cap-token">MODEL</span><span class="cap-token">TOOLS</span><span class="cap-token">CONTEXT</span><span class="cap-token">SANDBOX</span><span class="cap-token">SESSION</span></div>
+        <div class="vendors">
+          <div class="vendor v1"><div class="name">OpenAI</div><div class="micro">Agents SDK / API</div></div>
+          <div class="vendor v2"><div class="name">Claude</div><div class="micro">Agent SDK / Managed</div></div>
+          <div class="vendor v3"><div class="name">Google</div><div class="micro">ADK</div></div>
+        </div>
+      </div>
+      <div class="ownership enter-owner"><span class="owner-side">团队持有</span><span class="owner-arrow"></span><span class="owner-side">厂商托管</span></div>
+    </div>
+  </section>
+
+  <section id="scene-6" class="clip s6" data-start="53" data-duration="11" data-track-index="0">
+    <div class="scene-bg enter-bg"></div><div class="grid enter-grid"></div><div class="grain"></div><div class="ghost enter-ghost">MCP / A2A</div>
+    <div class="scene-content">
+      <div class="eyebrow enter-a">VERTICAL VS HORIZONTAL</div>
+      <div class="headline small enter-b">MCP 用东西，<span class="gold">A2A 与 Agent 协作</span></div>
+      <div class="network">
+        <div class="panel agent"><div class="label">YOUR BOUNDARY</div><div class="name">你的 Agent</div><div class="desc">由你控制的运行边界</div></div>
+        <div class="panel external"><div class="label">EXTERNAL</div><div class="name">外部 Agent</div><div class="desc">跨团队 / 公司 / 框架</div></div>
+        <div class="route-h"></div><div class="route-v"></div><div class="route-label a2a">A2A</div><div class="route-label mcp">MCP</div>
+        <div class="panel tools"><div class="name">工具与数据源</div><div class="tool-list"><span>数据库</span><span>GitHub</span><span>Slack</span><span>内部 API</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="scene-7" class="clip s7" data-start="64" data-duration="14" data-track-index="0">
+    <div class="scene-bg enter-bg"></div><div class="grid enter-grid"></div><div class="grain"></div><div class="ghost enter-ghost">?</div>
+    <div class="scene-content">
+      <div class="eyebrow enter-a">START WITH CONSTRAINTS</div>
+      <div class="headline small enter-b">你真正需要的，<span class="gold">是哪种能力？</span></div>
+      <div class="routes">
+        <div class="route-row r1"><div class="condition">重视控制力与持久化</div><div class="arrow"></div><div class="recommend">LangGraph</div></div>
+        <div class="route-row r2"><div class="condition">本周要做出多 Agent Demo</div><div class="arrow"></div><div class="recommend">CrewAI</div></div>
+        <div class="route-row r3"><div class="condition">主要返回结构化数据</div><div class="arrow"></div><div class="recommend">Pydantic AI</div></div>
+        <div class="route-row r4"><div class="condition">团队使用 .NET 或 Azure</div><div class="arrow"></div><div class="recommend">Microsoft AF</div></div>
+        <div class="route-row r5"><div class="condition">已绑定单一模型厂商</div><div class="arrow"></div><div class="recommend">原生运行时</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="scene-8" class="clip s8" data-start="78" data-duration="12" data-track-index="0">
+    <div class="scene-bg enter-bg"></div><div class="grid enter-grid"></div><div class="grain"></div><div class="ghost enter-ghost">03:00</div>
+    <div class="scene-content">
+      <div class="eyebrow enter-a">THE REAL LOCK-IN</div>
+      <div class="headline small enter-b">真正难迁移的，<span class="gold">不是 import</span></div>
+      <div class="lock-world">
+        <div class="panel replaceable"><div class="label">FRAMEWORK</div><div class="name">代码中引入的库</div><div class="desc">可以替换，只需重写调用</div></div>
+        <div class="panel runtime"><div class="label">RUNTIME CORE</div><div class="name">状态、沙盒、会话历史</div><div class="desc">这些才是真正难以迁移的部分</div><div class="state-row"><span class="state">STATE</span><span class="state">SANDBOX</span><span class="state">SESSION</span></div></div>
+        <div class="chain a"></div><div class="chain b"></div><div class="clock">03:00</div>
+      </div>
+      <div class="final-question enter-q">凌晨 3 点出故障时，谁能掌控并恢复 Agent 的核心状态？</div>
+      <div class="cta enter-cta">完整对比与选型细节，请关注公众号「墨筝」</div>
+    </div>
+  </section>
+
+  <div id="transition-1" class="clip transition t1" data-start="7.6" data-duration="0.8" data-track-index="1"></div>
+  <div id="transition-2" class="clip transition t2" data-start="18.6" data-duration="0.8" data-track-index="1"></div>
+  <div id="transition-3" class="clip transition t3" data-start="29.6" data-duration="0.8" data-track-index="1"></div>
+  <div id="transition-4" class="clip transition t4" data-start="41.6" data-duration="0.8" data-track-index="1"></div>
+  <div id="transition-5" class="clip transition t5" data-start="52.6" data-duration="0.8" data-track-index="1"></div>
+  <div id="transition-6" class="clip transition t6" data-start="63.6" data-duration="0.8" data-track-index="1"></div>
+  <div id="transition-7" class="clip transition t7" data-start="77.6" data-duration="0.8" data-track-index="1"></div>
+  <audio id="bgm" data-start="0" data-duration="90" data-track-index="3" data-volume="0.3" src="bgm.mp3"></audio>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+window.__timelines=window.__timelines||{};
+const tl=gsap.timeline({paused:true});
+const intro=(scene,start,withHeading=true)=>{
+  tl.fromTo(`${scene} .enter-bg`,{opacity:0},{opacity:1,duration:.7,ease:"sine.out"},start+.12);
+  tl.fromTo(`${scene} .enter-grid`,{opacity:0,x:50},{opacity:1,x:0,duration:1.05,ease:"power2.out"},start+.18);
+  tl.fromTo(`${scene} .enter-ghost`,{opacity:0,scale:.92},{opacity:1,scale:1,duration:1.2,ease:"expo.out"},start+.24);
+  tl.fromTo(`${scene} .enter-a`,{opacity:0,x:-70},{opacity:1,x:0,duration:.55,ease:"power3.out"},start+.28);
+  if(withHeading){
+    tl.fromTo(`${scene} .enter-b`,{opacity:0,y:70},{opacity:1,y:0,duration:.8,ease:"expo.out"},start+.48);
+  }
+};
+intro(".s1",0,false);
+tl.fromTo(".s1 .cloud-item",{opacity:0,scale:.8,rotation:-3},{opacity:1,scale:1,rotation:0,duration:.52,ease:"back.out(1.7)",stagger:.09},.9);
+tl.fromTo(".s1 .enter-rule",{scaleX:0},{scaleX:1,duration:.7,ease:"power4.out"},1.65);
+tl.fromTo(".s1 .enter-q",{opacity:0,y:90,scaleX:.94},{opacity:1,y:0,scaleX:1,duration:.85,ease:"expo.out"},2.05);
+tl.fromTo(".s1 .enter-issue",{opacity:0,x:40},{opacity:1,x:0,duration:.4,ease:"power2.out"},2.6);
+tl.to(".s1 .enter-ghost",{x:45,duration:7.5,ease:"none"},.3);
+
+intro(".s2",8);
+tl.fromTo(".s2 .enter-core",{opacity:0,scale:.72,rotation:-4},{opacity:1,scale:1,rotation:0,duration:.72,ease:"back.out(1.45)"},8.9);
+tl.fromTo(".s2 .cap",{opacity:0,y:55,rotationX:-12},{opacity:1,y:0,rotationX:0,duration:.6,ease:"power3.out",stagger:.12},9.45);
+tl.fromTo(".s2 .enter-step",{opacity:0,x:90},{opacity:1,x:0,duration:.55,ease:"circ.out"},10.2);
+tl.to(".s2 .enter-core",{boxShadow:"0 0 52px rgba(196,149,106,.28)",duration:1.4,yoyo:true,repeat:5,ease:"sine.inOut"},10.4);
+
+intro(".s3",19);
+tl.fromTo(".s3 .layer",{opacity:0,x:(i)=>i%2===0?-90:90},{opacity:1,x:0,duration:.7,ease:"power3.out",stagger:.18},20.05);
+tl.fromTo(".s3 .chip",{opacity:0,scale:.75},{opacity:1,scale:1,duration:.38,ease:"back.out(1.8)",stagger:.055},20.85);
+tl.fromTo(".s3 .enter-c",{opacity:0,y:45},{opacity:1,y:0,duration:.65,ease:"expo.out"},21.65);
+tl.to(".s3 .active",{borderColor:"#D8B28C",duration:1.1,yoyo:true,repeat:6,ease:"sine.inOut"},22);
+
+intro(".s4",30);
+tl.fromTo(".s4 .fw1",{opacity:0,x:-100},{opacity:1,x:0,duration:.65,ease:"expo.out"},31);
+tl.fromTo(".s4 .fw2",{opacity:0,x:110},{opacity:1,x:0,duration:.55,ease:"power4.out"},31.22);
+tl.fromTo(".s4 .fw3",{opacity:0,scale:.82},{opacity:1,scale:1,duration:.7,ease:"back.out(1.4)"},31.44);
+tl.fromTo(".s4 .fw4",{opacity:0,y:90},{opacity:1,y:0,duration:.62,ease:"circ.out"},31.66);
+tl.fromTo(".s4 .fw-tag",{opacity:0,x:24},{opacity:1,x:0,duration:.6,ease:"power2.out",stagger:.08},32.15);
+
+intro(".s5",42);
+tl.fromTo(".s5 .enter-harness",{opacity:0,scaleX:.35},{opacity:1,scaleX:1,duration:.85,ease:"expo.out"},43.05);
+tl.fromTo(".s5 .cap-token",{opacity:0,y:-30},{opacity:1,y:0,duration:.42,ease:"power3.out",stagger:.07},43.55);
+tl.fromTo(".s5 .vendor",{opacity:0,y:70,rotationY:-10},{opacity:1,y:0,rotationY:0,duration:.65,ease:"back.out(1.4)",stagger:.13},44.05);
+tl.fromTo(".s5 .enter-owner",{opacity:0,x:-80},{opacity:1,x:0,duration:.6,ease:"circ.out"},44.8);
+tl.to(".s5 .owner-arrow",{scaleX:.96,duration:1.2,yoyo:true,repeat:5,ease:"sine.inOut"},45.1);
+
+intro(".s6",53);
+tl.fromTo(".s6 .agent",{opacity:0,scale:.75},{opacity:1,scale:1,duration:.7,ease:"back.out(1.6)"},54.05);
+tl.fromTo(".s6 .external",{opacity:0,x:100},{opacity:1,x:0,duration:.62,ease:"power4.out"},54.4);
+tl.fromTo(".s6 .tools",{opacity:0,y:110},{opacity:1,y:0,duration:.75,ease:"expo.out"},54.65);
+tl.fromTo(".s6 .route-h",{scaleX:0,transformOrigin:"left center"},{scaleX:1,duration:.6,ease:"power3.out"},55);
+tl.fromTo(".s6 .route-v",{scaleY:0,transformOrigin:"top center"},{scaleY:1,duration:.7,ease:"circ.out"},55.15);
+tl.fromTo(".s6 .route-label",{opacity:0,scale:.7},{opacity:1,scale:1,duration:.45,ease:"back.out(1.8)",stagger:.16},55.6);
+tl.fromTo(".s6 .tool-list span",{opacity:0,x:-25},{opacity:1,x:0,duration:.36,ease:"power2.out",stagger:.08},55.9);
+
+intro(".s7",64);
+tl.fromTo(".s7 .route-row",{opacity:0,x:(i)=>i%2===0?-100:100},{opacity:1,x:0,duration:.68,ease:"power3.out",stagger:.2},65.05);
+tl.fromTo(".s7 .arrow",{scaleX:0,transformOrigin:"left center"},{scaleX:1,duration:.48,ease:"expo.out",stagger:.16},66.1);
+tl.fromTo(".s7 .recommend",{opacity:0,scale:.82},{opacity:1,scale:1,duration:.55,ease:"back.out(1.5)",stagger:.16},66.45);
+tl.to(".s7 .recommend",{borderColor:"#D8B28C",duration:1.1,yoyo:true,repeat:6,ease:"sine.inOut",stagger:{each:.12,from:"start"}},68);
+
+intro(".s8",78);
+tl.fromTo(".s8 .replaceable",{opacity:0,x:-100,rotation:-3},{opacity:1,x:0,rotation:0,duration:.65,ease:"power3.out"},79.05);
+tl.fromTo(".s8 .runtime",{opacity:0,y:100,scale:.9},{opacity:1,y:0,scale:1,duration:.85,ease:"expo.out"},79.35);
+tl.fromTo(".s8 .chain",{scaleX:0},{scaleX:1,duration:.7,ease:"circ.out",stagger:.18},80.05);
+tl.fromTo(".s8 .clock",{opacity:0,scale:.75},{opacity:1,scale:1,duration:.9,ease:"power4.out"},80.4);
+tl.fromTo(".s8 .state",{opacity:0,y:30},{opacity:1,y:0,duration:.45,ease:"back.out(1.6)",stagger:.1},80.75);
+tl.fromTo(".s8 .enter-q",{opacity:0,y:65},{opacity:1,y:0,duration:.8,ease:"expo.out"},81.35);
+tl.fromTo(".s8 .enter-cta",{opacity:0,x:-70},{opacity:1,x:0,duration:.65,ease:"power3.out"},82.05);
+tl.to(".s8 .replaceable",{x:-32,y:-18,duration:5.5,ease:"sine.inOut"},82.3);
+tl.to(".s8 .scene-content",{opacity:.05,duration:.8,ease:"power2.in"},89.1);
+
+tl.fromTo("#watermark",{opacity:0,x:-30},{opacity:1,x:0,duration:.6,ease:"power2.out"},.2);
+[".t1",".t2",".t3",".t4",".t5",".t6",".t7"].forEach((selector,index)=>{
+  const starts=[7.6,18.6,29.6,41.6,52.6,63.6,77.6];
+  tl.fromTo(selector,{scaleX:0,transformOrigin:"left center"},{scaleX:1,duration:.4,ease:"power3.in"},starts[index]);
+  tl.to(selector,{scaleX:0,transformOrigin:"right center",duration:.4,ease:"power3.out"},starts[index]+.4);
+});
+window.__timelines["agent-frameworks-video"]=tl;
+</script>
+</body>
+</html>

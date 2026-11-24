@@ -1,0 +1,127 @@
+{
+  "dependency_sha256": "fbbfd33d70f729011b6a6bc232851c116cd4a89ead2adea4462888a6ce26fc1a",
+  "style_sha256": "e1b22a8148dfe0c85dbaf6ec05be99191179a212d434ca47d0d772a8c3cd0133",
+  "images": [
+    {
+      "source": "../inputs/illustrations/01-library-problem.png",
+      "method": "generated_under_guidance",
+      "brief_file": "briefs/01-library-problem.md",
+      "prompt_file": "prompts/01-library-problem.txt",
+      "sha256": "167dbde9cc1342c9a21987cbff8ede2a60705371d972246e78fadd39e0835405",
+      "status": "pass",
+      "evidence": "实际查看受控几何简化后的原图和 160px 缩略图：主体一眼可辨为会说话的图书馆；红叉纸条、电镐和两张外挂卡片清楚且互不遮挡。每个物件只保留一个大平涂轮廓，面部与错误叉号使用最少必要线条；lineart_gate 通过，texture_stroke_ratio 为 0。",
+      "brief_sha256": "96ddc1e1eef586cba04480868719415aa2f2c693c2d4b1a311708362b5e38ec0",
+      "prompt_sha256": "339f3d9b596da22e6a37cd266bcec0c0da36c8b5e94f6a4f5c949c6fc638b75b"
+    },
+    {
+      "source": "../inputs/illustrations/02-three-tools.png",
+      "method": "generated_under_guidance",
+      "sha256": "5e16ddeec9cb62da5b1084398b01c0ae1fe9b8a38e425bc7a721a41368f6da0e",
+      "brief_file": "briefs/02-three-tools.md",
+      "prompt_file": "prompts/02-three-tools.txt",
+      "status": "pass",
+      "evidence": "实际查看：同一图书馆、便签、三本书资料车和大扳手从左到右清楚可辨，互不遮挡；线稿门禁通过，texture_stroke_ratio 0.001。",
+      "brief_sha256": "c12053ae3b5c9ce9eff30da1f7a8f1eabfac71f4632f57be56d479f6100b2011",
+      "prompt_sha256": "dc5e22061cfd9093ff6a54dfc28cabd32e72465a8653dd31d644e9ddcb1b49d8"
+    },
+    {
+      "source": "../inputs/illustrations/03-full-finetune.png",
+      "method": "generated_under_guidance",
+      "sha256": "3c6bd598df9f228c55d646bf76647cca6c0c632da94d292c6cac7b15900a3b50",
+      "brief_file": "briefs/03-full-finetune.md",
+      "prompt_file": "prompts/03-full-finetune.txt",
+      "status": "pass",
+      "evidence": "实际查看：主图书馆四组书架全部被拉出，右侧恰有三座复制图书馆，底部有一本掉落旧书；线稿门禁通过，texture_stroke_ratio 0.061。",
+      "brief_sha256": "15a14b658a65f634957f7930c38407aded403da1e6abd4feff67e20c2b11687a",
+      "prompt_sha256": "b1c6994480670c4097be7cb198c534600d1cc425a87686620ae9b45bbe4e7a57"
+    },
+    {
+      "source": "../inputs/illustrations/04-peft-locks.png",
+      "method": "generated_under_guidance",
+      "sha256": "37584206d11e190249c2d81da7ebc34dcab2ea49804bcafb93f9e87757716fbb",
+      "brief_file": "briefs/04-peft-locks.md",
+      "prompt_file": "prompts/04-peft-locks.txt",
+      "status": "pass",
+      "evidence": "实际查看：六格书架全部被锁的视觉占绝对主体，仅三个小金色旋钮形成可调部分；线稿门禁通过，texture_stroke_ratio 0.019。",
+      "brief_sha256": "366a12fd40e9ef14c5c57430c322caf3d5283116275d43dcdfee9e4827b15965",
+      "prompt_sha256": "da1bfc0449156a4747bbae4e022cb1445552a8d83506a347567fa5c2c6e0f9a5"
+    },
+    {
+      "source": "../inputs/illustrations/05-lora-cards.png",
+      "method": "generated_under_guidance",
+      "sha256": "79f21e6e164af495ab2dc3545368a8b8140862c768e8fcc1e6da656b20f34af4",
+      "brief_file": "briefs/05-lora-cards.md",
+      "prompt_file": "prompts/05-lora-cards.txt",
+      "status": "pass",
+      "evidence": "实际查看：冻结图书馆旁有一高一宽两张小卡，底部三个不同色卡包均连接同一底座；线稿门禁通过，texture_stroke_ratio 0.026。",
+      "brief_sha256": "76d97c6511daac50f21c3ce192553a7ccbf31f7a8dc14f927618fd24723769bc",
+      "prompt_sha256": "6c3e20fcf53bf576645b16ea23e3c2cfa5f2ce6ce365b739a90973c3a234817f"
+    },
+    {
+      "source": "../inputs/illustrations/06-qlora-compress.png",
+      "method": "generated_under_guidance",
+      "sha256": "9bbfdcc142c54967f2f40682404f23f9a93e313483363c4d2ef5b2b102d7edde",
+      "brief_file": "briefs/06-qlora-compress.md",
+      "prompt_file": "prompts/06-qlora-compress.txt",
+      "status": "pass",
+      "evidence": "实际查看：左侧十六格大柜经压缩箭头变成右侧四格小箱，且仅一层抽出并带回收箭头；线稿门禁通过，texture_stroke_ratio 0.010。",
+      "brief_sha256": "81daa5f68e65c074fcaf2871f46f15a114d6aa0bbd695d9a6f96e688eb7e4bc5",
+      "prompt_sha256": "fbca488cc1b54323411f6c0cb6de18353f52afdca083bc354fd7ea2458088009"
+    },
+    {
+      "source": "../inputs/illustrations/07-direction-coupling.png",
+      "method": "generated_under_guidance",
+      "sha256": "70778b7e894fbae1815d1dfa660ff47938f2b8aca213a96cdbf7c9627c1c8630",
+      "brief_file": "briefs/07-direction-coupling.md",
+      "prompt_file": "prompts/07-direction-coupling.txt",
+      "status": "pass",
+      "evidence": "实际查看：指南针上深墨原箭头、金色附加箭头和砖红结果箭头可分辨，结果同时转向并明显变长；线稿门禁通过，texture_stroke_ratio 0.000。",
+      "brief_sha256": "cb3e2a4aec61bb6fe215a2635aac5ebf055e240b0b3c9fab5b2b3e9ef7f8f1b6",
+      "prompt_sha256": "2a62f5676b19cad1747e9547ffb88d2ee2e642cccefb616f1bc65a78d62f21a2"
+    },
+    {
+      "source": "../inputs/illustrations/08-dora-controls.png",
+      "method": "generated_under_guidance",
+      "sha256": "968f8bfe625aec1e1d97af71f3b1b29e90d8f4a5ff0868a0609b59c2c0ac69cc",
+      "brief_file": "briefs/08-dora-controls.md",
+      "prompt_file": "prompts/08-dora-controls.txt",
+      "status": "pass",
+      "evidence": "实际查看：两个独立旋钮通过不同形状的连接线控制同一箭头的方向和长度，通道分离；线稿门禁通过，texture_stroke_ratio 0.022。",
+      "brief_sha256": "d05167725989bc7b45e9f9ef1a1be6b26fbe4c501d060aea4ce37a83c0e0f67d",
+      "prompt_sha256": "7cb357ea18ded1dde60f5aeae711edfedb11207930fe5f4b9dbc84907d076f96"
+    },
+    {
+      "source": "../inputs/illustrations/09-qdora-combine.png",
+      "method": "generated_under_guidance",
+      "sha256": "b55bc76537319f51f35ddf0129d915cf981133e032e818ba9379bd9ab8e09585",
+      "brief_file": "briefs/09-qdora-combine.md",
+      "prompt_file": "prompts/09-qdora-combine.txt",
+      "status": "pass",
+      "evidence": "实际查看：四格压缩柜连接双旋钮控制台，旁边无文字红金施工牌清楚表达生态仍在完善；线稿门禁通过，texture_stroke_ratio 0.026。",
+      "brief_sha256": "18358fec2840b67e23bb04b5e330d32b5d6416d562aea411a483d0fe46da8549",
+      "prompt_sha256": "49b8f223ad1d9c77483b3c6211c83cc5cfc92a8cc117be3029f010396380215a"
+    },
+    {
+      "source": "../inputs/illustrations/10-choice-roadmap.png",
+      "method": "generated_under_guidance",
+      "sha256": "b875e9500e84bfa680183e01e363461821b41a9cef98ec399b89c565458af1b4",
+      "brief_file": "briefs/10-choice-roadmap.md",
+      "prompt_file": "prompts/10-choice-roadmap.txt",
+      "status": "pass",
+      "evidence": "实际查看：四向路牌、微笑图书馆和便签/资料车/扳手三个检查站均可数清，无错误文字；线稿门禁通过，texture_stroke_ratio 0.016。",
+      "brief_sha256": "6252de5a199eb37859df8682d0eaaa3f74c26dd912df9fed9761893dd0b7f225",
+      "prompt_sha256": "fb2a75e20f576fbfda6c38b4010f19edd8b82ca8e2316c5c13f7e89b0eebc60c"
+    },
+    {
+      "source": "../inputs/cover.png",
+      "method": "composed_with_verified_layers",
+      "sha256": "35395d3c4ffc4194494debd27c28c80c14e3a056d6471ad6c13d40ab73656a90",
+      "brief_file": "briefs/cover.md",
+      "prompt_file": "prompts/cover.txt",
+      "status": "pass",
+      "evidence": "实际查看 1080×1920 合成封面：中文标题准确完整、顶部安全区充足、金色规则线清楚，主视觉保持原比例且未裁断。文字由可编辑字体层合成，未依赖 AI 生字。",
+      "brief_sha256": "4f3a97e40cffe4b5d3e335fc29144d8645639de272a3f8e7332ca65cc250e511",
+      "prompt_sha256": "7e06a29f14e0515185450d28e8142a1890162ac13831303f149e5f5f8dfdbc43"
+    }
+  ]
+}

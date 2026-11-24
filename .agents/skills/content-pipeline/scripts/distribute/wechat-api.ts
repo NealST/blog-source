@@ -217,9 +217,13 @@ export function fixHtmlForWechat(html: string): string {
 }
 
 /** Scan HTML for local image paths (src="/Users/...") and upload them to WeChat CDN */
-export async function uploadLocalImagesInHtml(html: string, token: string): Promise<string> {
-  // Match src attributes with local file paths (absolute paths starting with /)
-  const localImgRegex = /src=["'](\/(Users|home|tmp|var)[^"']+\.(?:png|jpg|jpeg|gif|webp|bmp))["']/gi;
+export async function uploadLocalImagesInHtml(
+  html: string,
+  token: string,
+  baseDir = process.cwd(),
+): Promise<string> {
+  // Match local absolute and relative paths while excluding remote/data URLs.
+  const localImgRegex = /src=["']((?!(?:https?:|data:|\/\/|cid:))[^"']+\.(?:png|jpg|jpeg|gif|webp|bmp)(?:[?#][^"']*)?)["']/gi;
   const matches: Array<{ full: string; localPath: string }> = [];
 
   let match: RegExpExecArray | null;
@@ -243,21 +247,25 @@ export async function uploadLocalImagesInHtml(html: string, token: string): Prom
     } catch {
       decodedPath = localPath;
     }
+    decodedPath = decodedPath.replace(/[?#].*$/, '');
+    const resolvedPath = path.isAbsolute(decodedPath)
+      ? decodedPath
+      : path.resolve(baseDir, decodedPath);
 
-    if (!fs.existsSync(decodedPath)) {
-      console.warn(`  [wechat-api]   ✗ Not found: ${decodedPath}`);
+    if (!fs.existsSync(resolvedPath)) {
+      console.warn(`  [wechat-api]   ✗ Not found: ${resolvedPath}`);
       failed++;
       continue;
     }
 
     try {
-      const cdnUrl = await uploadContentImage(token, decodedPath);
+      const cdnUrl = await uploadContentImage(token, resolvedPath);
       const newSrc = `src="${cdnUrl}"`;
       processed = processed.replace(full, newSrc);
       uploaded++;
-      console.log(`  [wechat-api]   ✓ ${path.basename(decodedPath)}`);
+      console.log(`  [wechat-api]   ✓ ${path.basename(resolvedPath)}`);
     } catch (err) {
-      console.warn(`  [wechat-api]   ✗ ${path.basename(decodedPath)}: ${err instanceof Error ? err.message : err}`);
+      console.warn(`  [wechat-api]   ✗ ${path.basename(resolvedPath)}: ${err instanceof Error ? err.message : err}`);
       failed++;
     }
   }
@@ -544,7 +552,11 @@ export async function publishViaApi(manifest: Manifest): Promise<{ mediaId: stri
   const finalContent = processHtmlWithImages(htmlContent, extracted.styles, imageMap);
 
   // 5. Upload local images referenced in HTML to WeChat CDN
-  let contentWithCdnImages = await uploadLocalImagesInHtml(finalContent, token);
+  let contentWithCdnImages = await uploadLocalImagesInHtml(
+    finalContent,
+    token,
+    path.dirname(wechatData.html!),
+  );
 
   // 5.1 Download and upload remote images to WeChat CDN
   contentWithCdnImages = await uploadRemoteImagesInHtml(contentWithCdnImages, token);

@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "historyId": "4d75004b-fb7b-4871-ab50-708e6d31b543",
+  "currentRevision": null,
+  "pendingChanges": false,
+  "files": {
+    "design.md": {
+      "hash": "b2d357f6bd20194ee1a0d8cacccb35755c44e9b6b561bcb99d011f281f390701",
+      "content": "/Users/nealkaffrey/.cache/hyperframes/history/4d75004b-fb7b-4871-ab50-708e6d31b543/blobs/b2/b2d357f6bd20194ee1a0d8cacccb35755c44e9b6b561bcb99d011f281f390701"
+    },
+    "index.html": {
+      "hash": "1b818069e792e22ac39cf001dfcabb6fc97828b82c96cf0357aea2b27847bdd7",
+      "content": "/Users/nealkaffrey/.cache/hyperframes/history/4d75004b-fb7b-4871-ab50-708e6d31b543/blobs/1b/1b818069e792e22ac39cf001dfcabb6fc97828b82c96cf0357aea2b27847bdd7"
+    },
+    "bgm.mp3": {
+      "hash": "fc4a880d0b177f6b8360a3ea3766cf955a36d9aac18f6c91ccb76a1acf3f5d30",
+      "content": "/Users/nealkaffrey/.cache/hyperframes/history/4d75004b-fb7b-4871-ab50-708e6d31b543/blobs/fc/fc4a880d0b177f6b8360a3ea3766cf955a36d9aac18f6c91ccb76a1acf3f5d30"
+    },
+    "fonts/noto-sans-sc.ttf": {
+      "hash": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+      "content": "/Users/nealkaffrey/.cache/hyperframes/history/4d75004b-fb7b-4871-ab50-708e6d31b543/blobs/a3/a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+    },
+    "fonts/zcool-xiaowei.ttf": {
+      "hash": "5788a8dc317e9bdfa8c005a449c9cc33f52904621b63dd4751dcd7ba0ae0dddb",
+      "content": "/Users/nealkaffrey/.cache/hyperframes/history/4d75004b-fb7b-4871-ab50-708e6d31b543/blobs/57/5788a8dc317e9bdfa8c005a449c9cc33f52904621b63dd4751dcd7ba0ae0dddb"
+    }
+  },
+  "revisions": {},
+  "checks": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "1dd20566-d91a-446f-909f-5c245e75c523",
+      "completedAt": 1794223442589,
+      "output": "/Users/nealkaffrey/projects/blog-source/content/agent-frameworks/video/hyperframes/output.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
+}

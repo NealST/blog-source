@@ -1,0 +1,53 @@
+{
+  "complete": true,
+  "config_type": "model_infer",
+  "choices": {
+    "hand": {
+      "value": {
+        "preset": "pen-only"
+      },
+      "reason": "default"
+    },
+    "advertising": {
+      "value": {
+        "text": ""
+      },
+      "reason": "default"
+    },
+    "watermark": {
+      "value": {
+        "text": "公众号：墨筝"
+      },
+      "reason": "default"
+    },
+    "aspect": {
+      "value": {
+        "aspect_ratio": "9:16",
+        "width": 1080,
+        "height": 1920
+      },
+      "reason": "model_infer"
+    },
+    "style": {
+      "value": {
+        "mode": "inferred"
+      },
+      "reason": "model_infer"
+    },
+    "voice": {
+      "value": {
+        "voice": "magnetic-narrator"
+      },
+      "reason": "model_infer"
+    },
+    "captions": {
+      "value": {
+        "mode": "quiet"
+      },
+      "reason": "model_infer"
+    }
+  },
+  "timeout_seconds": 60,
+  "content": "把 LLM 微调技术改编成零基础也能看懂的故事会白板科普",
+  "stages": []
+}

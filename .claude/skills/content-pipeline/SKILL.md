@@ -21,10 +21,14 @@ description: 内容生产和分发管线。素材收集→出稿→排版→封�
 source/_posts/                      # 博客长文（Hexo 管理，只放 .md）
 content/[slug]/                     # 自媒体产物（content-pipeline 管理）
 ├── post.md                         # 短资讯源文件（仅短资讯有）
+├── wechat.md                       # 公众号排版用 Markdown（本地图路径）
 ├── preview.html                    # 公众号排版预览
-├── cover.html                      # 公众号头图
-├── illustrations.html              # 品牌配图（HTML→PNG）
+├── cover.html / cover.png          # 公众号头图
+├── illustrations.html              # 品牌/小黑配图索引（占位符来源）
 ├── xiaohei-illustrations/          # 小黑手绘配图（AI 生图 PNG）
+├── source-images/                  # 原文插图本地缓存
+├── localized-images/               # 判定为 localize 的中文转译图
+├── image-localization.json         # 原文插图 keep/localize 审计
 ├── manifest.json                   # 分发清单
 ├── [主题]-小红书版.html            # 小红书轮播图
 ├── video/                          # HyperFrames 视频（Path C）
@@ -106,7 +110,26 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 
 写 Markdown 文章。写作时参考写作 skill（`../writing/SKILL.md`）的 5 步方法论和 AI 模式检测。
 
-### 第 2 步：排版
+### 第 2 步：原文插图转译审计（排版前）
+
+正文里已有的英文截图 / 图表 / UI / 社交帖，**不是默认全部转成中文**。先写 `content/[slug]/image-localization.json`，逐张判定 `keep` / `localize` / `replace-for-wechat`，再据此整理 `wechat.md` 的图片路径。
+
+**总原则**：只有当自然语言文字是图片的主要信息载体，且中文转译能实质提升阅读理解时，才转译；否则保留原文。翻译会削弱真实性、出处或被评对象本身时，一律保留。
+
+| 判定 | 典型场景 | 处理 |
+|------|---------|------|
+| **keep（默认）** | 产品 UI、官方文档摘录、基准测试证据图、社交帖/论坛截图、被评的生成物截图、品牌素材 | 保留原文；靠正文中文说明 |
+| **localize** | 信息图、对比速查表、流程说明图——图上的中文标签本身就是读者要读的内容 | 转译后放入 `localized-images/`，并在 `wechat.md` 替换路径 |
+| **replace-for-wechat** | 原文头图与公众号头图职责重复 | 正文去掉，改用微信头图 |
+
+**不要转译的常见误区**：
+- 看见英文就整图汉化（会破坏证据链与 UI 真实感）
+- 把评测对象（如 AI 生成的英文网页）改成中文（改变了被讨论的原件）
+- 把定价表、模型名、坐标轴数值“翻译掉”（精确性优先于本地化）
+
+审计完成后：`keep` 的图用本地 `source-images/` 或可访问的原链；`localize` 的图必须落地到 `localized-images/` 并完成核验记录。
+
+### 第 3 步：排版
 
 ```bash
 cd "$MD_FORMATTER_DIR"
@@ -126,7 +149,7 @@ python3 md2wechat_formatter.py [文章路径] -o content/[slug]/preview.html
 
 **正文加粗不用金色**：`<strong>` 统一深墨色 `#1C1C1E` + `font-weight:700`，金色仅保留给 H2 左竖线和序号圆等装饰元素。避免长文中金色泛滥失去强调意义。
 
-### 第 3 步：头图 + 配图
+### 第 4 步：头图 + 配图
 
 **头图**：→ 读 `references/cover-template.md`
 **竖版封面**（可选）：→ 读 `references/cover-vertical-spec.md`
@@ -181,16 +204,17 @@ python3 md2wechat_formatter.py [文章路径] -o content/[slug]/preview.html
 
 `data-num` 给品牌 slide 一个稳定编号，对应输出文件 `配图-N.png`；`.xiaohei-row` 让 `render_pngs.py` 跳过这一行（PNG 已经在磁盘上）。`scripts/insert_image_placeholders.py` 会按 `slide-label` 的顺序，把对应文件名注入 `preview.html` 锚点章节末尾。
 
-### 第 4 步：manifest + 收尾
+### 第 5 步：manifest + 收尾
 
 生成 manifest.json，供 `/distribute` 使用。然后询问是否清空素材列表（`drafts/current.json`）。
 
 **WeChat 发布流程**（全自动）：
-1. 排版（生成 `preview.html`）
-2. 生成配图 PNG
-3. 在 `preview.html` 中插入图片占位符
-4. 生成 manifest.json
-5. `/distribute --platforms wechat`（API：上传封面→上传配图→替换占位符→推送草稿箱）
+1. 原文插图转译审计（`image-localization.json`）
+2. 排版（生成 `preview.html`）
+3. 生成头图 + 配图 PNG
+4. 在 `preview.html` 中插入图片占位符
+5. 生成 manifest.json
+6. `/distribute --platforms wechat`（API：上传封面→上传配图→替换占位符→推送草稿箱）
 
 **manifest wechat 字段**：
 - `html`（必填）：排版后的 `preview.html` 路径
@@ -343,6 +367,7 @@ npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/m
 | 场景 | 读取文件 |
 |------|---------|
 | 出稿写文章 | → 写作 skill（`../writing/SKILL.md`） |
+| 原文插图转译 | 见上方「第 2 步：原文插图转译审计」；产物 `image-localization.json` |
 | 品牌色/色板 | `references/brand-colors.md` — 墨筝色体系 single source of truth |
 | 生成头图/品牌配图 | `references/cover-template.md` — 头图 + 品牌信息图规范 |
 | 生成小黑配图 | `../xiaohei-illustrations/SKILL.md` — 小黑 IP 手绘风格 |

@@ -1,0 +1,5 @@
+{
+  "mode": "inferred",
+  "confirmation": "user_delegated",
+  "evidence": "config_type=model_infer; model resolves style from content"
+}

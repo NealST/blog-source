@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "topic": "用一座会说话的图书馆讲懂 LLM 微调",
+  "audience": "不了解大模型训练和矩阵概念的普通中文观众",
+  "explanation_goal": "观众能用生活化比喻区分全量微调、PEFT、LoRA、QLoRA、DoRA 与 QDoRA，并知道何时先用提示词或 RAG",
+  "source_scope": {
+    "type": "user_article",
+    "path": "source/_posts/fine-tune.md",
+    "adaptation": "导流型故事化科普，保留原文的技术关系、4-bit 条件、方法优缺点和选型边界"
+  },
+  "narrative_route": {
+    "decision": "non_default_story_metaphor",
+    "reason": "术语密集但底层关系递进，统一的图书馆改造故事能让零基础观众保持同一认知锚点",
+    "director_review": "故事必须服务机制，不能把微调误说成简单添加知识；提示词、RAG 和微调的边界要在开头交代",
+    "director_plan": "以小镇会说话的万能图书馆为主角，从说错咖啡店话术的具体困境出发。改造方式依次升级：门口便签、资料车、整栋重建、外挂卡片、压缩书柜、指南针。每个新方案解决上一个方案留下的成本或耦合问题。"
+  },
+  "opening_hook": {
+    "strategy": "悬念缺口",
+    "selection_reason": "先给出会说话却总说错话的图书馆，再提出重建还是外挂卡片的明确问题，能在不夸大效果的前提下承接全部技术路线",
+    "spoken_text": "小镇有座什么都懂的图书馆，可它一当客服就总说错话。要教好它，难道得把整栋楼拆了重建吗？",
+    "first_frame": "封面上是一座张嘴说话的图书馆，旁边一张错误话术纸条被红线划掉",
+    "first_action": "先画会说话的图书馆轮廓，再画错误纸条和一个大问号",
+    "bridge": "把改造图书馆的不同办法，映射为提示词、RAG 和六种微调方案",
+    "payoff_beat": "choice",
+    "timing": {
+      "first_voice_seconds": null,
+      "hook_end_seconds": null,
+      "first_meaningful_visual_seconds": null,
+      "measurement": "待真实旁白与代表段生成后填写"
+    }
+  },
+  "presentation": {
+    "mode": "focus_diagram",
+    "density": "medium",
+    "reason": "每个技术机制使用一张独立白板主图，故事角色保持一致，避免两分钟内容挤在同一块板上",
+    "page_content_policy": {
+      "max_heroes_per_page": 6,
+      "max_labels_per_page": 14,
+      "board_reuse": false,
+      "text_role": "board_labels",
+      "hold_after_draw_s": 0.8
+    }
+  },
+  "visual_direction": {
+    "style_name": "墨筝故事会白板",
+    "characters": "拟人化图书馆作为基座模型，金色围巾的小管理员作为观众代理",
+    "line": "连续干净的深墨色轮廓，粗细稳定，不使用排线和纹理线",
+    "palette": "宣纸白底、深墨线、筝弦金重点、少量灰蓝和砖红辅助色",
+    "shading": "大块平涂和极少柔和阴影",
+    "background": "低复杂度白板场景，物件关系清楚，底部持续预留字幕带",
+    "motion": "先轮廓后平涂，同一块板随旁白逐项补齐"
+  },
+  "cover": {
+    "title": "一座图书馆，讲懂六种微调",
+    "main_visual": "会说话的图书馆、外挂小卡片和一个指向不同方向的指南针",
+    "consistency": "封面三个物件分别对应基座模型、LoRA 和 DoRA，均在正文中兑现"
+  },
+  "boards": [
+    {
+      "id": "library-problem",
+      "purpose": "建立会说话的图书馆和三种改进工具",
+      "regions": [
+        {"id": "library", "purpose": "表现通用模型懂得多但不懂具体业务", "box": [0.06, 0.06, 0.94, 0.48], "visuals": ["v01"]},
+        {"id": "three-tools", "purpose": "区分提示词、RAG 与微调", "box": [0.06, 0.52, 0.94, 0.86], "visuals": ["v02", "v03", "v04"]}
+      ]
+    },
+    {
+      "id": "upgrade-path",
+      "purpose": "让六种微调方案在同一条改造路线中递进",
+      "regions": [
+        {"id": "heavy", "purpose": "全量微调与 PEFT 的成本反差", "box": [0.05, 0.06, 0.95, 0.35], "visuals": ["v05", "v06"]},
+        {"id": "adapter", "purpose": "LoRA 与 QLoRA 的外挂和压缩逻辑", "box": [0.05, 0.38, 0.95, 0.62], "visuals": ["v07", "v08"]},
+        {"id": "direction", "purpose": "DoRA 与 QDoRA 的大小方向拆分", "box": [0.05, 0.65, 0.95, 0.88], "visuals": ["v09", "v10"]}
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "id": "opening",
+      "narration": "小镇有座什么都懂的图书馆，可它一当客服就总说错话。要教好它，难道得把整栋楼拆了重建吗？",
+      "visual": "会说话的图书馆拿着错误客服话术，小管理员面对拆楼锤和外挂卡片做选择"
+    },
+    {
+      "id": "tools",
+      "narration": "管理员先试了三招。临时提醒，就在门口贴便签，这像提示词；缺少新资料，就推来资料车，这像 RAG；可要它长期保持固定语气和规矩，才需要微调。",
+      "visual": "便签、资料车和调校扳手依次画到图书馆旁"
+    },
+    {
+      "id": "full",
+      "narration": "最直接的办法叫全量微调：把每个书架、每本书的位置都重新调整。改得最彻底，可工程巨大；每来一家新客户，还得复制一整座图书馆，甚至可能整理新规矩时，把旧本事弄丢。",
+      "visual": "工人搬动整栋图书馆的所有书架，旁边出现多座沉重复制品"
+    },
+    {
+      "id": "peft",
+      "narration": "于是管理员锁住绝大多数书架，只调整少数关键机关。这一大类省力办法叫 PEFT。它的核心只有一句：别什么都动，只训练真正需要变化的小部分。",
+      "visual": "大多数书架挂锁，只有几个金色旋钮可以转动"
+    },
+    {
+      "id": "lora",
+      "narration": "LoRA 更聪明。它不改原书架，而是在旁边挂一套很小的改造卡。两条细长卡片组合起来，就能记录原本需要一整面大墙才能保存的变化。底座仍是一座图书馆，不同客户只要换不同卡包。",
+      "visual": "冻结书架旁挂两条细卡组成小适配器，不同客户各有一个卡包"
+    },
+    {
+      "id": "qlora",
+      "narration": "但训练时，整座图书馆还是很占地方。QLoRA 就先把不动的书柜从十六位压成四位，体积大约缩到四分之一；用到哪一层，才临时展开哪一层，算完马上收回去。",
+      "visual": "十六格大书柜压缩为四格旅行箱，只展开正在使用的一层"
+    },
+    {
+      "id": "direction",
+      "narration": "接着看一个指南针。每支箭头都有长度和方向：长度代表特征有多强，方向代表它在表达什么。LoRA 用一根附加小箭头去转弯，转得太猛时，常常连总长度也一起拉长。",
+      "visual": "指南针箭头展示长度与方向，附加箭头让结果转弯同时变长"
+    },
+    {
+      "id": "dora",
+      "narration": "DoRA 的办法，是把两件事拆开：方向交给 LoRA 调，长度单独控制。这样想转弯就转弯，想变强再变强，互不拖累，效果更接近全量微调。",
+      "visual": "两个独立旋钮分别控制指南针方向和箭头长度"
+    },
+    {
+      "id": "qdora",
+      "narration": "QDoRA 就是把两招合在一起：底层书柜先压成四位，上层再用 DoRA 分开管理方向和长度。它既省显存，又追求更高效果，不过工具生态还在成熟。",
+      "visual": "压缩书柜上安装方向旋钮和长度旋钮，旁边挂着施工中标牌"
+    },
+    {
+      "id": "choice",
+      "narration": "所以别被名字吓住。默认先选 LoRA；显卡吃紧选 QLoRA；想更接近全量微调的效果，再看 DoRA 或 QDoRA。记住，提示词能解决就别训练，缺新事实先用 RAG，只有要长期改变说话做事的习惯，才轮到微调。",
+      "visual": "管理员沿决策路牌选择 LoRA、QLoRA、DoRA 或 QDoRA，最后圈出提示词、RAG、微调三条边界"
+    }
+  ],
+  "script_changes": [
+    {
+      "original": "文章按模型机制和算法顺序展开",
+      "adapted": "统一改写为图书馆管理员的连续故事",
+      "reason": "用户要求零基础也能看懂的故事会白板科普；技术关系、适用条件和结论保持不变"
+    }
+  ]
+}

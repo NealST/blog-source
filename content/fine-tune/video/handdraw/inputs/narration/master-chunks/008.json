@@ -1,0 +1,37 @@
+{
+  "signature": "b166bfa913b92b0770a1783746754f62cbd56c55f5b5c17fe5030d2c2e83fb1d",
+  "index": 8,
+  "text": "QDoRA 就是把两招合在一起：底层书柜先压成四位，上层再用 DoRA 分开管理方向和长度。它既省显存，又追求更高效果，不过工具生态还在成熟。",
+  "units": [
+    {
+      "beat": "qdora",
+      "page": 3,
+      "text": "QDoRA 就是把两招合在一起：底层书柜先压成四位，上层再用 DoRA 分开管理方向和长度。它既省显存，又追求更高效果，不过工具生态还在成熟。"
+    }
+  ],
+  "join": "beat",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "008.wav",
+        "duration_seconds": 11.885,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -53.4,
+        "dc_offset": -0.00022,
+        "peak_dbfs": -2.21,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 5.34,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "c19547e95864a18feb5a85400f1d5f5492a6c56639784a44042e592ae12ba605"
+}

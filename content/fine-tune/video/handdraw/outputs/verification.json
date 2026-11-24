@@ -1,0 +1,947 @@
+{
+  "status": "delivery_review_completed_with_open_checks",
+  "open_checks": [
+    "listening"
+  ],
+  "engineering": {
+    "duration_seconds": 133.12645833333335,
+    "engine": {
+      "version": "1.4.1",
+      "scripts_sha256": "1b556615543eb434"
+    },
+    "art_direction": {
+      "dependency_sha256": "fbbfd33d70f729011b6a6bc232851c116cd4a89ead2adea4462888a6ce26fc1a",
+      "reviewed_image_uses": 12,
+      "style": {
+        "mode": "inferred",
+        "name": "墨筝故事会白板",
+        "resolved_sha256": "e1b22a8148dfe0c85dbaf6ec05be99191179a212d434ca47d0d772a8c3cd0133",
+        "drawing_mode": "draw"
+      },
+      "drawing_plan": {
+        "plan_sha256": "9b4e3fe91db9aa00c18fbafbdd20800ca88132f3950f5a678b46f5fa7e3817aa",
+        "reviewed_illustrations": 10
+      },
+      "presentation": {
+        "mode": "focus_diagram",
+        "density": "medium",
+        "reason": "每个技术机制使用一张独立白板主图，故事角色保持一致，避免两分钟内容挤在同一块板上",
+        "policy": {
+          "density": "medium",
+          "max_hold_seconds": 8,
+          "hold_range": [
+            6,
+            10
+          ],
+          "cadence_factor": 1.0,
+          "max_picture_visuals_per_shot": 2,
+          "max_labels_per_shot": 5,
+          "board_reuse": false,
+          "min_finished_hold_median": 1.2,
+          "drawing_share": 0.7,
+          "text_role": "labels",
+          "summary": "单概念深挖：一主图+关键标注"
+        },
+        "summary": "单概念深挖：一主图+关键标注"
+      }
+    },
+    "checks": {
+      "full_decode": true,
+      "complete_timeline": true,
+      "paths_and_paint_coverage": true,
+      "narration_controls_drawing_time": true,
+      "canvas_bounds": true,
+      "subtitle_order": true,
+      "loudness": true,
+      "audio_gate": "PASS",
+      "caption_sync": "PASS",
+      "semantic_part_order": true,
+      "outlines_before_fill": true,
+      "glyph_isolation": true,
+      "arm_continues_off_canvas": true,
+      "cover_half_second_still_and_fade": true,
+      "mandatory_art_direction": true
+    },
+    "assets": [
+      {
+        "name": "element-0001",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0002",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0003",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0004",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "roof_face",
+          "building_body",
+          "wrong_note",
+          "demolition_hammer",
+          "adapter_cards"
+        ],
+        "ink_tip_max_distance_px": 7.843423842257989,
+        "paint_max_overshoot_px": -0.8994899360277628
+      },
+      {
+        "name": "element-0005",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0006",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0007",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0008",
+        "type": "typeset_caption",
+        "lines": 1,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0009",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "library",
+          "prompt_note",
+          "rag_cart",
+          "finetune_wrench"
+        ],
+        "ink_tip_max_distance_px": 7.753519350543218,
+        "paint_max_overshoot_px": -0.899073313438123
+      },
+      {
+        "name": "element-0010",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0011",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0012",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0013",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0014",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0015",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "main_shell",
+          "all_shelves",
+          "copy_one",
+          "copy_two",
+          "copy_three",
+          "lost_book"
+        ],
+        "ink_tip_max_distance_px": 7.615774288204553,
+        "paint_max_overshoot_px": -0.8986389254209826
+      },
+      {
+        "name": "element-0016",
+        "type": "marker_underline",
+        "maximum_tip_distance_px": 4.999119260011965
+      },
+      {
+        "name": "element-0017",
+        "type": "handwritten_text",
+        "isolated_characters": 1,
+        "maximum_tip_distance_px": 5.8047873969767645
+      },
+      {
+        "name": "element-0018",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0019",
+        "type": "typeset_caption",
+        "lines": 1,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0020",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0021",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0022",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "shelf_frame",
+          "locked_sections",
+          "trainable_knobs"
+        ],
+        "ink_tip_max_distance_px": 5.662003306032718,
+        "paint_max_overshoot_px": -0.8972943567703879
+      },
+      {
+        "name": "element-0023",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0024",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0025",
+        "type": "typeset_caption",
+        "lines": 1,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0026",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0027",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0028",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "base_library",
+          "tall_card",
+          "wide_card",
+          "pack_one",
+          "pack_two",
+          "pack_three"
+        ],
+        "ink_tip_max_distance_px": 6.6984372564855645,
+        "paint_max_overshoot_px": -0.8972017337099061
+      },
+      {
+        "name": "element-0029",
+        "type": "handwritten_text",
+        "isolated_characters": 1,
+        "maximum_tip_distance_px": 4.933390379260805
+      },
+      {
+        "name": "element-0030",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0031",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0032",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0033",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0034",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "large_cabinet",
+          "compression_arrow",
+          "compressed_case",
+          "expanded_layer"
+        ],
+        "ink_tip_max_distance_px": 7.916958763854716,
+        "paint_max_overshoot_px": -0.8987638129497952
+      },
+      {
+        "name": "element-0035",
+        "type": "marker_underline",
+        "maximum_tip_distance_px": 4.999119260011965
+      },
+      {
+        "name": "element-0036",
+        "type": "handwritten_text",
+        "isolated_characters": 1,
+        "maximum_tip_distance_px": 5.599028075024474
+      },
+      {
+        "name": "element-0037",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0038",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0039",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0040",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0041",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "compass",
+          "original_vector",
+          "delta_vector",
+          "coupled_result"
+        ],
+        "ink_tip_max_distance_px": 7.898673920998561,
+        "paint_max_overshoot_px": -0.8996251943834146
+      },
+      {
+        "name": "element-0042",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0043",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0044",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0045",
+        "type": "typeset_caption",
+        "lines": 1,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0046",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "panel",
+          "direction_knob",
+          "length_knob",
+          "direction_arrow"
+        ],
+        "ink_tip_max_distance_px": 7.354012025042224,
+        "paint_max_overshoot_px": -0.8993340384544126
+      },
+      {
+        "name": "element-0047",
+        "type": "handwritten_text",
+        "isolated_characters": 1,
+        "maximum_tip_distance_px": 5.007281209025798
+      },
+      {
+        "name": "element-0048",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0049",
+        "type": "typeset_caption",
+        "lines": 1,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0050",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0051",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0052",
+        "type": "typeset_caption",
+        "lines": 1,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0053",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "compressed_base",
+          "direction_control",
+          "magnitude_control",
+          "construction_sign"
+        ],
+        "ink_tip_max_distance_px": 7.2804389635256745,
+        "paint_max_overshoot_px": -0.8981803965555244
+      },
+      {
+        "name": "element-0054",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0055",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0056",
+        "type": "typeset_caption",
+        "lines": 1,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0057",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0058",
+        "type": "typeset_caption",
+        "lines": 1,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0059",
+        "type": "typeset_caption",
+        "lines": 2,
+        "font": {
+          "path": "/System/Library/Fonts/Hiragino Sans GB.ttc",
+          "index": 0,
+          "family": "Hiragino Sans GB",
+          "style": "W3"
+        },
+        "background": null
+      },
+      {
+        "name": "element-0060",
+        "type": "illustration",
+        "mode": "draw",
+        "outlines_before_fill": "pass",
+        "semantic_parts_in_order": [
+          "finished_library",
+          "signpost",
+          "prompt_checkpoint",
+          "rag_checkpoint",
+          "finetune_checkpoint"
+        ],
+        "ink_tip_max_distance_px": 7.652653902162832,
+        "paint_max_overshoot_px": -0.8983875288603826
+      },
+      {
+        "name": "element-0061",
+        "type": "handwritten_text",
+        "isolated_characters": 1,
+        "maximum_tip_distance_px": 4.826617645252297
+      }
+    ],
+    "pages": [
+      {
+        "page": 1,
+        "duration_seconds": 8.409,
+        "drawing_completed_before_speech_end_seconds": 1.2347619969185777
+      },
+      {
+        "page": 2,
+        "duration_seconds": 12.362999999999998,
+        "drawing_completed_before_speech_end_seconds": 4.052718685688792
+      },
+      {
+        "page": 3,
+        "duration_seconds": 15.043,
+        "drawing_completed_before_speech_end_seconds": 4.477679634501879
+      },
+      {
+        "page": 4,
+        "duration_seconds": 12.651000000000003,
+        "drawing_completed_before_speech_end_seconds": 3.929669787651129
+      },
+      {
+        "page": 5,
+        "duration_seconds": 16.062999999999995,
+        "drawing_completed_before_speech_end_seconds": 3.929557787695188
+      },
+      {
+        "page": 6,
+        "duration_seconds": 13.488,
+        "drawing_completed_before_speech_end_seconds": 3.091367475473916
+      },
+      {
+        "page": 7,
+        "duration_seconds": 14.239000000000004,
+        "drawing_completed_before_speech_end_seconds": 4.6511892449805
+      },
+      {
+        "page": 8,
+        "duration_seconds": 11.016999999999996,
+        "drawing_completed_before_speech_end_seconds": 2.860348836991534
+      },
+      {
+        "page": 9,
+        "duration_seconds": 12.165000000000006,
+        "drawing_completed_before_speech_end_seconds": 3.4916554812534457
+      },
+      {
+        "page": 10,
+        "duration_seconds": 16.688458333333315,
+        "drawing_completed_before_speech_end_seconds": 2.517778429323272
+      }
+    ],
+    "pictures": {
+      "drawn": 10,
+      "revealed": []
+    },
+    "subtitles": {
+      "subtitle_streams": 0,
+      "adjacent_sidecars": 0,
+      "presentation": "burned"
+    },
+    "audio_mix": {
+      "background_music": false,
+      "layers": [],
+      "narration_only": true,
+      "narration_filter": "highpass=f=70,loudnorm=I=-20:TP=-2:LRA=7",
+      "loudnorm_first_pass": {
+        "input_i": "-20.59",
+        "input_tp": "-0.50",
+        "input_lra": "2.60",
+        "input_thresh": "-30.86",
+        "output_i": "-20.04",
+        "output_tp": "-2.00",
+        "output_lra": "2.60",
+        "output_thresh": "-30.31",
+        "normalization_type": "dynamic",
+        "target_offset": "0.04"
+      },
+      "loudnorm_mode": "dynamic",
+      "delivery_notice": "默认未添加背景音乐；可自行合成，或在发布平台选择配乐。"
+    },
+    "ending_review": {
+      "last_active_seconds": 131.21,
+      "source_tail_seconds": 0.3164583333333155,
+      "activity_threshold_dbfs": -60,
+      "analysis_window_seconds": 0.01,
+      "hold_seconds": 0.6,
+      "total_tail_seconds": 0.9164583333333155,
+      "closing_text": null,
+      "scope": "Protects samples and pacing; complete pronunciation still needs final-track review",
+      "final_phrase_encoding_correlation": 0.9994970656624337
+    },
+    "audio_track_correlation": 0.9997170116599816,
+    "audio_gate": {
+      "source": "outputs/film.mp4 audio",
+      "duration_seconds": 133.141,
+      "tonal_lines_hz_persistence": [],
+      "pause_percentile": 5,
+      "pause_depth_db": -46.6,
+      "dc_offset": 1e-05,
+      "peak_dbfs": -1.87,
+      "clipped_fraction": 0.0,
+      "status": "PASS",
+      "failures": []
+    },
+    "caption_sync": {
+      "status": "PASS",
+      "tolerance_seconds": 0.3,
+      "cues": 44,
+      "cues_after_gap": 34,
+      "max_offset_seconds": 0.14,
+      "outside_tolerance": []
+    },
+    "loudness": {
+      "input_i": "-17.04",
+      "input_tp": "-1.86",
+      "input_lra": "2.70",
+      "input_thresh": "-27.32",
+      "output_i": "-17.10",
+      "output_tp": "-2.00",
+      "output_lra": "2.40",
+      "output_thresh": "-27.37",
+      "normalization_type": "dynamic",
+      "target_offset": "0.10"
+    },
+    "status": "engineering_passed_review_required",
+    "video_sha256": "935139303d7fbb80a2ad847c3a529478869dde232a5a825fb3b91d5e67c23ad0",
+    "cover_sha256": "35395d3c4ffc4194494debd27c28c80c14e3a056d6471ad6c13d40ab73656a90",
+    "build_fingerprint": "523ca6502006a26451cc4c43235c3981ca36f45c693767e3fe00c91b299ec8f4",
+    "frames": "3994",
+    "bytes": 8531808
+  },
+  "review": {
+    "video_sha256": "935139303d7fbb80a2ad847c3a529478869dde232a5a825fb3b91d5e67c23ad0",
+    "content": {
+      "status": "pass",
+      "evidence": "已逐项核对 10 个章节脚本映射，并查看 5、18、32、45、58、72、85、98、112、127 秒关键帧：图书馆、提示词/RAG、全量微调、PEFT、LoRA、QLoRA、方向耦合、DoRA、QDoRA 和选型均与旁白主题一致，未发现错误机制或错页。"
+    },
+    "visual": {
+      "status": "pass",
+      "evidence": "已查看 15 秒代表段及全片 10 个章节关键帧：极简墨色/金色几何风格统一，主体可辨，字幕与水印未遮挡关键图形；10.5 秒关键帧确认第二页从空白白板开始，机制之间正常清板。"
+    },
+    "motion": {
+      "status": "pass",
+      "evidence": "已实际播放 15 秒代表段，确认笔尖带出轮廓、先描线后填色、无整块弹出或软刷揭示；工程验证的路径覆盖、填色覆盖、语义部位顺序及先描线后填色检查均通过。"
+    },
+    "audio": {
+      "status": "pass",
+      "evidence": "工程音频门禁通过：旁白轨存在且覆盖完整时间线，字幕同步通过（最大偏移约 0.14 秒），峰值约 -1.87 dBFS、无削波；本项仅确认可测声学指标，主观听感另列为未完成。"
+    },
+    "privacy": {
+      "status": "pass",
+      "evidence": "十张最终插画均已执行元数据清理，素材隐私检查与完整工程验证通过；抽查画面未见个人信息、第三方账户信息或意外元数据内容。"
+    },
+    "continuous_playback": {
+      "status": "pass",
+      "evidence": "2026-03-10 在集成浏览器中从 0 秒连续播放至 ended 事件；媒体时长与结束时间均为 133.133333 秒，墙钟播放 133.1374 秒，共解码 3994 帧、丢帧 0。"
+    },
+    "listening": {
+      "status": "not_done",
+      "evidence": "当前宿主无法向执行者提供可可靠判断的扬声器或耳机输出，因此未进行真人主观听音；不得用波形、字幕同步或声学门禁替代。"
+    },
+    "limitations": [
+      "真人主观听音尚未完成；发布前需由用户完整听一遍，确认音色、语气、停顿、发音和整体听感。",
+      "无背景音乐，音轨仅包含旁白。"
+    ]
+  }
+}

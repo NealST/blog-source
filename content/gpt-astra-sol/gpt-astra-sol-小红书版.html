@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>OpenAI GPT-6.2 拉了? · 小红书</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #2c2825; display: flex; flex-direction: column; align-items: center; padding: 90px 20px 80px; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(28,28,30,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.toolbar .btn { background: #1C1C1E; color: #F2EDE3; border: 1px solid rgba(255,255,255,0.15); padding: 9px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.toolbar .btn.accent { background: #C4956A; border-color: #C4956A; color: #1C1C1E; }
+.toolbar .progress { color: rgba(255,255,255,0.7); font-size: 12px; margin-left: 8px; }
+.slide { width: 540px; height: 720px; margin-bottom: 40px; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 6px 28px rgba(28,28,30,0.35); background: #F2EDE3; }
+.bg-paper { position: absolute; inset: 0; background: linear-gradient(135deg, #F6F1E7 0%, #F2EDE3 55%, #ECE4D2 100%); }
+.bg-paper::after { content: ''; position: absolute; inset: 0; opacity: 0.04; background-image: linear-gradient(rgba(28,28,30,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(28,28,30,0.6) 1px, transparent 1px); background-size: 28px 28px; pointer-events: none; }
+.content { position: relative; z-index: 2; height: 100%; padding: 32px 36px 24px; display: flex; flex-direction: column; color: #333; letter-spacing: 0.3px; }
+.slide.img-only { height: auto; min-height: 0; background: transparent; border-radius: 0; box-shadow: none; }
+.slide.img-only .content { height: auto; padding: 0; }
+.slide.img-only img.main-img { width: 100%; height: auto; object-fit: unset; display: block; }
+.post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
+.avatar-wrap { position: relative; width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 1.5px solid #C4956A; background: linear-gradient(135deg, #C4956A 0%, #8a6240 100%); flex-shrink: 0; }
+.avatar-wrap .avatar-fallback { position: absolute; inset: 0; z-index: 0; display: flex; align-items: center; justify-content: center; color: #F2EDE3; font-size: 22px; font-weight: 700; font-family: "Songti SC", serif; }
+.avatar-wrap .avatar { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
+.meta .name { font-size: 15px; font-weight: 700; color: #1C1C1E; }
+.meta .date { font-size: 13px; color: #888; margin-top: 2px; }
+.follow-prompt { margin-left: auto; text-align: right; line-height: 1.35; }
+.follow-title { color: #C4956A; font-size: 14px; font-weight: 700; }
+.follow-subtitle { color: #888; font-size: 11px; margin-top: 2px; letter-spacing: .5px; }
+.post-body { flex: 1; overflow: hidden; }
+.post-body .h1 { font-size: 27px; font-weight: 800; color: #1C1C1E; margin-bottom: 14px; line-height: 1.35; text-align: center; padding: 10px 0; border-top: 2px solid #1C1C1E; border-bottom: 2px solid #1C1C1E; font-family: "Songti SC", "Source Han Serif SC", serif; letter-spacing: 1px; }
+.post-body .h3 { font-size: 19px; font-weight: 700; color: #2C2A28; margin: 8px 0 10px; letter-spacing: 0.5px; }
+.post-body p { font-size: 18px; line-height: 1.6; margin-bottom: 8px; }
+.post-body em { font-style: italic; color: #555; }
+.post-body strong { color: #1C1C1E; font-weight: 700; }
+.list-item { display: flex; gap: 8px; margin-bottom: 7px; font-size: 18px; line-height: 1.6; }
+.list-item .bullet { color: #999; font-weight: bold; flex-shrink: 0; }
+code { background: #E8E0D1; color: #1C1C1E; padding: 1px 5px; border-radius: 4px; font-family: "SF Mono", Menlo, monospace; font-size: 0.92em; white-space: nowrap; }
+.post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(28,28,30,0.08); flex-shrink: 0; gap: 8px; }
+.post-footer .brand { font-size: 12px; color: #888; }
+.post-footer .brand .gz { color: #C4956A; font-weight: 700; }
+.post-footer .page { font-size: 12px; color: #888; flex-shrink: 0; }
+.cutoff { color: #888; font-size: 16px; margin-top: 12px; }
+.swipe-hint { text-align: center; font-size: 12px; letter-spacing: 1px; margin-top: auto; padding: 8px 0; }
+.swipe-hint.dark { color: rgba(242,237,227,0.5); }
+.swipe-arrow { display: inline-block; }
+.post-body.center-single { display: flex; flex-direction: column; justify-content: center; }
+.post-body.center-single p { font-size: 20px; line-height: 1.7; margin-bottom: 0; text-align: center; }
+.quote-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.quote-card .q { font-size: 18px; line-height: 1.7; font-weight: 400; color: #F2EDE3; }
+.quote-card .punch { font-size: 20px; line-height: 1.7; font-weight: 600; color: #F2EDE3; margin-top: 16px; }
+.slide.cover .bg-paper, .slide.end .bg-paper { background: #1C1C1E; }
+.slide.cover .bg-paper::after, .slide.end .bg-paper::after { display: none; }
+.slide.cover .meta .name, .slide.end .meta .name { color: #F2EDE3; }
+.slide.cover .meta .date, .slide.end .meta .date { color: rgba(242,237,227,.55); }
+.slide.cover .follow-title, .slide.end .follow-title { color: #D8B28C; }
+.slide.cover .follow-subtitle, .slide.end .follow-subtitle { color: rgba(242,237,227,.55); }
+.slide.cover .post-body, .slide.cover .post-body p, .slide.end .post-body { color: #F2EDE3; }
+.slide.cover .post-body .h1 { color: #F2EDE3; border-color: rgba(242,237,227,.7); }
+.slide.cover .post-body strong { color: #F2EDE3; }
+.slide.cover .post-footer, .slide.end .post-footer { border-top-color: rgba(242,237,227,.15); }
+.slide.cover .post-footer .brand, .slide.cover .post-footer .page, .slide.end .post-footer .brand, .slide.end .post-footer .page { color: rgba(242,237,227,.55); }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button class="btn accent" onclick="downloadAll()">全部下载 (ZIP)</button>
+  <button class="btn" onclick="downloadOne()">下载当前</button>
+  <span class="progress" id="progress"></span>
+</div>
+<div class="slide cover" id="slide-1">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body">
+      <div class="h1">OpenAI GPT-6.2 拉了?</div>
+      <p>几天前，OpenAI 正式发布了 GPT-6.2 Astra 与 GPT-6.2 Sol。</p>
+      <p>正常来说，这是 OpenAI 迄今为止推出的最强的两款模型，尽管纸面参数和各项指标相当亮眼，但用户群（尤其是开发者群体）的实际反馈却十分惨淡。</p>
+      <p>Hacker News 上的发布讨论帖目前已收获超过 1,300 个点赞和 800 多条评论，其中充斥着大量的吐槽与批评。</p>
+    </section>
+    <div class="swipe-hint dark"><span class="swipe-arrow">←</span> 左滑查看更多</div>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">1 / 18</span></footer>
+  </div>
+</div><div class="slide img-only" id="slide-2">
+  <img class="main-img" src="source-images/02-public-reaction.png" alt="社区对 GPT-6.2 Astra 与 Sol 的公开反馈">
+</div><div class="slide" id="slide-3">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p>在 X 上，几位 AI 领域大 V 甚至公开表示，他们非常厌恶使用这款新旗舰模型。关于具体细节，我会在后文进一步展开。</p><p>我翻阅了一下大家的负面反馈，并仔细研读了官方公布的模型规格说明，对于 OpenAI 为何会以这种状态推出模型，我有一些自己的推测，这很可能与 Anthropic 本周正式上市有着密切关联。</p><p>在深入梳理负面反馈之前，先聊聊 GPT-6.2 Astra 和 GPT-6.2 Sol 具体带来了哪些更新。</p><div class="h3">GPT-6.2 Astra 与 GPT-6.2 Sol 带来了哪些新变化</div><p>OpenAI 将 Astra 定位为面向高难度复杂项目的前沿旗舰模型；Sol 则是体量更小、成本更低的轻量模型，适用于一些简要的日常任务。</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">3 / 18</span></footer>
+  </div>
+</div><div class="slide" id="slide-4">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p>我首先关注到的是价格变化：https://developers.openai.com/api/docs/pricing</p><p>6.2 Astra 现在的定价为每百万输入 Token 8 美元、每百万输出 Token 40 美元，相比 GPT-6 Astra 便宜了 20%；缓存命中后的输入价格更是降低了 60%，仅需 0.40 美元。</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">4 / 18</span></footer>
+  </div>
+</div><div class="slide img-only" id="slide-5">
+  <img class="main-img" src="source-images/03-pricing.png" alt="GPT-6.2 Astra 与 Sol 的定价信息">
+</div><div class="slide" id="slide-6">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p>Sol 则维持了与 GPT-6.1 Sol 相同的定价：每百万输入 Token 2 美元，每百万输出 Token 10 美元。</p><p>此外，OpenAI 还强调这两款模型在完成高要求复杂任务时所消耗的输出 Token 更少。在官方内部的 GDPval v2 基准测试中，6.2 Astra 比 GPT-6 Astra 高出 6.2 分，同时输出 Token 减少了 22%。</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">6 / 18</span></footer>
+  </div>
+</div><div class="slide img-only" id="slide-7">
+  <img class="main-img" src="source-images/04-gdpval.png" alt="GDPval v2 由金融、数据科学、生物技术和市场营销等真实项目中的长期复杂知识工作任务组成">
+</div><div class="slide" id="slide-8">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p><em>GDPval v2 由金融、数据科学、生物技术和市场营销等真实项目中的长期复杂知识工作任务组成。</em></p><p>PS：这个“减少 22%”的细节，在我看来，正是这个版本引发种种问题的关键原因之一，后文我会专门分析。</p><p>除此之外，还有以下几点值得一提：</p><div class="list-item"><span class="bullet">•</span><div><strong>基准测试成绩显著提升</strong>：在 agent 测试中，OpenAI 称 6.2 Astra 比上一代 GPT-6 Astra 得分高出 5.2，成本却不到后者的三分之一；相比竞争对手 Claude Fable 5.2，Astra 领先 5.5 分，而成本仅为对方的 5%。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>轻量模型性价比突出</strong>：在 FrontierCode 2.0 代码基准测试中，轻量版 Sol 的表现与旗舰版 Astra 仅差 0.5 分，而成本只有 Astra 的约五分之一。</div></div><div class="list-item"><span class="bullet">•</span><div><strong>多渠道开放，但暂未全量普及</strong>：目前两款模型已面向 Plus、Pro、企业版和教育版用户开放，可在 ChatGPT Work、Codex 以及 API 中直接调用，但尚未上线普通版 ChatGPT 对话界面。</div></div><p>在 Codex 上，这两款模型也已经正式上架：</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">8 / 18</span></footer>
+  </div>
+</div><div class="slide img-only" id="slide-9">
+  <img class="main-img" src="source-images/05-codex-models.png" alt="Codex 中的模型选择界面">
+</div><div class="slide" id="slide-10">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p>OpenAI 此前明确承诺：使用 Astra 构建的前端界面会更加美观易用，生成的幻灯片和文档也会显著减少 AI 味。</p><p>但用户吐槽最多的恰恰就是这两个点。</p><div class="h3">GPT-6.2 Sol 生成的网页依然充满 AI 味</div><p>在逛 X 时，我注意到一条热议推文（https://x.com/MiaAI_lab/status/2122799702185738616）。博主 Mia 用 GPT-6.2 Sol 生成了 100 个 HTML 页面文件：https://miaai-lab.github.io/GPT-6.2-Sol-100-HTML-Files/。</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">10 / 18</span></footer>
+  </div>
+</div><div class="slide img-only" id="slide-11">
+  <img class="main-img" src="source-images/06-mia-post.jpg" alt="Mia 用 GPT-6.2 Sol 生成 100 个 HTML 页面的推文">
+</div><div class="slide" id="slide-12">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p>其中有一个示例页面，展示了一个折叠手风琴图表（accordion chart）：https://miaai-lab.github.io/GPT-6.2-Sol-100-HTML-Files/001-the-folded-pacific.html。点击展开后，它会呈现一段虚构航行路线的四个航段：从出发地海岬处漂浮的海带林，一路延伸至茶隼湾后方平静的水域。</p><p>生成该页面的提示词如下：</p><p><strong>Prompt（提示词）：</strong></p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">12 / 18</span></footer>
+  </div>
+</div><div class="slide" id="slide-13">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p>为定期班轮“飞燕草号”（Larkspur）设计一张虚构海图，展示其从桤木港（Port Alder）到茶隼湾（Kestrel Bay）的四段航程。页面整体需呈现出 20 世纪中叶水道测量局那种沉稳严谨的专业质感。配色使用仿旧纸色 <code>#e5dfcc</code>、深青蓝 <code>#143d48</code> 和朱红 <code>#c84330</code>。在左对齐的巨大 Georgia 字体标题上方，放置小号等宽字体的海图元数据；下方接一个横向宽幅的四折手风琴图表，包含细致的纬线标尺、虚构岛屿、水深标注以及朱红色的航线轨迹。</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">13 / 18</span></footer>
+  </div>
+</div><div class="slide" id="slide-14">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p>海图折痕要有清晰的立体棱纹感，四周留出逼真的物理留白边距。提供三个切换标签：收纳折叠（Stowed）、半开（Half sheet）与完整航线（Full passage）。展开时采用带有物理重感、时长 820 毫秒的铰链过渡动效，逐层显现每个图板，平抑透视形变，并在动画停稳展平时重新连合航线接缝。折叠状态下，海图在视觉上应为一个完整物件；展开后，重点突出四条独立的航海日志记录。注明海图纯属虚构，并编写几段贴合航海实际的甲板记录文案，具体提及海藻床、逆流与下风向进港路线。若开启“减弱动态效果”（reduced motion），以直接的静态状态切换取代折叠动画。移动端将日志记录改为垂直堆叠排列，确保海图始终保持在视口范围内。</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">14 / 18</span></footer>
+  </div>
+</div><div class="slide" id="slide-15">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body center-single"><p>下图是 GPT-6.2 Sol 的实际生成效果：</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">15 / 18</span></footer>
+  </div>
+</div><div class="slide img-only" id="slide-16">
+  <img class="main-img" src="source-images/07-folded-pacific.png" alt="GPT-6.2 Sol 生成的“折叠太平洋”页面">
+</div><div class="slide" id="slide-17">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body"><p><em>GPT-6.2 Sol 生成的“折叠太平洋（The Folded Pacific）”页面。</em></p><p>乍看之下整体效果尚可，但作为一名经常使用 GPT 模型生成网页的开发者，这种视觉审美依然带有一眼可见的“AI 感”。</p><p class="cutoff">因篇幅限制，完整长文请移步微信公众号『墨筝』</p></section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">17 / 18</span></footer>
+  </div>
+</div><div class="slide end" id="slide-18">
+  <div class="bg-paper"></div>
+  <div class="content">
+    <header class="post-header">
+      <div class="avatar-wrap"><span class="avatar-fallback">墨</span><img class="avatar" src="../_shared/avatar.jpg" alt="墨筝" onerror="this.style.display='none'"></div>
+      <div class="meta"><div class="name">墨筝</div><div class="date">11/22</div></div>
+      <div class="follow-prompt"><div class="follow-title">关注我</div><div class="follow-subtitle">持续更新 AI 实战</div></div>
+    </header>
+    <section class="post-body">
+      <div class="quote-card">
+        <div class="q">本质上，Astra 和 Sol 依然是底座能力极强的大模型，它们之所以能把价格降下来，主要途径是“少说多做/压缩输出”。</div>
+        <div class="punch">但 OpenAI 显然严重低估了开发者群体对于“确切知晓模型到底在做什么”的重视程度。</div>
+      </div>
+    </section>
+    <footer class="post-footer"><span class="brand">微信搜索公众号<span class="gz">「墨筝」</span>查看更多内容</span><span class="page">18 / 18</span></footer>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const d = new Date();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    document.querySelectorAll('.date').forEach(el => el.textContent = `${mm}/${dd}`);
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script>
+const SCALE = 2;
+function flattenAlpha(canvas, bgColor) {
+  const flat = document.createElement('canvas');
+  flat.width = canvas.width; flat.height = canvas.height;
+  const ctx = flat.getContext('2d');
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, flat.width, flat.height);
+  ctx.drawImage(canvas, 0, 0);
+  return flat;
+}
+async function fetchAsDataURL(url) {
+  const r = await fetch(url, { mode: 'cors', cache: 'force-cache' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const blob = await r.blob();
+  return await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
+}
+async function inlineRemoteImages() {
+  const imgs = Array.from(document.querySelectorAll('img'));
+  await Promise.all(imgs.map(async (img) => {
+    const src = img.getAttribute('src') || '';
+    if (!src || src.startsWith('data:') || src.startsWith('blob:')) return;
+    try { const u = new URL(src, location.href); if (u.origin === location.origin) return; } catch (_) { return; }
+    const stripped = src.replace(/^https?:\/\//, '');
+    const candidates = [src, 'https://wsrv.nl/?url=' + encodeURIComponent(stripped), 'https://images.weserv.nl/?url=' + encodeURIComponent(stripped), 'https://corsproxy.io/?' + encodeURIComponent(src)];
+    let dataUrl = null;
+    for (const u of candidates) { try { dataUrl = await fetchAsDataURL(u); break; } catch (e) {} }
+    if (dataUrl) { img.src = dataUrl; if (img.decode) { try { await img.decode(); } catch (_) {} } }
+  }));
+}
+async function renderSlide(s) {
+  const origRadius = s.style.borderRadius;
+  s.style.borderRadius = '0';
+  const isImgOnly = s.classList.contains('img-only');
+  if (isImgOnly) {
+    const img = s.querySelector('img.main-img');
+    if (!img || !img.naturalWidth) throw new Error('原文图片加载失败');
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    s.style.borderRadius = origRadius;
+    return canvas;
+  }
+  const bg = (s.classList.contains('cover') || s.classList.contains('end')) ? '#1C1C1E' : '#F2EDE3';
+  const raw = await html2canvas(s, { scale: SCALE, useCORS: true, allowTaint: false, backgroundColor: null, width: 540, height: 720, logging: false });
+  s.style.borderRadius = origRadius;
+  return flattenAlpha(raw, bg);
+}
+function canvasToBlob(c) { return new Promise(r => c.toBlob(r, 'image/png')); }
+async function downloadAll() {
+  const progress = document.getElementById('progress');
+  try {
+    progress.textContent = '预加载图片...';
+    await inlineRemoteImages();
+    const slides = document.querySelectorAll('.slide');
+    const zip = new JSZip();
+    for (let i = 0; i < slides.length; i++) {
+      progress.textContent = `渲染第 ${i+1}/${slides.length} 张...`;
+      const canvas = await renderSlide(slides[i]);
+      const blob = await canvasToBlob(canvas);
+      if (!blob) throw new Error(`第 ${i+1} 张 toBlob 失败`);
+      zip.file(`GPT-6.2-${String(i+1).padStart(2,'0')}.png`, blob);
+    }
+    progress.textContent = '打包中...';
+    saveAs(await zip.generateAsync({type:'blob'}), 'GPT-6.2-小红书.zip');
+    progress.textContent = `${slides.length} 张已打包下载`;
+  } catch (e) {
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e));
+  }
+}
+let currentSlideIdx = 0;
+const observer = new IntersectionObserver((entries) => {
+  let best = null;
+  entries.forEach(e => { if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e; });
+  if (best) currentSlideIdx = Array.from(document.querySelectorAll('.slide')).indexOf(best.target);
+}, { threshold: [0.5, 0.75, 1] });
+document.querySelectorAll('.slide').forEach(s => observer.observe(s));
+async function downloadOne() {
+  const progress = document.getElementById('progress');
+  try {
+    await inlineRemoteImages();
+    const slides = document.querySelectorAll('.slide');
+    const idx = Math.max(0, Math.min(currentSlideIdx, slides.length - 1));
+    const canvas = await renderSlide(slides[idx]);
+    const blob = await canvasToBlob(canvas);
+    if (!blob) throw new Error('toBlob 失败');
+    saveAs(blob, `GPT-6.2-${String(idx+1).padStart(2,'0')}.png`);
+    progress.textContent = `已下载第 ${idx+1} 张`;
+  } catch (e) {
+    progress.textContent = '下载失败：' + (e && e.message ? e.message : e);
+    alert('下载失败：' + (e && e.message ? e.message : e));
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "signature": "18e3e7be0f45e2c7bbf29e90286255e1442b98506a14a225721484f893cb534d",
+  "index": 6,
+  "text": "接着看一个指南针。每支箭头都有长度和方向：长度代表特征有多强，方向代表它在表达什么。LoRA 用一根附加小箭头去转弯，转得太猛时，常常连总长度也一起拉长。",
+  "units": [
+    {
+      "beat": "direction",
+      "page": 3,
+      "text": "接着看一个指南针。每支箭头都有长度和方向：长度代表特征有多强，方向代表它在表达什么。LoRA 用一根附加小箭头去转弯，转得太猛时，常常连总长度也一起拉长。"
+    }
+  ],
+  "join": "page",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "006.wav",
+        "duration_seconds": 13.998,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -52.4,
+        "dc_offset": -0.00022,
+        "peak_dbfs": -2.09,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 4.96,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "ea49f5f5bf5553d8f07aa9f6c81b4e66509fe919d6c5d7b32cf3d78102d7a322"
+}

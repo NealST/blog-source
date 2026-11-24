@@ -54,12 +54,40 @@ font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
 
 ---
 
-## 四、Header 设计（每张卡都有）
+## 四、Header 设计（每张文字卡都有）
 
 ```
-[头像 44×44 圆形, 筝弦金 1.5px 描边]   墨筝
-                                       MM/DD     ← 灰 #888 13px
+[头像 44×44 圆形]   墨筝                         关注我
+                    MM/DD              持续更新 AI 实战
 ```
+
+左侧作者信息保持原结构，右侧关注提示必须靠右对齐。关注提示是文字卡、封面和封底的固定品牌组件；原文图片独占页不得添加。
+
+```html
+<header class="post-header">
+  <div class="avatar-wrap">...</div>
+  <div class="meta">
+    <div class="name">墨筝</div>
+    <div class="date">MM/DD</div>
+  </div>
+  <div class="follow-prompt">
+    <div class="follow-title">关注我</div>
+    <div class="follow-subtitle">持续更新 AI 实战</div>
+  </div>
+</header>
+```
+
+```css
+.follow-prompt { margin-left: auto; text-align: right; line-height: 1.35; }
+.follow-title { color: #C4956A; font-size: 14px; font-weight: 700; }
+.follow-subtitle { color: #888; font-size: 11px; margin-top: 2px; letter-spacing: .5px; }
+.cover-slide .follow-title,
+.end-slide .follow-title { color: #D8B28C; }
+.cover-slide .follow-subtitle,
+.end-slide .follow-subtitle { color: rgba(242,237,227,.55); }
+```
+
+**对齐硬规则**：`.follow-prompt` 必须同时设置 `margin-left:auto` 与 `text-align:right`，两行文案右边缘对齐，不得紧贴昵称或居中。
 
 ### 头像处理（重点 ⚠️）
 
@@ -142,7 +170,7 @@ content/_shared/avatar.jpg
 
 ### ⚠️ 金色使用禁区（高频错误，必须逐项检查）
 
-> **筝弦金 `#C4956A` 只允许用在以下 5 处**：h2 左竖线、序号圆底 `.num`、头像描边、footer 品牌字 `.gz`、封底 `.hl` 高亮（最多 1 处）。
+> **筝弦金 `#C4956A` 只允许用在以下 6 处**：h2 左竖线、序号圆底 `.num`、头像描边、顶栏关注标题 `.follow-title`、footer 品牌字 `.gz`、封底 `.hl` 高亮（最多 1 处）。
 >
 > **以下元素禁止使用 `#C4956A`，违反即为 BUG**：
 > - `strong` → 必须 `color: #1C1C1E; font-weight: 700`

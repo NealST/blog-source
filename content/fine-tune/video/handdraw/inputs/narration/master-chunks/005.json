@@ -1,0 +1,37 @@
+{
+  "signature": "d5d69ef8aafceb9bb2ec556c87645ee9ce144b8f081a3f0583d042102399f9e4",
+  "index": 5,
+  "text": "但训练时，整座图书馆还是很占地方。QLoRA 就先把不动的书柜从十六位压成四位，体积大约缩到四分之一；用到哪一层，才临时展开哪一层，算完马上收回去。",
+  "units": [
+    {
+      "beat": "qlora",
+      "page": 2,
+      "text": "但训练时，整座图书馆还是很占地方。QLoRA 就先把不动的书柜从十六位压成四位，体积大约缩到四分之一；用到哪一层，才临时展开哪一层，算完马上收回去。"
+    }
+  ],
+  "join": "beat",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "005.wav",
+        "duration_seconds": 13.048,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -53.8,
+        "dc_offset": -0.00022,
+        "peak_dbfs": -1.81,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 5.1,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "0f7cf0551042850907d4bc972af0e501e8a661c8cfdd963e35e538cab56143aa"
+}

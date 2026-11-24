@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent 技术栈的三层架构</title>
+<style>
+body{margin:0;background:#fff;color:#1c1c1e;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{width:100%;overflow-x:auto}.wrap svg{display:block;width:100%;min-width:960px}
+.title{font-size:28px;font-weight:700}.band{fill:#fff;stroke:#d5d0c6;stroke-width:1.5}.focal{fill:#f8f2eb;stroke:#c4956a;stroke-width:2}
+.idx{font-size:12px;font-weight:700;fill:#c4956a;letter-spacing:1px}.name{font-size:20px;font-weight:700;fill:#1c1c1e}.sub{font-size:13px;fill:#7a7876}.item{font-size:14px;fill:#1c1c1e}
+</style></head>
+<body><div class="wrap"><svg viewBox="0 0 960 600" role="img" aria-labelledby="stack-title stack-desc">
+<title id="stack-title">Agent 技术栈的三层架构</title>
+<desc id="stack-desc">编排框架、厂商运行时和通信协议分属不同层级，并非直接替代关系。</desc>
+<rect width="960" height="600" fill="#fff"/>
+<text x="64" y="70" class="idx">THREE LAYERS</text><text x="64" y="112" class="title">这些工具不在同一层，也不必三选一</text>
+<rect x="120" y="155" width="720" height="112" rx="8" class="band"/>
+<text x="152" y="190" class="idx">L3</text><text x="206" y="193" class="name">编排框架</text>
+<text x="206" y="220" class="sub">定义业务逻辑、状态与控制流</text>
+<text x="808" y="206" text-anchor="end" class="item">LangGraph · CrewAI · Pydantic AI</text>
+<rect x="120" y="283" width="720" height="112" rx="8" class="focal"/>
+<text x="152" y="318" class="idx">L2</text><text x="206" y="321" class="name">厂商运行时</text>
+<text x="206" y="348" class="sub">驱动模型、工具、上下文与会话</text>
+<text x="808" y="334" text-anchor="end" class="item">OpenAI · Claude · Google ADK</text>
+<rect x="120" y="411" width="720" height="112" rx="8" class="band"/>
+<text x="152" y="446" class="idx">L1</text><text x="206" y="449" class="name">通信协议</text>
+<text x="206" y="476" class="sub">连接工具与其他 Agent</text>
+<text x="808" y="462" text-anchor="end" class="item">MCP · A2A</text>
+<text x="120" y="562" class="sub">常见生产系统会同时使用一套框架、一个运行时和边界上的两种协议。</text>
+</svg></div></body></html>

@@ -1,0 +1,37 @@
+{
+  "signature": "15accafa77750230f2033f41579c6e88c9094c1f862364c9389606af20a40cf2",
+  "index": 2,
+  "text": "最直接的办法叫全量微调：把每个书架、每本书的位置都重新调整。改得最彻底，可工程巨大；每来一家新客户，还得复制一整座图书馆，甚至可能整理新规矩时，把旧本事弄丢。",
+  "units": [
+    {
+      "beat": "full",
+      "page": 1,
+      "text": "最直接的办法叫全量微调：把每个书架、每本书的位置都重新调整。改得最彻底，可工程巨大；每来一家新客户，还得复制一整座图书馆，甚至可能整理新规矩时，把旧本事弄丢。"
+    }
+  ],
+  "join": "page",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "002.wav",
+        "duration_seconds": 14.803,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -49.3,
+        "dc_offset": -0.00021,
+        "peak_dbfs": -1.9,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 4.77,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "175ceef1b92ae986961a90cc2b9b750eb65b8181d2923e0378c7478378f46392"
+}

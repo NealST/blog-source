@@ -1,0 +1,37 @@
+{
+  "signature": "e66363b3cbc2d7490d8b87082cf24c17111546f0682b7e4d47fc51a112e685d5",
+  "index": 1,
+  "text": "管理员先试了三招。临时提醒，就在门口贴便签，这像提示词；缺少新资料，就推来资料车，这像 RAG；可要它长期保持固定语气和规矩，才需要微调。",
+  "units": [
+    {
+      "beat": "tools",
+      "page": 0,
+      "text": "管理员先试了三招。临时提醒，就在门口贴便签，这像提示词；缺少新资料，就推来资料车，这像 RAG；可要它长期保持固定语气和规矩，才需要微调。"
+    }
+  ],
+  "join": "beat",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "001.wav",
+        "duration_seconds": 11.924,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -48.5,
+        "dc_offset": -0.00021,
+        "peak_dbfs": -1.97,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 4.99,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "55a221809f2e916380d43e66aa7d941316ce89c6e6137a41c491ab35ec194655"
+}

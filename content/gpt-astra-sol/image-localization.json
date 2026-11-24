@@ -1,0 +1,139 @@
+{
+  "version": "1.0",
+  "principle": "Only localize when natural-language text is the image's primary information carrier and translation materially improves comprehension. Preserve source-language product UI, social posts, official documents, benchmark evidence, brand assets, and visual examples when translation would weaken authenticity or context.",
+  "images": [
+    {
+      "id": 1,
+      "source": "source-images/01-medium-cover.jpeg",
+      "role": "original article cover",
+      "action": "replace-for-wechat",
+      "reason": "A dedicated WeChat cover will provide a stronger Chinese editorial visual; the original cover is not needed as a body image."
+    },
+    {
+      "id": 2,
+      "source": "source-images/02-public-reaction.png",
+      "role": "community reaction evidence",
+      "action": "keep",
+      "reason": "The original comments and layout are primary-source evidence; Chinese context is already provided in the surrounding text."
+    },
+    {
+      "id": 3,
+      "source": "source-images/03-pricing.png",
+      "role": "official pricing table",
+      "action": "keep",
+      "reason": "Model names, prices, and units must remain exact; the article explains the figures in Chinese."
+    },
+    {
+      "id": 4,
+      "source": "source-images/04-gdpval.png",
+      "role": "benchmark chart",
+      "action": "keep",
+      "reason": "This is source benchmark evidence with model names and numeric axes; translating it would add little while reducing provenance."
+    },
+    {
+      "id": 5,
+      "source": "source-images/05-codex-models.png",
+      "role": "real Codex interface",
+      "action": "keep",
+      "reason": "Authentic product UI should remain unchanged."
+    },
+    {
+      "id": 6,
+      "source": "source-images/06-mia-post.jpg",
+      "role": "social post evidence",
+      "action": "keep",
+      "reason": "The post is evidence of public reaction; preserve its original language and account context."
+    },
+    {
+      "id": 7,
+      "source": "source-images/07-folded-pacific.png",
+      "role": "generated webpage example",
+      "action": "keep",
+      "reason": "The visual design itself is the subject of comparison; translating the UI would alter the artifact being evaluated."
+    },
+    {
+      "id": 8,
+      "source": "source-images/08-koi-pond.png",
+      "role": "generated webpage example",
+      "action": "keep",
+      "reason": "The image is primarily visual and contains no text that blocks understanding."
+    },
+    {
+      "id": 9,
+      "source": "source-images/09-theo-post.png",
+      "role": "social post evidence",
+      "action": "keep",
+      "reason": "The original post is primary-source evidence; the article already summarizes it in Chinese."
+    },
+    {
+      "id": 10,
+      "source": "source-images/10-reactions.jpg",
+      "role": "social reaction evidence",
+      "action": "keep",
+      "reason": "Preserve the original posts and account context; use Chinese prose for interpretation."
+    },
+    {
+      "id": 11,
+      "source": "source-images/11-hn-thread.png",
+      "role": "Hacker News discussion evidence",
+      "action": "keep",
+      "reason": "The original comment thread is source evidence and is translated in the body."
+    },
+    {
+      "id": 12,
+      "source": "source-images/12-tibo-responses.png",
+      "role": "social response evidence",
+      "action": "keep",
+      "reason": "Preserve the original conversation and identities; Chinese prose supplies context."
+    },
+    {
+      "id": 13,
+      "source": "source-images/13-reset-tracker.png",
+      "role": "real website interface",
+      "action": "keep",
+      "reason": "This is a real product screenshot whose interface language is part of the evidence."
+    },
+    {
+      "id": 14,
+      "source": "source-images/14-system-card.png",
+      "role": "official system card evidence",
+      "action": "keep",
+      "reason": "The highlighted official wording should remain verbatim; the key claim is translated in the article."
+    },
+    {
+      "id": 15,
+      "source": "source-images/15-cyber-benchmark.png",
+      "role": "benchmark source excerpt",
+      "action": "keep",
+      "reason": "The highlighted excerpt is evidence; scores and model names must retain provenance."
+    },
+    {
+      "id": 16,
+      "source": "source-images/16-coding-index.png",
+      "role": "benchmark chart",
+      "action": "keep",
+      "reason": "The chart is sourced evidence, and the Chinese caption already states the relevant comparison."
+    },
+    {
+      "id": 17,
+      "source": "source-images/17-ipo.jpg",
+      "role": "IPO source evidence",
+      "action": "keep",
+      "reason": "Preserve the original report or post context; translation is supplied by the surrounding text."
+    },
+    {
+      "id": 18,
+      "source": "source-images/18-counterargument.png",
+      "role": "counterargument evidence",
+      "action": "keep",
+      "reason": "The screenshot documents a specific counterargument and should retain its original wording."
+    },
+    {
+      "id": 19,
+      "source": "source-images/19-intelligence-cost.png",
+      "role": "benchmark chart",
+      "action": "keep",
+      "reason": "The chart's values and model labels are authoritative source material; the body explains its conclusion in Chinese."
+    }
+  ]
+}

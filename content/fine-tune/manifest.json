@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "created": "2026-11-04T09:42:00+08:00",
+  "title": "LLM 微调终极指南：全量微调、PEFT、LoRA、QLoRA、DoRA 与 QDoRA",
+  "outputs": {
+    "wechat": {
+      "html": "content/fine-tune/preview.html",
+      "cover_image": "content/fine-tune/cover.png",
+      "title": "LLM 微调终极指南：全量微调、PEFT、LoRA、QLoRA、DoRA 与 QDoRA",
+      "author": "墨筝",
+      "digest": "从模型如何生成一个词讲起，串起全量微调、PEFT、LoRA、QLoRA、DoRA 与 QDoRA，并给出 Prompt、RAG 和微调的实用选型建议。",
+      "images": [
+        "content/fine-tune/xiaohei-illustrations/01-prompt-rag-finetune.png",
+        "content/fine-tune/xiaohei-illustrations/02-full-vs-peft.png",
+        "content/fine-tune/xiaohei-illustrations/06-method-selection.png"
+      ],
+      "markdown": "source/_posts/fine-tune.md"
+    },
+    "xiaohongshu": {
+      "html": "content/fine-tune/fine-tune-小红书版.html",
+      "images_dir": "content/fine-tune/xiaohongshu-images",
+      "card_count": 18,
+      "copy": "content/fine-tune/xiaohongshu-copy.md",
+      "title": "LoRA到QDoRA怎么选｜大模型微调指南"
+    },
+    "video": {
+      "backend": "handdraw",
+      "path": "content/fine-tune/video/handdraw/outputs/film.mp4",
+      "cover": "content/fine-tune/video/handdraw/outputs/cover.png",
+      "captions": "content/fine-tune/video/handdraw/outputs/editing/transcript.srt",
+      "script": "content/fine-tune/video/handdraw/outputs/script.txt",
+      "verification": "content/fine-tune/video/handdraw/outputs/verification.json",
+      "job": "content/fine-tune/video/handdraw/job.json",
+      "aigc": true
+    }
+  },
+  "cover": {
+    "style": "medium",
+    "source": "content/fine-tune/cover-source.png",
+    "prompt": "content/fine-tune/cover-prompt.txt",
+    "model": "GPT Image 2",
+    "resolution": "2K"
+  },
+  "illustrations": {
+    "style": "localized-source+xiaohei",
+    "model": "GPT Image 2",
+    "resolution": "2K",
+    "localized_source_images": [
+      "content/fine-tune/localized-images/01-pretraining-instruction.png",
+      "content/fine-tune/localized-images/02-pretrained-limitations.png",
+      "content/fine-tune/localized-images/03-finetuning-impact.png",
+      "content/fine-tune/localized-images/04-full-finetuning-cost.png",
+      "content/fine-tune/localized-images/05-lora-update.png",
+      "content/fine-tune/localized-images/06-low-rank-matrices.png",
+      "content/fine-tune/localized-images/07-shared-base-adapters.png",
+      "content/fine-tune/localized-images/08-deployment-benefits.png",
+      "content/fine-tune/localized-images/09-compress-weights.png",
+      "content/fine-tune/localized-images/10-store-small-compute-big.png",
+      "content/fine-tune/localized-images/11-lora-vs-qlora.png",
+      "content/fine-tune/localized-images/12-magnitude-direction.png",
+      "content/fine-tune/localized-images/13-full-vs-lora-direction.png",
+      "content/fine-tune/localized-images/14-lora-dora-coupling.png",
+      "content/fine-tune/localized-images/15-dora-pipeline.png"
+    ]
+  }
+}

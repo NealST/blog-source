@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent 上线所需的四项能力</title>
+<style>
+body{margin:0;background:#fff;color:#1c1c1e;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{width:100%;overflow-x:auto}.wrap svg{display:block;width:100%;min-width:960px}
+.title{font-size:28px;font-weight:700}.node{fill:#fff;stroke:#d5d0c6;stroke-width:1.5}.focal{fill:#f8f2eb;stroke:#c4956a;stroke-width:2}
+.name{font-size:18px;font-weight:700;fill:#1c1c1e}.sub{font-size:13px;fill:#7a7876}.tag{font-size:11px;font-weight:700;fill:#c4956a;letter-spacing:1px}
+.arrow{fill:none;stroke:#7a7876;stroke-width:2}
+</style>
+</head>
+<body><div class="wrap">
+<svg viewBox="0 0 960 600" role="img" aria-labelledby="prod-title prod-desc">
+<title id="prod-title">Agent 上线所需的四项能力</title>
+<desc id="prod-desc">基础 Agent 循环需要持久化、人机协同、可观测性和沙盒隔离才能可靠进入生产环境。</desc>
+<defs><marker id="prod-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#7a7876"/></marker></defs>
+<rect width="960" height="600" fill="#fff"/>
+<text x="64" y="70" class="tag">PRODUCTION READINESS</text>
+<text x="64" y="112" class="title">一个循环距离生产系统，还差四项能力</text>
+<path class="arrow" marker-end="url(#prod-arrow)" d="M480 290V230"/>
+<path class="arrow" marker-end="url(#prod-arrow)" d="M365 330H286"/>
+<path class="arrow" marker-end="url(#prod-arrow)" d="M595 330H674"/>
+<path class="arrow" marker-end="url(#prod-arrow)" d="M480 370V430"/>
+<rect x="365" y="290" width="230" height="80" rx="8" class="focal"/>
+<text x="480" y="326" text-anchor="middle" class="name">Agent 基础循环</text>
+<text x="480" y="350" text-anchor="middle" class="sub">模型调用 + 工具执行</text>
+<rect x="350" y="150" width="260" height="80" rx="8" class="node"/>
+<text x="480" y="184" text-anchor="middle" class="name">持久化</text>
+<text x="480" y="208" text-anchor="middle" class="sub">中断后从检查点恢复</text>
+<rect x="70" y="290" width="216" height="80" rx="8" class="node"/>
+<text x="178" y="324" text-anchor="middle" class="name">人机协同</text>
+<text x="178" y="348" text-anchor="middle" class="sub">暂停、审批、继续执行</text>
+<rect x="674" y="290" width="216" height="80" rx="8" class="node"/>
+<text x="782" y="324" text-anchor="middle" class="name">可观测性</text>
+<text x="782" y="348" text-anchor="middle" class="sub">追踪调用、输入与结果</text>
+<rect x="350" y="430" width="260" height="80" rx="8" class="node"/>
+<text x="480" y="464" text-anchor="middle" class="name">沙盒隔离</text>
+<text x="480" y="488" text-anchor="middle" class="sub">限制代码与文件访问范围</text>
+<text x="64" y="558" class="sub">缺少其中任何一项，团队最终都要自己补上一层框架能力。</text>
+</svg></div></body></html>

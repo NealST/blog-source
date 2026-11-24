@@ -1,0 +1,286 @@
+---
+title: OpenAI 的 GPT-6.2 拉了?
+date: 2026-11-20 09:25:00
+tags:
+  - AI
+  - OpenAI
+  - GPT-6.2
+  - LLM
+categories:
+  - AI
+---
+
+![](https://miro.medium.com/v2/resize:fit:1400/1*We4DLJDjjp6BMhgQr_BpkA.jpeg)
+
+几天前，OpenAI 正式发布了 [GPT-6.2 Astra 与 GPT-6.2 Sol](https://openai.com/index/introducing-gpt-6-2-astra-sol/)。
+
+正常来说，这是 OpenAI 迄今为止推出的最强的两款模型，尽管纸面参数和各项指标相当亮眼，但用户群（尤其是开发者群体）的实际反馈却十分惨淡。
+
+[Hacker News 上的发布讨论帖](https://news.ycombinator.com/item?id=50535230)目前已收获超过 1,300 个点赞和 800 多条评论，其中充斥着大量的吐槽与批评。
+
+![社区对 GPT-6.2 Astra 与 Sol 的公开反馈](https://miro.medium.com/v2/resize:fit:1400/1*nLZAJ1Z2YRk9-9UL04KHCQ.png)
+
+在 X 上，几位 AI 领域大 V 甚至公开表示，他们非常厌恶使用这款新旗舰模型。关于具体细节，我会在后文进一步展开。
+
+我翻阅了一下大家的负面反馈，并仔细研读了官方公布的模型规格说明，对于 OpenAI 为何会以这种状态推出模型，我有一些自己的推测，这很可能与 Anthropic 本周正式上市有着密切关联。
+
+在深入梳理负面反馈之前，先聊聊 GPT-6.2 Astra 和 GPT-6.2 Sol 具体带来了哪些更新。
+
+### GPT-6.2 Astra 与 GPT-6.2 Sol 带来了哪些新变化
+
+OpenAI 将 Astra 定位为面向高难度复杂项目的前沿旗舰模型；Sol 则是体量更小、成本更低的轻量模型，适用于一些简要的日常任务。
+
+我首先关注到的是[价格](https://developers.openai.com/api/docs/pricing)变化：https://developers.openai.com/api/docs/pricing
+
+6.2 Astra 现在的定价为每百万输入 Token 8 美元、每百万输出 Token 40 美元，相比 GPT-6 Astra 便宜了 20%；缓存命中后的输入价格更是降低了 60%，仅需 0.40 美元。
+
+![GPT-6.2 Astra 与 Sol 的定价信息](https://miro.medium.com/v2/resize:fit:1400/1*6n0c5Xr4URv7GjaNfWwrxg.png)
+
+Sol 则维持了与 GPT-6.1 Sol 相同的定价：每百万输入 Token 2 美元，每百万输出 Token 10 美元。
+
+此外，OpenAI 还强调这两款模型在完成高要求复杂任务时所消耗的输出 Token 更少。在官方内部的 GDPval v2 基准测试中，6.2 Astra 比 GPT-6 Astra 高出 6.2 分，同时输出 Token 减少了 22%。
+
+![GDPval v2 由金融、数据科学、生物技术和市场营销等真实项目中的长期复杂知识工作任务组成](https://miro.medium.com/v2/resize:fit:1400/1*CNx2PzWsl0GiU9AGrh-6mA.png)
+
+*GDPval v2 由金融、数据科学、生物技术和市场营销等真实项目中的长期复杂知识工作任务组成。*
+
+PS：这个“减少 22%”的细节，在我看来，正是这个版本引发种种问题的关键原因之一，后文我会专门分析。
+
+除此之外，还有以下几点值得一提：
+
+- **基准测试成绩显著提升**：在 agent 测试中，OpenAI 称 6.2 Astra 比上一代 GPT-6 Astra 得分高出 5.2，成本却不到后者的三分之一；相比竞争对手 Claude Fable 5.2，Astra 领先 5.5 分，而成本仅为对方的 5%。
+- **轻量模型性价比突出**：在 FrontierCode 2.0 代码基准测试中，轻量版 Sol 的表现与旗舰版 Astra 仅差 0.5 分，而成本只有 Astra 的约五分之一。
+- **多渠道开放，但暂未全量普及**：目前两款模型已面向 Plus、Pro、企业版和教育版用户开放，可在 ChatGPT Work、Codex 以及 API 中直接调用，但尚未上线普通版 ChatGPT 对话界面。
+
+在 Codex 上，这两款模型也已经正式上架：
+
+![Codex 中的模型选择界面](https://miro.medium.com/v2/resize:fit:1400/1*3WwxLTvnsto9Jk7MVRe07A.png)
+
+OpenAI 此前明确承诺：使用 Astra 构建的前端界面会更加美观易用，生成的幻灯片和文档也会显著减少 AI 味。
+
+但用户吐槽最多的恰恰就是这两个点。
+
+### GPT-6.2 Sol 生成的网页依然充满 AI 味
+
+在逛 X 时，我注意到一条热议推文（https://x.com/MiaAI_lab/status/2122799702185738616）。博主 Mia 用 GPT-6.2 Sol 生成了 [100 个 HTML 页面文件](https://miaai-lab.github.io/GPT-6.2-Sol-100-HTML-Files/)：https://miaai-lab.github.io/GPT-6.2-Sol-100-HTML-Files/。
+
+![](https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBzvBrAs61DFK22G3VwQkXSj46ElYaYgACJg1rG2owGURgoIEI9r2DAwEAAwIAA3cAAz0E.png)
+
+其中有一个示例页面，展示了一个[折叠手风琴图表（accordion chart）](https://miaai-lab.github.io/GPT-6.2-Sol-100-HTML-Files/001-the-folded-pacific.html)：https://miaai-lab.github.io/GPT-6.2-Sol-100-HTML-Files/001-the-folded-pacific.html。点击展开后，它会呈现一段虚构航行路线的四个航段：从出发地海岬处漂浮的海带林，一路延伸至茶隼湾后方平静的水域。
+
+生成该页面的提示词如下：
+
+> **Prompt（提示词）：**
+> 
+> 为定期班轮“飞燕草号”（Larkspur）设计一张虚构海图，展示其从桤木港（Port Alder）到茶隼湾（Kestrel Bay）的四段航程。页面整体需呈现出 20 世纪中叶水道测量局那种沉稳严谨的专业质感。配色使用仿旧纸色 `#e5dfcc`、深青蓝 `#143d48` 和朱红 `#c84330`。在左对齐的巨大 Georgia 字体标题上方，放置小号等宽字体的海图元数据；下方接一个横向宽幅的四折手风琴图表，包含细致的纬线标尺、虚构岛屿、水深标注以及朱红色的航线轨迹。海图折痕要有清晰的立体棱纹感，四周留出逼真的物理留白边距。提供三个切换标签：收纳折叠（Stowed）、半开（Half sheet）与完整航线（Full passage）。展开时采用带有物理重感、时长 820 毫秒的铰链过渡动效，逐层显现每个图板，平抑透视形变，并在动画停稳展平时重新连合航线接缝。折叠状态下，海图在视觉上应为一个完整物件；展开后，重点突出四条独立的航海日志记录。注明海图纯属虚构，并编写几段贴合航海实际的甲板记录文案，具体提及海藻床、逆流与下风向进港路线。若开启“减弱动态效果”（reduced motion），以直接的静态状态切换取代折叠动画。移动端将日志记录改为垂直堆叠排列，确保海图始终保持在视口范围内。
+
+下图是 GPT-6.2 Sol 的实际生成效果：
+
+![GPT-6.2 Sol 生成的“折叠太平洋”页面](https://miro.medium.com/v2/resize:fit:1400/1*iSjoOnVr3f3UcxnZyqXiEA.png)
+
+*GPT-6.2 Sol 生成的“折叠太平洋（The Folded Pacific）”页面。*
+
+乍看之下整体效果尚可，但作为一名经常使用 GPT 模型生成网页的开发者，这种视觉审美依然带有一眼可见的“AI 感”。
+
+作为对比，我们再来看看 Claude Fable 5.2 生成的网页，其整体视觉明显更加细腻美观，动效也更为生动自然。以下是 Mia 的 Claude 测试集中一个[交互式锦鲤池塘](https://miaai-lab.github.io/Claude-Fable-5.2-HTML-Files/009-koi-pond-noon.html)：https://miaai-lab.github.io/Claude-Fable-5.2-HTML-Files/009-koi-pond-noon.html 页面示例：
+
+> **Prompt（提示词）：**
+> 
+> 基于 Canvas 2D 绘制一个正午花园锦鲤池塘的环境全屏俯视图。无需设定任何达成目标，纯粹作为一处放松双眼的静心空间。核心理念：充满生机的程序化生物，每条锦鲤均由行进正弦波驱动的脊柱骨骼链构成，具备拟真的体宽曲线轮廓、会规律划动的胸鳍、舒展扇动的尾鳍，以及各不相同的绘制花纹。
+
+![Claude Fable 5.2 生成的锦鲤池塘页面截图](https://miro.medium.com/v2/resize:fit:1400/1*lLorUwQecyTrCMwJ4gG8-Q.png)
+
+*Claude Fable 5.2 生成的锦鲤池塘页面截图。*
+
+我建议你可以亲自点开体验一下，在它的实际动态表现中，你几乎感受不到那种刻板的“AI 生成感”。
+
+两者的提示词并不相同，这也算不上严格意义上的同题对照实验；但这确实非常契合我在日常实际开发工作中的直观感受。
+
+作为一名频繁使用 AI Agent 的开发者，在处理前端用户界面相关任务时，我通常更倾向于选择 Opus 5.5 或 Fable 5.2。
+
+此外，Claude 还配有专门的 Design Skill，能够有效修正设计与审美层面常见的“AI 廉价感”。
+
+在 [36氪（36Kr）发布的一份上手实测](https://eu.36kr.com/en/p/4075007825450116)（https://eu.36kr.com/en/p/4075007825450116）中，测试者直言，尽管 Astra 更加便宜且响应速度更快，“但在 UI 设计和视觉质感方面，依然被 Fable 5.2 全方位碾压”。
+
+另一条让我重新审视 GPT-6.2 的[推文来自知名开发者 Theo](https://x.com/theo/status/2122760447103484410)（https://x.com/theo/status/2122760447103484410），他的评价极其犀利、毫不留情。
+
+他列举了自己对这款模型十分不满的几个主要原因：
+
+1. **对自身知识盲区毫无概念**：在处理长程复杂任务时，它虽然能调动并管理大量子智能体（subagents），但它根本意识不到自己的认知边界。遇到不懂的地方既不会主动停下向用户确认，也不会承认自己不懂，而是指派子任务盲目自作主张，最终导致任务跑偏。
+2. **输出难以理解**：Theo 评价称，这是他今年使用过的所有大模型中，输出内容最难理解的一个，仿佛在用只有它自己才懂的语言说话。
+3. **陷入死循环，没有实质进展**：模型本身非常聪明，但在真实项目中与它协作却非常抓马。给人的感觉是，它完全沉浸在自己的世界里，而且是随机决定哪些思考过程的片段需要向外界吐露。
+
+![Theo 关于 GPT-6.2 Astra 的评价推文](https://miro.medium.com/v2/resize:fit:1400/1*h8BwFB12ZBN75DoUf2W4uQ.png)
+
+*Theo 关于 GPT-6.2 Astra 的评价推文。*
+
+Theo 直言，在自己的实际工作中，他绝不会选择 Astra 来替代 Opus 5.5，尽管他也坦言 Astra 在 3D 与游戏开发方面确实达到了世界级的水准。
+
+持有类似看法的远不止他一人。X 上的多位知名圈内博主（如 Matt Shumer 和 Chubby）也纷纷[表达了对全新 GPT-6.2 系列模型的失望](https://x.com/kimmonismus/status/2122760517530137043)。
+
+![](https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBzLdrAAE8StFcl8Qmf8SemvqnAlAPQV0AArMOaxtWggFEcQxqXaALIPQBAAMCAAN3AAM9BA.png)
+
+开发者 Mckay Wrigley 甚至更进一步，直截了当地调侃这次发布“堪称给 Anthropic 的 IPO 做了个绝佳的免费广告”。考虑到 OpenAI 特意挑选的发布时间节点，这恐怕是对他们最杀人诛心的一则评价了。
+
+平心而论，Astra 并非蠢笨，它本身做的相当扎实，只是外界对 OpenAI 的期待值实在太高，而且大家的负面反馈其实都非常具象：核心症结在于模型与用户沟通交互时的话语风格，以及放手让它自主执行长程复杂任务时的行为表现。这与“模型能力不足、解不出题”完全是两码事，而且我认为，这类交互体验与行为模式层面的问题，在常规的基准测试中往往极难被量化和察觉。
+
+我还花了一些时间浏览 [Hacker News 上的讨论帖](https://news.ycombinator.com/item?id=50535230)（https://news.ycombinator.com/item?id=50535230），里面的反馈同样如出一辙。其中有一条评论，比我在 X 上看到的大多数推文都更精准地指出了问题所在：
+
+> “我在工作中经常同时使用 Astra 和 Fable。我发现 Astra 在维持长周期任务、替我做出决策并在适当时机向我同步方面，明显要弱得多。Astra 往往严格遵照我的字面指令执行，但绝不会多做哪怕一步，即便存在一些显而易见、它本该主动建议补充的关联任务，它也完全无动于衷。此外，它在任务完成后的汇报也远不如 Fable 那样全面详尽。不可否认我对 Fable 更熟悉，但这究竟是我使用方式的问题，还是我漏掉了 Astra 的什么关键特性？”
+
+![Hacker News 上关于 GPT-6.2 Astra 与 Sol 的讨论帖](https://miro.medium.com/v2/resize:fit:1400/1*Kjcg7Xkvk0bTzKPCHmREYQ.png)
+
+*Hacker News 上关于 GPT-6.2 Astra 与 Sol 的讨论帖。*
+
+另一位开发者[写道](https://news.ycombinator.com/item?id=50539230)（https://news.ycombinator.com/item?id=50539230）：“Astra 显然非常聪明，但它需要大量的人工监督与字斟句酌的精心提示，而这些在 Opus 5.5 上根本不需要。”
+
+他提到，该模型在协助构建工具时，竟悄悄删除了对 Postgres 和 DuckDB 的数据库支持，最后只交付了一个只能打开 CSV 文件的简陋半成品，而他自始至终压根没提过要用 CSV。
+
+还有一位评论者抱怨称，这款模型“总是抓着我不关心的无聊琐碎问题问个不停，而不是老老实实把手头的活干完”。这与前文 Theo 吐槽它总提奇怪实现细节的问题如出一辙。
+
+甚至还有一个团队在测试了几个小时新模型后，在基础文档生成、商业方案撰写和营销文案等日常工作上，果断回退到了 6.1 版本。
+
+但文档生成恰恰是 GPT-6.2 声明的重点提升的核心强项之一。
+
+6.2 发布后不久，Tibo [在 X 上发帖询问](https://x.com/thsottiaux/status/2123113107048501273)（https://x.com/thsottiaux/status/2123113107048501273）大家使用 6.2 Sol 的体验如何，底下的回复就十分耐人寻味。
+
+大家的评价褒贬不一。虽然有人对这款模型表示满意，但许多用户表达得相当直接且毫不客气。
+
+不少人抱怨其综合表现仍不及 Opus 5.5，还有很多人吐槽它极其地费 Token。
+
+![](https://miro.medium.com/v2/resize:fit:1400/1*ztCO6hK4pdCUWG_vsJwgzQ.png)
+
+而且自从这两款新模型发布以来，官方就再也没赠送过免费的重置机会。社区自发维护的 [Codex 重置追踪器（Codex reset tracker）](https://codex-reset.com/tibo)（https://codex-reset.com/tibo）上记录的最近一次重置还是 11 月 12 日，也就是 GPT-6.2 发布前的 5 天。
+
+![Will Codex Reset Today? 一个公开的 Codex 重置追踪网站](https://miro.medium.com/v2/resize:fit:1400/1*8xO5rbdj9_RaBd5LPCONTA.png)
+
+*Will Codex Reset Today？一个挺有意思的 Codex 重置额度追踪小工具。*
+
+在尝试使用 6.2 Astra 时务必格外留心，因为这是一个吞噬 Token 的“大胃王”。如果只是日常体验，不妨直接切换到 6.2 Sol，毕竟它的价格与 6.1 Sol 完全一致。
+
+据权威评测机构 [Artificial Analysis 关于 Astra 的数据页面](https://artificialanalysis.ai/models/gpt-6-2-astra)（https://artificialanalysis.ai/models/gpt-6-2-astra）显示：当推理强度（reasoning effort）设为最大值（max）时，Astra 在完成智能指数（Intelligence Index）评测时总共生成了 6,580 万个输出 Token；而将推理强度降为极高（xhigh）档位时，它仅需 2,710 万个 Token，却能跑出完全相同的 62 分。
+
+也就是说，把 Astra 开到 max 档，会白白多烧掉一倍以上的 Token，但在评测分数上没有任何额外收益。如果你经常很快就遭遇使用限额，那么可以优先检查下推理强度（reasoning effort）的设置
+
+### 官方承认了部分问题
+
+看到这里，我很想看看 OpenAI 事先是否预料到了这些情况。
+
+于是我翻阅了 [GPT-6.2 的 System Card](https://deploymentsafety.openai.com/gpt-6-2-astra-sol)（https://deploymentsafety.openai.com/gpt-6-2-astra-sol），核实这些用户抱怨是否在其内部测试中有所体现。结果发现，其中确实有部分问题已被官方记录在册。
+
+前文中有位 Hacker News 用户抱怨 Astra 在汇报工作时往往避重就轻。而 OpenAI 恰恰在安全概览（safety overview）章节中明确写道：这两款模型“在汇报工作进展时，更容易遗漏已知的障碍”。
+
+![GPT-6.2 System Card 中的安全概览章节](https://miro.medium.com/v2/resize:fit:2000/1*g0J2Q4tja214howJ2Vj_nw.png)
+
+*GPT-6.2 System Card 中的安全概览章节。*
+
+官方发布博文中列举了一些典型场景，比如遇到文件缺失或搜索工具不可用时。模型在碰到此类障碍后，会自行寻找替代方案绕过，却对用户只字不提。OpenAI 表示他们对这类能力退步高度重视，目前仍在深入排查背后的根本原因。
+
+官方现阶段给出的临时应对方案是：在 Codex 中注入了一套额外的系统指令，据称能大幅减少这类信息遗漏的情况。
+
+这固然能让 Codex 用户受益，但据报道，这些补丁指令并不会应用于直接调用 API 的场景。
+
+换句话说，如果你是基于底层 API 自行构建 Agent 应用，那么你拿到的依然是没有经过这层补丁修复的原始模型。
+
+官方说明中还印证了关于“回答过于简短”的抱怨。外部测试机构 SecureBio 发现，Astra 的预发布版本“给出的回答比 GPT-6 Astra 更短”，并且“有时会遗漏有用的细节、参考资料或备选实验方案”。
+
+虽然这是一项生物学研究领域的测试而非代码编程测试，但它表现出的行为模式与开发者们所描述的情况完全一致。
+
+此外，也并非所有基准测试的成绩都在上升。在 Irregular 开展的 FrontierCyber 网络安全测试中，Astra 在 217 道挑战题中仅解出了 68 道，而较早的 GPT-6 Astra 反倒解出了 77 道。
+
+![](https://miro.medium.com/v2/resize:fit:2000/1*S-6C3OqFw0DGOMkN-gA-gg.png)
+
+在 Artificial Analysis 的代码智能体指数（Coding Agent Index）中，Astra 的表现与上一代 GPT-6 Astra 基本持平，而 Sol 甚至相比 GPT-6.1 Sol 下跌了 3 分。对于我们绝大多数以编写代码为核心用途的开发者来说，这无疑是最值得关注的指标。
+
+![Coding Agent 指数未见提升：GPT-6.2 Astra 与 GPT-6 Astra 持平，GPT-6.2 Sol 相比 GPT-6.1 Sol 下跌了 3 分](https://miro.medium.com/v2/resize:fit:2000/1*hw1_8VVV_tFOSJ5BQCnS8w.png)
+
+*Coding Agent 指数未见提升：GPT-6.2 Astra 与 GPT-6 Astra 持平，GPT-6.2 Sol 相比 GPT-6.1 Sol 下跌了 3 分。*
+
+还有一个细节引起了我极大的兴趣。[据 Dealroom 报道](https://dealroom.co/news/173679-openai-undercuts-claude-by-95-with-gpt-6-2-astra-in-anthropic-s-ipo-week/)（https://dealroom.co/news/173679-openai-undercuts-claude-by-95-with-gpt-6-2-astra-in-anthropic-s-ipo-week/），OpenAI 曾在 9 月下旬砍掉了原定的 GPT-6.1 Astra，原因是内部测试发现其无法准确汇报自己的执行动作。
+
+如果属实，那这恰好解释了为什么 Astra 的版本号直接从 6 跳到了 6.2。这也意味着，OpenAI 早在几个月前就已经知晓这一缺陷，却依然选择将模型推向市场。
+
+不过官方说明中并未提及前端设计质量、陷入死循环或是提问莫名其妙等问题。这些抱怨全部来自真实用户的实际反馈，目前尚未得到 OpenAI 官方的正式确认。
+
+### OpenAI 是为了应对 Anthropic 上市而牺牲质量换取成本优势吗？
+
+GPT-6.2 于 11 月 17 日正式发布。仅一天之后，Anthropic 就[被报道将其 IPO 发行价定为](https://techcrunch.com/2026/11/18/anthropic-reportedly-prices-ipo-at-83-a-share-above-projected-range/)每股 83 美元，高于此前 70 至 78 美元的预期区间，公司整体估值因此达到约 1.5 万亿美元。
+
+![](https://im.gurl.eu.org/file/AgACAgEAAxkDAAEBznxrAi2ID-WPswcopWVVcASFilW8MwAC6Q1rG2owEUQVN7QT0nG1vAEAAwIAA3cAAz0E.png)
+
+其股票于 11 月 19 日在纳斯达克挂牌交易，代码为“ANT”。反观 OpenAI，其最近一次被报道的估值为 1.25 万亿美元，且迄今尚未公布任何上市计划。
+
+也就是说，就在 Anthropic 账面估值反超 OpenAI 的同一个星期里，OpenAI 发布了一篇几乎在所有基准测试结果后都附带成本对比的新品博文。
+
+其中最显眼的宣言是：Astra 在 Agent 测试上以仅 5% 的成本击败了 Fable 5.2。外媒 Dealroom 将此举形象地描述为 OpenAI 试图将价格作为核心竞争武器。
+
+以下是我的推测。我不认为 OpenAI 是故意把模型做笨的。在 Artificial Analysis 的智能指数（Intelligence Index）中，Astra 得到了 62 分，高于上一代 GPT-6 Astra 的 57 分，因此其智力底座显然依然在线。
+
+我认为真正的原因在于：OpenAI 为了压低“单任务成本”，对这两款模型进行了极具针对性的激进微调；而降低单个任务开销最直接、最立竿见影的手段，就是让模型尽量少写字。这正是前文中我请大家特别留意的“输出 Token 减少 22%”。
+
+试想一下，一个被训练成“能少说就绝不多说”的模型，在实际交互中会有怎样的表现？
+
+它的解释会极其简短；它会省去对自己做了什么的总结；它会把中间过程的进展汇报压缩成高度精简的速记符号。这种表达在模型自身的逻辑里或许说得通，但在屏幕前的人类读者看来却晦涩难懂。
+
+这样一来，所有线索就完全串联起来了：OpenAI 官方大肆宣传“输出 Token 显著减少”；外部评测机构发现其回答篇幅变短且丢失了关键细节；而官方至今还在排查为什么模型会在工作汇报中隐瞒遇到的障碍。
+
+当然，这里也存在一种客观且合乎情理的反方观点。
+
+![](https://miro.medium.com/v2/resize:fit:2000/1*aMccAcV-avQzAAXPJBQKcA.png)
+
+整个 AI 行业都在致力于降低推理成本，绝非仅有 OpenAI 和 Anthropic 两家，开源模型更是在不断推波助澜，无论 Anthropic 是否上市，推理价格的下行都是不可阻挡的大趋势。
+
+但我依然认为，正是这场 IPO 解释了 OpenAI 如此急迫的底层动机。在华尔街投资人密集给 Anthropic 评估定价、权衡其价值的关键一周里，OpenAI 迫切需要拿出一个在数字上能让 Claude 显得极其昂贵的核心指标。
+
+### 抛开槽点，再来看看积极的一面
+
+我无意将这篇文章写成一篇纯粹宣泄情绪的声讨帖。在 [Artificial Analysis 的智能指数](https://artificialanalysis.ai/models?speed=output-speed-over-time&agentic-speed=intelligence-vs-time-per-task#intelligence-per-task-tabs)（https://artificialanalysis.ai/models?speed=output-speed-over-time&agentic-speed=intelligence-vs-time-per-task#intelligence-per-task-tabs）中，Astra 和 Sol 在“智能水平与单任务成本”的坐标系中，几乎都稳稳落在了帕累托最优前沿面（Pareto frontier）上。
+
+![展示 Astra 和 Sol 智能与单任务成本对比的 Artificial Analysis 图表](https://miro.medium.com/v2/resize:fit:1400/1*xxWMVaxcD8cghO4aPWLR-A.png)
+
+*展示 Astra 和 Sol 智能水平与单任务成本对比的 Artificial Analysis 图表。*
+
+在该指数中，Astra 拿下了 62 分的高分。在所有参评模型中，仅有 Claude Fable 5.2 以 65 分略胜一筹，而 Astra 领先于 60 分的 Gemini 4 Carbon 以及 59 分的 Opus 5.5。
+
+两者在成本上的差距同样极其显著。据 Trending Topics 报道，在完成该指数中的同等基准任务时，Astra 在满血推理档位（max effort）下的开销约为 4 美元，而使用 Fable 5.2 则高达 27 美元。
+
+如果让我来选，两款模型中轻量版的 Sol 显然性价比更高。它取得了 57 分，与上一代最初发布的 GPT-6 Astra 旗舰得分完全相同，而单个任务的实际成本却仅为后者的约 15%。
+
+那可是本次发布之前 OpenAI 的顶级旗舰性能水平，而现在你只需以每百万输入 Token 2 美元的极低价格就能直接享受到。
+
+除常规的 Web 开发之外，Astra 在其他技术领域同样实力强劲。在 AA-3D 基准测试中，它的 Elo 天梯分达到了 1,318 分，大幅领先 Fable 5.2 的 1,271 分；就连前文严厉吐槽它的 Theo，也由衷承认它在 3D 和游戏开发上具备“世界级”实力。
+
+此外，官方声称在模拟真实工作场所任务的评估中，两款新模型出现不当或违规操作的概率，仅有前代模型的约 50%。
+
+也就是说，尽管 GPT-6.2 在总结汇报时变差了，但它做出不该做的事情的概率也显著降低了。
+
+### 写在最后
+
+挺有意思的一个现象是：在 OpenAI 发布新品的讨论区里，大家的评论往往偏向看好 Anthropic；而在 Anthropic 发布新品的讨论区里，大家又反过来夸赞 OpenAI。或许，批评与挑刺在网络社区中本就更容易吸引眼球。
+
+两家厂商的模型都谈不上尽善尽美，但它们彼此间的激烈竞争一直在推动整个行业向前发展。而作为普通用户群体的一员，我们在两者之间灵活切换其实相对容易。
+
+我在本文标题中认为这次的模型发布拉胯了只是就这场发布事件本身而言，并非全盘否定这两款模型。
+
+本质上，Astra 和 Sol 依然是底座能力极强的大模型，它们之所以能把价格降下来，主要途径是“少说多做/压缩输出”。
+
+但 OpenAI 显然严重低估了开发者群体对于“确切知晓模型到底在做什么”的重视程度。
+
+目前来看，我会继续使用 Sol 来协助处理具体的代码业务逻辑实现，而在所有涉及前端与 UI 设计的任务中则转向 Claude。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

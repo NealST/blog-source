@@ -1,0 +1,37 @@
+{
+  "signature": "80528b8e882b0876430014476630fe3280d0957b6ac3e871be98a246f6ca6632",
+  "index": 3,
+  "text": "于是管理员锁住绝大多数书架，只调整少数关键机关。这一大类省力办法叫 PEFT。它的核心只有一句：别什么都动，只训练真正需要变化的小部分。",
+  "units": [
+    {
+      "beat": "peft",
+      "page": 1,
+      "text": "于是管理员锁住绝大多数书架，只调整少数关键机关。这一大类省力办法叫 PEFT。它的核心只有一句：别什么都动，只训练真正需要变化的小部分。"
+    }
+  ],
+  "join": "beat",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "003.wav",
+        "duration_seconds": 12.211,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -47.2,
+        "dc_offset": -0.00021,
+        "peak_dbfs": -1.89,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 5.04,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "aa2958b3922a24f42331b52a4a4160038ed4f005c7cb50a17a08ed5d4e253429"
+}

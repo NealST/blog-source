@@ -1,0 +1,13 @@
+标题：2026 Agent 框架怎么选｜完整对比
+
+正文：
+Agent 框架到底该怎么选？
+
+这篇把 LangGraph、CrewAI、Pydantic AI、OpenAI Agents SDK、Google ADK，以及经常被混在一起讨论的 MCP、A2A，放回它们真正的位置：编排框架、厂商运行时、通信协议。
+
+真正该先问的不是 GitHub Star，而是：任务是否需要持久化、人机审批、可观测性和沙盒？状态、沙盒、会话历史由谁持有？
+
+轮播先讲清三层技术栈和迁移成本，完整框架逐项对比放在公众号「墨筝」。
+
+.
+#AI #AIAgent #Agent框架 #LangGraph #CrewAI #MCP #A2A #AI编程 #技术选型 #开发者

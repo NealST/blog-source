@@ -1,0 +1,20 @@
+{
+  "background_music": false,
+  "layers": [],
+  "narration_only": true,
+  "narration_filter": "highpass=f=70,loudnorm=I=-20:TP=-2:LRA=7",
+  "loudnorm_first_pass": {
+    "input_i": "-20.59",
+    "input_tp": "-0.50",
+    "input_lra": "2.60",
+    "input_thresh": "-30.86",
+    "output_i": "-20.04",
+    "output_tp": "-2.00",
+    "output_lra": "2.60",
+    "output_thresh": "-30.31",
+    "normalization_type": "dynamic",
+    "target_offset": "0.04"
+  },
+  "loudnorm_mode": "dynamic",
+  "delivery_notice": "默认未添加背景音乐；可自行合成，或在发布平台选择配乐。"
+}

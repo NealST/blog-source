@@ -1,0 +1,28 @@
+{
+  "source": "source/_posts/ai-presentations.md",
+  "image_count": 18,
+  "cutoff": {
+    "after_source_line": 106,
+    "reason": "小红书单篇最多 18 张，按原文顺序自然截断"
+  },
+  "slides": [
+    {"slide": 1, "source": "frontmatter title; lines 13-16"},
+    {"slide": 2, "source": "lines 18-26"},
+    {"slide": 3, "source": "line 28 image"},
+    {"slide": 4, "source": "lines 30-32"},
+    {"slide": 5, "source": "line 34 image"},
+    {"slide": 6, "source": "lines 36-44"},
+    {"slide": 7, "source": "line 46 image"},
+    {"slide": 8, "source": "line 48"},
+    {"slide": 9, "source": "line 50 image"},
+    {"slide": 10, "source": "line 52"},
+    {"slide": 11, "source": "line 54 image"},
+    {"slide": 12, "source": "line 56"},
+    {"slide": 13, "source": "line 58 image"},
+    {"slide": 14, "source": "lines 60-96 code block, truncated per pipeline rule"},
+    {"slide": 15, "source": "lines 98-100"},
+    {"slide": 16, "source": "line 102 image"},
+    {"slide": 17, "source": "lines 104-106; cutoff notice"},
+    {"slide": 18, "source": "line 160 excerpt;公众号引导"}
+  ]
+}

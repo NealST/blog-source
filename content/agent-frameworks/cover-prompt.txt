@@ -1,0 +1,7 @@
+Create one premium 16:9 editorial cover image for a Chinese technology article comparing AI agent frameworks in 2026.
+
+Core visual metaphor: three precisely engineered layers suspended in a dark architectural void — a lower protocol layer of two clean interlocking rails, a middle runtime layer represented by one durable sealed engine chamber, and an upper orchestration layer represented by a restrained branching control structure. One small warm-gold path passes through all three layers, showing that the tools complement rather than replace one another.
+
+Matte ink-black background (#1C1C1E), warm gold key light (#C4956A), subtle paper-white highlights, one restrained cool-blue accent. Premium physical materials, cinematic soft side lighting, clear silhouette, extensive negative space. Keep all important subjects inside the central 70% safe area because the image will be cropped vertically to 2.35:1. One dominant focal composition, readable at thumbnail size.
+
+No people, no robots, no glowing orb, no random data stream, no UI panels. Absolutely no text, no letters, no numbers, no logos, no watermark.

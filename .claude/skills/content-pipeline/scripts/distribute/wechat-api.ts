@@ -352,7 +352,17 @@ export function extractArticleContent(htmlPath: string): { content: string; styl
   // Detect if CSS is inlined (no <style> blocks or they're empty → premailer removed them)
   const hasInlineStyles = styles.trim() === '' || html.includes('style="');
 
-  // Priority: #output → .content → <body>
+  // Priority: #output → .copy-view → .content → <body>
+  // preview.html renders the article twice (phone frame + copy view). The copy
+  // view is the publishable article. A mode-toggle button sits between it and
+  // </body>, so the old ".content … </body>" pattern misses and the body
+  // fallback would upload both copies.
+
+  const copyView = extractCopyView(html);
+  if (copyView) {
+    const hasInlineStyle = /<(?:div|section)[^>]*class=["'][^"']*\bcontent\b[^"']*["'][^>]*style=["'][^"']+["']/i.test(copyView);
+    return { content: stripTipElements(copyView), styles, hasOuterDiv: hasInlineStyle };
+  }
 
   // 1. Extract #output content (md-to-wechat output)
   const outputMatch = html.match(/<div[^>]*id=["']output["'][^>]*>([\s\S]*?)<\/div>\s*(?:<\/body>|<script|$)/i);
@@ -382,6 +392,26 @@ export function extractArticleContent(htmlPath: string): { content: string; styl
   }
 
   throw new Error('Could not extract article content from HTML');
+}
+
+/** The formatter's copy-view wrapper holds the single article meant for WeChat. */
+function extractCopyView(html: string): string | null {
+  const open = html.match(/<div[^>]*class=["'][^"']*\bcopy-view\b[^"']*["'][^>]*>/i);
+  if (!open || open.index === undefined) return null;
+
+  const innerStart = open.index + open[0].length;
+  const rest = html.slice(innerStart);
+  const tagRe = /<\/?div\b[^>]*>/gi;
+  let depth = 1;
+  let match: RegExpExecArray | null;
+  while ((match = tagRe.exec(rest))) {
+    depth += match[0].startsWith('</') ? -1 : 1;
+    if (depth === 0) {
+      const inner = rest.slice(0, match.index).trim();
+      return inner || null;
+    }
+  }
+  return null;
 }
 
 /** Remove .tip elements (e.g. "全选复制粘贴到公众号编辑器" hint bars) */

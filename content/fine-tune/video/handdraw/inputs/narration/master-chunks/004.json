@@ -1,0 +1,37 @@
+{
+  "signature": "d51795f81f0027ddd8e72f49f971efbf3f12e9145bfa4d9ce59c77545b1d985b",
+  "index": 4,
+  "text": "LoRA 更聪明。它不改原书架，而是在旁边挂一套很小的改造卡。两条细长卡片组合起来，就能记录原本需要一整面大墙才能保存的变化。底座仍是一座图书馆，不同客户只要换不同卡包。",
+  "units": [
+    {
+      "beat": "lora",
+      "page": 2,
+      "text": "LoRA 更聪明。它不改原书架，而是在旁边挂一套很小的改造卡。两条细长卡片组合起来，就能记录原本需要一整面大墙才能保存的变化。底座仍是一座图书馆，不同客户只要换不同卡包。"
+    }
+  ],
+  "join": "page",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "004.wav",
+        "duration_seconds": 15.823,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -55.4,
+        "dc_offset": -0.00022,
+        "peak_dbfs": -1.38,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 4.9,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "28f7944f40ae33c1a50c52e1c0057df640799a8befee654cccad9ed3cb6e6281"
+}

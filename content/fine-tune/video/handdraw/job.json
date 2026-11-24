@@ -1,0 +1,1469 @@
+{
+  "version": 1,
+  "title": "一座图书馆，讲懂六种微调",
+  "design_file": "design.json",
+  "storyboard": "storyboard.json",
+  "drawing_plan": "design/drawing-plan.json",
+  "drawing_review": "design/drawing-review.json",
+  "art_direction": {
+    "record": "design/art-direction.json"
+  },
+  "presentation": {
+    "mode": "focus_diagram",
+    "reason": "每个技术机制使用一张独立白板主图，故事角色保持一致"
+  },
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "aspect_ratio": "9:16"
+  },
+  "cover": {
+    "source": "inputs/cover.png",
+    "seconds": 1.0
+  },
+  "drawing": {
+    "mode": "draw",
+    "speed": 4.0,
+    "sketch": false
+  },
+  "hand": {
+    "preset": "pen-only",
+    "pen_text": ""
+  },
+  "watermark": {
+    "text": "公众号：墨筝",
+    "opacity": 0.24
+  },
+  "captions": {
+    "mode": "quiet",
+    "color": "#FFFFFF",
+    "stroke_width": 2,
+    "stroke_color": "#000000",
+    "background": null
+  },
+  "voice_studio": {
+    "url": "http://127.0.0.1:3900",
+    "voice": "magnetic-narrator",
+    "backend": "omnivoice",
+    "model": "k2-fsa/OmniVoice",
+    "language": "Chinese",
+    "speed": 1.03,
+    "effect_preset": "broadcast"
+  },
+  "narration": {
+    "source": "inputs/narration/master.wav",
+    "alignment": "inputs/narration/alignment.json"
+  },
+  "audio": {
+    "end_hold_seconds": 0.6
+  },
+  "pages": [
+    {
+      "beats": [
+        {
+          "id": "opening",
+          "text": "小镇有座什么都懂的图书馆，可它一当客服就总说错话。要教好它，难道得把整栋楼拆了重建吗？",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v01",
+              "source": "inputs/illustrations/01-library-problem.png",
+              "drawing_plan_id": "library-problem",
+              "parts": [
+                {
+                  "id": "roof_face",
+                  "polygon": [
+                    [
+                      0.15,
+                      0.12
+                    ],
+                    [
+                      0.85,
+                      0.12
+                    ],
+                    [
+                      0.85,
+                      0.31
+                    ],
+                    [
+                      0.15,
+                      0.31
+                    ]
+                  ]
+                },
+                {
+                  "id": "building_body",
+                  "polygon": [
+                    [
+                      0.17,
+                      0.29
+                    ],
+                    [
+                      0.84,
+                      0.29
+                    ],
+                    [
+                      0.84,
+                      0.61
+                    ],
+                    [
+                      0.17,
+                      0.61
+                    ]
+                  ],
+                  "exclude_polygons": [
+                    [
+                      [
+                        0.38,
+                        0.43
+                      ],
+                      [
+                        0.61,
+                        0.43
+                      ],
+                      [
+                        0.61,
+                        0.64
+                      ],
+                      [
+                        0.38,
+                        0.64
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "id": "wrong_note",
+                  "polygon": [
+                    [
+                      0.38,
+                      0.43
+                    ],
+                    [
+                      0.61,
+                      0.43
+                    ],
+                    [
+                      0.61,
+                      0.64
+                    ],
+                    [
+                      0.38,
+                      0.64
+                    ]
+                  ]
+                },
+                {
+                  "id": "demolition_hammer",
+                  "polygon": [
+                    [
+                      0.08,
+                      0.62
+                    ],
+                    [
+                      0.43,
+                      0.62
+                    ],
+                    [
+                      0.43,
+                      0.93
+                    ],
+                    [
+                      0.08,
+                      0.93
+                    ]
+                  ]
+                },
+                {
+                  "id": "adapter_cards",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ],
+              "x": 120,
+              "y": 260,
+              "width": 840,
+              "height": 1050,
+              "weight": 100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "tools",
+          "text": "管理员先试了三招。临时提醒，就在门口贴便签，这像提示词；缺少新资料，就推来资料车，这像 RAG；可要它长期保持固定语气和规矩，才需要微调。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v03",
+              "source": "inputs/illustrations/02-three-tools.png",
+              "drawing_plan_id": "three-tools",
+              "x": 100,
+              "y": 230,
+              "width": 880,
+              "height": 1200,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "library",
+                  "polygon": [
+                    [
+                      0.35,
+                      0.18
+                    ],
+                    [
+                      0.8,
+                      0.18
+                    ],
+                    [
+                      0.8,
+                      0.65
+                    ],
+                    [
+                      0.35,
+                      0.65
+                    ]
+                  ]
+                },
+                {
+                  "id": "prompt_note",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.38
+                    ],
+                    [
+                      0.2,
+                      0.38
+                    ],
+                    [
+                      0.2,
+                      0.62
+                    ],
+                    [
+                      0.0,
+                      0.62
+                    ]
+                  ]
+                },
+                {
+                  "id": "rag_cart",
+                  "polygon": [
+                    [
+                      0.15,
+                      0.36
+                    ],
+                    [
+                      0.43,
+                      0.36
+                    ],
+                    [
+                      0.43,
+                      0.68
+                    ],
+                    [
+                      0.15,
+                      0.68
+                    ]
+                  ]
+                },
+                {
+                  "id": "finetune_wrench",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "full",
+          "text": "最直接的办法叫全量微调：把每个书架、每本书的位置都重新调整。改得最彻底，可工程巨大；每来一家新客户，还得复制一整座图书馆，甚至可能整理新规矩时，把旧本事弄丢。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v05",
+              "source": "inputs/illustrations/03-full-finetune.png",
+              "drawing_plan_id": "full-finetune",
+              "x": 190,
+              "y": 300,
+              "width": 700,
+              "height": 950,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "main_shell",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.1
+                    ],
+                    [
+                      0.58,
+                      0.1
+                    ],
+                    [
+                      0.58,
+                      0.27
+                    ],
+                    [
+                      0.0,
+                      0.27
+                    ]
+                  ]
+                },
+                {
+                  "id": "all_shelves",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.27
+                    ],
+                    [
+                      0.58,
+                      0.27
+                    ],
+                    [
+                      0.58,
+                      0.61
+                    ],
+                    [
+                      0.0,
+                      0.61
+                    ]
+                  ]
+                },
+                {
+                  "id": "copy_one",
+                  "polygon": [
+                    [
+                      0.53,
+                      0.32
+                    ],
+                    [
+                      0.68,
+                      0.32
+                    ],
+                    [
+                      0.68,
+                      0.6
+                    ],
+                    [
+                      0.53,
+                      0.6
+                    ]
+                  ]
+                },
+                {
+                  "id": "copy_two",
+                  "polygon": [
+                    [
+                      0.68,
+                      0.32
+                    ],
+                    [
+                      0.84,
+                      0.32
+                    ],
+                    [
+                      0.84,
+                      0.6
+                    ],
+                    [
+                      0.68,
+                      0.6
+                    ]
+                  ]
+                },
+                {
+                  "id": "copy_three",
+                  "polygon": [
+                    [
+                      0.84,
+                      0.32
+                    ],
+                    [
+                      1.0,
+                      0.32
+                    ],
+                    [
+                      1.0,
+                      0.6
+                    ],
+                    [
+                      0.84,
+                      0.6
+                    ]
+                  ]
+                },
+                {
+                  "id": "lost_book",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "marker",
+              "visual": "v06",
+              "style": "underline",
+              "x": 650,
+              "y": 1060,
+              "width": 60,
+              "height": 12,
+              "color": "#C4956A",
+              "line_width": 10
+            },
+            {
+              "type": "text",
+              "visual": "v06",
+              "text": "重",
+              "x": 860,
+              "y": 980,
+              "size": 72,
+              "color": "#C4956A",
+              "weight": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "peft",
+          "text": "于是管理员锁住绝大多数书架，只调整少数关键机关。这一大类省力办法叫 PEFT。它的核心只有一句：别什么都动，只训练真正需要变化的小部分。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v07",
+              "source": "inputs/illustrations/04-peft-locks.png",
+              "drawing_plan_id": "peft-locks",
+              "x": 100,
+              "y": 230,
+              "width": 880,
+              "height": 1200,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "shelf_frame",
+                  "polygon": [
+                    [
+                      0.02,
+                      0.04
+                    ],
+                    [
+                      0.98,
+                      0.04
+                    ],
+                    [
+                      0.98,
+                      0.23
+                    ],
+                    [
+                      0.02,
+                      0.23
+                    ]
+                  ]
+                },
+                {
+                  "id": "locked_sections",
+                  "polygon": [
+                    [
+                      0.02,
+                      0.23
+                    ],
+                    [
+                      0.98,
+                      0.23
+                    ],
+                    [
+                      0.98,
+                      0.72
+                    ],
+                    [
+                      0.02,
+                      0.72
+                    ]
+                  ],
+                  "exclude_polygons": [
+                    [
+                      [
+                        0.22,
+                        0.48
+                      ],
+                      [
+                        0.3,
+                        0.48
+                      ],
+                      [
+                        0.3,
+                        0.54
+                      ],
+                      [
+                        0.22,
+                        0.54
+                      ]
+                    ],
+                    [
+                      [
+                        0.46,
+                        0.48
+                      ],
+                      [
+                        0.54,
+                        0.48
+                      ],
+                      [
+                        0.54,
+                        0.54
+                      ],
+                      [
+                        0.46,
+                        0.54
+                      ]
+                    ],
+                    [
+                      [
+                        0.7,
+                        0.48
+                      ],
+                      [
+                        0.78,
+                        0.48
+                      ],
+                      [
+                        0.78,
+                        0.54
+                      ],
+                      [
+                        0.7,
+                        0.54
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "id": "trainable_knobs",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "lora",
+          "text": "LoRA 更聪明。它不改原书架，而是在旁边挂一套很小的改造卡。两条细长卡片组合起来，就能记录原本需要一整面大墙才能保存的变化。底座仍是一座图书馆，不同客户只要换不同卡包。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v09",
+              "source": "inputs/illustrations/05-lora-cards.png",
+              "drawing_plan_id": "lora-cards",
+              "x": 100,
+              "y": 220,
+              "width": 880,
+              "height": 1220,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "base_library",
+                  "polygon": [
+                    [
+                      0.18,
+                      0.1
+                    ],
+                    [
+                      0.72,
+                      0.1
+                    ],
+                    [
+                      0.72,
+                      0.58
+                    ],
+                    [
+                      0.18,
+                      0.58
+                    ]
+                  ]
+                },
+                {
+                  "id": "tall_card",
+                  "polygon": [
+                    [
+                      0.7,
+                      0.28
+                    ],
+                    [
+                      0.82,
+                      0.28
+                    ],
+                    [
+                      0.82,
+                      0.52
+                    ],
+                    [
+                      0.7,
+                      0.52
+                    ]
+                  ]
+                },
+                {
+                  "id": "wide_card",
+                  "polygon": [
+                    [
+                      0.8,
+                      0.3
+                    ],
+                    [
+                      0.98,
+                      0.3
+                    ],
+                    [
+                      0.98,
+                      0.52
+                    ],
+                    [
+                      0.8,
+                      0.52
+                    ]
+                  ]
+                },
+                {
+                  "id": "pack_one",
+                  "polygon": [
+                    [
+                      0.1,
+                      0.56
+                    ],
+                    [
+                      0.36,
+                      0.56
+                    ],
+                    [
+                      0.36,
+                      0.76
+                    ],
+                    [
+                      0.1,
+                      0.76
+                    ]
+                  ]
+                },
+                {
+                  "id": "pack_two",
+                  "polygon": [
+                    [
+                      0.37,
+                      0.56
+                    ],
+                    [
+                      0.63,
+                      0.56
+                    ],
+                    [
+                      0.63,
+                      0.76
+                    ],
+                    [
+                      0.37,
+                      0.76
+                    ]
+                  ]
+                },
+                {
+                  "id": "pack_three",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "visual": "v10",
+              "text": "挂",
+              "x": 860,
+              "y": 980,
+              "size": 72,
+              "color": "#C4956A",
+              "weight": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "qlora",
+          "text": "但训练时，整座图书馆还是很占地方。QLoRA 就先把不动的书柜从十六位压成四位，体积大约缩到四分之一；用到哪一层，才临时展开哪一层，算完马上收回去。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v11",
+              "source": "inputs/illustrations/06-qlora-compress.png",
+              "drawing_plan_id": "qlora-compress",
+              "x": 100,
+              "y": 250,
+              "width": 880,
+              "height": 1160,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "large_cabinet",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.14
+                    ],
+                    [
+                      0.53,
+                      0.14
+                    ],
+                    [
+                      0.53,
+                      0.68
+                    ],
+                    [
+                      0.0,
+                      0.68
+                    ]
+                  ]
+                },
+                {
+                  "id": "compression_arrow",
+                  "polygon": [
+                    [
+                      0.51,
+                      0.34
+                    ],
+                    [
+                      0.68,
+                      0.34
+                    ],
+                    [
+                      0.68,
+                      0.52
+                    ],
+                    [
+                      0.51,
+                      0.52
+                    ]
+                  ]
+                },
+                {
+                  "id": "compressed_case",
+                  "polygon": [
+                    [
+                      0.66,
+                      0.22
+                    ],
+                    [
+                      0.98,
+                      0.22
+                    ],
+                    [
+                      0.98,
+                      0.66
+                    ],
+                    [
+                      0.66,
+                      0.66
+                    ]
+                  ],
+                  "exclude_polygons": [
+                    [
+                      [
+                        0.76,
+                        0.43
+                      ],
+                      [
+                        0.99,
+                        0.43
+                      ],
+                      [
+                        0.99,
+                        0.62
+                      ],
+                      [
+                        0.76,
+                        0.62
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "id": "expanded_layer",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "marker",
+              "visual": "v12",
+              "style": "underline",
+              "x": 820,
+              "y": 980,
+              "width": 60,
+              "height": 12,
+              "color": "#C4956A",
+              "line_width": 10
+            },
+            {
+              "type": "text",
+              "visual": "v12",
+              "text": "省",
+              "x": 860,
+              "y": 980,
+              "size": 72,
+              "color": "#C4956A",
+              "weight": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "direction",
+          "text": "接着看一个指南针。每支箭头都有长度和方向：长度代表特征有多强，方向代表它在表达什么。LoRA 用一根附加小箭头去转弯，转得太猛时，常常连总长度也一起拉长。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v13",
+              "source": "inputs/illustrations/07-direction-coupling.png",
+              "drawing_plan_id": "direction-coupling",
+              "x": 100,
+              "y": 230,
+              "width": 880,
+              "height": 1200,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "compass",
+                  "polygon": [
+                    [
+                      0.08,
+                      0.06
+                    ],
+                    [
+                      0.92,
+                      0.06
+                    ],
+                    [
+                      0.92,
+                      0.7
+                    ],
+                    [
+                      0.08,
+                      0.7
+                    ]
+                  ],
+                  "exclude_polygons": [
+                    [
+                      [
+                        0.42,
+                        0.19
+                      ],
+                      [
+                        0.78,
+                        0.19
+                      ],
+                      [
+                        0.78,
+                        0.54
+                      ],
+                      [
+                        0.42,
+                        0.54
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "id": "original_vector",
+                  "polygon": [
+                    [
+                      0.42,
+                      0.2
+                    ],
+                    [
+                      0.58,
+                      0.2
+                    ],
+                    [
+                      0.58,
+                      0.52
+                    ],
+                    [
+                      0.42,
+                      0.52
+                    ]
+                  ]
+                },
+                {
+                  "id": "delta_vector",
+                  "polygon": [
+                    [
+                      0.48,
+                      0.36
+                    ],
+                    [
+                      0.7,
+                      0.36
+                    ],
+                    [
+                      0.7,
+                      0.52
+                    ],
+                    [
+                      0.48,
+                      0.52
+                    ]
+                  ]
+                },
+                {
+                  "id": "coupled_result",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "dora",
+          "text": "DoRA 的办法，是把两件事拆开：方向交给 LoRA 调，长度单独控制。这样想转弯就转弯，想变强再变强，互不拖累，效果更接近全量微调。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v15",
+              "source": "inputs/illustrations/08-dora-controls.png",
+              "drawing_plan_id": "dora-controls",
+              "x": 100,
+              "y": 260,
+              "width": 880,
+              "height": 1120,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "panel",
+                  "polygon": [
+                    [
+                      0.02,
+                      0.2
+                    ],
+                    [
+                      0.98,
+                      0.2
+                    ],
+                    [
+                      0.98,
+                      0.62
+                    ],
+                    [
+                      0.02,
+                      0.62
+                    ]
+                  ],
+                  "exclude_polygons": [
+                    [
+                      [
+                        0.08,
+                        0.23
+                      ],
+                      [
+                        0.92,
+                        0.23
+                      ],
+                      [
+                        0.92,
+                        0.6
+                      ],
+                      [
+                        0.08,
+                        0.6
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "id": "direction_knob",
+                  "polygon": [
+                    [
+                      0.12,
+                      0.3
+                    ],
+                    [
+                      0.5,
+                      0.3
+                    ],
+                    [
+                      0.5,
+                      0.62
+                    ],
+                    [
+                      0.12,
+                      0.62
+                    ]
+                  ]
+                },
+                {
+                  "id": "length_knob",
+                  "polygon": [
+                    [
+                      0.5,
+                      0.3
+                    ],
+                    [
+                      0.88,
+                      0.3
+                    ],
+                    [
+                      0.88,
+                      0.62
+                    ],
+                    [
+                      0.5,
+                      0.62
+                    ]
+                  ]
+                },
+                {
+                  "id": "direction_arrow",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "visual": "v16",
+              "text": "拆",
+              "x": 860,
+              "y": 980,
+              "size": 72,
+              "color": "#C4956A",
+              "weight": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "qdora",
+          "text": "QDoRA 就是把两招合在一起：底层书柜先压成四位，上层再用 DoRA 分开管理方向和长度。它既省显存，又追求更高效果，不过工具生态还在成熟。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v17",
+              "source": "inputs/illustrations/09-qdora-combine.png",
+              "drawing_plan_id": "qdora-combine",
+              "x": 100,
+              "y": 250,
+              "width": 880,
+              "height": 1160,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "compressed_base",
+                  "polygon": [
+                    [
+                      0.02,
+                      0.18
+                    ],
+                    [
+                      0.36,
+                      0.18
+                    ],
+                    [
+                      0.36,
+                      0.64
+                    ],
+                    [
+                      0.02,
+                      0.64
+                    ]
+                  ]
+                },
+                {
+                  "id": "direction_control",
+                  "polygon": [
+                    [
+                      0.34,
+                      0.32
+                    ],
+                    [
+                      0.58,
+                      0.32
+                    ],
+                    [
+                      0.58,
+                      0.62
+                    ],
+                    [
+                      0.34,
+                      0.62
+                    ]
+                  ]
+                },
+                {
+                  "id": "magnitude_control",
+                  "polygon": [
+                    [
+                      0.56,
+                      0.32
+                    ],
+                    [
+                      0.76,
+                      0.32
+                    ],
+                    [
+                      0.76,
+                      0.62
+                    ],
+                    [
+                      0.56,
+                      0.62
+                    ]
+                  ]
+                },
+                {
+                  "id": "construction_sign",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "beats": [
+        {
+          "id": "choice",
+          "text": "所以别被名字吓住。默认先选 LoRA；显卡吃紧选 QLoRA；想更接近全量微调的效果，再看 DoRA 或 QDoRA。记住，提示词能解决就别训练，缺新事实先用 RAG，只有要长期改变说话做事的习惯，才轮到微调。",
+          "actions": [
+            {
+              "type": "illustration",
+              "visual": "v19",
+              "source": "inputs/illustrations/10-choice-roadmap.png",
+              "drawing_plan_id": "choice-roadmap",
+              "x": 100,
+              "y": 210,
+              "width": 880,
+              "height": 1260,
+              "weight": 100,
+              "parts": [
+                {
+                  "id": "finished_library",
+                  "polygon": [
+                    [
+                      0.22,
+                      0.05
+                    ],
+                    [
+                      0.78,
+                      0.05
+                    ],
+                    [
+                      0.78,
+                      0.45
+                    ],
+                    [
+                      0.22,
+                      0.45
+                    ]
+                  ],
+                  "exclude_polygons": [
+                    [
+                      [
+                        0.24,
+                        0.3
+                      ],
+                      [
+                        0.76,
+                        0.3
+                      ],
+                      [
+                        0.76,
+                        0.68
+                      ],
+                      [
+                        0.24,
+                        0.68
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "id": "signpost",
+                  "polygon": [
+                    [
+                      0.24,
+                      0.3
+                    ],
+                    [
+                      0.76,
+                      0.3
+                    ],
+                    [
+                      0.76,
+                      0.68
+                    ],
+                    [
+                      0.24,
+                      0.68
+                    ]
+                  ]
+                },
+                {
+                  "id": "prompt_checkpoint",
+                  "polygon": [
+                    [
+                      0.05,
+                      0.68
+                    ],
+                    [
+                      0.34,
+                      0.68
+                    ],
+                    [
+                      0.34,
+                      0.93
+                    ],
+                    [
+                      0.05,
+                      0.93
+                    ]
+                  ]
+                },
+                {
+                  "id": "rag_checkpoint",
+                  "polygon": [
+                    [
+                      0.34,
+                      0.68
+                    ],
+                    [
+                      0.66,
+                      0.68
+                    ],
+                    [
+                      0.66,
+                      0.93
+                    ],
+                    [
+                      0.34,
+                      0.93
+                    ]
+                  ]
+                },
+                {
+                  "id": "finetune_checkpoint",
+                  "polygon": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "visual": "v20",
+              "text": "选",
+              "x": 860,
+              "y": 980,
+              "size": 72,
+              "color": "#C4956A",
+              "weight": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "voxcpm": {
+    "voice": "magnetic-narrator"
+  }
+}

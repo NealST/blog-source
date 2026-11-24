@@ -79,6 +79,36 @@
       "skillPath": "skills/three/SKILL.md",
       "computedHash": "d40f783d8687f93b19657c193811c78304f84dd276ad344c38045e57b03de187"
     },
+    "topview-amazon-ops": {
+      "source": "topviewai/skill",
+      "sourceType": "github",
+      "skillPath": "topview-amazon-ops/SKILL.md",
+      "computedHash": "aaf43f058c7a38dd14b96641a2b2195702d254ef7122b2dfc6dd31cdedb62193"
+    },
+    "topview-generate": {
+      "source": "topviewai/skill",
+      "sourceType": "github",
+      "skillPath": "topview-generate/SKILL.md",
+      "computedHash": "41dc1c9da232bf6214c8510c025ed641b1cf1e1fcfb0f873d610ca3bcdc6c31a"
+    },
+    "topview-shopee-ops": {
+      "source": "topviewai/skill",
+      "sourceType": "github",
+      "skillPath": "topview-shopee-ops/SKILL.md",
+      "computedHash": "6131366f1e25579b5fed8b05f28d9a1f293ddd392d7f7b8bb87bc9fa2e9bd071"
+    },
+    "topview-tiktok-shop-ops": {
+      "source": "topviewai/skill",
+      "sourceType": "github",
+      "skillPath": "topview-tiktok-shop-ops/SKILL.md",
+      "computedHash": "c69d783e04ed16f0b0ab62548d7fffbd3055ca607c98346256cce8a8f175cdc8"
+    },
+    "topview-youtube-kol-ops": {
+      "source": "topviewai/skill",
+      "sourceType": "github",
+      "skillPath": "topview-youtube-kol-ops/SKILL.md",
+      "computedHash": "0753f8c23fd5cb9a9c1a99b1a516750b45aafb20ce6348ef371c39333500c516"
+    },
     "typegpu": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

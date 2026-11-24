@@ -1,0 +1,16 @@
+{
+  "status": "resolved",
+  "mode": "inferred",
+  "selection_sha256": "1eeb21ae4a83c1da4239cc66727bc8b2f17100a07b7e94da0902c36a82de8016",
+  "style_name": "墨筝故事会白板",
+  "rationale": "零基础技术科普需要亲切的故事角色，同时必须保留清楚的技术关系和逐笔形成过程",
+  "content_fit": "拟人图书馆承载基座模型，卡片、压缩书柜与指南针承载 LoRA、量化和 DoRA 三个核心机制",
+  "style_spec": {
+    "line": "深墨色连续轮廓，粗细稳定，部位交界闭合，无排线、碎线和纹理线",
+    "palette": "宣纸白 #F2EDE3、深墨 #1C1C1E、筝弦金 #C4956A，少量灰蓝和砖红",
+    "shading": "大块平涂，最多一层柔和阴影，不用线条表达明暗",
+    "texture": "无纸纹噪点、无毛发线、无布纹，靠完整形体和色块表现手绘感",
+    "background": "低复杂度白板场景，主体边缘有充足留白，底部字幕区保持干净"
+  },
+  "drawing_mode": "draw"
+}

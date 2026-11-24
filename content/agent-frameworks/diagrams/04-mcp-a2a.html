@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP 与 A2A 的连接方向</title>
+<style>
+body{margin:0;background:#fff;color:#1c1c1e;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{width:100%;overflow-x:auto}.wrap svg{display:block;width:100%;min-width:960px}
+.title{font-size:28px;font-weight:700}.node{fill:#fff;stroke:#d5d0c6;stroke-width:1.5}.focal{fill:#f8f2eb;stroke:#c4956a;stroke-width:2}
+.name{font-size:18px;font-weight:700;fill:#1c1c1e}.sub{font-size:13px;fill:#7a7876}.tag{font-size:11px;font-weight:700;fill:#c4956a;letter-spacing:1px}.label{font-size:13px;font-weight:700;fill:#1c1c1e}
+.arrow{fill:none;stroke:#7a7876;stroke-width:2}.link{fill:none;stroke:#c4956a;stroke-width:2.5}
+</style></head>
+<body><div class="wrap"><svg viewBox="0 0 960 600" role="img" aria-labelledby="mcp-title mcp-desc">
+<title id="mcp-title">MCP 与 A2A 的连接方向</title>
+<desc id="mcp-desc">MCP 连接 Agent 与工具和数据，A2A 连接跨边界的不同 Agent。</desc>
+<defs><marker id="mcp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#7a7876"/></marker><marker id="mcp-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#c4956a"/></marker></defs>
+<rect width="960" height="600" fill="#fff"/>
+<text x="64" y="70" class="tag">VERTICAL VS HORIZONTAL</text><text x="64" y="112" class="title">MCP 用东西，A2A 与其他 Agent 协作</text>
+<path class="link" marker-end="url(#mcp-gold)" d="M584 280H692"/>
+<rect x="615" y="255" width="48" height="24" fill="#fff"/><text x="639" y="273" text-anchor="middle" class="label">A2A</text>
+<path class="arrow" marker-end="url(#mcp-arrow)" d="M480 340V425"/>
+<rect x="456" y="372" width="48" height="24" fill="#fff"/><text x="480" y="390" text-anchor="middle" class="label">MCP</text>
+<rect x="376" y="220" width="208" height="120" rx="8" class="focal"/>
+<text x="480" y="270" text-anchor="middle" class="name">你的 Agent</text><text x="480" y="298" text-anchor="middle" class="sub">由你控制的运行边界</text>
+<rect x="692" y="220" width="196" height="120" rx="8" class="node"/>
+<text x="790" y="270" text-anchor="middle" class="name">外部 Agent</text><text x="790" y="298" text-anchor="middle" class="sub">跨团队 / 公司 / 框架</text>
+<rect x="240" y="425" width="480" height="100" rx="8" class="node"/>
+<text x="480" y="465" text-anchor="middle" class="name">工具与数据源</text><text x="480" y="493" text-anchor="middle" class="sub">数据库 · GitHub · Slack · 内部 API</text>
+<text x="64" y="558" class="sub">同一代码库内的多 Agent 通常由框架负责交接，不必额外引入 A2A。</text>
+</svg></div></body></html>

@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "created": "2026-11-17T21:14:18+08:00",
+  "source": "source/_posts/ai-presentations.md",
+  "title": "PPT 制作 AI 工具对比：Plus AI VS Gamma AI",
+  "slug": "ai-presentations",
+  "outputs": {
+    "wechat": {
+      "markdown": "source/_posts/ai-presentations.md",
+      "html": "content/ai-presentations/preview.html",
+      "cover_image": "content/ai-presentations/cover.png",
+      "title": "PPT 制作 AI 工具对比：Plus AI VS Gamma AI",
+      "author": "墨筝",
+      "digest": "从生成速度、设计质量、原生可编辑性、AI 编辑和品牌模板等维度，对比 Plus AI 与 Gamma，并给出不同工作场景下的选型建议。",
+      "images": [
+        "content/ai-presentations/xiaohei-illustrations/01-precise-vs-global-edit.png",
+        "content/ai-presentations/xiaohei-illustrations/02-plusai-vs-gamma-choice.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/ai-presentations/ai-presentations-小红书版.html",
+      "images_dir": "content/ai-presentations/xiaohongshu-images",
+      "image_count": 18,
+      "content_map": "content/ai-presentations/xiaohongshu-content-map.json",
+      "copy_file": "content/ai-presentations/xiaohongshu-copy.txt",
+      "copy": {
+        "title": "Plus AI 还是 Gamma｜PPT 工具实测",
+        "body": "同一份原始资料，Plus AI 和 Gamma 会走向两套完全不同的工作流。\n\nPlus AI 直接运行在 PowerPoint 和 Google Slides 里，重点是原生可编辑、团队协作和企业模板兼容。Gamma 则更像 Notion 加 AI，生成更快、视觉更现代，也更适合用链接直接分享。\n\n这组轮播先还原两款工具的核心差异，并完整展示 Plus AI 从插件安装、提示词输入到大纲确认的生成流程。\n\n真正选型时，关键不是谁生成得更快，而是演示文稿最后要在哪里继续编辑、交付和协作。\n\n完整的 Gamma 体验、逐项对比和选型建议见公众号「墨筝」。\n\n.\n#AI工具 #PPT #PlusAI #GammaAI #演示文稿 #办公效率 #生产力工具 #职场工具 #人工智能 #内容创作",
+        "tags": ["#AI工具", "#PPT", "#PlusAI", "#GammaAI", "#演示文稿", "#办公效率", "#生产力工具", "#职场工具", "#人工智能", "#内容创作"]
+      }
+    }
+  },
+  "cover": {
+    "style": "mozheng-editorial",
+    "source": "content/ai-presentations/cover-source.png",
+    "prompt": "content/ai-presentations/cover-prompt.txt",
+    "size": "1800x766"
+  },
+  "illustrations": {
+    "style": "mozheng-mixed",
+    "html": "content/ai-presentations/illustrations.html",
+    "xiaohei": "content/ai-presentations/xiaohei-illustrations"
+  },
+  "localized_images": {
+    "audit": "content/ai-presentations/image-localization.json",
+    "directory": "content/ai-presentations/localized-images"
+  },
+  "layout": {
+    "theme": "mozheng",
+    "font_size": "large"
+  }
+}

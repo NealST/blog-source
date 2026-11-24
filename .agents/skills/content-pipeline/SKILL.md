@@ -77,6 +77,7 @@ content/[slug]/                     # 自媒体产物（content-pipeline 管理�
 | "做配图" / "准备配图" | 自动选型：结构/数据→diagram-design 品牌图，观点/隐喻→小黑 |
 | "做小黑配图" | 全部走小黑手绘风格（→ xiaohei-illustrations skill） |
 | "做品牌配图" / "做架构图" / "做流程图" | 结构化图调用 diagram-design（HTML→PNG）；不适合成图的列表保留文字或表格 |
+| "优化原图" / "统一插图风格" / "图片中文化" | 审核文章已有插图；必要时用 Topview image edit 统一风格并翻译图中文字 |
 | "排版+配图" / "全套排版" | 排版 + 头图 + 配图一起生成 |
 
 ### 视频生成（Path C）
@@ -175,11 +176,16 @@ python3 md2wechat_formatter.py [文章路径] -o content/[slug]/preview.html
 
 **选型流程**（用户说"做配图"时执行）：
 1. 消化正文，提炼需要配图的段落（认知锚点优先）
-2. 逐张分析原文已有图片表达的核心语义，建立已有视觉信息清单
-3. 删除与原图语义重复的候选配图；新图必须补充原图没有表达的观点、结构或数据
-4. 对每张图检查是否命中品牌触发条件；未命中 → 小黑，命中 → diagram-design；若表格/文字更清楚则取消该候选图
-5. 输出 shot list，标注风格、位置、主题、与原图的差异；diagram-design 图额外标注图型、语义模式（如有）、尺寸预设、信息来源与计划删减项
-6. 按对应技能生成。小黑保持原流程；diagram-design 按 `references/diagram-design-integration.md` 执行风格确认、单图设计、验证与 PNG 接入。用户要求直接生成可跳过 shot list 等待，但不能跳过 diagram-design 的首次品牌确认或覆盖 profile 的授权
+2. 逐张分析原文已有图片表达的核心语义，建立已有视觉信息清单；同时按 `references/source-image-localization.md` 判断风格适配与中文化价值
+3. 对需要处理的原图调用已安装的 `topview-generate` skill，以 `image_edit` 生成主题适配的中文版；不满足条件的原图保持不变
+4. 删除与处理后原图语义重复的候选配图；新图必须补充原图没有表达的观点、结构或数据
+5. 对每张新图检查是否命中品牌触发条件；未命中 → 小黑，命中 → diagram-design；若表格/文字更清楚则取消该候选图
+6. 输出 shot list，标注风格、位置、主题、与原图的差异；原图额外标注 `keep` / `localize` / `restyle+localize` 及判定理由；diagram-design 图额外标注图型、语义模式（如有）、尺寸预设、信息来源与计划删减项
+7. 按对应技能生成。原图处理遵循 Topview 的首次计费确认与 MCP 流程；小黑保持原流程；diagram-design 按 `references/diagram-design-integration.md` 执行风格确认、单图设计、验证与 PNG 接入。用户要求直接生成可跳过 shot list 等待，但不能跳过计费确认、diagram-design 的首次品牌确认或覆盖 profile 的授权
+
+**原文插图适配与中文化**：先判断图片的主要价值来自“信息解释”还是“原始证据”，不得见到英文就翻译。只有当自然语言文字是图片的主要信息载体，且中文化能明显降低理解门槛时，才考虑翻译或重绘；产品界面、社交平台原帖、官方文档、论文或基准原图、品牌素材、纪实照片等具有来源和证据价值的图片，默认保留原文，通过中文图注解释。只处理文章中已存在的内容型插图，不把截图、照片和品牌素材一律重绘。风格明显偏离墨筝主题时做视觉适配；图中存在会影响中文读者理解的外语标题、标签、图例、注释或流程节点时翻译为中文。代码、命令、API/产品名、商标、网址、数据和真实 UI 文案默认保留。使用 Topview `image_edit` 时必须保持原图事实、结构、节点关系、数值、单位和宽高比，不新增原文没有的信息；详细判定、提示词和验收规则见 `references/source-image-localization.md`。
+
+处理后文件保存为 `content/[slug]/localized-images/NN-original-name.png`，Markdown、`preview.html`、小红书轮播与 manifest 均引用处理后的同一文件。原始图片不得覆盖；若编辑结果文字错误、关系变化、主体走样或可读性下降，回退原图并报告，不得带病发布。
 
 **关键规则**：**每个章节只配一张图**，不要给同一段落同时安排品牌图和小黑图。两种风格按段落分工，混合编排在同一篇文章里。
 
@@ -257,7 +263,9 @@ python3 "${SKILL_DIR}/scripts/fetch_wechat_article.py" "<URL>" --json
 
 头像路径：`content/[slug]/` 下用 `../_shared/avatar.jpg`，配 `onerror` 回退。真实头像必须绝对定位并完整覆盖底层“墨”字 fallback；头像加载成功时不得露出 fallback。
 
-**原文图片硬规则**：Markdown 原图不是 540×720 文字卡的内嵌元素。每张原图本身就是一张独立轮播素材，保持原始宽高比导出，不加 Header/Footer/页码、底色、边框、圆角、阴影或 3:4 留白。
+**关注提示硬规则**：每张文字卡、封面和封底的 Header 右侧必须放置两行右对齐文案：`关注我` / `持续更新 AI 实战`。使用 `margin-left:auto; text-align:right`，第一行金色加粗、第二行弱灰小字；原文图片独占页不添加。Footer 的公众号引导继续保留。
+
+**原文图片硬规则**：Markdown 原图不是 540×720 文字卡的内嵌元素。先按 `references/source-image-localization.md` 完成原图审核与必要的 Topview 中文化，再把最终采用的图片作为独立轮播素材；保持原始宽高比导出，不加 Header/Footer/页码、底色、边框、圆角、阴影或 3:4 留白。
 
 **格式校验**：生成的 HTML **必须使用 markdown-faithful 格式**（包含 `.post-header`、`.post-body`、`.post-footer` class 和 `.bg-paper` 宣纸背景）。**不得使用旧版** `.slide-title` + `.bg-light { background: #FFFFFF }` 格式，该格式已废弃。内容页背景统一使用宣纸底 `#F2EDE3`。
 
@@ -326,10 +334,12 @@ python3 "${SKILL_DIR}/scripts/validate_xhs_html.py" content/[slug]/*小红书版
 ### HyperFrames 流程
 
 1. **定位文章**：从 `source/_posts/[slug].md` 读取，创建 `content/[slug]/video/hyperframes/`
-2. **生成 design.md**：品牌色衍生（暗色基调，筝弦金暖金调性可提升至视频级 `#D4A76A`-`#E8A850`），字体必须从 hyperframes 内置列表选择
-3. **准备 BGM**：复制 `content/_shared/bgm.mp3`（共享 BGM 资源；若不存在则从 `content/ai-code-review-benchmark/video/bgm.mp3` 回退）
-4. **调用 hyperframes 生成视频**：进入目录，hyperframes 自动读取 design.md。品牌元素必带：常驻水印（`公众号：墨筝`，opacity 0.7）、BGM 音频轨（`data-volume="0.3"`）、尾屏 CTA。竖版布局（1080×1920）：顶部留 180px 平台安全区，scene-content padding `340px 64px 80px`，水印 `top:228px;left:60px`
-5. **校验 & 渲染**：`npx hyperframes lint && npx hyperframes render --output output.mp4`
+2. **读取默认视频风格**：完整读取 `references/hyperframes-video-style.md`。除非用户明确指定其他风格，否则使用其中的技术编辑部视觉、固定墨筝色板、非对称信息图构图和动效规则
+3. **生成 design.md**：以风格参考中的模板为基线，保留 `#1C1C1E`、`#F2EDE3`、`#C4956A`、`#D8B28C` 等固定色板；标题使用 `ZCOOL XiaoWei`，正文使用 `Noto Sans SC`，技术标签使用 `IBM Plex Mono`
+4. **准备共享资产**：复制 `content/_shared/bgm.mp3` 为项目根目录的 `bgm.mp3`；复制 `content/_shared/fonts/zcool-xiaowei.ttf` 和 `content/_shared/fonts/noto-sans-sc.ttf` 到项目的 `fonts/` 目录。若任一共享字体缺失则停止并报告，不得静默退回系统字体
+5. **调用 hyperframes 生成视频**：进入目录，hyperframes 自动读取 design.md。品牌元素必带：常驻水印（`公众号：墨筝`，opacity 0.7）、BGM 音频轨（`data-volume="0.3"`）、尾屏 CTA。竖版布局（1080×1920）：顶部留 180px 平台安全区，scene-content padding `340px 64px 80px`，水印 `top:228px;left:60px`
+6. **校验 & 草稿验收**：运行 lint 和 check；先渲染 draft，从每个场景中段提取关键帧，实际检查完整画布。工具检查失败时按风格参考中的降级流程执行，不得直接跳到最终渲染
+7. **最终渲染**：关键帧通过后运行 `npx hyperframes render --output output.mp4 --quality high`，再用 `ffprobe` 核对时长、1080×1920、视频轨和 AAC 音轨
 
 manifest 的 `outputs.video` 增加 `"backend": "hyperframes"`；旧 manifest 没有该字段时保持兼容。
 
@@ -398,13 +408,14 @@ npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/m
 | 出稿写文章 | → 写作 skill（`../writing/SKILL.md`） |
 | 品牌色/色板 | `references/brand-colors.md` — 墨筝色体系 single source of truth |
 | 生成头图 | `references/cover-template.md` — 头图规范 |
+| 原文插图风格适配与中文化 | `../topview-generate/SKILL.md` + `references/source-image-localization.md` — Topview image edit、翻译边界与验收 |
 | 生成品牌结构图/数据图表 | `../diagram-design/SKILL.md` + `references/diagram-design-integration.md` — 图型设计、品牌适配、PNG 接入 |
 | 生成小黑配图 | `../xiaohei-illustrations/SKILL.md` — 小黑 IP 手绘风格 |
 | 横版→竖版封面 | `references/cover-vertical-spec.md` |
 | 小红书卡片生成规则 | `references/xiaohongshu-card-rules.md` — 内容拆分逻辑、字号层级、质量控制、下载工具栏 |
 | 小红书视觉样式 | `references/xiaohongshu-text-card.md` — 组件 CSS 模板、配色方案、Header/Footer HTML |
 | 小红书文案 | `references/platform-copy.md` |
-| 生成 HyperFrames 视频 | hyperframes skill（`../hyperframes/SKILL.md`） |
+| 生成 HyperFrames 视频 | `references/hyperframes-video-style.md` + hyperframes skill（`../hyperframes/SKILL.md`） |
 | 生成手绘视频 | `references/handdraw-video-integration.md` + 已安装的 sweety-handdraw-video skill |
 | 分发到各平台 | `references/distribute-platforms.md` |
 
@@ -420,5 +431,6 @@ npx -y bun "${SKILL_DIR}/scripts/distribute/distribute.ts" --manifest /path/to/m
 | 导出图片模糊 | Path B | 检查 SCALE=2，浏览器缩放 100% |
 | manifest 不存在 | 通用 | 提示先运行内容生成 |
 | Chrome 启动失败 | 分发 | 降级 L3（手动模式） |
+| Topview MCP 未连接或未认证 | 原文插图处理 | 停止图片编辑，按 `topview-generate` skill 引导宿主连接 `topview-mcp` 或完成登录；不得改走旧 REST API |
 | Handdraw render venv 缺失 | Path C | 报告 `setup.sh` 命令，征得用户同意后安装 |
 | Handdraw 无生图或配音能力 | Path C | 停止并说明缺失能力，不生成纯文字片、不静默切换后端 |

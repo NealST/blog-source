@@ -1,0 +1,33 @@
+{
+  "content": "把 LLM 微调技术改编成零基础也能看懂的故事会白板科普",
+  "config_type": "model_infer",
+  "aspect": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920
+  },
+  "style": {
+    "mode": "inferred"
+  },
+  "hand": {
+    "preset": "pen-only"
+  },
+  "voice": {
+    "voice": "magnetic-narrator"
+  },
+  "advertising": {
+    "text": ""
+  },
+  "watermark": {
+    "text": "公众号：墨筝"
+  },
+  "captions": {
+    "mode": "quiet"
+  },
+  "rationale": {
+    "style": "故事会白板科普采用干净墨线、宣纸底和少量筝弦金平涂，兼顾亲切感与逐笔可绘制性",
+    "aspect": "默认竖屏 9:16，适合短视频平台",
+    "voice": "磁性解说男声适合娓娓道来的知识故事",
+    "captions": "浅色白板画面使用无底板短句字幕，避免遮挡插画"
+  }
+}

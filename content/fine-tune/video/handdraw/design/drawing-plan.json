@@ -1,0 +1,311 @@
+{
+  "version": 1,
+  "illustrations": [
+    {
+      "id": "library-problem",
+      "source": "inputs/illustrations/01-library-problem.png",
+      "composition": "竖版白板中央是一座有眼睛和嘴巴的简化图书馆，左下是一把拆楼锤，右下是两张外挂卡片；错误话术纸条从门口伸出。主体占画面约 65%，底部预留字幕带。",
+      "drawability_reason": "主体全部由大轮廓和封闭平涂色块组成；屋顶、楼体、纸条和两个选择物彼此分离，控制在约 13 组主要笔画内，适合开场约 5.4 秒的快速逐笔形成。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {
+          "id": "library",
+          "kind": "object",
+          "identity_cues": ["三角屋顶和成排书窗构成图书馆轮廓", "正门上有克制的眼睛和嘴巴，表现会说话"]
+        },
+        {
+          "id": "wrong_note",
+          "kind": "object",
+          "identity_cues": ["从门口伸出的单张纸条", "纸条上只有一个砖红色叉号，不生成文字"]
+        },
+        {
+          "id": "choices",
+          "kind": "object",
+          "identity_cues": ["左侧拆楼锤", "右侧两张窄长金色卡片"]
+        }
+      ],
+      "parts": [
+        {
+          "id": "roof_face",
+          "subject": "library",
+          "role": "roof_and_face",
+          "stroke_groups": ["三角屋顶外轮廓", "两只眼睛和一条嘴线"]
+        },
+        {
+          "id": "building_body",
+          "subject": "library",
+          "role": "building_body",
+          "stroke_groups": ["矩形楼体外轮廓", "正门和四个大书窗"]
+        },
+        {
+          "id": "wrong_note",
+          "subject": "wrong_note",
+          "role": "paper_note",
+          "stroke_groups": ["纸条外轮廓", "砖红色叉号"]
+        },
+        {
+          "id": "demolition_hammer",
+          "subject": "choices",
+          "role": "left_choice",
+          "stroke_groups": ["锤头轮廓", "锤柄长线"]
+        },
+        {
+          "id": "adapter_cards",
+          "subject": "choices",
+          "role": "right_choice",
+          "stroke_groups": ["第一张窄长卡片", "第二张窄长卡片"]
+        }
+      ],
+      "outline_order": ["roof_face", "building_body", "wrong_note", "demolition_hammer", "adapter_cards"],
+      "fill_order": ["roof_face", "building_body", "wrong_note", "demolition_hammer", "adapter_cards"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {
+          "id": "speaking-library",
+          "narration_quote": "小镇有座什么都懂的图书馆，可它一当客服就总说错话。",
+          "observable": "画面必须一眼认出是一座会说话的图书馆，并有一张带错误标记的话术纸条"
+        },
+        {
+          "id": "rebuild-or-adapt",
+          "narration_quote": "要教好它，难道得把整栋楼拆了重建吗？",
+          "observable": "图书馆下方必须同时出现拆楼锤和外挂卡片两个相反选择"
+        }
+      ],
+      "references": []
+    },
+    {
+      "id": "three-tools",
+      "source": "inputs/illustrations/02-three-tools.png",
+      "composition": "中央是同一座简化图书馆，左侧便签，中间小资料车，右侧调校扳手，三件工具按阅读顺序排列，底部留字幕区。",
+      "drawability_reason": "一座简化建筑和三个彼此分离的大图标，连续闭合轮廓、平涂无纹理，约 17 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "library", "kind": "object", "identity_cues": ["三角屋顶与书窗", "正门上的简单表情"]},
+        {"id": "tools", "kind": "object", "identity_cues": ["便签", "装书的小推车", "大号扳手"]}
+      ],
+      "parts": [
+        {"id": "library", "subject": "library", "role": "base_model", "stroke_groups": ["屋顶与楼体外轮廓", "正门、书窗和表情"]},
+        {"id": "prompt_note", "subject": "tools", "role": "prompt", "stroke_groups": ["单张便签外轮廓", "一个短横线符号"]},
+        {"id": "rag_cart", "subject": "tools", "role": "rag", "stroke_groups": ["资料车箱体与把手", "两个车轮和三本大书"]},
+        {"id": "finetune_wrench", "subject": "tools", "role": "finetune", "stroke_groups": ["扳手开口", "扳手长柄"]}
+      ],
+      "outline_order": ["library", "prompt_note", "rag_cart", "finetune_wrench"],
+      "fill_order": ["library", "prompt_note", "rag_cart", "finetune_wrench"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "three-methods", "narration_quote": "管理员先试了三招。", "observable": "图书馆旁必须同时出现三种不同工具"},
+        {"id": "tool-roles", "narration_quote": "临时提醒，就在门口贴便签，这像提示词；缺少新资料，就推来资料车，这像 RAG；可要它长期保持固定语气和规矩，才需要微调。", "observable": "便签、资料车和扳手必须从左到右清楚可辨"}
+      ],
+      "references": ["inputs/illustrations/01-library-problem.png"]
+    },
+    {
+      "id": "full-finetune",
+      "source": "inputs/illustrations/03-full-finetune.png",
+      "composition": "左侧主图书馆的书架全部被拉出重排，右侧排着三座缩小复制图书馆，底部掉落一本旧书。",
+      "drawability_reason": "用一个主建筑、三个小复制轮廓和一本掉落旧书表达全部更新、复制成本和遗忘，约 23 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "main_library", "kind": "object", "identity_cues": ["打开的图书馆正面", "所有书架都被拉出"]},
+        {"id": "copies", "kind": "object", "identity_cues": ["三座相同的小图书馆并排", "每座都有同样屋顶"]},
+        {"id": "lost_book", "kind": "object", "identity_cues": ["底部单独掉落的一本旧书"]}
+      ],
+      "parts": [
+        {"id": "main_shell", "subject": "main_library", "role": "building", "stroke_groups": ["屋顶与楼体外轮廓", "敞开的正门"]},
+        {"id": "all_shelves", "subject": "main_library", "role": "all_parameters", "stroke_groups": ["四组拉出的书架", "几本大书轮廓"]},
+        {"id": "copy_one", "subject": "copies", "role": "task_copy", "stroke_groups": ["第一座小图书馆"]},
+        {"id": "copy_two", "subject": "copies", "role": "task_copy", "stroke_groups": ["第二座小图书馆"]},
+        {"id": "copy_three", "subject": "copies", "role": "task_copy", "stroke_groups": ["第三座小图书馆"]},
+        {"id": "lost_book", "subject": "lost_book", "role": "forgetting", "stroke_groups": ["掉落书本外轮廓", "一条书脊线"]}
+      ],
+      "outline_order": ["main_shell", "all_shelves", "copy_one", "copy_two", "copy_three", "lost_book"],
+      "fill_order": ["main_shell", "all_shelves", "copy_one", "copy_two", "copy_three", "lost_book"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "all-updated", "narration_quote": "把每个书架、每本书的位置都重新调整。", "observable": "主图书馆全部书架必须处于被搬动状态"},
+        {"id": "copy-and-forget", "narration_quote": "每来一家新客户，还得复制一整座图书馆，甚至可能整理新规矩时，把旧本事弄丢。", "observable": "三座复制图书馆和一本掉落旧书必须同时出现"}
+      ],
+      "references": ["inputs/illustrations/01-library-problem.png"]
+    },
+    {
+      "id": "peft-locks",
+      "source": "inputs/illustrations/04-peft-locks.png",
+      "composition": "一整面大书架，大多数格子挂深墨锁，只有三个筝弦金旋钮可操作。",
+      "drawability_reason": "单一正面书架用重复大格构成，锁和旋钮为封闭简单图标，约 21 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "shelf_wall", "kind": "object", "identity_cues": ["整面书架", "大多数格子有锁"]},
+        {"id": "controls", "kind": "object", "identity_cues": ["仅三个金色旋钮可转动"]}
+      ],
+      "parts": [
+        {"id": "shelf_frame", "subject": "shelf_wall", "role": "base_parameters", "stroke_groups": ["书架外框", "六个大格分隔线"]},
+        {"id": "locked_sections", "subject": "shelf_wall", "role": "frozen_parameters", "stroke_groups": ["三把大锁的外轮廓", "三条锁梁"]},
+        {"id": "trainable_knobs", "subject": "controls", "role": "trainable_parameters", "stroke_groups": ["三个圆形旋钮", "三个短指针"]}
+      ],
+      "outline_order": ["shelf_frame", "locked_sections", "trainable_knobs"],
+      "fill_order": ["shelf_frame", "locked_sections", "trainable_knobs"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "mostly-frozen", "narration_quote": "于是管理员锁住绝大多数书架，只调整少数关键机关。", "observable": "大多数书架区域必须有锁，只有少数金色旋钮未锁"},
+        {"id": "small-part", "narration_quote": "别什么都动，只训练真正需要变化的小部分。", "observable": "可操作旋钮面积明显小于被锁书架面积"}
+      ],
+      "references": []
+    },
+    {
+      "id": "lora-cards",
+      "source": "inputs/illustrations/05-lora-cards.png",
+      "composition": "中央一座冻结图书馆，旁边两张一高一宽的细卡组合成小适配器，底部三个不同颜色卡包连向同一底座。",
+      "drawability_reason": "主建筑保持简化，矩阵用两个大矩形而非网格，三个卡包是独立平涂色块，约 25 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "base_library", "kind": "object", "identity_cues": ["与开场相同的图书馆轮廓", "外侧有冻结锁"]},
+        {"id": "adapter", "kind": "object", "identity_cues": ["一张高瘦卡和一张扁宽卡相接"]},
+        {"id": "client_packs", "kind": "object", "identity_cues": ["三个颜色不同的小卡包", "都连向同一图书馆"]}
+      ],
+      "parts": [
+        {"id": "base_library", "subject": "base_library", "role": "frozen_base", "stroke_groups": ["屋顶与楼体", "书窗与一把锁"]},
+        {"id": "tall_card", "subject": "adapter", "role": "matrix_b", "stroke_groups": ["高瘦卡片外轮廓"]},
+        {"id": "wide_card", "subject": "adapter", "role": "matrix_a", "stroke_groups": ["扁宽卡片外轮廓"]},
+        {"id": "pack_one", "subject": "client_packs", "role": "task_adapter", "stroke_groups": ["第一卡包和连接线"]},
+        {"id": "pack_two", "subject": "client_packs", "role": "task_adapter", "stroke_groups": ["第二卡包和连接线"]},
+        {"id": "pack_three", "subject": "client_packs", "role": "task_adapter", "stroke_groups": ["第三卡包和连接线"]}
+      ],
+      "outline_order": ["base_library", "tall_card", "wide_card", "pack_one", "pack_two", "pack_three"],
+      "fill_order": ["base_library", "tall_card", "wide_card", "pack_one", "pack_two", "pack_three"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "two-small-cards", "narration_quote": "两条细长卡片组合起来，就能记录原本需要一整面大墙才能保存的变化。", "observable": "高瘦卡和扁宽卡必须明显小于图书馆"},
+        {"id": "shared-base", "narration_quote": "底座仍是一座图书馆，不同客户只要换不同卡包。", "observable": "三个不同卡包必须连接同一座底座图书馆"}
+      ],
+      "references": ["inputs/illustrations/01-library-problem.png"]
+    },
+    {
+      "id": "qlora-compress",
+      "source": "inputs/illustrations/06-qlora-compress.png",
+      "composition": "左侧十六格大书柜，中间压缩箭头，右侧四格旅行箱；旅行箱只有一层被展开。",
+      "drawability_reason": "柜体用大矩形和少量分隔线，压缩前后关系清楚；不画细小数字，约 20 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "large_cabinet", "kind": "object", "identity_cues": ["明显更大的多格书柜"]},
+        {"id": "compressed_case", "kind": "object", "identity_cues": ["明显更小的四格旅行箱", "其中一层向外展开"]},
+        {"id": "compression_arrow", "kind": "object", "identity_cues": ["从大书柜指向小箱子的粗箭头"]}
+      ],
+      "parts": [
+        {"id": "large_cabinet", "subject": "large_cabinet", "role": "sixteen_bit_base", "stroke_groups": ["大书柜外框", "四行四列的简化分隔线"]},
+        {"id": "compression_arrow", "subject": "compression_arrow", "role": "quantization", "stroke_groups": ["单个粗压缩箭头"]},
+        {"id": "compressed_case", "subject": "compressed_case", "role": "four_bit_base", "stroke_groups": ["小旅行箱外框", "四个大格"]},
+        {"id": "expanded_layer", "subject": "compressed_case", "role": "temporary_dequantization", "stroke_groups": ["单层向外抽出的托盘", "一条回收箭头"]}
+      ],
+      "outline_order": ["large_cabinet", "compression_arrow", "compressed_case", "expanded_layer"],
+      "fill_order": ["large_cabinet", "compression_arrow", "compressed_case", "expanded_layer"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "quarter-size", "narration_quote": "QLoRA 就先把不动的书柜从十六位压成四位，体积大约缩到四分之一；", "observable": "右侧四格箱必须明显小于左侧十六格柜"},
+        {"id": "one-layer", "narration_quote": "用到哪一层，才临时展开哪一层，算完马上收回去。", "observable": "小箱子只能有一层处于展开状态"}
+      ],
+      "references": []
+    },
+    {
+      "id": "direction-coupling",
+      "source": "inputs/illustrations/07-direction-coupling.png",
+      "composition": "中央大指南针，原箭头为深墨色；一根金色附加小箭头把结果推向新方向，同时让结果箭头变长。",
+      "drawability_reason": "圆盘、三根粗箭头和少量刻度构成单概念图，无复杂场景，约 20 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "compass", "kind": "object", "identity_cues": ["圆形指南针盘", "清楚的中心轴"]},
+        {"id": "vectors", "kind": "object", "identity_cues": ["原箭头、附加箭头和变长后的结果箭头"]}
+      ],
+      "parts": [
+        {"id": "compass", "subject": "compass", "role": "reference_frame", "stroke_groups": ["圆盘外轮廓", "四个大刻度和中心点"]},
+        {"id": "original_vector", "subject": "vectors", "role": "original_weight", "stroke_groups": ["原始深墨箭头"]},
+        {"id": "delta_vector", "subject": "vectors", "role": "lora_delta", "stroke_groups": ["附加金色小箭头"]},
+        {"id": "coupled_result", "subject": "vectors", "role": "changed_direction_and_length", "stroke_groups": ["转向后更长的砖红结果箭头"]}
+      ],
+      "outline_order": ["compass", "original_vector", "delta_vector", "coupled_result"],
+      "fill_order": ["compass", "original_vector", "delta_vector", "coupled_result"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "length-direction", "narration_quote": "每支箭头都有长度和方向：长度代表特征有多强，方向代表它在表达什么。", "observable": "指南针上箭头的方向和长度差异必须可见"},
+        {"id": "coupled-change", "narration_quote": "LoRA 用一根附加小箭头去转弯，转得太猛时，常常连总长度也一起拉长。", "observable": "结果箭头必须同时改变方向并变得更长"}
+      ],
+      "references": []
+    },
+    {
+      "id": "dora-controls",
+      "source": "inputs/illustrations/08-dora-controls.png",
+      "composition": "中央简化控制台，左旋钮连接指南针方向，右旋钮连接箭头伸缩，两个控制通道完全分开。",
+      "drawability_reason": "控制台、两个大旋钮和一支箭头组成，线条少且封闭，约 15 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "control_panel", "kind": "object", "identity_cues": ["有两个明显分开的控制旋钮"]},
+        {"id": "direction_arrow", "kind": "object", "identity_cues": ["箭头既能转向又能独立伸缩", "两条控制线分别连接方向与长度"]}
+      ],
+      "parts": [
+        {"id": "panel", "subject": "control_panel", "role": "decomposition", "stroke_groups": ["控制台外轮廓", "中央分隔线"]},
+        {"id": "direction_knob", "subject": "control_panel", "role": "direction_control", "stroke_groups": ["左侧圆旋钮", "方向弧线"]},
+        {"id": "length_knob", "subject": "control_panel", "role": "magnitude_control", "stroke_groups": ["右侧圆旋钮", "伸缩刻度"]},
+        {"id": "direction_arrow", "subject": "direction_arrow", "role": "independent_result", "stroke_groups": ["结果箭头", "两条独立连接线"]}
+      ],
+      "outline_order": ["panel", "direction_knob", "length_knob", "direction_arrow"],
+      "fill_order": ["panel", "direction_knob", "length_knob", "direction_arrow"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "separate-controls", "narration_quote": "方向交给 LoRA 调，长度单独控制。", "observable": "方向旋钮与长度旋钮必须是两个独立控件"},
+        {"id": "no-coupling", "narration_quote": "这样想转弯就转弯，想变强再变强，互不拖累，效果更接近全量微调。", "observable": "两条控制线必须分别连接箭头的方向和长度"}
+      ],
+      "references": []
+    },
+    {
+      "id": "qdora-combine",
+      "source": "inputs/illustrations/09-qdora-combine.png",
+      "composition": "左侧四格压缩书柜连接右侧方向与长度双旋钮控制台，旁边一块无文字的条纹施工牌表示生态仍在成熟。",
+      "drawability_reason": "复用四格柜与双旋钮两种已建立视觉，施工牌只用条纹，不生成文字，约 20 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "compressed_base", "kind": "object", "identity_cues": ["四格压缩书柜"]},
+        {"id": "dora_console", "kind": "object", "identity_cues": ["方向与长度两个独立旋钮"]},
+        {"id": "construction_sign", "kind": "object", "identity_cues": ["砖红与金色斜条纹施工牌"]}
+      ],
+      "parts": [
+        {"id": "compressed_base", "subject": "compressed_base", "role": "four_bit_base", "stroke_groups": ["四格柜外框", "四个大格"]},
+        {"id": "direction_control", "subject": "dora_console", "role": "direction", "stroke_groups": ["方向旋钮和连接线"]},
+        {"id": "magnitude_control", "subject": "dora_console", "role": "magnitude", "stroke_groups": ["长度旋钮和连接线"]},
+        {"id": "construction_sign", "subject": "construction_sign", "role": "ecosystem_maturity", "stroke_groups": ["施工牌外框", "三条粗斜纹"]}
+      ],
+      "outline_order": ["compressed_base", "direction_control", "magnitude_control", "construction_sign"],
+      "fill_order": ["compressed_base", "direction_control", "magnitude_control", "construction_sign"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "combined-method", "narration_quote": "底层书柜先压成四位，上层再用 DoRA 分开管理方向和长度。", "observable": "四格书柜必须同时连接方向和长度两个旋钮"},
+        {"id": "maturing-tools", "narration_quote": "不过工具生态还在成熟。", "observable": "画面必须有不含文字的施工中视觉标记"}
+      ],
+      "references": []
+    },
+    {
+      "id": "choice-roadmap",
+      "source": "inputs/illustrations/10-choice-roadmap.png",
+      "composition": "中央四向路牌，每个方向用不同几何符号而非文字；背后是改造完成的图书馆，底部三个检查站图标依次为便签、资料车、扳手。",
+      "drawability_reason": "路牌、简化图书馆与三个大图标构成总结画面，全部为封闭平涂轮廓，约 25 组主要笔画。",
+      "outline_strategy": "visible_source_ink",
+      "subjects": [
+        {"id": "signpost", "kind": "object", "identity_cues": ["一个立柱上有四个不同方向的箭头牌"]},
+        {"id": "finished_library", "kind": "object", "identity_cues": ["与开场一致的会说话图书馆", "表情变为自信微笑"]},
+        {"id": "checkpoints", "kind": "object", "identity_cues": ["便签、资料车、扳手三个检查图标"]}
+      ],
+      "parts": [
+        {"id": "finished_library", "subject": "finished_library", "role": "adapted_model", "stroke_groups": ["屋顶与楼体", "书窗和微笑"]},
+        {"id": "signpost", "subject": "signpost", "role": "method_choices", "stroke_groups": ["立柱", "四个方向箭头牌"]},
+        {"id": "prompt_checkpoint", "subject": "checkpoints", "role": "prompt_first", "stroke_groups": ["便签图标和圆形检查框"]},
+        {"id": "rag_checkpoint", "subject": "checkpoints", "role": "rag_for_facts", "stroke_groups": ["资料车图标和圆形检查框"]},
+        {"id": "finetune_checkpoint", "subject": "checkpoints", "role": "finetune_for_behavior", "stroke_groups": ["扳手图标和圆形检查框"]}
+      ],
+      "outline_order": ["finished_library", "signpost", "prompt_checkpoint", "rag_checkpoint", "finetune_checkpoint"],
+      "fill_order": ["finished_library", "signpost", "prompt_checkpoint", "rag_checkpoint", "finetune_checkpoint"],
+      "spatial_order": "top_to_bottom_left_to_right",
+      "narrative_requirements": [
+        {"id": "four-choices", "narration_quote": "默认先选 LoRA；显卡吃紧选 QLoRA；想更接近全量微调的效果，再看 DoRA 或 QDoRA。", "observable": "中央路牌必须有四个清楚分开的方向"},
+        {"id": "three-boundaries", "narration_quote": "提示词能解决就别训练，缺新事实先用 RAG，只有要长期改变说话做事的习惯，才轮到微调。", "observable": "底部必须按顺序出现便签、资料车、扳手三个检查图标"}
+      ],
+      "references": ["inputs/illustrations/01-library-problem.png"]
+    }
+  ]
+}

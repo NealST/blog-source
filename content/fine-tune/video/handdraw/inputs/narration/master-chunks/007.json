@@ -1,0 +1,37 @@
+{
+  "signature": "e07ac8d15bd3255353b412422fcc9787c72a9495070a0d0b03e12e00658d7cb2",
+  "index": 7,
+  "text": "DoRA 的办法，是把两件事拆开：方向交给 LoRA 调，长度单独控制。这样想转弯就转弯，想变强再变强，互不拖累，效果更接近全量微调。",
+  "units": [
+    {
+      "beat": "dora",
+      "page": 3,
+      "text": "DoRA 的办法，是把两件事拆开：方向交给 LoRA 调，长度单独控制。这样想转弯就转弯，想变强再变强，互不拖累，效果更接近全量微调。"
+    }
+  ],
+  "join": "beat",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "007.wav",
+        "duration_seconds": 10.618,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -51.1,
+        "dc_offset": -0.00022,
+        "peak_dbfs": -1.9,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 5.33,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "f6844e4fe72c3d68a9fdf80901875c16b9e18d2f2ff86b569546db85c2c67cc2"
+}

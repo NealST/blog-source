@@ -179,7 +179,8 @@ def check_header_footer(content: str) -> list[str]:
     slides = re.findall(rf'{slide_tag}[^>]*>[\s\S]*?(?={slide_tag}|$)', content)
     for i, slide_html in enumerate(slides):
         slide_num = i + 1
-        is_img_only = 'img-only' in slide_html
+        opening_tag = slide_html.split('>', 1)[0]
+        is_img_only = 'img-only' in opening_tag
         if is_img_only:
             continue
         if 'post-header' not in slide_html:
@@ -188,6 +189,36 @@ def check_header_footer(content: str) -> list[str]:
             errors.append(f'  [结构] 第 {slide_num} 张缺少 .post-footer')
     if len(errors) > 6:
         errors = errors[:3] + [f'  [结构] ... 还有 {len(errors) - 3} 处缺失']
+    return errors
+
+
+def check_follow_prompt(content: str) -> list[str]:
+    """每张文字卡的 Header 右侧必须有双行、右对齐的关注提示。"""
+    errors = []
+    prompt_css = re.search(
+        r'\.follow-prompt[^{]*\{[^}]*margin-left\s*:\s*auto[^}]*text-align\s*:\s*right',
+        content,
+        re.IGNORECASE,
+    )
+    if not prompt_css:
+        errors.append('  [关注提示] .follow-prompt 必须设置 margin-left:auto 与 text-align:right')
+
+    slide_tag = r'<div\s+class="[^"]*\bslide\b[^"]*"'
+    slides = re.findall(rf'{slide_tag}[^>]*>[\s\S]*?(?={slide_tag}|$)', content)
+    for i, slide_html in enumerate(slides):
+        opening_tag = slide_html.split('>', 1)[0]
+        if 'img-only' in opening_tag:
+            if 'follow-prompt' in slide_html:
+                errors.append(f'  [关注提示] 第 {i + 1} 张是原图页，不应添加关注提示')
+            continue
+        if (
+            'follow-prompt' not in slide_html
+            or '关注我' not in slide_html
+            or '持续更新 AI 实战' not in slide_html
+        ):
+            errors.append(f'  [关注提示] 第 {i + 1} 张缺少“关注我 / 持续更新 AI 实战”双行提示')
+    if len(errors) > 6:
+        errors = errors[:3] + [f'  [关注提示] ... 还有 {len(errors) - 3} 处问题']
     return errors
 
 
@@ -217,6 +248,7 @@ def validate(filepath: str) -> list[str]:
     errors.extend(check_image_only_export(content))
     errors.extend(check_avatar_fallback_coverage(content))
     errors.extend(check_header_footer(content))
+    errors.extend(check_follow_prompt(content))
 
     return errors
 

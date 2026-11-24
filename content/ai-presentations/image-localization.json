@@ -1,0 +1,64 @@
+{
+  "source": "source/_posts/ai-presentations.md",
+  "policy": "Only the comparison quick-reference table is localized. Product screenshots and UI examples remain unchanged.",
+  "images": [
+    {
+      "alt": "Plus AI landing page",
+      "action": "keep",
+      "reason": "Product screenshot; original UI and branding should remain faithful."
+    },
+    {
+      "alt": "Gamma landing page",
+      "action": "keep",
+      "reason": "Product screenshot; original UI and branding should remain faithful."
+    },
+    {
+      "alt": "Plus AI 下载与安装页面",
+      "action": "keep",
+      "reason": "Product screenshot; source interface text is part of the demonstrated workflow."
+    },
+    {
+      "alt": "在 Google Slides 中使用 Plus AI 创建新演示文稿",
+      "action": "keep",
+      "reason": "Product screenshot; source interface text is part of the demonstrated workflow."
+    },
+    {
+      "alt": "Plus AI 演示文稿生成设置面板",
+      "action": "keep",
+      "reason": "Product screenshot; source interface text is part of the demonstrated workflow."
+    },
+    {
+      "alt": "Plus AI 提示词输入与数据配置",
+      "action": "keep",
+      "reason": "Product screenshot; source interface text is part of the demonstrated workflow."
+    },
+    {
+      "alt": "Plus AI 生成的演示文稿大纲示例",
+      "action": "keep",
+      "reason": "Product output screenshot; retaining it preserves the actual product experience."
+    },
+    {
+      "alt": "Plus AI 最终生成的演示文稿示例",
+      "action": "keep",
+      "reason": "Product output screenshot; retaining it preserves the actual product experience."
+    },
+    {
+      "alt": "Plus AI 与 Gamma 对比速查表",
+      "action": "localize",
+      "reason": "The English labels carry the image's main information and would hinder Chinese readers.",
+      "source": "content/ai-presentations/localized-images/source-comparison.png",
+      "output": "content/ai-presentations/localized-images/01-plusai-gamma-comparison-cn.png",
+      "verification": "All rows, product names, prices, plan labels, and comparison claims were preserved; only explanatory text was translated."
+    },
+    {
+      "alt": "Gamma 演示文稿生成界面",
+      "action": "keep",
+      "reason": "Product screenshot; original UI and branding should remain faithful."
+    },
+    {
+      "alt": "Gamma 演示文稿生成效果示例",
+      "action": "keep",
+      "reason": "Product output screenshot; retaining it preserves the actual product experience."
+    }
+  ]
+}

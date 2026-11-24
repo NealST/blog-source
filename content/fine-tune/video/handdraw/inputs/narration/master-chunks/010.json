@@ -1,0 +1,37 @@
+{
+  "signature": "c3cafa0799a5fc83c250bb1bf5f9bc787e3138dec2fb0204f046a2b050ebbc44",
+  "index": 10,
+  "text": "记住，提示词能解决就别训练，缺新事实先用 RAG，只有要长期改变说话做事的习惯，才轮到微调。",
+  "units": [
+    {
+      "beat": "choice",
+      "page": 4,
+      "text": "记住，提示词能解决就别训练，缺新事实先用 RAG，只有要长期改变说话做事的习惯，才轮到微调。"
+    }
+  ],
+  "join": "sentence",
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "010.wav",
+        "duration_seconds": 7.849,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -43.8,
+        "dc_offset": -0.0002,
+        "peak_dbfs": -1.79,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 5.17,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "2af59cdd349ad3139d072e37b8abfa8f4bd68f27d8b5584b9a98e24c9071c596"
+}

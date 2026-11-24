@@ -1,0 +1,90 @@
+{
+  "source": "source/_posts/agent-frameworks.md",
+  "policy": "Preserve facts, node counts, arrows, product names, data, and aspect ratios; translate explanatory text and apply Mozheng colors.",
+  "images": [
+    {
+      "source": "original-images/01-full-comparison.png",
+      "action": "restyle+localize",
+      "output": "localized-images/01-full-comparison.png",
+      "reason": "English comparison table; all labels affect comprehension.",
+      "task_id": "d1d7b1b5a63b4950b43d69fc37c713a0",
+      "status": "accepted",
+      "cost_credit": 0.8,
+      "dimensions": "2544x1648"
+    },
+    {
+      "source": "original-images/02-four-problems.png",
+      "action": "restyle+localize",
+      "output": "localized-images/02-four-problems.png",
+      "reason": "English capability labels and annotations.",
+      "task_id": "a62cea87be5d412ea397f35c2776385b",
+      "status": "accepted",
+      "cost_credit": 0.8,
+      "dimensions": "2608x1600"
+    },
+    {
+      "source": "original-images/03-three-layers.png",
+      "action": "restyle+localize",
+      "output": "localized-images/03-three-layers.png",
+      "reason": "English layer names and explanatory note.",
+      "task_id": "2053dc7bb9b147c2b9456175d4259398",
+      "status": "accepted_with_local_text_fix",
+      "local_fix": "Corrected generated '424' to 'A2A'.",
+      "cost_credit": 0.8,
+      "dimensions": "2480x1696"
+    },
+    {
+      "source": "original-images/04-framework-harness-protocol.png",
+      "action": "restyle+localize",
+      "output": "localized-images/04-framework-harness-protocol.png",
+      "reason": "English architecture labels and annotations.",
+      "task_id": "281866d556a34dc5825a411e44166290",
+      "status": "accepted_with_local_text_fix",
+      "local_fix": "Corrected generated '424' to 'A2A'.",
+      "cost_credit": 0.8,
+      "dimensions": "2592x1616"
+    },
+    {
+      "source": "original-images/05-langgraph-vs-crewai.png",
+      "action": "restyle+localize",
+      "output": "localized-images/05-langgraph-vs-crewai.png",
+      "reason": "English role and flow labels.",
+      "task_id": "bafbbd7e199b4b0a9ba63ad9a680ea4f",
+      "status": "accepted",
+      "cost_credit": 0.8,
+      "dimensions": "2512x1664"
+    },
+    {
+      "source": "original-images/06-mcp-vs-a2a.webp",
+      "action": "restyle+localize",
+      "output": "localized-images/06-mcp-vs-a2a.png",
+      "reason": "English nodes and explanatory text.",
+      "task_id": "1a1bd4edffe94b0b9b1dbcdf5a7c8060",
+      "status": "accepted",
+      "cost_credit": 0.8,
+      "dimensions": "2672x1568"
+    },
+    {
+      "source": "original-images/07-decision-framework.png",
+      "action": "restyle+localize",
+      "output": "localized-images/07-decision-framework.png",
+      "reason": "English decision branches and recommendations.",
+      "task_id": "35f042264bd54de29eccf15fbdaec67a",
+      "status": "accepted",
+      "cost_credit": 0.8,
+      "dimensions": "2512x1664"
+    },
+    {
+      "source": "original-images/08-lock-in.png",
+      "action": "restyle+localize",
+      "output": "localized-images/08-lock-in.png",
+      "reason": "English lock-in explanation and annotations.",
+      "task_id": "f235148d53234bbc8ec719c8bf1c9dd3",
+      "status": "accepted_with_local_text_fix",
+      "local_fix": "Corrected generated '424' to 'A2A'.",
+      "usage": "replaced_by_xiaohei-illustrations/03-runtime-lock-in.png",
+      "cost_credit": 0.8,
+      "dimensions": "3264x1280"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "status": "ready_for_generation",
+  "plan_sha256": "9b4e3fe91db9aa00c18fbafbdd20800ca88132f3950f5a678b46f5fa7e3817aa",
+  "style_sha256": "e1b22a8148dfe0c85dbaf6ec05be99191179a212d434ca47d0d772a8c3cd0133",
+  "illustrations": [
+    "library-problem",
+    "three-tools",
+    "full-finetune",
+    "peft-locks",
+    "lora-cards",
+    "qlora-compress",
+    "direction-coupling",
+    "dora-controls",
+    "qdora-combine",
+    "choice-roadmap"
+  ]
+}

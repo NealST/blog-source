@@ -1,0 +1,37 @@
+{
+  "signature": "a4b535972c17d3b3fabacb112a8ecfa1d0a8eabea9cdb9dc7bf087215d8aa542",
+  "index": 0,
+  "text": "小镇有座什么都懂的图书馆，可它一当客服就总说错话。要教好它，难道得把整栋楼拆了重建吗？",
+  "units": [
+    {
+      "beat": "opening",
+      "page": 0,
+      "text": "小镇有座什么都懂的图书馆，可它一当客服就总说错话。要教好它，难道得把整栋楼拆了重建吗？"
+    }
+  ],
+  "join": null,
+  "attempts": [
+    {
+      "seed": 2026,
+      "gate": {
+        "source": "000.wav",
+        "duration_seconds": 8.109,
+        "tonal_lines_hz_persistence": [],
+        "pause_percentile": 2,
+        "pause_depth_db": -47.6,
+        "dc_offset": -0.00023,
+        "peak_dbfs": -1.27,
+        "clipped_fraction": 0.0,
+        "status": "PASS",
+        "failures": []
+      },
+      "chars_per_second": 4.89,
+      "asr": {
+        "status": "not_available"
+      },
+      "failures": [],
+      "status": "PASS"
+    }
+  ],
+  "sha256": "be82d95837a8cc164599eb7d6974262d174960cf11a00cc475c6bcb74f6805d2"
+}

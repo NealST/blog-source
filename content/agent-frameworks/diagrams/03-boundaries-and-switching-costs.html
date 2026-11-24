@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>三层工具的职责与迁移成本</title>
+<style>
+body{margin:0;background:#fff;color:#1c1c1e;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{width:100%;overflow-x:auto}.wrap svg{display:block;width:100%;min-width:960px}
+.title{font-size:28px;font-weight:700}.node{fill:#fff;stroke:#d5d0c6;stroke-width:1.5}.focal{fill:#f8f2eb;stroke:#c4956a;stroke-width:2}
+.name{font-size:19px;font-weight:700;fill:#1c1c1e}.sub{font-size:13px;fill:#7a7876}.tag{font-size:11px;font-weight:700;fill:#c4956a;letter-spacing:1px}.cost{font-size:15px;font-weight:700;fill:#1c1c1e}
+.arrow{fill:none;stroke:#7a7876;stroke-width:2}
+</style></head>
+<body><div class="wrap"><svg viewBox="0 0 960 600" role="img" aria-labelledby="boundary-title boundary-desc">
+<title id="boundary-title">三层工具的职责与迁移成本</title>
+<desc id="boundary-desc">框架负责表达逻辑，运行时保存状态并执行循环，协议定义边界通信；运行时最难迁移。</desc>
+<defs><marker id="boundary-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#7a7876"/></marker></defs>
+<rect width="960" height="600" fill="#fff"/>
+<text x="64" y="70" class="tag">RESPONSIBILITY &amp; LOCK-IN</text><text x="64" y="112" class="title">越靠近状态与会话，迁移成本越高</text>
+<path class="arrow" marker-end="url(#boundary-arrow)" d="M312 300H374"/>
+<path class="arrow" marker-end="url(#boundary-arrow)" d="M586 300H648"/>
+<rect x="72" y="210" width="240" height="180" rx="8" class="node"/>
+<text x="96" y="248" class="tag">FRAMEWORK</text><text x="96" y="282" class="name">表达逻辑</text>
+<text x="96" y="314" class="sub">Prompt · 工具 · 控制流</text><text x="96" y="342" class="sub">业务逻辑大多可以复用</text>
+<text x="96" y="372" class="cost">迁移成本：中</text>
+<rect x="374" y="190" width="212" height="220" rx="8" class="focal"/>
+<text x="398" y="228" class="tag">HARNESS</text><text x="398" y="262" class="name">执行与保存</text>
+<text x="398" y="294" class="sub">状态 · 沙盒 · 会话历史</text><text x="398" y="322" class="sub">恢复与持久化能力</text>
+<text x="398" y="366" class="cost">迁移成本：最高</text>
+<rect x="648" y="210" width="240" height="180" rx="8" class="node"/>
+<text x="672" y="248" class="tag">PROTOCOL</text><text x="672" y="282" class="name">定义通信格式</text>
+<text x="672" y="314" class="sub">MCP · A2A</text><text x="672" y="342" class="sub">不负责运行 Agent</text>
+<text x="672" y="372" class="cost">迁移成本：低</text>
+<text x="72" y="472" class="sub">最难撤销的决定，不是 import 哪个库，而是把状态和运行环境交给了谁。</text>
+</svg></div></body></html>

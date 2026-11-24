@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "created": "2026-11-22T20:55:00+08:00",
+  "source": "source/_posts/gpt-astra-sol.md",
+  "title": "OpenAI GPT-6.2 拉了?",
+  "slug": "gpt-astra-sol",
+  "outputs": {
+    "wechat": {
+      "markdown": "content/gpt-astra-sol/wechat.md",
+      "html": "content/gpt-astra-sol/preview.html",
+      "cover_image": "content/gpt-astra-sol/cover.png",
+      "title": "OpenAI GPT-6.2 拉了?",
+      "author": "墨筝",
+      "digest": "GPT-6.2 Astra 与 Sol 纸面成绩亮眼，开发者反馈却很惨淡。本文梳理社区吐槽、官方 System Card 自承问题，以及“少输出换低成本”是否与 Anthropic IPO 窗口有关。",
+      "images": [
+        "content/gpt-astra-sol/xiaohei-illustrations/01-token-press.png",
+        "content/gpt-astra-sol/xiaohei-illustrations/02-model-toolboxes.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/gpt-astra-sol/gpt-astra-sol-小红书版.html",
+      "copy_file": "content/gpt-astra-sol/xiaohongshu-copy.txt",
+      "content_map": "content/gpt-astra-sol/xiaohongshu-content-map.json",
+      "image_count": 18,
+      "copy": {
+        "title": "少说换来的低价｜GPT-6.2 实测",
+        "body": "GPT-6.2 Astra 和 Sol 刚发布。纸面分数在涨，开发者却不太想用。\n\n官方强调输出 Token 少了 22%，价格也比上一代低。社区看到的是另一面：汇报变短，过程说不清，生成的网页还是有 AI 味。\n\n1. Astra 输入 8 美元、输出 40 美元，缓存命中更低\n2. Sol 价格没变，轻量，但吐槽很集中\n3. 业务实现可以试 Sol，界面还是更想交给 Claude\n\n后面的 System Card、成本和选型，完整版在公众号「墨筝」。\n\n.\n#AI #OpenAI #GPT #大模型 #AI编程 #开发者 #Claude #Anthropic #人工智能 #编程",
+        "tags": ["#AI", "#OpenAI", "#GPT", "#大模型", "#AI编程", "#开发者", "#Claude", "#Anthropic", "#人工智能", "#编程"]
+      }
+    }
+  },
+  "cover": {
+    "style": "mozheng-editorial",
+    "source": "content/gpt-astra-sol/cover-source.png",
+    "prompt": "content/gpt-astra-sol/cover-prompt.txt",
+    "size": "1800x766"
+  },
+  "illustrations": {
+    "style": "mozheng-xiaohei",
+    "html": "content/gpt-astra-sol/illustrations.html",
+    "xiaohei": "content/gpt-astra-sol/xiaohei-illustrations"
+  },
+  "localized_images": {
+    "audit": "content/gpt-astra-sol/image-localization.json",
+    "directory": "content/gpt-astra-sol/localized-images",
+    "note": "All source screenshots kept in original language; none required Chinese localization."
+  },
+  "layout": {
+    "theme": "mozheng",
+    "font_size": "large"
+  }
+}

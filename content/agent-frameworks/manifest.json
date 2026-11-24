@@ -1,0 +1,64 @@
+{
+  "version": "1.0",
+  "created": "2026-11-09T14:56:45+08:00",
+  "source": "source/_posts/agent-frameworks.md",
+  "title": "2026 Agent 框架对比：LangGraph、CrewAI、OpenAI Agents SDK 与 Google ADK",
+  "outputs": {
+    "wechat": {
+      "markdown": "source/_posts/agent-frameworks.md",
+      "html": "content/agent-frameworks/preview.html",
+      "cover_image": "content/agent-frameworks/cover.png",
+      "title": "2026 AI Agent 框架对比：LangGraph、CrewAI、OpenAI Agents SDK 与 Google ADK",
+      "author": "墨筝",
+      "digest": "从编排框架、厂商运行时到 MCP 与 A2A，梳理 2026 年 Agent 技术栈，并给出 LangGraph、CrewAI 等方案的选型建议。",
+      "images": [
+        "content/agent-frameworks/localized-images/01-full-comparison.png",
+        "content/agent-frameworks/localized-images/02-four-problems.png",
+        "content/agent-frameworks/localized-images/03-three-layers.png",
+        "content/agent-frameworks/localized-images/04-framework-harness-protocol.png",
+        "content/agent-frameworks/配图-3.png",
+        "content/agent-frameworks/localized-images/05-langgraph-vs-crewai.png",
+        "content/agent-frameworks/localized-images/06-mcp-vs-a2a.png",
+        "content/agent-frameworks/localized-images/07-decision-framework.png",
+        "content/agent-frameworks/xiaohei-illustrations/03-runtime-lock-in.png"
+      ]
+    },
+    "xiaohongshu": {
+      "html": "content/agent-frameworks/2026-Agent-框架对比-小红书版.html",
+      "images_dir": "content/agent-frameworks/xiaohongshu-images",
+      "image_count": 18,
+      "content_map": "content/agent-frameworks/xiaohongshu-content-map.json",
+      "copy_file": "content/agent-frameworks/xiaohongshu-copy.txt",
+      "copy": {
+        "title": "2026 Agent 框架怎么选｜完整对比",
+        "body": "Agent 框架到底该怎么选？\n\n这篇把 LangGraph、CrewAI、Pydantic AI、OpenAI Agents SDK、Google ADK，以及经常被混在一起讨论的 MCP、A2A，放回它们真正的位置：编排框架、厂商运行时、通信协议。\n\n真正该先问的不是 GitHub Star，而是：任务是否需要持久化、人机审批、可观测性和沙盒？状态、沙盒、会话历史由谁持有？\n\n轮播先讲清三层技术栈和迁移成本，完整框架逐项对比放在公众号「墨筝」。\n\n.\n#AI #AIAgent #Agent框架 #LangGraph #CrewAI #MCP #A2A #AI编程 #技术选型 #开发者",
+        "tags": ["#AI", "#AIAgent", "#Agent框架", "#LangGraph", "#CrewAI", "#MCP", "#A2A", "#AI编程", "#技术选型", "#开发者"]
+      }
+    },
+    "video": {
+      "backend": "hyperframes",
+      "path": "content/agent-frameworks/video/hyperframes/output.mp4",
+      "aigc": true
+    }
+  },
+  "cover": {
+    "style": "topview",
+    "source": "content/agent-frameworks/cover-source.png",
+    "prompt": "content/agent-frameworks/cover-prompt.txt",
+    "size": "1800x766"
+  },
+  "illustrations": {
+    "style": "mozheng-mixed",
+    "html": "content/agent-frameworks/illustrations.html",
+    "diagrams": "content/agent-frameworks/diagrams",
+    "xiaohei": "content/agent-frameworks/xiaohei-illustrations"
+  },
+  "localized_images": {
+    "audit": "content/agent-frameworks/image-localization.json",
+    "directory": "content/agent-frameworks/localized-images"
+  },
+  "layout": {
+    "theme": "mozheng",
+    "font_size": "large"
+  }
+}

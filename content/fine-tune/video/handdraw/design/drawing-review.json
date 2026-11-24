@@ -1,0 +1,178 @@
+{
+  "style_sha256": "e1b22a8148dfe0c85dbaf6ec05be99191179a212d434ca47d0d772a8c3cd0133",
+  "plan_sha256": "9b4e3fe91db9aa00c18fbafbdd20800ca88132f3950f5a678b46f5fa7e3817aa",
+  "illustrations": [
+    {
+      "plan_id": "library-problem",
+      "status": "pass",
+      "source_sha256": "167dbde9cc1342c9a21987cbff8ede2a60705371d972246e78fadd39e0835405",
+      "crop": null,
+      "anatomy_and_occlusion": "全部是物件主体；图书馆、纸条、电镐和卡片互不遮挡，纸条位于正门前方。",
+      "part_boundaries": "屋顶、楼体、纸条、电镐和卡片均有闭合深墨轮廓；五个计划部位可用简单多边形分开。",
+      "stroke_breaks": "屋顶和楼体各用长外轮廓与极少内部结构；纸条、电镐和两张卡片分别抬笔。",
+      "outline_then_fill": "深墨轮廓与金、灰蓝、砖红平涂分离，适合先完整描线再按同一部位顺序填色。",
+      "spatial_order": "先画上方屋顶和楼体，再画中央红叉纸条，最后从左到右画电镐和两张卡片。",
+      "recognizability": {
+        "status": "pass",
+        "named_as": "会说话的图书馆，旁边有重建工具和两张外挂卡片",
+        "evidence": "实际查看 work/review/recognizability.png 的 160px 第 1 格，一秒内能说出主体和两个选择；错误叉号仍可见。"
+      },
+      "narrative_checks": [
+        {
+          "id": "speaking-library",
+          "status": "pass",
+          "evidence": "图书馆正面有眼睛和嘴，门口伸出带红叉的话术纸条。"
+        },
+        {
+          "id": "rebuild-or-adapt",
+          "status": "pass",
+          "evidence": "左下是重型拆建工具，右下是两张金色外挂卡片，两个选择同时可见。"
+        }
+      ]
+    },
+    {
+          "plan_id": "three-tools",
+          "status": "pass",
+          "source_sha256": "5e16ddeec9cb62da5b1084398b01c0ae1fe9b8a38e425bc7a721a41368f6da0e",
+          "crop": null,
+          "anatomy_and_occlusion": "图书馆、便签、资料车和扳手互不遮挡。",
+          "part_boundaries": "四个计划部位均有独立闭合轮廓。",
+          "stroke_breaks": "建筑与三个工具分别抬笔，工具内部只保留必要结构线。",
+          "outline_then_fill": "深墨轮廓和四组平涂色块清楚分离。",
+          "spatial_order": "先画中央图书馆，再从左到右画便签、资料车和扳手。",
+          "recognizability": {"status": "pass", "named_as": "图书馆、便签、资料车和扳手", "evidence": "按正常播放尺寸检查，四类物件形状清楚；缩小后仍可凭轮廓辨认。"},
+          "narrative_checks": [
+            {"id": "three-methods", "status": "pass", "evidence": "图书馆旁同时出现三种不同工具。"},
+            {"id": "tool-roles", "status": "pass", "evidence": "便签、资料车和扳手从左到右依次可见。"}
+          ]
+        },
+        {
+          "plan_id": "full-finetune",
+          "status": "pass",
+          "source_sha256": "3c6bd598df9f228c55d646bf76647cca6c0c632da94d292c6cac7b15900a3b50",
+          "crop": null,
+          "anatomy_and_occlusion": "主建筑、复制品和掉落旧书分区清楚，无遮挡歧义。",
+          "part_boundaries": "主壳体、书架、三座复制品和旧书均有闭合边界。",
+          "stroke_breaks": "每座建筑和旧书独立起落笔。",
+          "outline_then_fill": "墨线先形成建筑结构，再按建筑与书本分区平涂。",
+          "spatial_order": "先左侧主建筑，再从左到右画三座复制品，最后画底部旧书。",
+          "recognizability": {"status": "pass", "named_as": "一座被全面搬动的图书馆、三座复制品和掉落旧书", "evidence": "正常和缩略尺寸下均能数清三座复制品并看见掉落书本。"},
+          "narrative_checks": [
+            {"id": "all-updated", "status": "pass", "evidence": "主图书馆四组书架全部处于拉出和重排状态。"},
+            {"id": "copy-and-forget", "status": "pass", "evidence": "右侧恰有三座完整复制图书馆，底部有一本脱离主建筑的旧书。"}
+          ]
+        },
+        {
+          "plan_id": "peft-locks",
+          "status": "pass",
+          "source_sha256": "37584206d11e190249c2d81da7ebc34dcab2ea49804bcafb93f9e87757716fbb",
+          "crop": null,
+          "anatomy_and_occlusion": "正面书架没有遮挡，锁与旋钮均完整可见。",
+          "part_boundaries": "书架框、锁区和金色旋钮可按纵向区域分开描绘。",
+          "stroke_breaks": "六格框架、锁和旋钮各自使用独立笔画。",
+          "outline_then_fill": "先画书架和锁的深墨轮廓，再填灰蓝和金色。",
+          "spatial_order": "从上方框架开始，随后完成被锁区域和少数旋钮。",
+          "recognizability": {"status": "pass", "named_as": "大部分被锁、只有少量旋钮可调的书架", "evidence": "六个大锁占据主体，三个小金色旋钮形成明显面积反差。"},
+          "narrative_checks": [
+            {"id": "mostly-frozen", "status": "pass", "evidence": "整面六格书架均有锁，只有三个小旋钮用金色强调。"},
+            {"id": "small-part", "status": "pass", "evidence": "旋钮面积远小于被锁书架面积。"}
+          ]
+        },
+        {
+          "plan_id": "lora-cards",
+          "status": "pass",
+          "source_sha256": "79f21e6e164af495ab2dc3545368a8b8140862c768e8fcc1e6da656b20f34af4",
+          "crop": null,
+          "anatomy_and_occlusion": "底座图书馆、两张适配卡和三个客户卡包彼此分离。",
+          "part_boundaries": "高卡、宽卡和三个卡包均有独立闭合边界。",
+          "stroke_breaks": "底座先完成，随后两张小卡和三个卡包分别抬笔。",
+          "outline_then_fill": "轮廓与客户卡包的三种平涂颜色分离。",
+          "spatial_order": "先上方图书馆与适配卡，再从左到右完成底部卡包。",
+          "recognizability": {"status": "pass", "named_as": "一座共享图书馆、两张小适配卡和三个客户卡包", "evidence": "适配卡明显小于底座，三个卡包都由连接线汇入同一建筑。"},
+          "narrative_checks": [
+            {"id": "two-small-cards", "status": "pass", "evidence": "图书馆右侧恰有一高一宽两张小卡。"},
+            {"id": "shared-base", "status": "pass", "evidence": "三个不同颜色卡包均连接同一图书馆。"}
+          ]
+        },
+        {
+          "plan_id": "qlora-compress",
+          "status": "pass",
+          "source_sha256": "9bbfdcc142c54967f2f40682404f23f9a93e313483363c4d2ef5b2b102d7edde",
+          "crop": null,
+          "anatomy_and_occlusion": "大柜、压缩箭头、小箱和抽出层无遮挡。",
+          "part_boundaries": "四个计划部位都有清楚闭合轮廓。",
+          "stroke_breaks": "压缩前后柜体分别完成，抽屉和回收箭头独立起笔。",
+          "outline_then_fill": "柜体轮廓先画，金色框和灰蓝门板后填。",
+          "spatial_order": "从左侧十六格柜经中间箭头画到右侧四格箱和抽屉。",
+          "recognizability": {"status": "pass", "named_as": "十六格大柜压成四格小箱，并只抽出一层", "evidence": "格数、体积差异和单层抽出在缩略尺寸下仍清楚。"},
+          "narrative_checks": [
+            {"id": "quarter-size", "status": "pass", "evidence": "右侧四格箱显著小于左侧十六格柜。"},
+            {"id": "one-layer", "status": "pass", "evidence": "小箱只有右下单层处于抽出状态，并带回收箭头。"}
+          ]
+        },
+        {
+          "plan_id": "direction-coupling",
+          "status": "pass",
+          "source_sha256": "70778b7e894fbae1815d1dfa660ff47938f2b8aca213a96cdbf7c9627c1c8630",
+          "crop": null,
+          "anatomy_and_occlusion": "三根箭头从同一中心轴出发，颜色和方向均可区分。",
+          "part_boundaries": "圆盘、原箭头、附加箭头和结果箭头边界清楚。",
+          "stroke_breaks": "指南针圆盘与每根箭头独立起笔。",
+          "outline_then_fill": "先形成圆盘和箭头墨线，再分别填深墨、金和砖红。",
+          "spatial_order": "先画圆盘，再按原箭头、附加箭头、结果箭头顺序完成。",
+          "recognizability": {"status": "pass", "named_as": "指南针上的原箭头、附加小箭头和更长的转向结果", "evidence": "无需文字即可看出结果箭头同时转向并增长。"},
+          "narrative_checks": [
+            {"id": "length-direction", "status": "pass", "evidence": "不同箭头的朝向和长度差异显著。"},
+            {"id": "coupled-change", "status": "pass", "evidence": "砖红结果箭头相对原箭头既转向又变长。"}
+          ]
+        },
+        {
+          "plan_id": "dora-controls",
+          "status": "pass",
+          "source_sha256": "968f8bfe625aec1e1d97af71f3b1b29e90d8f4a5ff0868a0609b59c2c0ac69cc",
+          "crop": null,
+          "anatomy_and_occlusion": "双旋钮和箭头完整可见，连接线不互相遮挡。",
+          "part_boundaries": "面板、两个旋钮和箭头均为闭合大形。",
+          "stroke_breaks": "面板、左旋钮、右旋钮和箭头按计划分别起笔。",
+          "outline_then_fill": "深墨轮廓先画，金色旋钮和箭头随后平涂。",
+          "spatial_order": "先面板，再从左至右完成两个旋钮和上方箭头。",
+          "recognizability": {"status": "pass", "named_as": "两个旋钮分别控制箭头方向和长度", "evidence": "弧形控制线与直线测量线把两个职责区分开。"},
+          "narrative_checks": [
+            {"id": "separate-controls", "status": "pass", "evidence": "控制台上有两个独立旋钮。"},
+            {"id": "no-coupling", "status": "pass", "evidence": "两条不同形态的控制线分别连接方向与长度。"}
+          ]
+        },
+        {
+          "plan_id": "qdora-combine",
+          "status": "pass",
+          "source_sha256": "b55bc76537319f51f35ddf0129d915cf981133e032e818ba9379bd9ab8e09585",
+          "crop": null,
+          "anatomy_and_occlusion": "四格柜、双旋钮控制台和施工牌互不遮挡。",
+          "part_boundaries": "柜体、两个控制旋钮和施工牌边界清楚。",
+          "stroke_breaks": "三个模块分别起落笔，施工牌粗条纹独立完成。",
+          "outline_then_fill": "模块轮廓先画，再填灰绿、金和砖红。",
+          "spatial_order": "从左侧压缩柜画到中间控制台，最后画右侧施工牌。",
+          "recognizability": {"status": "pass", "named_as": "四格压缩柜连接双旋钮，旁边有施工牌", "evidence": "三个模块在缩略尺寸下仍能按从左到右辨认。"},
+          "narrative_checks": [
+            {"id": "combined-method", "status": "pass", "evidence": "四格柜同时连接两个独立旋钮。"},
+            {"id": "maturing-tools", "status": "pass", "evidence": "右侧红金斜纹施工牌不含文字，清楚表达仍在建设。"}
+          ]
+        },
+        {
+          "plan_id": "choice-roadmap",
+          "status": "pass",
+          "source_sha256": "b875e9500e84bfa680183e01e363461821b41a9cef98ec399b89c565458af1b4",
+          "crop": null,
+          "anatomy_and_occlusion": "图书馆、四向路牌和底部三个检查站分层清楚。",
+          "part_boundaries": "建筑、路牌与三个圆形检查站均有独立闭合轮廓。",
+          "stroke_breaks": "先建筑和路牌，随后三个检查站从左到右独立起笔。",
+          "outline_then_fill": "墨线完成后按金、灰蓝和砖红平涂。",
+          "spatial_order": "先上方图书馆，再中央路牌，最后从左到右完成底部检查站。",
+          "recognizability": {"status": "pass", "named_as": "四向选型路牌、完成改造的图书馆和三道检查站", "evidence": "四个方向和便签、资料车、扳手三个图标均可数清。"},
+          "narrative_checks": [
+            {"id": "four-choices", "status": "pass", "evidence": "中央路牌恰有四个分开的方向，每个用不同几何符号区分。"},
+            {"id": "three-boundaries", "status": "pass", "evidence": "底部从左到右依次是便签、资料车和扳手三个检查图标。"}
+          ]
+    }
+  ]
+}

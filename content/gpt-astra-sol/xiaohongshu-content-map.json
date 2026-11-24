@@ -1,0 +1,31 @@
+{
+  "source": "source/_posts/gpt-astra-sol.md",
+  "image_count": 18,
+  "cutoff": {
+    "after": "折叠太平洋页面说明，以及“一眼可见的 AI 感”这句",
+    "reason": "小红书单篇最多 18 张。原文图片各自独占一页，按顺序排到提示词和生成结果后自然截断。"
+  },
+  "skipped": [
+    "文首 Medium 封面图不进轮播，封面改用原文标题和开场三段。"
+  ],
+  "slides": [
+    {"slide": 1, "source": "标题；开场三段"},
+    {"slide": 2, "source": "社区反馈截图"},
+    {"slide": 3, "source": "X 上的厌恶、上市推测、章节「带来了哪些新变化」及定位段"},
+    {"slide": 4, "source": "价格链接与 Astra 定价段"},
+    {"slide": 5, "source": "定价截图"},
+    {"slide": 6, "source": "Sol 定价与 GDPval 少 22% 段"},
+    {"slide": 7, "source": "GDPval 截图"},
+    {"slide": 8, "source": "图注、22% 注释、三条列表、Codex 上架引导"},
+    {"slide": 9, "source": "Codex 模型截图"},
+    {"slide": 10, "source": "前端承诺、吐槽、章节「网页依然充满 AI 味」、Mia 推文段"},
+    {"slide": 11, "source": "Mia 推文截图"},
+    {"slide": 12, "source": "折叠手风琴说明与提示词引导"},
+    {"slide": 13, "source": "提示词前半，至「朱红色的航线轨迹。」"},
+    {"slide": 14, "source": "提示词后半，至句末"},
+    {"slide": 15, "source": "「下图是 GPT-6.2 Sol 的实际生成效果：」"},
+    {"slide": 16, "source": "折叠太平洋截图"},
+    {"slide": 17, "source": "图注、AI 感评价、公众号截断提示"},
+    {"slide": 18, "source": "文末两句原文，作为封底"}
+  ]
+}
